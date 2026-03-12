@@ -1,0 +1,40 @@
+#ifndef WORD_H
+#define WORD_H
+
+#include <stdlib.h>
+#include <stdbool.h>
+
+#include "cab_consts.h"
+
+# define UNDEFINED_LETTER '-'
+
+
+typedef struct{
+    char letters[LETTERS_IN_WORD];
+} Word;
+
+typedef struct{
+    Word* words;
+    size_t size;
+} Vocabolary;
+
+Word word__new(char letters[LETTERS_IN_WORD]);
+
+bool string_is_valid_word(char* string);
+
+void word__print(Word word);
+
+int word__compare(Word a, Word b);
+
+
+void vocabolary__init_from_file(Vocabolary* vocabolary,const char* file_name);
+
+bool vocabolary__contains_word(const Vocabolary* vocabolary,Word word);
+
+
+bool check_pattern(char pattern[LETTERS_IN_WORD]);
+
+void set_undefined_pattern(char * pattern);
+
+bool word__contains_letters(Word word,char *letters);
+#endif /* WORD_H */
