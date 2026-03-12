@@ -155,8 +155,9 @@ void print_attempts(){
 
 
 bool is_word_already_attempted(Word word){
+    /* return true if the given word has already been guessed earlier */
     for(size_t i = 0; i < attempt_number; i++){
-        if (word__compare(attempts[i].word,word) != 0){
+        if (word__compare(attempts[i].word, word) == 0){
             return true;
         }
     }
@@ -185,25 +186,27 @@ Word get_word_from_input(){
             fflush(stdin);
             continue;
         }
-
+        /*
         if(strcmp(input_string,"cows")==0){
             char pattern[100];
             if (scanf("%99s", pattern) != 1) {
-                /* treat bad input as if user cancelled help */
                 continue;
             }
             to_lower(pattern);
 
             
+        }*/
+        if (strcmp(input_string,"help") == 0){
+            printf(HELP_TEXT);
+            continue;
         }
-
         if (strcmp(input_string,"attempts") == 0){
             print_attempts();
             fflush(stdin);
             continue;
         }
 
-        if (strcmp(input_string, "help") == 0) {
+        if (strcmp(input_string, "list") == 0) {
             char pattern[100];
             if (scanf("%99s", pattern) != 1) {
                 /* treat bad input as if user cancelled help */
@@ -283,7 +286,7 @@ int main(){
     setup_game();
     printf("Welcome to Cows and Bulls!\n");
     printf("Guess the %d-letter word.\n", LETTERS_IN_WORD);
-
+    printf(HELP_TEXT);
 
     while(true){
         Word word = get_word_from_input();
