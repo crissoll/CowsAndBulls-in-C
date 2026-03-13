@@ -137,6 +137,9 @@ Word get_word_from_input(){
 
 
 void game_start(){
+
+    load_vocabolary();
+
     bool load_game = false;
 
     if(is_game_data_valid()){
@@ -177,8 +180,8 @@ bool play_turn(){
     return play_word(word);
 }
 int main(){
-    setup_game();
     game_start();
+
     printf("Welcome to Cows and Bulls!\n");
     printf("Guess the %d-letter word.\n", LETTERS_IN_WORD);
     printf(HELP_TEXT);

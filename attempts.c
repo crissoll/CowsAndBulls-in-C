@@ -92,10 +92,12 @@ void store_attempt_array(Attempt* attempts,size_t*attempt_number,unsigned long s
 }
 
 bool load_attempt_array(Attempt* attempts,size_t* attempt_number,unsigned long* session_id){
+    
+    *attempt_number = 0;
+
     FILE* attempts_file = fopen(ATTEMPTS_FILE_NAME,"r");
     if (attempts_file == NULL) {
         /* nothing to load */
-        *attempt_number = 0;
         return false;
     }
 
@@ -104,11 +106,8 @@ bool load_attempt_array(Attempt* attempts,size_t* attempt_number,unsigned long* 
     if (fscanf(attempts_file, "%15s %lu", label, session_id) != 2 ||
         strcmp(label, "session_id") != 0) {
         fclose(attempts_file);
-        *attempt_number = 0;
         return false;
     }
-
-    *attempt_number = 0;
     while (true) {
         char letters[LETTERS_IN_WORD + 1] = {0};
         GuessResult result;
@@ -120,12 +119,8 @@ bool load_attempt_array(Attempt* attempts,size_t* attempt_number,unsigned long* 
         if (scanned != 3)
             break;
 
-        if (!string_is_valid_word(letters)) {
-            /* corrupted save entry: abort loading and signal invalid data */
-            *attempt_number = 0;
-            fclose(attempts_file);
-            return false;
-        }
+        if (!string_is_valid_word(letters))
+            break;
 
         result.cows = (size_t)cows;
         result.bulls = (size_t)bulls;

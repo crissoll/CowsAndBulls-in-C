@@ -34,7 +34,7 @@ SessionId get_session_id(void){
 }
 
 
-void setup_game(){
+void load_vocabolary(){
     vocabolary__init_from_file(used_vocabolary, EN_FILE_NAME);
 }
 
@@ -44,9 +44,6 @@ GuessResult guess_word(Word attempt){
     return compare_words(attempt,secret_word);
 }
 
-void guess_result__print(GuessResult result){
-    printf("cows: %zu, bulls: %zu", result.cows, result.bulls);
-}
 
 bool load_attempts(void){
     return load_attempt_array(attempts, &attempt_number, &session_id);

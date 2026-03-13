@@ -5,7 +5,7 @@
 
 typedef unsigned long SessionId;
 
-void setup_game();
+void load_vocabolary();
 
 void generate_secret_word();
 
