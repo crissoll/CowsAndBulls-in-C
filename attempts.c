@@ -126,8 +126,9 @@ bool load_attempt_array(Attempt* attempts,size_t* attempt_number,unsigned long* 
         result.bulls = (size_t)bulls;
 
         Word word = word__new(letters);
-        attempts[*attempt_number++] = attempt__new(word, result);
 
+        Attempt attempt = attempt__new(word, result);
+        attempts[(*attempt_number)++] = attempt;
         if (*attempt_number >= MAX_ATTEMPTS)
             break; /* prevent overflow */
     }
