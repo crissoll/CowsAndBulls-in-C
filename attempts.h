@@ -1,7 +1,7 @@
 #ifndef ATTEMPTS
 #define ATTEMPTS
 
-#include "index_array.h"
+
 #include "word.h"
 #include "cab_guess.h"
 
