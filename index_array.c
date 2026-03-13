@@ -155,3 +155,4 @@ IndexArray index_array__match_letters(
     return_value.size = return_size;
     return return_value;
 }
+

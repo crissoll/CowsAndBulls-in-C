@@ -100,7 +100,7 @@ bool vocabolary__contains_word(const Vocabolary* vocabolary,Word word){
 bool check_pattern(char pattern[LETTERS_IN_WORD]){
     for (size_t k = 0; k < LETTERS_IN_WORD; k++) {
         char c = pattern[k];
-        if (c == '\0' || (c < 'a' || c > 'z') && c != UNDEFINED_LETTER){
+        if (c == '\0' || ((c < 'a' || c > 'z') && c != UNDEFINED_LETTER)){
             return false;
         }
     }
