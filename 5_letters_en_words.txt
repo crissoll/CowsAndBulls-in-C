@@ -469,6 +469,7 @@ cease
 cedar
 ceded
 cells
+cello
 cents
 chafe
 chaff
@@ -905,6 +906,7 @@ endow
 enemy
 enjoy
 ennui
+enoki
 enrol
 ensue
 enter
@@ -994,6 +996,7 @@ feuds
 fever
 fewer
 fiche
+ficus
 fiefs
 field
 fiend
@@ -1303,6 +1306,7 @@ gummy
 gusto
 gusts
 gusty
+gyoza
 gypsy
 habit
 hacks
@@ -1491,6 +1495,7 @@ judge
 juice
 juicy
 jumps
+junco
 junks
 junta
 juror
@@ -1510,6 +1515,7 @@ kinds
 kings
 kiosk
 kites
+klutz
 knack
 knave
 knead
@@ -1675,6 +1681,7 @@ lutes
 lying
 lymph
 lynch
+lyres
 lyric
 maces
 madam
@@ -1743,6 +1750,7 @@ metal
 meted
 meter
 mewed
+mezzo
 miami
 midst
 miens
@@ -1917,6 +1925,7 @@ osier
 other
 otter
 ought
+ouija
 ounce
 outdo
 outer
@@ -2006,6 +2015,7 @@ petal
 petty
 phase
 phial
+phlox
 phone
 photo
 piano
@@ -2486,6 +2496,7 @@ sings
 sinks
 siren
 sires
+sitar
 sites
 sixes
 sixth
@@ -3206,7 +3217,15 @@ wrong
 wrote
 wroth
 xebec
+xenia
 xenon
+xeric
+xerox
+xerus
+xylem
+xylic
+xyris
+xysta
 yacht
 yards
 yarns
@@ -3226,9 +3245,15 @@ young
 yours
 youth
 zappy
+zaxes
+zazen
+zebec
 zebra
 zeros
 zests
 zesty
+zhuzh
 zippy
+zombi
+zonal
 zones
