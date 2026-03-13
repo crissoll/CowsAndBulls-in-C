@@ -5,13 +5,19 @@
 
 #include "cab_consts.h"
 #include "word_set.h"
-#include "utils.h"
+
+#include "cab_instructions.h"
 
 #include "cab_session.h"
 
-
 WordSet help_word_set;
 IndexArray help_array;
+
+void help_array_init(){
+    index_array__init(&help_array,used_vocabolary->size);
+    for (size_t i = 0; i < used_vocabolary->size;i++)
+        help_array.indexes[i] = i;
+}
 
 void list_mode__remove(const char* pattern){
     IndexArray tmp = word_set__get_words_by_pattern(&help_word_set,pattern);
@@ -24,13 +30,127 @@ void list_mode__remove(const char* pattern){
     index_array__free_content(&new_arr);
 }
 
-bool check_arguments_bounds(size_t args,size_t min_count,size_t max_count){
-    if (args > max_count){
-        printf("too many arguments\n");
+
+void _instr__help(Instruction* instr_ptr){
+    printf(HELP_TEXT);
+}
+
+void _instr__attempts(Instruction* instr_ptr){
+    print_attempts();
+}
+
+
+void _instr__list(Instruction* instr_ptr){
+        if(instr_ptr->args_count == 2){
+            const char* pattern = instr_ptr->arguments[1];
+            /* initial pattern to filter vocabulary */
+            const size_t len = strlen(pattern);
+            if(len > LETTERS_IN_WORD){
+                printf("pattern too long!\n");
+                return;
+            }
+
+            bool undefined_pattern=true;
+            for(size_t i = 0; i < len;i++){
+                if(pattern[i]!=UNDEFINED_LETTER){
+                    undefined_pattern = false;
+                    break;
+                }
+            }
+            if(undefined_pattern){
+                index_array__free_content(&help_array);
+                help_array_init();
+            }
+            else{
+                if(!check_pattern(pattern)){
+                    printf("invalid pattern!\n");
+                    return;
+                }
+                index_array__free_content(&help_array);
+                help_array = word_set__get_words_by_pattern(&help_word_set, pattern);
+            }
+            
+        }
+
+        index_array__print(help_array, *used_vocabolary);
+
+        /* repeatedly remove words until user types "stop" */
+        char pattern[100];
+        while(true){
+            if (!get_input(
+                    "remove words with pattern: ",
+                    "pattern",
+                    pattern,
+                    0, //THIS MUST BE 0!
+                    true)
+                ) {
+                /* unlikely, but retry if input failed */
+                continue;
+            }
+            
+            if(strcmp(pattern,"stop") == 0){
+                break;
+            }
+            if(!check_pattern(pattern)){
+                printf("invalid pattern!\n");
+                continue;
+            }
+            
+            list_mode__remove(pattern);
+
+            index_array__print(help_array, *used_vocabolary);
+        };
+    }
+
+
+#define INSTR_DEFINERS_COUNT 3
+
+InstructionDefiner instr_definers[INSTR_DEFINERS_COUNT] = {
+    {
+        .name = "help",
+        .min_args_count = 1,
+        .max_args_count = 1,
+        .function_ptr = _instr__help
+    },
+    {
+        .name = "attempts",
+        .min_args_count = 1,
+        .max_args_count = 1,
+        .function_ptr = _instr__attempts
+    },
+    {
+        .name = "list",
+        .min_args_count = 1,
+        .max_args_count = 2,
+        .function_ptr = _instr__list
+    }
+};
+
+
+bool _instr__guess_word( Instruction* instruction,Word* word){
+    size_t input_len = strlen(instruction->name);
+    if (input_len > LETTERS_IN_WORD){
+        printf("word too long\n");
         return false;
     }
-    if (args < min_count){
-        printf("too few arguments\n");
+    if (input_len < LETTERS_IN_WORD){
+        printf("word too short\n");
+        return false;
+    }
+
+    if(!string_is_valid_word(instruction->name)){
+        printf("word contains invalid characters\n");
+        return false;
+    }
+
+    *word = word__new(instruction->name);
+
+    if (!vocabolary__contains_word(used_vocabolary, *word)){
+        printf("word not contained in vocabolary\n");
+        return false;
+    }
+    if (is_word_already_attempted(*word)){
+        printf("word already attempted!\n");
         return false;
     }
     return true;
@@ -40,148 +160,21 @@ Word get_word_from_input(){
     Word result;
     /* read until user types a valid five‑letter word
        that is contained in the vocabulary */
-    while(true){
-
-        char input_strings[3][100];
-        char* input_tokens[] = { input_strings[0], input_strings[1], input_strings[2] };
+    
+    bool word_received = false;
+    while(!word_received){
+        bool input_processed = false;
         printf("Enter guess or command: ");
-        const size_t args = get_multiple_input(input_tokens, 3);
+        
+        Instruction instruction;
+        instruction__init_from_input(&instruction);
 
-        if(args==(size_t)-1){
-            printf("too many arguments");
-            continue;
+        for (size_t i = 0; i < INSTR_DEFINERS_COUNT && !input_processed; i++){
+            input_processed = instruction__try(&instruction,&instr_definers[i]);
         }
 
-        if(args == 0){
-            continue;
-        }
-
-        char * input_string = input_strings[0];
-        /*
-        if(strcmp(input_string,"cows")==0){
-            char pattern[100];
-            if (scanf("%99s", pattern) != 1) {
-                continue;
-            }
-            to_lower(pattern,LETTERS_IN_WORD);
-
-            
-        }*/
-        if (strcmp(input_string,"help") == 0){
-            if(!check_arguments_bounds(args,1,1))
-                continue;
-            printf(HELP_TEXT);
-            fflush(stdin);
-            continue;
-        }
-        if (strcmp(input_string,"attempts") == 0){
-            if(!check_arguments_bounds(args,1,1))
-                continue;
-            print_attempts();
-            fflush(stdin);
-            continue;
-        }
-
-        if (strcmp(input_string, "list") == 0) {
-            if(!check_arguments_bounds(args,1,2))
-                continue;
-            char pattern[100] = {0};
-
-
-            if(args == 2){
-                strcpy(pattern, input_strings[1]);
-                /* initial pattern to filter vocabulary */
-                const size_t len = strlen(pattern);
-                if(len > LETTERS_IN_WORD){
-                    printf("pattern too long!\n");
-                    continue;
-                }
-
-                bool undefined_pattern=true;
-                for(size_t i = 0; i < len;i++){
-                    if(pattern[i]!=UNDEFINED_LETTER){
-                        undefined_pattern = false;
-                        break;
-                    }
-                }
-                if(undefined_pattern){
-                    index_array__free_content(&help_array);
-                    help_array_init();
-                }
-                else{
-                    if(!check_pattern(pattern)){
-                        printf("invalid pattern!\n");
-                        continue;
-                    }
-                    index_array__free_content(&help_array);
-                    help_array = word_set__get_words_by_pattern(&help_word_set, pattern);
-                }
-                
-            }
-
-            index_array__print(help_array, *used_vocabolary);
-
-            /* repeatedly remove words until user types "stop" */
-            while(true){
-                if (!get_input(
-                        "remove words with pattern: ",
-                        "pattern",
-                        pattern,
-                        0, //THIS MUST BE 0!
-                        true)
-                    ) {
-                    /* unlikely, but retry if input failed */
-                    continue;
-                }
-                
-                if(strcmp(pattern,"stop") == 0){
-                    break;
-                }
-                if(!check_pattern(pattern)){
-                    printf("invalid pattern!\n");
-                    continue;
-                }
-                
-                list_mode__remove(pattern);
-
-                index_array__print(help_array, *used_vocabolary);
-            };
-
-            continue;
-        }
-
-        size_t input_len = strlen(input_string);
-        if (input_len > LETTERS_IN_WORD){
-            printf("word too long\n");
-            continue;
-        }
-        if (input_len < LETTERS_IN_WORD){
-            printf("word too short\n");
-            continue;
-        }
-
-        for(size_t i = 0; i < LETTERS_IN_WORD; i++){
-            if(input_string[i] >= 'A' && input_string[i] <= 'Z')
-                input_string[i] -= 'A' - 'a';
-        }
-
-        if(!string_is_valid_word(input_string)){
-            printf("word contains invalid characters\n");
-            continue;
-        }
-
-        result = word__new(input_string);
-
-        if (!vocabolary__contains_word(used_vocabolary, result)){
-            printf("word not contained in vocabolary\n");
-            continue;
-        }
-        if (is_word_already_attempted(result)){
-            printf("word already attempted!\n");
-            continue;
-        }
-
-        break;
+        if(!input_processed)
+            word_received = _instr__guess_word(&instruction,&result);
     }
     return result;
 }
@@ -224,44 +217,41 @@ void game_start(){
        whether a previous game was loaded */
 
     word_set__init_from_file(&help_word_set,EN_FILE_NAME);
+    help_array_init();
 }
 
 bool play_turn(){
     Word word = get_word_from_input();
-    
-    return play_word(word);
+    bool game_ended = play_word(word);
+    return game_ended;
 }
 
-void help_array_init(){
-    index_array__init(&help_array,used_vocabolary->size);
-    for (size_t i = 0; i < used_vocabolary->size;i++)
-        help_array.indexes[i] = i;
+void game_win(){
+    index_array__free_content(&help_array);
+    printf("Congratulations, you found the word!\n");
+    delete_game_data();
 }
+
+
 
 int main(){
     game_start();
-    help_array_init();
 
     printf("Welcome to Cows and Bulls!\n");
     printf("Guess the %d-letter word.\n", LETTERS_IN_WORD);
     printf(HELP_TEXT);
 
     bool game_ended = false;
-    {
+
+    game_ended = play_turn();
+    // secret word is stored only after the first turn,
+    // so that if you Ctrl+C after misclicking "n" you can go back
+    store_secret_word();
+
+    while(!game_ended)
         game_ended = play_turn();
 
-        store_secret_word();
-        store_attempts();
-    }
-    while(!game_ended){
-        game_ended = play_turn();
+    game_win();
 
-        store_attempts();
-    };
-    
-    index_array__free_content(&help_array);
-    printf("Congratulations, you found the word!\n");
-    delete_game_data();
     return 0;
 }
-

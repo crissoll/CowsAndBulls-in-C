@@ -150,6 +150,7 @@ void store_attempts(){
 bool play_word(Word word){
     GuessResult result = guess_word(word);
     attempts[attempt_number++] = attempt__new(word,result);
+    store_attempts();
     guess_result__print(result);
     printf("\n");
 
