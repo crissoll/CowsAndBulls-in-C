@@ -1,7 +1,7 @@
 #ifndef ATTEMPTS
 #define ATTEMPTS
 
-
+#include "index_array.h"
 #include "word.h"
 #include "cab_guess.h"
 
@@ -41,5 +41,20 @@ bool is_word_in_attempt_array(Word word,Attempt* attempts,size_t*attempt_number)
 void store_attempt_array(Attempt* attempts,size_t*attempt_number,unsigned long session_id);
 
 bool load_attempt_array(Attempt* attempts,size_t* attempt_number,unsigned long* session_id);
+
+
+bool is_word_valid(
+    Word word,
+    Attempt* attempt_array,
+    size_t attempt_array_size,
+    Vocabolary* used_vocabolary
+);
+
+
+IndexArray get_possible_words_from_attempt_array(
+    Attempt* attempt_array,
+    size_t attempt_array_size,
+    Vocabolary* used_vocabolary
+);
 
 #endif

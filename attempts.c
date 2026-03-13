@@ -135,3 +135,41 @@ bool load_attempt_array(Attempt* attempts,size_t* attempt_number,unsigned long* 
     fclose(attempts_file);
     return true;
 }
+
+bool is_word_valid(
+        Word word,
+        Attempt* attempt_array,
+        size_t attempt_array_size,
+        Vocabolary* used_vocabolary
+    ){
+    for(size_t j = 0; j < attempt_array_size;j++){
+        Attempt attempt = attempt_array[j];
+        GuessResult r = compare_words(attempt.word, word);
+        if(r.bulls != attempt.result.bulls || r.cows != attempt.result.cows){
+            return false;
+        }
+    }
+    return true;   
+}
+
+
+IndexArray get_possible_words_from_attempt_array(
+        Attempt* attempt_array,
+        size_t attempt_array_size,
+        Vocabolary* used_vocabolary){
+    IndexArray result;
+
+    /* allocate the maximum possible size; we'll trim by updating result.size */
+    index_array__init(&result, used_vocabolary->size);
+
+    size_t count = 0;
+    for(size_t i = 0; i < used_vocabolary->size; i++){
+        Word candidate = used_vocabolary->words[i];
+        
+        if(is_word_valid(candidate,attempt_array,attempt_array_size,used_vocabolary))
+            result.indexes[count++] = i;
+    }
+    result.size = count;
+
+    return result;
+}
