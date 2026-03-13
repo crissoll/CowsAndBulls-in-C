@@ -3,6 +3,8 @@
 #include <stdbool.h>
 #include <string.h>
 
+#define MAX_ARGUMENT_SIZE 100
+
 
 void set_bool_array_to_false(bool array[],size_t length){
     for(size_t i = 0; i < length; i++)
@@ -45,8 +47,9 @@ bool get_input(
     return true;
 }
 
+
 size_t get_multiple_input(
-    char* variables[],
+    char variables[][MAX_ARGUMENT_SIZE],
     size_t variable_count
 ){
     char line[1024];

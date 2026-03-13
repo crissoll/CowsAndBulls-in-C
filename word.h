@@ -32,9 +32,9 @@ void vocabolary__init_from_file(Vocabolary* vocabolary,const char* file_name);
 bool vocabolary__contains_word(const Vocabolary* vocabolary,Word word);
 
 
-bool check_pattern(char pattern[LETTERS_IN_WORD]);
+bool check_pattern(const char pattern[LETTERS_IN_WORD]);
 
 void set_undefined_pattern(char * pattern);
 
-bool word__contains_letters(Word word,char *letters);
+bool word__contains_letters(Word word,const char *letters);
 #endif /* WORD_H */

@@ -139,8 +139,7 @@ bool load_attempt_array(Attempt* attempts,size_t* attempt_number,unsigned long* 
 bool is_word_valid(
         Word word,
         Attempt* attempt_array,
-        size_t attempt_array_size,
-        Vocabolary* used_vocabolary
+        size_t attempt_array_size
     ){
     for(size_t j = 0; j < attempt_array_size;j++){
         Attempt attempt = attempt_array[j];
@@ -166,7 +165,7 @@ IndexArray get_possible_words_from_attempt_array(
     for(size_t i = 0; i < used_vocabolary->size; i++){
         Word candidate = used_vocabolary->words[i];
         
-        if(is_word_valid(candidate,attempt_array,attempt_array_size,used_vocabolary))
+        if(is_word_valid(candidate,attempt_array,attempt_array_size))
             result.indexes[count++] = i;
     }
     result.size = count;

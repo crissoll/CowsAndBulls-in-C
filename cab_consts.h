@@ -6,6 +6,8 @@
 
 # define MAX_ATTEMPTS 255
 
+
+
 /* string literals for the word‑list filenames; using macros avoids
    multiple‑definition linker errors that occur when a header defines
    non‑`static` objects. */

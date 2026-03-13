@@ -97,7 +97,7 @@ bool vocabolary__contains_word(const Vocabolary* vocabolary,Word word){
 }
 
 
-bool check_pattern(char pattern[LETTERS_IN_WORD]){
+bool check_pattern(const char pattern[LETTERS_IN_WORD]){
 
     for (size_t k = 0; k < LETTERS_IN_WORD; k++) {
         char c = pattern[k];
@@ -115,7 +115,7 @@ void set_undefined_pattern(char * pattern){
 }
 
 
-bool word__contains_letters(Word word,char *letters){
+bool word__contains_letters(Word word,const char *letters){
     int letter_count[LETTERS_IN_WORD];
     for(size_t i = 0; i < LETTERS_IN_WORD; i++)
         letter_count[i] = 0;
@@ -123,13 +123,13 @@ bool word__contains_letters(Word word,char *letters){
     for(;letters[len] != '\0' && len < LETTERS_IN_WORD; len++){
         size_t first_occurrence = 0;
         for(;letters[len] == letters[first_occurrence]; first_occurrence++);
-        letters[first_occurrence]++;        
+        letter_count[first_occurrence]++;        
     }
     
     for(size_t i = 0; i < LETTERS_IN_WORD; i++){
         for(size_t l = 0; l < len; l++){
             if(word.letters[i] == letters[l])
-                letters[l]--;
+                letter_count[l]--;
         }
     }
 
