@@ -1,0 +1,15 @@
+#ifndef CAB_GUESS
+#define CAB_GUESS
+
+#include <stdlib.h>
+
+#include "word.h"
+
+typedef struct{
+    size_t cows;
+    size_t bulls;
+} GuessResult;
+
+GuessResult compare_words(Word attempt,Word secret_word);
+
+#endif

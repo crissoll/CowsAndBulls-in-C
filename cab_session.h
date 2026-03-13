@@ -1,17 +1,7 @@
-#ifndef CAB_CORE
-#define CAB_CORE
+#ifndef CAB_SESSION
+#define CAB_SESSION
 
-#include <stdlib.h>
-
-#include "word.h"
-
-typedef struct{
-    size_t cows;
-    size_t bulls;
-} GuessResult;
-
-GuessResult compare_words(Word attempt,Word secret_word);
-
+#include "cab_guess.h"
 
 void setup_game();
 

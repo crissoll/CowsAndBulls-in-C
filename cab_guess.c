@@ -1,8 +1,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-
-
 #include "cab_consts.h"
 #include "word.h"
 

@@ -12,7 +12,7 @@
 
 
 #include "attempts.h"
-#include "cab_core.h"
+#include "cab_session.h"
 
 #include "letter_dispositions.h"
 

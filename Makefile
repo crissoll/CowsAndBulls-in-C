@@ -25,7 +25,7 @@ OBJS    := $(SRCS:.c=.o)
 # into the game, so they are built separately.
 # the data‑analysis module used to be called extract_data; we renamed the
 # source file and object accordingly.
-CAB_GAME_OBJS := cab_game.o cab_core.o cab_files.o word_set.o index_array.o cab_data_analysis.o word.o utils.o attempts.o
+CAB_GAME_OBJS := cab_game.o cab_session.o cab_guess.o cab_files.o word_set.o index_array.o cab_data_analysis.o word.o utils.o attempts.o
 
 # helpers that define their own main() ------------------------------------------------
 UNIT_TESTS := word extract_5_letters_words
@@ -69,3 +69,4 @@ help:
 	      "# remove object files and executables"
 
 # end of Makefile
+

@@ -3,8 +3,7 @@
 
 #include "index_array.h"
 #include "word.h"
-#include "cab_core.h"
-
+#include "cab_session.h"
 
 typedef struct{
     Word word;
