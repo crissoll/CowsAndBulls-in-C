@@ -1,6 +1,7 @@
 #ifndef UTILS
 #define UTILS
 
+#include <stdbool.h>
 #include <stdlib.h>
 
 
@@ -13,4 +14,8 @@ bool get_input(
         char buffer[100],
         size_t desired_size,
         bool repeat);
+
+size_t get_multiple_input(
+        char* variables[],
+        size_t variable_count);
 #endif

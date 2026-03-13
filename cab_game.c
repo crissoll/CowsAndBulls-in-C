@@ -11,19 +11,30 @@
 
 
 WordSet help_word_set;
+IndexArray help_array;
 
-
-void list_mode__remove(IndexArray* arr,const char* pattern){
+void list_mode__remove(const char* pattern){
     IndexArray tmp = word_set__get_words_by_pattern(&help_word_set,pattern);
-    IndexArray new_arr = subtract(*arr,tmp);
+    IndexArray new_arr = subtract(help_array,tmp);
 
     index_array__free_content(&tmp);
-    index_array__free_content(arr); /* free old array contents */
+    index_array__free_content(&help_array); /* free old array contents */
 
-    *arr = index_array__copy(&new_arr);
+    help_array = index_array__copy(&new_arr);
     index_array__free_content(&new_arr);
 }
 
+bool check_arguments_bounds(size_t args,size_t min_count,size_t max_count){
+    if (args > max_count){
+        printf("too many arguments\n");
+        return false;
+    }
+    if (args < min_count){
+        printf("too few arguments\n");
+        return false;
+    }
+    return true;
+}
 
 Word get_word_from_input(){
     Word result;
@@ -31,8 +42,21 @@ Word get_word_from_input(){
        that is contained in the vocabulary */
     while(true){
 
-        char input_string[100];
-        get_input("Enter guess: ","word",input_string,0,true);
+        char input_strings[3][100];
+        char* input_tokens[] = { input_strings[0], input_strings[1], input_strings[2] };
+        printf("Enter guess or command: ");
+        const size_t args = get_multiple_input(input_tokens, 3);
+
+        if(args==(size_t)-1){
+            printf("too many arguments");
+            continue;
+        }
+
+        if(args == 0){
+            continue;
+        }
+
+        char * input_string = input_strings[0];
         /*
         if(strcmp(input_string,"cows")==0){
             char pattern[100];
@@ -44,29 +68,58 @@ Word get_word_from_input(){
             
         }*/
         if (strcmp(input_string,"help") == 0){
+            if(!check_arguments_bounds(args,1,1))
+                continue;
             printf(HELP_TEXT);
+            fflush(stdin);
             continue;
         }
         if (strcmp(input_string,"attempts") == 0){
+            if(!check_arguments_bounds(args,1,1))
+                continue;
             print_attempts();
             fflush(stdin);
             continue;
         }
 
         if (strcmp(input_string, "list") == 0) {
-            char pattern[100];
-            /* initial pattern to filter vocabulary */
-            if (!get_input("","pattern",pattern,LETTERS_IN_WORD,false)) {
-                /* user didn't supply a correctly sized pattern */
+            if(!check_arguments_bounds(args,1,2))
                 continue;
-            }
-            if(!check_pattern(pattern)){
-                printf("invalid pattern!\n");
-                continue;
+            char pattern[100] = {0};
+
+
+            if(args == 2){
+                strcpy(pattern, input_strings[1]);
+                /* initial pattern to filter vocabulary */
+                const size_t len = strlen(pattern);
+                if(len > LETTERS_IN_WORD){
+                    printf("pattern too long!\n");
+                    continue;
+                }
+
+                bool undefined_pattern=true;
+                for(size_t i = 0; i < len;i++){
+                    if(pattern[i]!=UNDEFINED_LETTER){
+                        undefined_pattern = false;
+                        break;
+                    }
+                }
+                if(undefined_pattern){
+                    index_array__free_content(&help_array);
+                    help_array_init();
+                }
+                else{
+                    if(!check_pattern(pattern)){
+                        printf("invalid pattern!\n");
+                        continue;
+                    }
+                    index_array__free_content(&help_array);
+                    help_array = word_set__get_words_by_pattern(&help_word_set, pattern);
+                }
+                
             }
 
-            IndexArray arr = word_set__get_words_by_pattern(&help_word_set, pattern);
-            index_array__print(arr, *used_vocabolary);
+            index_array__print(help_array, *used_vocabolary);
 
             /* repeatedly remove words until user types "stop" */
             while(true){
@@ -89,12 +142,11 @@ Word get_word_from_input(){
                     continue;
                 }
                 
-                list_mode__remove(&arr,pattern);
+                list_mode__remove(pattern);
 
-                index_array__print(arr, *used_vocabolary);
+                index_array__print(help_array, *used_vocabolary);
             };
 
-            index_array__free_content(&arr);
             continue;
         }
 
@@ -179,8 +231,16 @@ bool play_turn(){
     
     return play_word(word);
 }
+
+void help_array_init(){
+    index_array__init(&help_array,used_vocabolary->size);
+    for (size_t i = 0; i < used_vocabolary->size;i++)
+        help_array.indexes[i] = i;
+}
+
 int main(){
     game_start();
+    help_array_init();
 
     printf("Welcome to Cows and Bulls!\n");
     printf("Guess the %d-letter word.\n", LETTERS_IN_WORD);
@@ -198,7 +258,8 @@ int main(){
 
         store_attempts();
     };
-
+    
+    index_array__free_content(&help_array);
     printf("Congratulations, you found the word!\n");
     delete_game_data();
     return 0;
