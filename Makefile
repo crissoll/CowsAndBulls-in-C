@@ -25,7 +25,7 @@ OBJS    := $(SRCS:.c=.o)
 # into the game, so they are built separately.
 # the data‑analysis module used to be called extract_data; we renamed the
 # source file and object accordingly.
-CAB_GAME_OBJS := cab_game.o cab_files.o word_set.o index_array.o cab_data_analysis.o word.o
+CAB_GAME_OBJS := cab_game.o cab_core.o cab_files.o word_set.o index_array.o cab_data_analysis.o word.o utils.o attempts.o
 
 # helpers that define their own main() ------------------------------------------------
 UNIT_TESTS := word extract_5_letters_words
@@ -43,8 +43,14 @@ cab_game: $(CAB_GAME_OBJS)
 %: %.o
 	$(CC) $(CFLAGS) -o $@ $^
 
-# compile any .c to the corresponding .o
-%.o: %.c
+# Force-regeneration helper.  When any target depends on FORCE the recipe
+# will run every time make is invoked, ignoring timestamp checks.
+.PHONY: FORCE
+FORCE:
+
+# compile any .c to the corresponding .o; depend on FORCE so objects are
+# rebuilt even if the source hasn’t changed.
+%.o: %.c FORCE
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
