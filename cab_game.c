@@ -17,7 +17,7 @@
 #include "letter_dispositions.h"
 
 Attempt attempts[MAX_ATTEMPTS];
-int attempt_number = 0;
+size_t attempt_number = 0;
 
 WordSet help_word_set;
 
@@ -241,17 +241,20 @@ int main(){
     printf("Guess the %d-letter word.\n", LETTERS_IN_WORD);
     printf(HELP_TEXT);
 
+    bool game_ended = false;
     {
         Word word = get_word_from_input();
         GuessResult result = guess_word(word);
         attempts[attempt_number++] = attempt__new(word,result);
         store_secret_word();
         store_attempts(attempts,&attempt_number,get_session_id());
-
         guess_result__print(result);
         printf("\n");
+
+        if (result.bulls >= LETTERS_IN_WORD)
+            game_ended = true;
     }
-    while(true){
+    while(!game_ended){
         Word word = get_word_from_input();
         GuessResult result = guess_word(word);
         attempts[attempt_number++] = attempt__new(word,result);
@@ -260,7 +263,7 @@ int main(){
         guess_result__print(result);
         printf("\n");
         if (result.bulls >= LETTERS_IN_WORD)
-            break;
+            game_ended = true;
     };
 
     printf("Congratulations, you found the word!\n");
