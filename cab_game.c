@@ -199,37 +199,32 @@ void delete_game_data(void)
         perror("remove attempts.txt");
 }
 
-int main(){
-    setup_game();
-    bool loaded_game = false;
+void game_start(){
+    bool load_game = false;
     unsigned long loaded_session_id;
 
     if(is_game_data_valid()){
+
         printf("load previous game? (y/n)\n");
         char buffer[100];
+
         get_input(">","response",buffer,1,false);
+
         while(buffer[0] != 'y' && buffer[0] != 'n'){
             printf("input must be y or n\n");
             get_input(">","response",buffer,1,false);
         }
+
         if(buffer[0] == 'y'){
-            if (!is_game_data_valid()) {
-                printf("saved game data is inconsistent, starting a new game\n");
-            }
-            else {
-                loaded_game = load_secret_word();
-                if (loaded_game)
-                    load_attempts(attempts,&attempt_number,&loaded_session_id);
-                else {
-                    printf("failed to load saved secret word, starting a new game\n");
-                    attempt_number = 0;
-                }
-            }
+            load_game = true;
         }
 
     }
 
-    if (!loaded_game) {
+    if (load_game){
+        load_secret_word();
+        load_attempts(attempts,&attempt_number,&loaded_session_id);
+    } else {
         generate_secret_word();
     }
 
@@ -237,33 +232,35 @@ int main(){
        whether a previous game was loaded */
 
     word_set__init_from_file(&help_word_set,EN_FILE_NAME);
+}
+
+bool play_turn(){
+    Word word = get_word_from_input();
+    GuessResult result = guess_word(word);
+    attempts[attempt_number++] = attempt__new(word,result);
+    guess_result__print(result);
+    printf("\n");
+
+    return (result.bulls >= LETTERS_IN_WORD);
+}
+int main(){
+    setup_game();
+    game_start();
     printf("Welcome to Cows and Bulls!\n");
     printf("Guess the %d-letter word.\n", LETTERS_IN_WORD);
     printf(HELP_TEXT);
 
     bool game_ended = false;
     {
-        Word word = get_word_from_input();
-        GuessResult result = guess_word(word);
-        attempts[attempt_number++] = attempt__new(word,result);
+        game_ended = play_turn();
+
         store_secret_word();
         store_attempts(attempts,&attempt_number,get_session_id());
-        guess_result__print(result);
-        printf("\n");
-
-        if (result.bulls >= LETTERS_IN_WORD)
-            game_ended = true;
     }
     while(!game_ended){
-        Word word = get_word_from_input();
-        GuessResult result = guess_word(word);
-        attempts[attempt_number++] = attempt__new(word,result);
-        store_attempts(attempts,&attempt_number,get_session_id());
+        game_ended = play_turn();
 
-        guess_result__print(result);
-        printf("\n");
-        if (result.bulls >= LETTERS_IN_WORD)
-            game_ended = true;
+        store_attempts(attempts,&attempt_number,get_session_id());
     };
 
     printf("Congratulations, you found the word!\n");
