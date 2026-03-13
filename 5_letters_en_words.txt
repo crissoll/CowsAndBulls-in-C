@@ -76,6 +76,7 @@ allow
 alloy
 aloes
 aloft
+aloha
 alone
 along
 aloof
@@ -181,6 +182,7 @@ baits
 baize
 baked
 baker
+bakes
 bales
 balls
 balmy
@@ -1175,6 +1177,7 @@ gazed
 gazer
 gazes
 gears
+gecko
 geese
 genie
 genii
@@ -1329,6 +1332,7 @@ hasty
 hatch
 hated
 hater
+hates
 hauls
 haven
 havoc
@@ -1521,6 +1525,7 @@ knoll
 knots
 known
 knows
+koala
 label
 laced
 laces
@@ -1942,6 +1947,7 @@ pales
 palms
 palmy
 palsy
+panda
 panel
 panes
 pangs
@@ -2234,6 +2240,7 @@ reuse
 revel
 revue
 rheum
+rhino
 rhyme
 ricks
 rider
@@ -2652,6 +2659,7 @@ spurt
 squad
 squat
 squaw
+squid
 stabs
 stack
 staff
@@ -3133,6 +3141,7 @@ whirr
 whisk
 whist
 white
+whoah
 whole
 whoop
 whore
@@ -3169,6 +3178,7 @@ woods
 woody
 wooed
 wooer
+woops
 words
 wordy
 works
@@ -3180,6 +3190,7 @@ worst
 worth
 would
 wound
+wowee
 wrack
 wraps
 wrapt
@@ -3207,6 +3218,7 @@ yells
 yelps
 yemen
 yield
+yikes
 yoked
 yokes
 yolks
