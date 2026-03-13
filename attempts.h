@@ -35,12 +35,12 @@ IndexArray get_possible_words_from_attempt(Attempt attempt);
 
 
 
-void print_attempts(Attempt* attempts, int* attempt_number);
+void print_attempts(Attempt* attempts, size_t* attempt_number);
 
-bool is_word_already_attempted(Word word,Attempt* attempts,int*attempt_number);
+bool is_word_already_attempted(Word word,Attempt* attempts,size_t*attempt_number);
 
-void store_attempts(Attempt* attempts,int*attempt_number,unsigned long session_id);
+void store_attempts(Attempt* attempts,size_t*attempt_number,unsigned long session_id);
 
-bool load_attempts(Attempt* attempts,int* attempt_number,unsigned long* session_id);
+bool load_attempts(Attempt* attempts,size_t* attempt_number,unsigned long* session_id);
 
 #endif

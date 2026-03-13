@@ -61,7 +61,7 @@ IndexArray get_possible_words_from_attempt(Attempt attempt){
 
 
 
-void print_attempts(Attempt* attempts, int* attempt_number){
+void print_attempts(Attempt* attempts, size_t* attempt_number){
     for(size_t i = 0; i < *attempt_number;i++){
         attempt__print(attempts[i]);
         printf("\n");
@@ -69,7 +69,7 @@ void print_attempts(Attempt* attempts, int* attempt_number){
 }
 
 
-bool is_word_already_attempted(Word word,Attempt* attempts,int*attempt_number){
+bool is_word_already_attempted(Word word,Attempt* attempts,size_t*attempt_number){
     /* return true if the given word has already been guessed earlier */
     for(size_t i = 0; i < *attempt_number; i++){
         if (word__compare(attempts[i].word, word) == 0){
@@ -79,7 +79,7 @@ bool is_word_already_attempted(Word word,Attempt* attempts,int*attempt_number){
     return false;
 }
 
-void store_attempts(Attempt* attempts,int*attempt_number,unsigned long session_id){
+void store_attempts(Attempt* attempts,size_t*attempt_number,unsigned long session_id){
     FILE* attempts_file = fopen(ATTEMPTS_FILE_NAME,"w");
 
     fprintf(attempts_file,"session_id %lu\n", session_id);
@@ -87,14 +87,14 @@ void store_attempts(Attempt* attempts,int*attempt_number,unsigned long session_i
     for(size_t i = 0; i < *attempt_number;i++){
         for(size_t j = 0; j < LETTERS_IN_WORD; j++)
             fprintf(attempts_file,"%c",attempts[i].word.letters[j]);
-        fprintf(attempts_file," %d %d\n",
+        fprintf(attempts_file," %zu %zu\n",
             attempts[i].result.cows,
             attempts[i].result.bulls);
     }
     fclose(attempts_file);
 }
 
-bool load_attempts(Attempt* attempts,int* attempt_number,unsigned long* session_id){
+bool load_attempts(Attempt* attempts,size_t* attempt_number,unsigned long* session_id){
     FILE* attempts_file = fopen(ATTEMPTS_FILE_NAME,"r");
     if (attempts_file == NULL) {
         /* nothing to load */

@@ -48,7 +48,7 @@ bool is_game_data_valid(){
     if(!is_there_previous_game())
         return false;
     Attempt dummy_attempts[MAX_ATTEMPTS];
-    int dummy_attempt_number = 0;
+    size_t dummy_attempt_number = 0;
     unsigned long loaded_session_id;
     
     if (!load_attempts(dummy_attempts,&dummy_attempt_number,&loaded_session_id))
