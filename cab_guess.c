@@ -41,3 +41,8 @@ GuessResult compare_words(Word attempt,Word secret_word){
     }
     return result;
 }
+
+
+void guess_result__print(GuessResult result){
+    printf("cows: %zu, bulls: %zu", result.cows, result.bulls);
+}

@@ -2,8 +2,7 @@
 #include <string.h>
 
 #include "index_array.h"
-#include "word.h"
-#include "cab_session.h"
+#include "cab_guess.h"
 
 typedef struct{
     Word word;
@@ -21,7 +20,6 @@ void attempt__print(Attempt attempt){
     word__print(attempt.word);
     printf("\t");
     guess_result__print(attempt.result);
-    
 }
 
 
@@ -39,7 +37,7 @@ void attempt__print(Attempt attempt){
  * this project) solution is simply to walk the vocabulary and compare every
  * candidate with the guess using compare_words().
  */
-IndexArray get_possible_words_from_attempt(Attempt attempt){
+IndexArray get_possible_words_from_attempt(Attempt attempt,Vocabolary* used_vocabolary){
     IndexArray result;
 
     /* allocate the maximum possible size; we'll trim by updating result.size */
@@ -60,7 +58,7 @@ IndexArray get_possible_words_from_attempt(Attempt attempt){
 
 
 
-void print_attempts(Attempt* attempts, size_t* attempt_number){
+void print_attempt_array(Attempt* attempts, size_t* attempt_number){
     for(size_t i = 0; i < *attempt_number;i++){
         attempt__print(attempts[i]);
         printf("\n");
@@ -68,7 +66,7 @@ void print_attempts(Attempt* attempts, size_t* attempt_number){
 }
 
 
-bool is_word_already_attempted(Word word,Attempt* attempts,size_t*attempt_number){
+bool is_word_in_attempt_array(Word word,Attempt* attempts,size_t*attempt_number){
     /* return true if the given word has already been guessed earlier */
     for(size_t i = 0; i < *attempt_number; i++){
         if (word__compare(attempts[i].word, word) == 0){
@@ -78,7 +76,7 @@ bool is_word_already_attempted(Word word,Attempt* attempts,size_t*attempt_number
     return false;
 }
 
-void store_attempts(Attempt* attempts,size_t*attempt_number,unsigned long session_id){
+void store_attempt_array(Attempt* attempts,size_t*attempt_number,unsigned long session_id){
     FILE* attempts_file = fopen(ATTEMPTS_FILE_NAME,"w");
 
     fprintf(attempts_file,"session_id %lu\n", session_id);
@@ -93,7 +91,7 @@ void store_attempts(Attempt* attempts,size_t*attempt_number,unsigned long sessio
     fclose(attempts_file);
 }
 
-bool load_attempts(Attempt* attempts,size_t* attempt_number,unsigned long* session_id){
+bool load_attempt_array(Attempt* attempts,size_t* attempt_number,unsigned long* session_id){
     FILE* attempts_file = fopen(ATTEMPTS_FILE_NAME,"r");
     if (attempts_file == NULL) {
         /* nothing to load */
@@ -112,7 +110,7 @@ bool load_attempts(Attempt* attempts,size_t* attempt_number,unsigned long* sessi
 
     *attempt_number = 0;
     while (true) {
-        char letters[LETTERS_IN_WORD + 1];
+        char letters[LETTERS_IN_WORD + 1] = {0};
         GuessResult result;
         unsigned long cows, bulls;
 
@@ -121,6 +119,13 @@ bool load_attempts(Attempt* attempts,size_t* attempt_number,unsigned long* sessi
                               letters, &cows, &bulls);
         if (scanned != 3)
             break;
+
+        if (!string_is_valid_word(letters)) {
+            /* corrupted save entry: abort loading and signal invalid data */
+            *attempt_number = 0;
+            fclose(attempts_file);
+            return false;
+        }
 
         result.cows = (size_t)cows;
         result.bulls = (size_t)bulls;

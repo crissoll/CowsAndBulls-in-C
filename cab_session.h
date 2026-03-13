@@ -3,20 +3,35 @@
 
 #include "cab_guess.h"
 
+typedef unsigned long SessionId;
+
 void setup_game();
 
 void generate_secret_word();
 
-unsigned long get_session_id(void);
+SessionId get_session_id(void);
 
 GuessResult guess_word(Word attempt);
 
-void guess_result__print(GuessResult result);
-
-Vocabolary *used_vocabolary;
-
+extern Vocabolary *used_vocabolary;
 
 bool load_secret_word();
 
+bool load_attempts(void);
+
+bool is_game_data_valid();
+
 void store_secret_word();
+
+void delete_game_data();
+
+void print_attempts(void);
+
+void store_attempts(void);
+
+bool is_word_already_attempted(Word word);
+
+
+bool play_word(Word word);
+
 #endif

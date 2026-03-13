@@ -31,16 +31,15 @@ void attempt__print(Attempt attempt);
  * this project) solution is simply to walk the vocabulary and compare every
  * candidate with the guess using try_word().
  */
-IndexArray get_possible_words_from_attempt(Attempt attempt);
+IndexArray get_possible_words_from_attempt(Attempt attempt,Vocabolary* used_vocabolary);
 
 
+void print_attempt_array(Attempt* attempts, size_t* attempt_number);
 
-void print_attempts(Attempt* attempts, size_t* attempt_number);
+bool is_word_in_attempt_array(Word word,Attempt* attempts,size_t*attempt_number);
 
-bool is_word_already_attempted(Word word,Attempt* attempts,size_t*attempt_number);
+void store_attempt_array(Attempt* attempts,size_t*attempt_number,unsigned long session_id);
 
-void store_attempts(Attempt* attempts,size_t*attempt_number,unsigned long session_id);
-
-bool load_attempts(Attempt* attempts,size_t* attempt_number,unsigned long* session_id);
+bool load_attempt_array(Attempt* attempts,size_t* attempt_number,unsigned long* session_id);
 
 #endif

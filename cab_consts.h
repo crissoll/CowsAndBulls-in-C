@@ -12,8 +12,8 @@
 # define IT_FILE_NAME "5_letters_it_words.txt"
 # define EN_FILE_NAME "5_letters_en_words.txt"
 
-# define SECRET_FILE_NAME "secret_word.saves"
-# define ATTEMPTS_FILE_NAME "attempts.saves"
+
+# define ATTEMPTS_FILE_NAME "saves/attempts.saves"
 
 # define HELP_TEXT "list [pattern] -> prints the words that follow that pattern;\n\
 \twhile inside \"list\" mode you can remove words inputting new patterns,\n\t\

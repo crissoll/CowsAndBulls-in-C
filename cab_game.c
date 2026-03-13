@@ -1,67 +1,16 @@
-#include <stdlib.h>
 #include <stdbool.h>
-#include <time.h>
 #include <stdio.h>
 #include <string.h>
 
 
-#include "word.h"
 #include "cab_consts.h"
 #include "word_set.h"
 #include "utils.h"
 
-
-#include "attempts.h"
 #include "cab_session.h"
 
-#include "letter_dispositions.h"
-
-Attempt attempts[MAX_ATTEMPTS];
-size_t attempt_number = 0;
 
 WordSet help_word_set;
-
-
-bool is_there_previous_game(){
-    FILE* attempts_file = fopen(ATTEMPTS_FILE_NAME,"r");
-    FILE* secret_file = fopen(SECRET_FILE_NAME,"r");
-
-    bool return_value = true;
-
-    if(attempts_file==NULL){
-        return_value = false;
-    }
-    else{
-        fclose(attempts_file);
-    }
-    if(secret_file==NULL){
-        return_value = false;
-    }
-    else{
-        fclose(secret_file);
-    }
-
-    return return_value;
-}
-
-bool is_game_data_valid(){
-    if(!is_there_previous_game())
-        return false;
-    Attempt dummy_attempts[MAX_ATTEMPTS];
-    size_t dummy_attempt_number = 0;
-    unsigned long loaded_session_id;
-    
-    if (!load_attempts(dummy_attempts,&dummy_attempt_number,&loaded_session_id))
-        return false;
-
-    if (!load_secret_word())
-        return false;
-    if (loaded_session_id != get_session_id())
-        return false;
-
-    
-    return true;
-}
 
 
 void list_mode__remove(IndexArray* arr,const char* pattern){
@@ -99,22 +48,8 @@ Word get_word_from_input(){
             continue;
         }
         if (strcmp(input_string,"attempts") == 0){
-            print_attempts(attempts,&attempt_number);
+            print_attempts();
             fflush(stdin);
-            continue;
-        }
-
-        if (strcmp(input_string,"load") == 0){
-            unsigned long loaded_session_id;
-
-            if (!is_game_data_valid()) {
-                printf("saved game data is inconsistent\n");
-                continue;
-            }
-            load_secret_word();
-            load_attempts(attempts,&attempt_number,&loaded_session_id);
-            printf("loaded previous save!\n");
-            /* don't treat "load" as an actual guess */
             continue;
         }
 
@@ -163,6 +98,15 @@ Word get_word_from_input(){
             continue;
         }
 
+        size_t input_len = strlen(input_string);
+        if (input_len > LETTERS_IN_WORD){
+            printf("word too long\n");
+            continue;
+        }
+        if (input_len < LETTERS_IN_WORD){
+            printf("word too short\n");
+            continue;
+        }
 
         for(size_t i = 0; i < LETTERS_IN_WORD; i++){
             if(input_string[i] >= 'A' && input_string[i] <= 'Z')
@@ -180,7 +124,7 @@ Word get_word_from_input(){
             printf("word not contained in vocabolary\n");
             continue;
         }
-        if (is_word_already_attempted(result,attempts,&attempt_number)){
+        if (is_word_already_attempted(result)){
             printf("word already attempted!\n");
             continue;
         }
@@ -190,18 +134,10 @@ Word get_word_from_input(){
     return result;
 }
 
-void delete_game_data(void)
-{
-    if (remove(SECRET_FILE_NAME) != 0)
-        perror("remove secret_word.txt");
 
-    if (remove(ATTEMPTS_FILE_NAME) != 0)
-        perror("remove attempts.txt");
-}
 
 void game_start(){
     bool load_game = false;
-    unsigned long loaded_session_id;
 
     if(is_game_data_valid()){
 
@@ -223,9 +159,10 @@ void game_start(){
 
     if (load_game){
         load_secret_word();
-        load_attempts(attempts,&attempt_number,&loaded_session_id);
+        load_attempts();
     } else {
         generate_secret_word();
+        printf("generated secret word\n");
     }
 
     /* ensure secret file exists with the current secret word regardless of
@@ -236,12 +173,8 @@ void game_start(){
 
 bool play_turn(){
     Word word = get_word_from_input();
-    GuessResult result = guess_word(word);
-    attempts[attempt_number++] = attempt__new(word,result);
-    guess_result__print(result);
-    printf("\n");
-
-    return (result.bulls >= LETTERS_IN_WORD);
+    
+    return play_word(word);
 }
 int main(){
     setup_game();
@@ -255,12 +188,12 @@ int main(){
         game_ended = play_turn();
 
         store_secret_word();
-        store_attempts(attempts,&attempt_number,get_session_id());
+        store_attempts();
     }
     while(!game_ended){
         game_ended = play_turn();
 
-        store_attempts(attempts,&attempt_number,get_session_id());
+        store_attempts();
     };
 
     printf("Congratulations, you found the word!\n");
