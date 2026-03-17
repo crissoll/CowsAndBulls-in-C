@@ -12,13 +12,23 @@
 
 
 WordSet help_word_set;
-IndexArray help_array;
+WordSetFilter help_filter;
 
+#define HELP_FILTER_HISTORY_MAX 100
+WordSetFilter help_filter_history[HELP_FILTER_HISTORY_MAX];
+size_t help_filter_history_count = 0;
 
-void help_array_init();
+void help_filter_init();
 
-static bool is_single_letter_query(const char pattern[LETTERS_IN_WORD + 1]){
-    return strlen(pattern) == 1 && pattern[0] != UNDEFINED_LETTER;
+static void help_filter_history_add(void){
+    if(help_filter_history_count < HELP_FILTER_HISTORY_MAX){
+        help_filter_history[help_filter_history_count] = help_filter;
+        help_filter_history_count++;
+    }
+}
+
+static void help_filter_history_clear(void){
+    help_filter_history_count = 0;
 }
 
 static bool is_valid_single_letter_query(const char pattern[LETTERS_IN_WORD + 1]){
@@ -26,49 +36,30 @@ static bool is_valid_single_letter_query(const char pattern[LETTERS_IN_WORD + 1]
     return c >= 'a' && c <= 'z';
 }
 
-/* Initialize help_array by building a JOIN filter for all vocabulary (no constraints) */
+/* Initialize help_filter to allow all words (all letters at all positions) */
 static void list_mode__init_all_words(void){
-    WordSetFilter filter;
-    filter__init(&filter);
+    filter__init(&help_filter);
     
-    /* Start with a JOIN filter that allows every letter at every position */
+    /* Build a JOIN filter that allows every letter at every position */
     for(char c = 'a'; c <= 'z'; c++){
         for(size_t i = 0; i < LETTERS_IN_WORD; i++){
             char pattern_single[LETTERS_IN_WORD + 1];
             set_undefined_pattern(pattern_single);
             pattern_single[i] = c;
-            filter__apply_pattern(&filter, pattern_single, JOIN);
+            filter__apply_pattern(&help_filter, pattern_single, JOIN);
         }
     }
-    
-    index_array__free_content(&help_array);
-    help_array = filter__get_words_from_word_set(&help_word_set, &filter);
 }
 
-/* Set help_array based on a single pattern */
+/* Set help_filter based on a single pattern */
 static void list_mode__set_pattern(const char pattern[LETTERS_IN_WORD + 1]){
-    WordSetFilter filter;
-    filter__init(&filter);
-    
-    /* Start filled, then restrict with JOIN mode */
     list_mode__init_all_words();
-    
-    filter__apply_pattern(&filter, pattern, JOIN);
-    
-    index_array__free_content(&help_array);
-    help_array = filter__get_words_from_word_set(&help_word_set, &filter);
+    filter__apply_pattern(&help_filter, pattern, JOIN);
 }
 
-/* Apply remove filter to help_array via persistent filter */
-void list_mode__remove(const WordSetFilter* filter){
-    index_array__free_content(&help_array);
-    help_array = filter__get_words_from_word_set(&help_word_set, filter);
-}
-
-/* Apply intersect filter to help_array via persistent filter */
-void list_mode__intersect(const WordSetFilter* filter){
-    index_array__free_content(&help_array);
-    help_array = filter__get_words_from_word_set(&help_word_set, filter);
+/* Convert help_filter to IndexArray for printing */
+static IndexArray list_mode__get_filtered_words(void){
+    return filter__get_words_from_word_set(&help_word_set, &help_filter);
 }
 
 bool check_arguments_bounds(size_t args,size_t min_count,size_t max_count){
@@ -172,7 +163,20 @@ Word get_word_from_input(){
 
             if(args == 2){
                 if(strcmp(input_tokens[1],"-p") == 0){
-                    index_array__print(help_array, *used_vocabolary);
+                    IndexArray filtered = list_mode__get_filtered_words();
+                    index_array__print(filtered, *used_vocabolary);
+                    index_array__free_content(&filtered);
+                    free(input_tokens);
+                    continue;
+                }
+                if(strcmp(input_tokens[1],"-h") == 0){
+                    printf("Filter history (%zu entries):\n", help_filter_history_count);
+                    for(size_t hist_idx = 0; hist_idx < help_filter_history_count; hist_idx++){
+                        printf("\n--- Step %zu ---\n", hist_idx + 1);
+                        filter__print(&help_filter_history[hist_idx]);
+                    }
+                    if(help_filter_history_count == 0)
+                        printf("(no history yet)\n");
                     free(input_tokens);
                     continue;
                 }
@@ -194,14 +198,30 @@ Word get_word_from_input(){
                 }
 
                 to_lower(pattern, len);
-                
-                /* Pad with wildcards if needed and null-terminate */
-                for(size_t i = len; i < LETTERS_IN_WORD; i++)
-                    pattern[i] = UNDEFINED_LETTER;
-                pattern[LETTERS_IN_WORD] = '\0';
+
+                bool single_letter_query = (len == 1 && pattern[0] != UNDEFINED_LETTER);
+                if(single_letter_query){
+                    pattern[1] = '\0';
+                    if(!is_valid_single_letter_query(pattern)){
+                        printf("invalid pattern!\n");
+                        free(input_tokens);
+                        continue;
+                    }
+                } else {
+                    /* Keep fixed-width patterns for classic mode (e.g. a**de). */
+                    for(size_t i = len; i < LETTERS_IN_WORD; i++)
+                        pattern[i] = UNDEFINED_LETTER;
+                    pattern[LETTERS_IN_WORD] = '\0';
+
+                    if(!check_pattern(pattern)){
+                        printf("invalid pattern!\n");
+                        free(input_tokens);
+                        continue;
+                    }
+                }
 
                 bool undefined_pattern = true;
-                for(size_t i = 0; i < LETTERS_IN_WORD; i++){
+                for(size_t i = 0; i < len; i++){
                     if(pattern[i] != UNDEFINED_LETTER){
                         undefined_pattern = false;
                         break;
@@ -211,19 +231,9 @@ Word get_word_from_input(){
                 if(undefined_pattern){
                     list_mode__init_all_words();
                 } else {
-                    if (is_single_letter_query(pattern)) {
-                        if (!is_valid_single_letter_query(pattern)) {
-                            printf("invalid pattern!\n");
-                            free(input_tokens);
-                            continue;
-                        }
-                    } else if(!check_pattern(pattern)){
-                        printf("invalid pattern!\n");
-                        free(input_tokens);
-                        continue;
-                    }
                     list_mode__set_pattern(pattern);
                 }
+                help_filter_history_add();
             }
             
             if (args > 2){
@@ -235,12 +245,7 @@ Word get_word_from_input(){
                     continue;
                 }
                 
-                /* Build a persistent filter with all patterns */
-                WordSetFilter combined_filter;
-                filter__init(&combined_filter);
-                
-                /* Start with the current help_array state mapped to a filter,
-                   then apply constraints from all patterns */
+                /* Apply all patterns to the existing help_filter */
                 bool invalid_pattern = false;
                 for(size_t arg_idx = 2; arg_idx < args; arg_idx++){
                     memset(pattern, 0, sizeof(pattern));
@@ -254,31 +259,31 @@ Word get_word_from_input(){
                     }
 
                     to_lower(pattern, len);
-                    
-                    /* Pad with wildcards if needed and null-terminate */
-                    for(size_t i = len; i < LETTERS_IN_WORD; i++)
-                        pattern[i] = UNDEFINED_LETTER;
-                    pattern[LETTERS_IN_WORD] = '\0';
 
-                    if (is_single_letter_query(pattern)) {
-                        if (!is_valid_single_letter_query(pattern)) {
+                    bool single_letter_query = (len == 1 && pattern[0] != UNDEFINED_LETTER);
+                    if(single_letter_query){
+                        pattern[1] = '\0';
+                        if(!is_valid_single_letter_query(pattern)){
                             printf("invalid pattern!\n");
                             invalid_pattern = true;
                             break;
                         }
-                    } else if(!check_pattern(pattern)){
-                        printf("invalid pattern!\n");
-                        invalid_pattern = true;
-                        break;
+                    } else {
+                        for(size_t i = len; i < LETTERS_IN_WORD; i++)
+                            pattern[i] = UNDEFINED_LETTER;
+                        pattern[LETTERS_IN_WORD] = '\0';
+
+                        if(!check_pattern(pattern)){
+                            printf("invalid pattern!\n");
+                            invalid_pattern = true;
+                            break;
+                        }
                     }
                     
-                    filter__apply_pattern(&combined_filter, pattern, mode);
+                    filter__apply_pattern(&help_filter, pattern, mode);
                 }
-                
-                if(!invalid_pattern){
-                    index_array__free_content(&help_array);
-                    help_array = filter__get_words_from_word_set(&help_word_set, &combined_filter);
-                }
+                if(!invalid_pattern)
+                    help_filter_history_add();
             }
             
             free(input_tokens);
@@ -372,15 +377,14 @@ bool play_turn(){
     return play_word(word);
 }
 
-void help_array_init(){
-    index_array__init(&help_array,used_vocabolary->size);
-    for (size_t i = 0; i < used_vocabolary->size;i++)
-        help_array.indexes[i] = i;
+void help_filter_init(){
+    help_filter_history_clear();
+    list_mode__init_all_words();
 }
 
 int main(){
     game_start();
-    help_array_init();
+    help_filter_init();
 
     printf("Welcome to Cows and Bulls!\n");
     printf("Guess the %d-letter word.\n", LETTERS_IN_WORD);
@@ -399,7 +403,6 @@ int main(){
         store_attempts();
     };
     
-    index_array__free_content(&help_array);
     printf("Congratulations, you found the word in %zu attempts!\n",attempt_number);
     delete_game_data();
     return 0;

@@ -38,4 +38,7 @@ IndexArray filter__get_words_from_word_set(
         const WordSetFilter* filter
     );
 
+/* Print a compact, human-readable view of allowed letters by position. */
+void filter__print(const WordSetFilter* filter);
+
 #endif /* WORD_SET_FILTER_H */

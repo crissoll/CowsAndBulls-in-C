@@ -1,6 +1,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
+#include <stdio.h>
 
 #include "cab_consts.h"
 #include "word.h"
@@ -110,4 +111,30 @@ IndexArray filter__get_words_from_word_set(const WordSet* word_set, const WordSe
     }
     
     return result;
+}
+
+
+void filter__print(const WordSetFilter* filter){
+    printf("Filter by position:\n");
+    for(size_t i = 0; i < LETTERS_IN_WORD; i++){
+        char allowed[ALPHABET_SIZE + 1];
+        size_t count = 0;
+
+        for(size_t j = 0; j < ALPHABET_SIZE; j++){
+            if(filter->present_letters[i][j]){
+                allowed[count] = (char)('a' + (int)j);
+                count++;
+            }
+        }
+        allowed[count] = '\0';
+
+        printf("  [%zu] ", i + 1);
+        if(count == 0){
+            printf("(none) 0/%d\n", ALPHABET_SIZE);
+        } else if(count == ALPHABET_SIZE){
+            printf("* %zu/%d\n", count, ALPHABET_SIZE);
+        } else {
+            printf("%s %zu/%d\n", allowed, count, ALPHABET_SIZE);
+        }
+    }
 }
