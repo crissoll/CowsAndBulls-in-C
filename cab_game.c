@@ -84,24 +84,13 @@ Word get_word_from_input(){
         printf("Enter guess or command: ");
         fflush(stdin);
         const size_t args = get_multiple_input(input_buffer, sizeof(input_buffer), &input_tokens);
-
+        printf("%zu\n",args); // debug
         if(args == 0){
             free(input_tokens);
             continue;
         }
-
-        char * input_string = input_tokens[0];
-        /*
-        if(strcmp(input_string,"cows")==0){
-            char pattern[100];
-            if (scanf("%99s", pattern) != 1) {
-                continue;
-            }
-            to_lower(pattern,LETTERS_IN_WORD);
-
-            
-        }*/
-        if (strcmp(input_string,"help") == 0){
+        
+        if (strcmp(input_tokens[0],"help") == 0){
             if(!check_arguments_bounds(args,1,1)){
                 free(input_tokens);
                 continue;
@@ -110,7 +99,7 @@ Word get_word_from_input(){
             free(input_tokens);
             continue;
         }
-        if (strcmp(input_string,"attempts") == 0){
+        if (strcmp(input_tokens[0],"attempts") == 0){
             if(!check_arguments_bounds(args,1,2)){
                 free(input_tokens);
                 continue;
@@ -153,7 +142,7 @@ Word get_word_from_input(){
             continue;
         }
 
-        if (strcmp(input_string, "list") == 0) {
+        if (strcmp(input_tokens[0], "list") == 0) {
             if(args < 1){
                 printf("too few arguments\n");
                 free(input_tokens);
@@ -227,7 +216,7 @@ Word get_word_from_input(){
                         break;
                     }
                 }
-                
+                printf("undefined_pattern: %s\n",(undefined_pattern)?"true":"false");
                 if(undefined_pattern){
                     list_mode__init_all_words();
                 } else {
@@ -290,7 +279,7 @@ Word get_word_from_input(){
             continue;
         }
 
-        size_t input_len = strlen(input_string);
+        size_t input_len = strlen(input_tokens[0]);
         if (input_len > LETTERS_IN_WORD){
             printf("word too long\n");
             free(input_tokens);
@@ -303,17 +292,17 @@ Word get_word_from_input(){
         }
 
         for(size_t i = 0; i < LETTERS_IN_WORD; i++){
-            if(input_string[i] >= 'A' && input_string[i] <= 'Z')
-                input_string[i] -= 'A' - 'a';
+            if(input_tokens[0][i] >= 'A' && input_tokens[0][i] <= 'Z')
+                input_tokens[0][i] -= 'A' - 'a';
         }
 
-        if(!string_is_valid_word(input_string)){
+        if(!string_is_valid_word(input_tokens[0])){
             printf("word contains invalid characters\n");
             free(input_tokens);
             continue;
         }
 
-        result = word__new(input_string);
+        result = word__new(input_tokens[0]);
 
         if (!vocabolary__contains_word(used_vocabolary, result)){
             printf("word not contained in vocabolary\n");
