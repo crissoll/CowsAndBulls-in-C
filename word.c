@@ -97,7 +97,10 @@ bool vocabolary__contains_word(const Vocabolary* vocabolary,Word word){
 }
 
 
-bool check_pattern(char pattern[LETTERS_IN_WORD]){
+bool check_pattern(const char pattern[LETTERS_IN_WORD + 1]){
+
+    if(pattern[LETTERS_IN_WORD] != '\0')
+        return false;
 
     for (size_t k = 0; k < LETTERS_IN_WORD; k++) {
         char c = pattern[k];
@@ -109,9 +112,11 @@ bool check_pattern(char pattern[LETTERS_IN_WORD]){
 }
 
 
-void set_undefined_pattern(char * pattern){
+void set_undefined_pattern(char pattern[LETTERS_IN_WORD + 1]){
     for(size_t i = 0; i < LETTERS_IN_WORD; i++)
         pattern[i] = UNDEFINED_LETTER;
+    pattern[LETTERS_IN_WORD] = '\0';
+    
 }
 
 

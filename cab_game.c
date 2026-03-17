@@ -13,6 +13,7 @@
 WordSet help_word_set;
 IndexArray help_array;
 
+
 void help_array_init();
 
 static bool is_single_letter_query(const char* pattern){

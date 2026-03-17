@@ -18,7 +18,6 @@ void index_array__init(IndexArray *array, size_t size){
         array->indexes = NULL;
 }
 
-
 void index_array__free_content(IndexArray* array){
     if (array->size > 0 && array->indexes != NULL) {
         free(array->indexes);

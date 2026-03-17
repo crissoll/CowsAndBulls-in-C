@@ -75,7 +75,7 @@ static void normalize_spaces_in_place(char* string){
 size_t get_multiple_input(
     char input_buffer[],
     size_t input_buffer_size,
-    char*** arguments
+    char*** arguments // pointer to array of strings
 ){
     int c;
 

@@ -25,7 +25,7 @@ IndexArray word_set__get_words_with_letter_at_pos(
 }
 
 
-IndexArray word_set__get_words_by_pattern(const WordSet* word_set, const char pattern[LETTERS_IN_WORD]){
+IndexArray word_set__get_words_by_pattern(const WordSet* word_set, const char pattern[LETTERS_IN_WORD + 1]){
     IndexArray result;
     index_array__init(&result, 0);
     bool have_result = false;
@@ -124,7 +124,7 @@ IndexArray word_set__get_words_that_contains_letters(
     index_array__init(&returned_array,0);
 
     while(true){
-        char pattern[LETTERS_IN_WORD];
+        char pattern[LETTERS_IN_WORD + 1];
 
         if(iterator__step(&iterator,letters,pattern) == ITERATOR_STOP)
             break;
