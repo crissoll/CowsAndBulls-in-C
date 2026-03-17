@@ -15,6 +15,8 @@
 
 # define ATTEMPTS_FILE_NAME "saves/attempts.saves"
 
+# define MAX_HELP_HISTORY_SIZE 200
+
 # define HELP_TEXT "list [pattern] -> prints the words that follow that pattern;\n\
 	a single letter pattern prints all words containing that letter;\n\
 \twhile inside \"list\" mode you can remove words inputting new patterns,\n\t\

@@ -25,55 +25,6 @@ IndexArray word_set__get_words_with_letter_at_pos(
 }
 
 
-IndexArray word_set__get_words_by_pattern(const WordSet* word_set, const char pattern[LETTERS_IN_WORD + 1]){
-    IndexArray result;
-    index_array__init(&result, 0);
-    bool have_result = false;
-
-    for (size_t i = 0; i < LETTERS_IN_WORD; i++) {
-        if (pattern[i] == UNDEFINED_LETTER)
-            continue;
-        
-        IndexArray source = word_set__get_words_with_letter_at_pos(pattern[i], i, *word_set);
-        IndexArray temp = index_array__copy(&source);
-
-        if (!have_result) {
-            result = temp;          
-            have_result = true;
-        } else {
-            IndexArray new_result = intersect(result, temp);
-            index_array__free_content(&result);
-            index_array__free_content(&temp);
-            result = new_result;
-        }
-    }
-    return result;
-}
-
-IndexArray word_set__get_words_containing_letter(const WordSet *word_set, char letter){
-    IndexArray result;
-    index_array__init(&result, 0);
-
-    bool have_result = false;
-    for (size_t i = 0; i < LETTERS_IN_WORD; i++) {
-        IndexArray source = word_set__get_words_with_letter_at_pos(letter, i, *word_set);
-        IndexArray temp = index_array__copy(&source);
-
-        if (!have_result) {
-            result = temp;
-            have_result = true;
-        } else {
-            IndexArray new_result = join(result, temp);
-            index_array__free_content(&result);
-            index_array__free_content(&temp);
-            result = new_result;
-        }
-    }
-
-    return result;
-}
-
-
 void word_set__init_from_file(WordSet* word_set,const char* file_name){
     int matrix[ALPHABET_SIZE][LETTERS_IN_WORD];
 

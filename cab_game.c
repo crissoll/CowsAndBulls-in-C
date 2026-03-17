@@ -5,6 +5,7 @@
 
 #include "cab_consts.h"
 #include "word_set.h"
+#include "word_set_filter.h"
 #include "utils.h"
 
 #include "cab_session.h"
@@ -16,41 +17,58 @@ IndexArray help_array;
 
 void help_array_init();
 
-static bool is_single_letter_query(const char* pattern){
+static bool is_single_letter_query(const char pattern[LETTERS_IN_WORD + 1]){
     return strlen(pattern) == 1 && pattern[0] != UNDEFINED_LETTER;
 }
 
-static bool is_valid_single_letter_query(const char* pattern){
+static bool is_valid_single_letter_query(const char pattern[LETTERS_IN_WORD + 1]){
     const char c = pattern[0];
     return c >= 'a' && c <= 'z';
 }
 
-static IndexArray list_mode__query_words(const char* pattern){
-    if (is_single_letter_query(pattern))
-        return word_set__get_words_containing_letter(&help_word_set, pattern[0]);
-    return word_set__get_words_by_pattern(&help_word_set, pattern);
+/* Initialize help_array by building a JOIN filter for all vocabulary (no constraints) */
+static void list_mode__init_all_words(void){
+    WordSetFilter filter;
+    filter__init(&filter);
+    
+    /* Start with a JOIN filter that allows every letter at every position */
+    for(char c = 'a'; c <= 'z'; c++){
+        for(size_t i = 0; i < LETTERS_IN_WORD; i++){
+            char pattern_single[LETTERS_IN_WORD + 1];
+            set_undefined_pattern(pattern_single);
+            pattern_single[i] = c;
+            filter__apply_pattern(&filter, pattern_single, JOIN);
+        }
+    }
+    
+    index_array__free_content(&help_array);
+    help_array = filter__get_words_from_word_set(&help_word_set, &filter);
 }
 
-void list_mode__remove(const char* pattern){
-    IndexArray tmp = list_mode__query_words(pattern);
-    IndexArray new_arr = subtract(help_array,tmp);
-
-    index_array__free_content(&tmp);
-    index_array__free_content(&help_array); /* free old array contents */
-
-    help_array = index_array__copy(&new_arr);
-    index_array__free_content(&new_arr);
+/* Set help_array based on a single pattern */
+static void list_mode__set_pattern(const char pattern[LETTERS_IN_WORD + 1]){
+    WordSetFilter filter;
+    filter__init(&filter);
+    
+    /* Start filled, then restrict with JOIN mode */
+    list_mode__init_all_words();
+    
+    filter__apply_pattern(&filter, pattern, JOIN);
+    
+    index_array__free_content(&help_array);
+    help_array = filter__get_words_from_word_set(&help_word_set, &filter);
 }
 
-void list_mode__intersect(const char* pattern){
-    IndexArray tmp = list_mode__query_words(pattern);
-    IndexArray new_arr = intersect(help_array,tmp);
+/* Apply remove filter to help_array via persistent filter */
+void list_mode__remove(const WordSetFilter* filter){
+    index_array__free_content(&help_array);
+    help_array = filter__get_words_from_word_set(&help_word_set, filter);
+}
 
-    index_array__free_content(&tmp);
-    index_array__free_content(&help_array); /* free old array contents */
-
-    help_array = index_array__copy(&new_arr);
-    index_array__free_content(&new_arr);
+/* Apply intersect filter to help_array via persistent filter */
+void list_mode__intersect(const WordSetFilter* filter){
+    index_array__free_content(&help_array);
+    help_array = filter__get_words_from_word_set(&help_word_set, filter);
 }
 
 bool check_arguments_bounds(size_t args,size_t min_count,size_t max_count){
@@ -150,8 +168,7 @@ Word get_word_from_input(){
                 free(input_tokens);
                 continue;
             }
-            char pattern[100] = {0};
-
+            char pattern[LETTERS_IN_WORD + 1] = {0};
 
             if(args == 2){
                 if(strcmp(input_tokens[1],"-p") == 0){
@@ -164,9 +181,12 @@ Word get_word_from_input(){
                     free(input_tokens);
                     continue;
                 }
-                strcpy(pattern, input_tokens[1]);
-                /* initial pattern to filter vocabulary */
+                
+                /* Single pattern case */
+                memset(pattern, 0, sizeof(pattern));
+                strncpy(pattern, input_tokens[1], LETTERS_IN_WORD);
                 const size_t len = strlen(pattern);
+                
                 if(len > LETTERS_IN_WORD){
                     printf("pattern too long!\n");
                     free(input_tokens);
@@ -174,19 +194,23 @@ Word get_word_from_input(){
                 }
 
                 to_lower(pattern, len);
+                
+                /* Pad with wildcards if needed and null-terminate */
+                for(size_t i = len; i < LETTERS_IN_WORD; i++)
+                    pattern[i] = UNDEFINED_LETTER;
+                pattern[LETTERS_IN_WORD] = '\0';
 
-                bool undefined_pattern=true;
-                for(size_t i = 0; i < len;i++){
-                    if(pattern[i]!=UNDEFINED_LETTER){
+                bool undefined_pattern = true;
+                for(size_t i = 0; i < LETTERS_IN_WORD; i++){
+                    if(pattern[i] != UNDEFINED_LETTER){
                         undefined_pattern = false;
                         break;
                     }
                 }
+                
                 if(undefined_pattern){
-                    index_array__free_content(&help_array);
-                    help_array_init();
-                }
-                else{
+                    list_mode__init_all_words();
+                } else {
                     if (is_single_letter_query(pattern)) {
                         if (!is_valid_single_letter_query(pattern)) {
                             printf("invalid pattern!\n");
@@ -198,30 +222,31 @@ Word get_word_from_input(){
                         free(input_tokens);
                         continue;
                     }
-                    index_array__free_content(&help_array);
-                    help_array = list_mode__query_words(pattern);
+                    list_mode__set_pattern(pattern);
                 }
-                
             }
+            
             if (args > 2){
-                void (*func_ptr)(const char* pattern) = NULL;
-                bool invalid_pattern = false;
-
-                if(strcmp(input_tokens[1],"-r") == 0) {
-                    func_ptr = &list_mode__remove;
-                }
-                if(strcmp(input_tokens[1],"-i") == 0) {
-                    func_ptr = &list_mode__intersect;
-                }
-                if (func_ptr == NULL){
+                FilterMode mode = (strcmp(input_tokens[1], "-r") == 0) ? REMOVE : INTERSECT;
+                
+                if(strcmp(input_tokens[1],"-r") != 0 && strcmp(input_tokens[1],"-i") != 0){
                     printf("invalid argument\n");
                     free(input_tokens);
                     continue;
                 }
-
+                
+                /* Build a persistent filter with all patterns */
+                WordSetFilter combined_filter;
+                filter__init(&combined_filter);
+                
+                /* Start with the current help_array state mapped to a filter,
+                   then apply constraints from all patterns */
+                bool invalid_pattern = false;
                 for(size_t arg_idx = 2; arg_idx < args; arg_idx++){
-                    strcpy(pattern, input_tokens[arg_idx]);
+                    memset(pattern, 0, sizeof(pattern));
+                    strncpy(pattern, input_tokens[arg_idx], LETTERS_IN_WORD);
                     const size_t len = strlen(pattern);
+                    
                     if(len > LETTERS_IN_WORD){
                         printf("pattern too long!\n");
                         invalid_pattern = true;
@@ -229,6 +254,11 @@ Word get_word_from_input(){
                     }
 
                     to_lower(pattern, len);
+                    
+                    /* Pad with wildcards if needed and null-terminate */
+                    for(size_t i = len; i < LETTERS_IN_WORD; i++)
+                        pattern[i] = UNDEFINED_LETTER;
+                    pattern[LETTERS_IN_WORD] = '\0';
 
                     if (is_single_letter_query(pattern)) {
                         if (!is_valid_single_letter_query(pattern)) {
@@ -241,13 +271,16 @@ Word get_word_from_input(){
                         invalid_pattern = true;
                         break;
                     }
-                    func_ptr(pattern);
+                    
+                    filter__apply_pattern(&combined_filter, pattern, mode);
                 }
-                if(invalid_pattern){
-                    free(input_tokens);
-                    continue;
+                
+                if(!invalid_pattern){
+                    index_array__free_content(&help_array);
+                    help_array = filter__get_words_from_word_set(&help_word_set, &combined_filter);
                 }
             }
+            
             free(input_tokens);
             continue;
         }

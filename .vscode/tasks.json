@@ -15,6 +15,7 @@
                 "cab_guess.c",
                 "cab_files.c",
                 "word_set.c",
+                "word_set_filter.c",
                 "index_array.c",
                 "cab_data_analysis.c",
                 "word.c",
