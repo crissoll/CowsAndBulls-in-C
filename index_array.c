@@ -102,7 +102,7 @@ IndexArray join(const IndexArray a, const IndexArray b){
             result.indexes[k++] = a.indexes[i];
             i++;
         } else { 
-            result.indexes[k++] = a.indexes[j];
+            result.indexes[k++] = b.indexes[j];
             j++;
         }
     }

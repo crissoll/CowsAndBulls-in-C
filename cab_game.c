@@ -69,23 +69,18 @@ Word get_word_from_input(){
     /* read until user types a valid five‑letter word
        that is contained in the vocabulary */
     while(true){
-
-        char input_strings[3][100];
-        char* input_tokens[] = { input_strings[0], input_strings[1], input_strings[2] };
+        char input_buffer[1024];
+        char** input_tokens = NULL;
         printf("Enter guess or command: ");
         fflush(stdin);
-        const size_t args = get_multiple_input(input_tokens, 3);
-
-        if(args==(size_t)-1){
-            printf("too many arguments\n");
-            continue;
-        }
+        const size_t args = get_multiple_input(input_buffer, sizeof(input_buffer), &input_tokens);
 
         if(args == 0){
+            free(input_tokens);
             continue;
         }
 
-        char * input_string = input_strings[0];
+        char * input_string = input_tokens[0];
         /*
         if(strcmp(input_string,"cows")==0){
             char pattern[100];
@@ -97,30 +92,83 @@ Word get_word_from_input(){
             
         }*/
         if (strcmp(input_string,"help") == 0){
-            if(!check_arguments_bounds(args,1,1))
+            if(!check_arguments_bounds(args,1,1)){
+                free(input_tokens);
                 continue;
+            }
             printf(HELP_TEXT);
+            free(input_tokens);
             continue;
         }
         if (strcmp(input_string,"attempts") == 0){
-            if(!check_arguments_bounds(args,1,1))
+            if(!check_arguments_bounds(args,1,2)){
+                free(input_tokens);
                 continue;
-            print_attempts();
+            }
+            if(args == 1)
+                print_attempts();
+            if(args == 2){
+                char* attempt_word_str = input_tokens[1];
+                const size_t attempt_word_len = strlen(attempt_word_str);
+
+                if (attempt_word_len > LETTERS_IN_WORD){
+                    printf("word too long\n");
+                    free(input_tokens);
+                    continue;
+                }
+                if (attempt_word_len < LETTERS_IN_WORD){
+                    printf("word too short\n");
+                    free(input_tokens);
+                    continue;
+                }
+
+                to_lower(attempt_word_str, attempt_word_len);
+
+                if(!string_is_valid_word(attempt_word_str)){
+                    printf("word contains invalid characters\n");
+                    free(input_tokens);
+                    continue;
+                }
+
+                Word candidate_word = word__new(attempt_word_str);
+                if (!vocabolary__contains_word(used_vocabolary, candidate_word)){
+                    printf("word not contained in vocabolary\n");
+                    free(input_tokens);
+                    continue;
+                }
+
+                compare_attempts_to_word(candidate_word);
+            }
+            free(input_tokens);
             continue;
         }
 
         if (strcmp(input_string, "list") == 0) {
-            if(!check_arguments_bounds(args,1,3))
+            if(args < 1){
+                printf("too few arguments\n");
+                free(input_tokens);
                 continue;
+            }
             char pattern[100] = {0};
 
 
             if(args == 2){
-                strcpy(pattern, input_strings[1]);
+                if(strcmp(input_tokens[1],"-p") == 0){
+                    index_array__print(help_array, *used_vocabolary);
+                    free(input_tokens);
+                    continue;
+                }
+                if(strcmp(input_tokens[1],"-r") == 0 || strcmp(input_tokens[1],"-i") == 0){
+                    printf("too few arguments\n");
+                    free(input_tokens);
+                    continue;
+                }
+                strcpy(pattern, input_tokens[1]);
                 /* initial pattern to filter vocabulary */
                 const size_t len = strlen(pattern);
                 if(len > LETTERS_IN_WORD){
                     printf("pattern too long!\n");
+                    free(input_tokens);
                     continue;
                 }
 
@@ -141,10 +189,12 @@ Word get_word_from_input(){
                     if (is_single_letter_query(pattern)) {
                         if (!is_valid_single_letter_query(pattern)) {
                             printf("invalid pattern!\n");
+                            free(input_tokens);
                             continue;
                         }
                     } else if(!check_pattern(pattern)){
                         printf("invalid pattern!\n");
+                        free(input_tokens);
                         continue;
                     }
                     index_array__free_content(&help_array);
@@ -152,52 +202,64 @@ Word get_word_from_input(){
                 }
                 
             }
-            if (args == 3){
+            if (args > 2){
                 void (*func_ptr)(const char* pattern) = NULL;
+                bool invalid_pattern = false;
 
-                if(strcmp(input_strings[1],"-r") == 0) {
+                if(strcmp(input_tokens[1],"-r") == 0) {
                     func_ptr = &list_mode__remove;
                 }
-                if(strcmp(input_strings[1],"-i") == 0) {
+                if(strcmp(input_tokens[1],"-i") == 0) {
                     func_ptr = &list_mode__intersect;
                 }
                 if (func_ptr == NULL){
                     printf("invalid argument\n");
+                    free(input_tokens);
                     continue;
                 }
 
-                strcpy(pattern, input_strings[2]);
-                const size_t len = strlen(pattern);
-                if(len > LETTERS_IN_WORD){
-                    printf("pattern too long!\n");
-                    continue;
-                }
-
-                to_lower(pattern, len);
-
-                if (is_single_letter_query(pattern)) {
-                    if (!is_valid_single_letter_query(pattern)) {
-                        printf("invalid pattern!\n");
-                        continue;
+                for(size_t arg_idx = 2; arg_idx < args; arg_idx++){
+                    strcpy(pattern, input_tokens[arg_idx]);
+                    const size_t len = strlen(pattern);
+                    if(len > LETTERS_IN_WORD){
+                        printf("pattern too long!\n");
+                        invalid_pattern = true;
+                        break;
                     }
-                } else if(!check_pattern(pattern)){
-                    printf("invalid pattern!\n");
+
+                    to_lower(pattern, len);
+
+                    if (is_single_letter_query(pattern)) {
+                        if (!is_valid_single_letter_query(pattern)) {
+                            printf("invalid pattern!\n");
+                            invalid_pattern = true;
+                            break;
+                        }
+                    } else if(!check_pattern(pattern)){
+                        printf("invalid pattern!\n");
+                        invalid_pattern = true;
+                        break;
+                    }
+                    func_ptr(pattern);
+                }
+                if(invalid_pattern){
+                    free(input_tokens);
                     continue;
                 }
-                func_ptr(pattern);
             }
-
-            index_array__print(help_array, *used_vocabolary);
+            free(input_tokens);
             continue;
         }
 
         size_t input_len = strlen(input_string);
         if (input_len > LETTERS_IN_WORD){
             printf("word too long\n");
+            free(input_tokens);
             continue;
         }
         if (input_len < LETTERS_IN_WORD){
             printf("word too short\n");
+            free(input_tokens);
             continue;
         }
 
@@ -208,6 +270,7 @@ Word get_word_from_input(){
 
         if(!string_is_valid_word(input_string)){
             printf("word contains invalid characters\n");
+            free(input_tokens);
             continue;
         }
 
@@ -215,12 +278,15 @@ Word get_word_from_input(){
 
         if (!vocabolary__contains_word(used_vocabolary, result)){
             printf("word not contained in vocabolary\n");
+            free(input_tokens);
             continue;
         }
         if (is_word_already_attempted(result)){
             printf("word already attempted!\n");
+            free(input_tokens);
             continue;
         }
+        free(input_tokens);
         break;
     }
     return result;
@@ -300,7 +366,7 @@ int main(){
     };
     
     index_array__free_content(&help_array);
-    printf("Congratulations, you found the word!\n");
+    printf("Congratulations, you found the word in %zu attempts!\n",attempt_number);
     delete_game_data();
     return 0;
 }

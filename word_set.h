@@ -14,7 +14,7 @@ void word_set__init_from_file(WordSet* word_set,const char* file_name);
 
 /* The caller provides a pointer to a pre‑initialised word set and a
    pattern string of length exactly LETTERS_IN_WORD.  Each character
-   should be a lowercase letter or the special `UNDEFINED_LETTER` ('-').
+    should be a lowercase letter or the special `UNDEFINED_LETTER` ('*').
    Matches are words whose letters equal the pattern at every defined
    position; undefined positions are ignored.
 

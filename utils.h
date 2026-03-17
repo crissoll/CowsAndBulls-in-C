@@ -18,6 +18,7 @@ bool get_input(
         bool repeat);
 
 size_t get_multiple_input(
-        char* variables[],
-        size_t variable_count);
+        char input_buffer[],
+        size_t input_buffer_size,
+        char*** arguments);
 #endif
