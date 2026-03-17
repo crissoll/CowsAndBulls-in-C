@@ -13,9 +13,37 @@
 WordSet help_word_set;
 IndexArray help_array;
 
+void help_array_init();
+
+static bool is_single_letter_query(const char* pattern){
+    return strlen(pattern) == 1 && pattern[0] != UNDEFINED_LETTER;
+}
+
+static bool is_valid_single_letter_query(const char* pattern){
+    const char c = pattern[0];
+    return c >= 'a' && c <= 'z';
+}
+
+static IndexArray list_mode__query_words(const char* pattern){
+    if (is_single_letter_query(pattern))
+        return word_set__get_words_containing_letter(&help_word_set, pattern[0]);
+    return word_set__get_words_by_pattern(&help_word_set, pattern);
+}
+
 void list_mode__remove(const char* pattern){
-    IndexArray tmp = word_set__get_words_by_pattern(&help_word_set,pattern);
+    IndexArray tmp = list_mode__query_words(pattern);
     IndexArray new_arr = subtract(help_array,tmp);
+
+    index_array__free_content(&tmp);
+    index_array__free_content(&help_array); /* free old array contents */
+
+    help_array = index_array__copy(&new_arr);
+    index_array__free_content(&new_arr);
+}
+
+void list_mode__intersect(const char* pattern){
+    IndexArray tmp = list_mode__query_words(pattern);
+    IndexArray new_arr = intersect(help_array,tmp);
 
     index_array__free_content(&tmp);
     index_array__free_content(&help_array); /* free old array contents */
@@ -45,10 +73,11 @@ Word get_word_from_input(){
         char input_strings[3][100];
         char* input_tokens[] = { input_strings[0], input_strings[1], input_strings[2] };
         printf("Enter guess or command: ");
+        fflush(stdin);
         const size_t args = get_multiple_input(input_tokens, 3);
 
         if(args==(size_t)-1){
-            printf("too many arguments");
+            printf("too many arguments\n");
             continue;
         }
 
@@ -71,19 +100,17 @@ Word get_word_from_input(){
             if(!check_arguments_bounds(args,1,1))
                 continue;
             printf(HELP_TEXT);
-            fflush(stdin);
             continue;
         }
         if (strcmp(input_string,"attempts") == 0){
             if(!check_arguments_bounds(args,1,1))
                 continue;
             print_attempts();
-            fflush(stdin);
             continue;
         }
 
         if (strcmp(input_string, "list") == 0) {
-            if(!check_arguments_bounds(args,1,2))
+            if(!check_arguments_bounds(args,1,3))
                 continue;
             char pattern[100] = {0};
 
@@ -97,6 +124,8 @@ Word get_word_from_input(){
                     continue;
                 }
 
+                to_lower(pattern, len);
+
                 bool undefined_pattern=true;
                 for(size_t i = 0; i < len;i++){
                     if(pattern[i]!=UNDEFINED_LETTER){
@@ -109,44 +138,56 @@ Word get_word_from_input(){
                     help_array_init();
                 }
                 else{
-                    if(!check_pattern(pattern)){
+                    if (is_single_letter_query(pattern)) {
+                        if (!is_valid_single_letter_query(pattern)) {
+                            printf("invalid pattern!\n");
+                            continue;
+                        }
+                    } else if(!check_pattern(pattern)){
                         printf("invalid pattern!\n");
                         continue;
                     }
                     index_array__free_content(&help_array);
-                    help_array = word_set__get_words_by_pattern(&help_word_set, pattern);
+                    help_array = list_mode__query_words(pattern);
                 }
                 
             }
+            if (args == 3){
+                void (*func_ptr)(const char* pattern) = NULL;
 
-            index_array__print(help_array, *used_vocabolary);
-
-            /* repeatedly remove words until user types "stop" */
-            while(true){
-                if (!get_input(
-                        "remove words with pattern: ",
-                        "pattern",
-                        pattern,
-                        0, //THIS MUST BE 0!
-                        true)
-                    ) {
-                    /* unlikely, but retry if input failed */
+                if(strcmp(input_strings[1],"-r") == 0) {
+                    func_ptr = &list_mode__remove;
+                }
+                if(strcmp(input_strings[1],"-i") == 0) {
+                    func_ptr = &list_mode__intersect;
+                }
+                if (func_ptr == NULL){
+                    printf("invalid argument\n");
                     continue;
                 }
-                
-                if(strcmp(pattern,"stop") == 0){
-                    break;
+
+                strcpy(pattern, input_strings[2]);
+                const size_t len = strlen(pattern);
+                if(len > LETTERS_IN_WORD){
+                    printf("pattern too long!\n");
+                    continue;
                 }
-                if(!check_pattern(pattern)){
+
+                to_lower(pattern, len);
+
+                if (is_single_letter_query(pattern)) {
+                    if (!is_valid_single_letter_query(pattern)) {
+                        printf("invalid pattern!\n");
+                        continue;
+                    }
+                } else if(!check_pattern(pattern)){
                     printf("invalid pattern!\n");
                     continue;
                 }
-                
-                list_mode__remove(pattern);
+                func_ptr(pattern);
+            }
 
-                index_array__print(help_array, *used_vocabolary);
-            };
-
+            index_array__print(help_array, *used_vocabolary);
             continue;
         }
 
@@ -180,7 +221,6 @@ Word get_word_from_input(){
             printf("word already attempted!\n");
             continue;
         }
-
         break;
     }
     return result;

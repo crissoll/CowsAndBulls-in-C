@@ -24,6 +24,11 @@ void word_set__init_from_file(WordSet* word_set,const char* file_name);
    are never freed or modified. */
 IndexArray word_set__get_words_by_pattern(const WordSet *word_set, const char pattern[LETTERS_IN_WORD]);
 
+/* Returns all words that contain the specified lowercase letter in at
+    least one position. The caller must free the returned array with
+    index_array__free_content. */
+IndexArray word_set__get_words_containing_letter(const WordSet *word_set, char letter);
+
 IndexArray word_set__get_words_that_contains_letters(
             const WordSet* word_set,
             const char letters[LETTERS_IN_WORD+1]

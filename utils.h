@@ -7,6 +7,8 @@
 
 void set_bool_array_to_false(bool array[],size_t length);
 
+void to_lower(char* string,size_t max_length);
+
 
 bool get_input(
         const char* prefix,

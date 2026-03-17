@@ -6,7 +6,7 @@
 #include "cab_consts.h"
 #include "cab_files.h"
 
-# define UNDEFINED_LETTER '-'
+# define UNDEFINED_LETTER '*'
 
 
 typedef struct{

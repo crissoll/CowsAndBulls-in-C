@@ -16,6 +16,7 @@
 # define ATTEMPTS_FILE_NAME "saves/attempts.saves"
 
 # define HELP_TEXT "list [pattern] -> prints the words that follow that pattern;\n\
+	a single letter pattern prints all words containing that letter;\n\
 \twhile inside \"list\" mode you can remove words inputting new patterns,\n\t\
 or quit the \"list\" mode inputting \"stop\".\n\n\
 attempts -> prints the previous attempts and the results\n\n\
