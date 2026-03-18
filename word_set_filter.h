@@ -14,6 +14,8 @@ typedef enum {
 
 typedef struct {
     bool present_letters[LETTERS_IN_WORD][ALPHABET_SIZE];
+    bool required_letters[ALPHABET_SIZE];
+    bool forbidden_letters[ALPHABET_SIZE];
 } WordSetFilter;
 
 /* Initialize an empty filter (all positions allow no letters) */
@@ -23,8 +25,9 @@ void filter__init(WordSetFilter* filter);
    - JOIN: union the pattern constraints (allow more letters)
    - INTERSECT: intersect the pattern constraints (restrict to only matching letters)
    - REMOVE: remove the pattern constraints (disallow matching letters)
-   
-   Supports single-letter patterns like "e" which expand to all positions. */
+
+    Single-letter patterns like "e" are treated as global constraints:
+    required/forbidden letter anywhere in the word. */
 void filter__apply_pattern(
         WordSetFilter* filter,
         const char pattern[LETTERS_IN_WORD + 1],

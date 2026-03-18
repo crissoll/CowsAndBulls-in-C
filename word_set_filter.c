@@ -9,10 +9,38 @@
 #include "index_array.h"
 #include "word_set_filter.h"
 
+static IndexArray filter__words_with_letter_anywhere(const WordSet* word_set, size_t letter_idx){
+    IndexArray result;
+    index_array__init(&result, 0);
+
+    bool have_result = false;
+    for(size_t pos = 0; pos < LETTERS_IN_WORD; pos++){
+        IndexArray source = word_set->words[pos][letter_idx];
+        IndexArray source_copy = index_array__copy(&source);
+
+        if(!have_result){
+            result = source_copy;
+            have_result = true;
+        } else {
+            IndexArray joined = join(result, source_copy);
+            index_array__free_content(&result);
+            index_array__free_content(&source_copy);
+            result = joined;
+        }
+    }
+
+    return result;
+}
+
 void filter__init(WordSetFilter* filter){
     for(size_t i = 0; i < LETTERS_IN_WORD; i++)
         for(size_t j = 0; j < ALPHABET_SIZE; j++)
             filter->present_letters[i][j] = false;
+
+    for(size_t i = 0; i < ALPHABET_SIZE; i++){
+        filter->required_letters[i] = false;
+        filter->forbidden_letters[i] = false;
+    }
 }
 
 
@@ -22,14 +50,13 @@ void filter__apply_pattern(
         FilterMode mode
     ){
     if(strlen(pattern) == 1){
-        /* For single-letter expansion, always use JOIN to collect all positions
-           where the letter can appear. Then apply the original mode to the result. */
-        FilterMode expansion_mode = (mode == INTERSECT) ? JOIN : mode;
-        char sub_pattern[LETTERS_IN_WORD+1];
-        for(size_t i = 0; i < LETTERS_IN_WORD; i++){
-            set_undefined_pattern(sub_pattern);
-            sub_pattern[i] = pattern[0];
-            filter__apply_pattern(filter,sub_pattern,expansion_mode);
+        const size_t letter_idx = (size_t)(pattern[0] - 'a');
+        if(mode == REMOVE){
+            filter->forbidden_letters[letter_idx] = true;
+            filter->required_letters[letter_idx] = false;
+        } else {
+            filter->required_letters[letter_idx] = true;
+            filter->forbidden_letters[letter_idx] = false;
         }
         return;
     }
@@ -39,7 +66,7 @@ void filter__apply_pattern(
             switch (mode)
             {
             case JOIN:
-                if(pattern[i] == 'a' + j){
+                if(pattern[i] == (char)('a' + (char)j)){
                     filter->present_letters[i][j] = true;
                 }
                 break;
@@ -48,7 +75,7 @@ void filter__apply_pattern(
                    Wildcard means "don't constrain this position". */
                 if(pattern[i] != UNDEFINED_LETTER){
                     if(filter->present_letters[i][j]){
-                        filter->present_letters[i][j] = (pattern[i] == 'a' + j);
+                        filter->present_letters[i][j] = (pattern[i] == (char)('a' + (char)j));
                     }
                 }
                 break;
@@ -56,7 +83,7 @@ void filter__apply_pattern(
                 /* If pattern specifies a letter, remove that letter from this position.
                    If pattern has wildcard, don't remove anything from this position. */
                 if(pattern[i] != UNDEFINED_LETTER && filter->present_letters[i][j]){
-                    filter->present_letters[i][j] = (pattern[i] != 'a' + j);
+                    filter->present_letters[i][j] = (pattern[i] != (char)('a' + (char)j));
                 }
                 break;
             default:
@@ -110,6 +137,26 @@ IndexArray filter__get_words_from_word_set(const WordSet* word_set, const WordSe
         }
     }
     
+    for(size_t letter_idx = 0; letter_idx < ALPHABET_SIZE; letter_idx++){
+        if(filter->required_letters[letter_idx]){
+            IndexArray has_letter = filter__words_with_letter_anywhere(word_set, letter_idx);
+            IndexArray updated = intersect(result, has_letter);
+            index_array__free_content(&result);
+            index_array__free_content(&has_letter);
+            result = updated;
+        }
+    }
+
+    for(size_t letter_idx = 0; letter_idx < ALPHABET_SIZE; letter_idx++){
+        if(filter->forbidden_letters[letter_idx]){
+            IndexArray has_letter = filter__words_with_letter_anywhere(word_set, letter_idx);
+            IndexArray updated = subtract(result, has_letter);
+            index_array__free_content(&result);
+            index_array__free_content(&has_letter);
+            result = updated;
+        }
+    }
+
     return result;
 }
 
@@ -137,4 +184,23 @@ void filter__print(const WordSetFilter* filter){
             printf("%s %zu/%d\n", allowed, count, ALPHABET_SIZE);
         }
     }
+
+    char required[ALPHABET_SIZE + 1];
+    char forbidden[ALPHABET_SIZE + 1];
+    size_t req_count = 0;
+    size_t forb_count = 0;
+
+    for(size_t i = 0; i < ALPHABET_SIZE; i++){
+        if(filter->required_letters[i])
+            required[req_count++] = (char)('a' + (char)i);
+        if(filter->forbidden_letters[i])
+            forbidden[forb_count++] = (char)('a' + (char)i);
+    }
+    required[req_count] = '\0';
+    forbidden[forb_count] = '\0';
+
+    if(req_count > 0)
+        printf("Required letters (anywhere): %s\n", required);
+    if(forb_count > 0)
+        printf("Forbidden letters (anywhere): %s\n", forbidden);
 }
