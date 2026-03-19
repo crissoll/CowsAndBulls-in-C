@@ -937,6 +937,7 @@ erase
 erect
 erred
 error
+erupt
 essay
 ethan
 ether
@@ -1003,6 +1004,7 @@ feels
 feign
 feint
 felix
+fella
 fells
 felon
 fence
@@ -1391,6 +1393,7 @@ herbs
 herds
 heron
 heros
+hertz
 hewed
 hides
 hills
@@ -1399,6 +1402,7 @@ hilts
 hinds
 hinge
 hints
+hippo
 hired
 hires
 hitch
@@ -3351,6 +3355,7 @@ zebra
 zeros
 zests
 zesty
+zetas
 zexes
 zhuzh
 zippy
