@@ -1,3 +1,4 @@
+#include "cab_io.h"
 #include <stdio.h>
 #include <time.h>
 #include <string.h>
@@ -146,13 +147,13 @@ void compare_attempts_to_word(Word word){
         if(attempts[i].result.cows == expected.cows &&
             attempts[i].result.bulls == expected.bulls
         ){
-            printf("\tV\n");
+            output("\tV\n");
         }
         else{
-            printf("\tX\t");
-            printf("expected: ");
+            output("\tX\t");
+            output("expected: ");
             guess_result__print(expected);
-            printf("\n");
+            output("\n");
         }
     }
 }
@@ -170,7 +171,7 @@ bool play_word(Word word){
     GuessResult result = guess_word(word);
     attempts[attempt_number++] = attempt__new(word,result);
     guess_result__print(result);
-    printf("\n");
+    output("\n");
 
     return (result.bulls >= LETTERS_IN_WORD);
 }

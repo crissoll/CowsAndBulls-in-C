@@ -1,25 +1,15 @@
 #include <stdlib.h>
+#include "cab_io.h"
 #include <stdio.h>
 #include <stdbool.h>
 
+#include "word.h"
 
 #include "cab_consts.h"
 #include "cab_files.h"
 
-# define UNDEFINED_LETTER '*'
 
-
-typedef struct{
-    char letters[LETTERS_IN_WORD];
-}Word;
-
-typedef struct{
-    Word* words;
-    size_t size;
-} Vocabolary;
-
-
-Word word__new(char letters[LETTERS_IN_WORD]){
+Word word__new(const char letters[LETTERS_IN_WORD + 1]){
     Word word;
     for(size_t i = 0; i < LETTERS_IN_WORD; i++){
         if (letters[i] < 'a' || letters[i] > 'z'){
@@ -28,10 +18,11 @@ Word word__new(char letters[LETTERS_IN_WORD]){
         }
         word.letters[i] = letters[i];
     }
+    word.letters[LETTERS_IN_WORD] = '\0';
     return word;
 }
 
-bool string_is_valid_word(char* letters){
+bool string_is_valid_word(const char* letters){
     for(size_t i = 0; i < LETTERS_IN_WORD; i++)
         if (letters[i] < 'a' || letters[i] > 'z')
             return false;
@@ -40,8 +31,7 @@ bool string_is_valid_word(char* letters){
 
 
 void word__print(Word word){
-    for(size_t i = 0; i < LETTERS_IN_WORD; i++)
-        putchar(word.letters[i]);
+    output("%s",word.letters);
 }
 
 
@@ -66,6 +56,7 @@ void vocabolary__init_from_file(Vocabolary* vocabolary,const char* file_name){
         Word temp_word;
         for(size_t j = 0; j < LETTERS_IN_WORD; j++)
             temp_word.letters[j] = buffer[j];
+        temp_word.letters[LETTERS_IN_WORD] = '\0';
         words[i] = temp_word;
         i++;
     }

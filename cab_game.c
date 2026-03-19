@@ -1,4 +1,5 @@
 #include <stdbool.h>
+#include "cab_io.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -72,11 +73,11 @@ static IndexArray cmd_list__get_filtered_words(void){
 
 bool check_arguments_bounds(size_t args,size_t min_count,size_t max_count){
     if (args > max_count){
-        printf("too many arguments\n");
+        output("too many arguments\n");
         return false;
     }
     if (args < min_count){
-        printf("too few arguments\n");
+        output("too few arguments\n");
         return false;
     }
     return true;
@@ -96,24 +97,24 @@ bool check_string_and_get_word(char* string, Word* word){
     const size_t attempt_word_len = strlen(string);
 
     if (attempt_word_len > LETTERS_IN_WORD){
-        printf("word too long\n");
+        output("word too long\n");
         return false;
     }
     if (attempt_word_len < LETTERS_IN_WORD){
-        printf("word too short\n");
+        output("word too short\n");
         return false;
     }
 
     to_lower(string, attempt_word_len);
 
     if(!string_is_valid_word(string)){
-        printf("word contains invalid characters\n");
+        output("word contains invalid characters\n");
         return false;
     }
 
     Word candidate_word = word__new(string);
     if (!vocabolary__contains_word(used_vocabolary, candidate_word)){
-        printf("word not contained in vocabolary\n");
+        output("word not contained in vocabolary\n");
         return false;
     }
     *word = candidate_word;
@@ -129,7 +130,7 @@ static bool cmd_list__parse_pattern(
 ){
     const size_t raw_len = strlen(raw_pattern);
     if(raw_len > LETTERS_IN_WORD){
-        printf("pattern too long!\n");
+        output("pattern too long!\n");
         return false;
     }
 
@@ -141,7 +142,7 @@ static bool cmd_list__parse_pattern(
     if(single_letter_query){
         normalized_pattern[1] = '\0';
         if(!is_valid_single_letter_query(normalized_pattern)){
-            printf("invalid pattern!\n");
+            output("invalid pattern!\n");
             return false;
         }
     } else {
@@ -150,7 +151,7 @@ static bool cmd_list__parse_pattern(
         normalized_pattern[LETTERS_IN_WORD] = '\0';
 
         if(!check_pattern(normalized_pattern)){
-            printf("invalid pattern!\n");
+            output("invalid pattern!\n");
             return false;
         }
     }
@@ -170,7 +171,7 @@ static bool cmd_list__parse_pattern(
 bool cmd_handler__help(size_t arguments_count,char* arguments[]){
     (void)arguments_count;
     (void)arguments;
-    printf(HELP_TEXT);
+    output(HELP_TEXT);
     return true;
 }
 
@@ -197,13 +198,13 @@ bool cmd_handler__list_print(size_t arguments_count,char* arguments[]){
 bool cmd_handler__list_history(size_t arguments_count,char* arguments[]){
     (void)arguments_count;
     (void)arguments;
-    printf("List history (%zu entries):\n", help_list_history_count);
+    output("List history (%zu entries):\n", help_list_history_count);
     for(size_t hist_idx = 0; hist_idx < help_list_history_count; hist_idx++){
-        printf("\n--- Step %zu: [%zu words] ---\n", hist_idx + 1, help_list_history[hist_idx].word_count);
+        output("\n--- Step %zu: [%zu words] ---\n", hist_idx + 1, help_list_history[hist_idx].word_count);
         filter__print(&help_list_history[hist_idx].filter);
     }
     if(help_list_history_count == 0)
-        printf("(no history yet)\n");
+        output("(no history yet)\n");
     return true;
 }
 
@@ -211,7 +212,7 @@ bool cmd_handler__list_history(size_t arguments_count,char* arguments[]){
 bool cmd_handler__list_remove(size_t arguments_count, char* arguments[]){
     (void)arguments;
     if(arguments_count == 0){
-        printf("too few arguments\n");
+        output("too few arguments\n");
         return false;
     }
 
@@ -229,34 +230,7 @@ bool cmd_handler__list(size_t arguments_count,char* arguments[]){
             return cmd_handler__list_history(0, NULL);
         }
         if(strcmp(arguments[0],"-r") == 0 || strcmp(arguments[0],"-i") == 0){
-            printf("too few arguments\n");
-            return false;
-        }
-    }
-
-    if(arguments_count == 2 && strcmp(arguments[0],"-h") == 0){
-        const char* step_str = arguments[1];
-        char* endptr = NULL;
-        long step_num = strtol(step_str, &endptr, 10);
-        
-        if(*endptr != '\0' || step_num < 1 || step_num > (long)help_list_history_count){
-            printf("invalid history step (must be 1-%zu)\n", help_list_history_count);
-            return false;
-        }
-
-        help_filter = help_list_history[step_num - 1].filter;
-        IndexArray tmp = filter__get_words_from_word_set(&help_word_set,&help_filter);
-        help_list_history_add(tmp.size);
-        index_array__free_content(&tmp);
-        
-        printf("Loaded history step %ld. Current state:\n", step_num);
-        filter__print(&help_filter);
-        return true;
-    }
-
-    if(arguments_count == 1){
-        if(strcmp(arguments[0],"-r") == 0 || strcmp(arguments[0],"-i") == 0){
-            printf("too few arguments\n");
+            output("too few arguments\n");
             return false;
         }
 
@@ -275,33 +249,48 @@ bool cmd_handler__list(size_t arguments_count,char* arguments[]){
     }
     
     if (arguments_count > 1){
-        FilterMode mode = (strcmp(arguments[0], "-r") == 0) ? REMOVE : INTERSECT;
-        
-        if(strcmp(arguments[0],"-r") != 0 && strcmp(arguments[0],"-i") != 0){
-            printf("invalid argument\n");
-            return false;
-        }
-        
-        /* Apply all patterns to the existing help_filter */
-        bool invalid_pattern = false;
-        for(size_t arg_idx = 1; arg_idx < arguments_count; arg_idx++){
-            bool is_undefined_pattern = false;
-            if(!cmd_list__parse_pattern(arguments[arg_idx], pattern, &is_undefined_pattern)){
-                invalid_pattern = true;
-                break;
+        if(strcmp(arguments[0], "-h") == 0){
+            int index;
+            sscanf(arguments[1],"%d",&index);
+            if(index < 0){
+                output("index must be > 0\n");
+                return false;
             }
-            
-            filter__apply_pattern(&help_filter, pattern, mode);
+            if((size_t)index >= help_list_history_count){
+                output("index too high!\n");
+                return false;
+            }
+            help_filter = help_list_history[index].filter;
         }
-        if(invalid_pattern)
-            return false;
+        else{
+            FilterMode mode = (strcmp(arguments[0], "-r") == 0) ? REMOVE : INTERSECT;
+            /*
+            if(strcmp(arguments[0],"-r") != 0 && strcmp(arguments[0],"-i") != 0){
+                output("invalid argument\n");
+                return false;
+            }
+            */
+            /* Apply all patterns to the existing help_filter */
+            bool invalid_pattern = false;
+            for(size_t arg_idx = 1; arg_idx < arguments_count; arg_idx++){
+                bool is_undefined_pattern = false;
+                if(!cmd_list__parse_pattern(arguments[arg_idx], pattern, &is_undefined_pattern)){
+                    invalid_pattern = true;
+                    break;
+                }
+                
+                filter__apply_pattern(&help_filter, pattern, mode);
+            }
+            if(invalid_pattern)
+                return false;
+        }
         IndexArray tmp = filter__get_words_from_word_set(&help_word_set,&help_filter);
         help_list_history_add(tmp.size);
         index_array__free_content(&tmp);
     }
     
     IndexArray tmp = filter__get_words_from_word_set(&help_word_set,&help_filter);
-    printf("[%zu words]\n",tmp.size);
+    output("[%zu words]\n",tmp.size);
     index_array__free_content(&tmp);
     return true;
 }
@@ -344,10 +333,9 @@ Word get_word_from_input(){
     while(true){
         char input_buffer[1024];
         char** input_tokens = NULL;
-        printf("Enter guess or command: ");
-        fflush(stdin);
+        output("Enter guess or command: ");
         const size_t token_count = get_multiple_input(input_buffer, sizeof(input_buffer), &input_tokens);
-        printf("%zu\n",token_count); // debug
+        output("%zu\n",token_count); // debug
         
         if(token_count == 0){
             free(input_tokens);
@@ -372,20 +360,19 @@ Word get_word_from_input(){
 
 
 void game_start(){
-
     load_vocabolary();
 
     bool load_game = false;
 
     if(is_game_data_valid()){
 
-        printf("load previous game? (y/n)\n");
+        output("load previous game? (y/n)\n");
         char buffer[100];
 
         get_input(">","response",buffer,1,false);
 
         while(buffer[0] != 'y' && buffer[0] != 'n'){
-            printf("input must be y or n\n");
+            output("input must be y or n\n");
             get_input(">","response",buffer,1,false);
         }
 
@@ -400,7 +387,7 @@ void game_start(){
         load_attempts();
     } else {
         generate_secret_word();
-        printf("generated secret word\n");
+        output("generated secret word\n");
     }
 
     /* ensure secret file exists with the current secret word regardless of
@@ -424,9 +411,9 @@ int main(){
     game_start();
     help_filter_init();
 
-    printf("Welcome to Cows and Bulls!\n");
-    printf("Guess the %d-letter word.\n", LETTERS_IN_WORD);
-    printf(HELP_TEXT);
+    output("Welcome to Cows and Bulls!\n");
+    output("Guess the %d-letter word.\n", LETTERS_IN_WORD);
+    output(HELP_TEXT);
 
     bool game_ended = false;
     {
@@ -441,7 +428,7 @@ int main(){
         store_attempts();
     };
     
-    printf("Congratulations, you found the word in %zu attempts!\n",attempt_number);
+    output("Congratulations, you found the word in %zu attempts!\n",attempt_number);
     delete_game_data();
     return 0;
 }

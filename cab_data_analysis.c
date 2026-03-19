@@ -1,3 +1,4 @@
+#include "cab_io.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -53,11 +54,11 @@ void get_adiacency_matrix(int matrix[ALPHABET_SIZE][ALPHABET_SIZE],const char* f
 }
 
 void print_alpha(size_t i){
-    printf("%c: ",'a'+(char)i);
+    output("%c: ",'a'+(char)i);
 }
 
 void print_frequency_in_percentage(int item,size_t word_count){
-    printf("\t%.1f ", (float)100 * item / word_count);
+    output("\t%.1f ", (float)100 * item / word_count);
 }
 
 void print_matrix(
@@ -72,7 +73,7 @@ void print_matrix(
             // Accesso aritmetico al puntatore
             print_frequency_in_percentage(matrix[i * width + j],word_count);
         }
-        printf("\n");
+        output("\n");
     }
 }
 
@@ -83,20 +84,20 @@ int cab_data_analysis__test(){
 
     size_t it_count = get_line_count(IT_FILE_NAME);
     get_frequencies(matrix, IT_FILE_NAME);
-    printf("--- Frequenze per Posizione ---\n");
+    output("--- Frequenze per Posizione ---\n");
     print_matrix((int*)matrix, LETTERS_IN_WORD, ALPHABET_SIZE, it_count);
 
     get_adiacency_matrix(ad_matrix, IT_FILE_NAME);
-    printf("\n--- Matrice di Adiacenza ---\n");
+    output("\n--- Matrice di Adiacenza ---\n");
     print_matrix((int*)ad_matrix, ALPHABET_SIZE, ALPHABET_SIZE, it_count);
 
     size_t en_count = get_line_count(EN_FILE_NAME);
     get_frequencies(matrix, EN_FILE_NAME);
-    printf("--- Frequenze per Posizione ---\n");
+    output("--- Frequenze per Posizione ---\n");
     print_matrix((int*)matrix, LETTERS_IN_WORD, ALPHABET_SIZE, en_count);
 
     get_adiacency_matrix(ad_matrix, EN_FILE_NAME);
-    printf("\n--- Matrice di Adiacenza ---\n");
+    output("\n--- Matrice di Adiacenza ---\n");
     print_matrix((int*)ad_matrix, ALPHABET_SIZE, ALPHABET_SIZE, en_count);
 
     return 0;

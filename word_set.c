@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
-#include <stdio.h>              /* for perror */
+#include <stdio.h>
+#include "cab_io.h"              /* for perror */
 #include <string.h>
 
 

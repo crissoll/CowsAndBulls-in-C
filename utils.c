@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include "cab_io.h"
 #include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
@@ -22,17 +23,17 @@ bool get_input(
         char buffer[100],
         size_t desired_size,
         bool repeat){
-    printf(prefix);
+    output(prefix);
     if(scanf("%99s", buffer) != 1) {
             /* handle EOF or error */
             exit(EXIT_FAILURE);
     }
     if(desired_size != 0){
         while(strlen(buffer) != desired_size){
-            printf("you must input a %zu-letters %s\n",desired_size,output_name);
+            output("you must input a %zu-letters %s\n",desired_size,output_name);
             if(!repeat)
                 return false;
-            printf(prefix);
+            output(prefix);
             if(scanf("%99s", buffer) != 1) {
                 /* handle EOF or error */
                 exit(EXIT_FAILURE);
@@ -180,7 +181,7 @@ void get_args_from_input(
     ){
 
     do {
-        printf("%s",prefix);
+        output("%s",prefix);
         if (fgets(args_buffer, args_buffer_size, stdin) == NULL)
             exit(EXIT_FAILURE);
     } while (args_buffer[0] == '\n'); //ignores empty lines and ask for input again

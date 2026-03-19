@@ -1,5 +1,5 @@
 #include <stdlib.h>
-#include <stdio.h>
+#include "cab_io.h"
 
 #include "word.h"
 
@@ -122,19 +122,19 @@ void index_array__print(IndexArray index_array,Vocabolary vocabolary){
     size_t j = 0;
     for(size_t i = 0; i < index_array.size;i++){
         word__print(vocabolary.words[index_array.indexes[i]]);
-        printf(" ");
+        output(" ");
         if(++j > 10){
-            printf("\n");
+            output("\n");
             j = 0;
         }
     }
-    printf("\n");
+    output("\n");
 }
 
 
 IndexArray index_array__match_letters(
         const IndexArray* index_array,
-        const char* letters,
+    char* letters,
         const Vocabolary* vocabolary
     ){
     IndexArray return_value;

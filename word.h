@@ -10,7 +10,7 @@
 
 
 typedef struct{
-    char letters[LETTERS_IN_WORD];
+    char letters[LETTERS_IN_WORD + 1];
 } Word;
 
 typedef struct{
@@ -18,9 +18,9 @@ typedef struct{
     size_t size;
 } Vocabolary;
 
-Word word__new(char letters[LETTERS_IN_WORD]);
+Word word__new(const char letters[LETTERS_IN_WORD + 1]);
 
-bool string_is_valid_word(char* string);
+bool string_is_valid_word(const char* string);
 
 void word__print(Word word);
 

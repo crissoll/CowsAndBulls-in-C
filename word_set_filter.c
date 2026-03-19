@@ -1,7 +1,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
-#include <stdio.h>
+#include "cab_io.h"
 
 #include "cab_consts.h"
 #include "word.h"
@@ -162,7 +162,7 @@ IndexArray filter__get_words_from_word_set(const WordSet* word_set, const WordSe
 
 
 void filter__print(const WordSetFilter* filter){
-    printf("Filter by position:\n");
+    output("Filter by position:\n");
     for(size_t i = 0; i < LETTERS_IN_WORD; i++){
         char allowed[ALPHABET_SIZE + 1];
         size_t count = 0;
@@ -175,13 +175,13 @@ void filter__print(const WordSetFilter* filter){
         }
         allowed[count] = '\0';
 
-        printf("  [%zu] ", i + 1);
+        output("  [%zu] ", i + 1);
         if(count == 0){
-            printf("(none) 0/%d\n", ALPHABET_SIZE);
+            output("(none) 0/%d\n", ALPHABET_SIZE);
         } else if(count == ALPHABET_SIZE){
-            printf("* %zu/%d\n", count, ALPHABET_SIZE);
+            output("* %zu/%d\n", count, ALPHABET_SIZE);
         } else {
-            printf("%s %zu/%d\n", allowed, count, ALPHABET_SIZE);
+            output("%s %zu/%d\n", allowed, count, ALPHABET_SIZE);
         }
     }
 
@@ -200,7 +200,7 @@ void filter__print(const WordSetFilter* filter){
     forbidden[forb_count] = '\0';
 
     if(req_count > 0)
-        printf("Required letters (anywhere): %s\n", required);
+        output("Required letters (anywhere): %s\n", required);
     if(forb_count > 0)
-        printf("Forbidden letters (anywhere): %s\n", forbidden);
+        output("Forbidden letters (anywhere): %s\n", forbidden);
 }
