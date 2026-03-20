@@ -161,6 +161,7 @@ IndexArray filter__get_words_from_word_set(const WordSet* word_set, const WordSe
 }
 
 
+
 void filter__print(const WordSetFilter* filter){
     output("Filter by position:\n");
     for(size_t i = 0; i < LETTERS_IN_WORD; i++){

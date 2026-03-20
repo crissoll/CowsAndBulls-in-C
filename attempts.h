@@ -42,7 +42,7 @@ void store_attempt_array(Attempt* attempts,size_t*attempt_number,unsigned long s
 
 bool load_attempt_array(Attempt* attempts,size_t* attempt_number,unsigned long* session_id);
 
-
+/*
 bool is_word_valid(
     Word word,
     Attempt* attempt_array,
@@ -56,5 +56,5 @@ IndexArray get_possible_words_from_attempt_array(
     size_t attempt_array_size,
     Vocabolary* used_vocabolary
 );
-
+*/
 #endif

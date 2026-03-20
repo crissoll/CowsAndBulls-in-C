@@ -136,7 +136,7 @@ bool load_attempt_array(Attempt* attempts,size_t* attempt_number,unsigned long* 
     fclose(attempts_file);
     return true;
 }
-
+/*
 bool is_word_valid(
         Word word,
         Attempt* attempt_array,
@@ -161,7 +161,7 @@ IndexArray get_possible_words_from_attempt_array(
         Vocabolary* used_vocabolary){
     IndexArray result;
 
-    /* allocate the maximum possible size; we'll trim by updating result.size */
+    // allocate the maximum possible size; we'll trim by updating result.size
     index_array__init(&result, used_vocabolary->size);
 
     size_t count = 0;
@@ -175,3 +175,4 @@ IndexArray get_possible_words_from_attempt_array(
 
     return result;
 }
+*/
