@@ -368,12 +368,19 @@ void game_start(){
 
         output("load previous game? (y/n)\n");
         char buffer[100];
+        char** input_tokens = NULL;
 
-        get_input(">","response",buffer,1,false);
+        if (get_multiple_input(buffer, sizeof(buffer), &input_tokens) == EMPTY_INPUT) {
+            buffer[0] = '\0';
+        }
+        free(input_tokens);
 
         while(buffer[0] != 'y' && buffer[0] != 'n'){
             output("input must be y or n\n");
-            get_input(">","response",buffer,1,false);
+            if (get_multiple_input(buffer, sizeof(buffer), &input_tokens) == EMPTY_INPUT) {
+                buffer[0] = '\0';
+            }
+            free(input_tokens);
         }
 
         if(buffer[0] == 'y'){

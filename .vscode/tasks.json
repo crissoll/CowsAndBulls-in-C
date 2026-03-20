@@ -13,6 +13,7 @@
                 "cab_game.c",
                 "cab_session.c",
                 "cab_guess.c",
+                "cab_io.c",
                 "cab_files.c",
                 "word_set.c",
                 "word_set_filter.c",
