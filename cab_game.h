@@ -4,5 +4,6 @@
 
 void game_start();
 
+bool _play_turn();
 
 #endif

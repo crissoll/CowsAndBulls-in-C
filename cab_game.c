@@ -245,7 +245,7 @@ bool cmd_handler__list_parse_all_patterns(size_t arguments_count,char* arguments
 
 
 bool cmd_handler__list_remove(size_t arguments_count,char* arguments[]){
-    if(arguments_count == 1){
+    if(arguments_count == 0){
         output("too few arguments\n");
             return false;
     }
@@ -262,7 +262,7 @@ bool cmd_handler__list_remove(size_t arguments_count,char* arguments[]){
 
 
 bool cmd_handler__list_intersect(size_t arguments_count,char* arguments[]){
-    if(arguments_count == 1){
+    if(arguments_count == 0){
         output("too few arguments\n");
             return false;
     }
@@ -440,15 +440,10 @@ int main(){
     output(HELP_TEXT);
 
     bool game_ended = false;
-    {
-        game_ended = play_turn();
-
-        store_secret_word();
-        store_attempts();
-    }
     while(!game_ended){
         game_ended = play_turn();
 
+        store_secret_word();
         store_attempts();
     };
     
