@@ -71,7 +71,7 @@ static IndexArray cmd_list__get_filtered_words(void){
     return filter__get_words_from_word_set(&help_word_set, &help_filter);
 }
 
-bool check_arguments_bounds(size_t args,size_t min_count,size_t max_count){
+bool check_arguments_bounds(size_t args,size_t min_count, size_t max_count){
     if (args > max_count){
         output("too many arguments\n");
         return false;
@@ -186,6 +186,7 @@ bool cmd_handler__attempts(size_t arguments_count,char* arguments[]){
     return true;
 }
 
+
 bool cmd_handler__list_print(size_t arguments_count,char* arguments[]){
     (void)arguments_count;
     (void)arguments;
@@ -196,104 +197,122 @@ bool cmd_handler__list_print(size_t arguments_count,char* arguments[]){
 }
 
 bool cmd_handler__list_history(size_t arguments_count,char* arguments[]){
-    (void)arguments_count;
-    (void)arguments;
-    output("List history (%zu entries):\n", help_list_history_count);
-    for(size_t hist_idx = 0; hist_idx < help_list_history_count; hist_idx++){
-        output("\n--- Step %zu: [%zu words] ---\n", hist_idx + 1, help_list_history[hist_idx].word_count);
-        filter__print(&help_list_history[hist_idx].filter);
-    }
-    if(help_list_history_count == 0)
-        output("(no history yet)\n");
-    return true;
-}
+    if(arguments_count == 0)
+        output("List history (%zu entries):\n", help_list_history_count);
+        for(size_t hist_idx = 0; hist_idx < help_list_history_count; hist_idx++){
+            output("\n--- Step %zu: [%zu words] ---\n", hist_idx + 1, help_list_history[hist_idx].word_count);
+            filter__print(&help_list_history[hist_idx].filter);
+        }
+        if(help_list_history_count == 0)
+            output("(no history yet)\n");
+        return true;
+    int index;
 
+    sscanf(arguments[1],"%d",&index);
 
-bool cmd_handler__list_remove(size_t arguments_count, char* arguments[]){
-    (void)arguments;
-    if(arguments_count == 0){
-        output("too few arguments\n");
+    if(index < 0){
+        output("index must be > 0\n");
         return false;
     }
-
-    return true;
-}
-
-bool cmd_handler__list(size_t arguments_count,char* arguments[]){
-    char pattern[LETTERS_IN_WORD + 1] = {0};
-
-    if(arguments_count == 1){
-        if(strcmp(arguments[0],"-p") == 0){
-            return cmd_handler__list_print(0, NULL);
-        }
-        if(strcmp(arguments[0],"-h") == 0){
-            return cmd_handler__list_history(0, NULL);
-        }
-        if(strcmp(arguments[0],"-r") == 0 || strcmp(arguments[0],"-i") == 0){
-            output("too few arguments\n");
-            return false;
-        }
-
-        bool undefined_pattern = false;
-        if(!cmd_list__parse_pattern(arguments[0], pattern, &undefined_pattern))
-            return false;
-
-        if(undefined_pattern){
-            cmd_list__init_all_words();
-        } else {
-            cmd_list__set_pattern(pattern);
-        }
-        IndexArray tmp = filter__get_words_from_word_set(&help_word_set,&help_filter);
-        help_list_history_add(tmp.size);
-        index_array__free_content(&tmp);
+    if((size_t)index >= help_list_history_count){
+        output("index too high!\n");
+        return false;
     }
-    
-    if (arguments_count > 1){
-        if(strcmp(arguments[0], "-h") == 0){
-            int index;
-            sscanf(arguments[1],"%d",&index);
-            if(index < 0){
-                output("index must be > 0\n");
-                return false;
-            }
-            if((size_t)index >= help_list_history_count){
-                output("index too high!\n");
-                return false;
-            }
-            help_filter = help_list_history[index].filter;
-        }
-        else{
-            FilterMode mode = (strcmp(arguments[0], "-r") == 0) ? REMOVE : INTERSECT;
-            /*
-            if(strcmp(arguments[0],"-r") != 0 && strcmp(arguments[0],"-i") != 0){
-                output("invalid argument\n");
-                return false;
-            }
-            */
-            /* Apply all patterns to the existing help_filter */
-            bool invalid_pattern = false;
-            for(size_t arg_idx = 1; arg_idx < arguments_count; arg_idx++){
-                bool is_undefined_pattern = false;
-                if(!cmd_list__parse_pattern(arguments[arg_idx], pattern, &is_undefined_pattern)){
-                    invalid_pattern = true;
-                    break;
-                }
-                
-                filter__apply_pattern(&help_filter, pattern, mode);
-            }
-            if(invalid_pattern)
-                return false;
-        }
-        IndexArray tmp = filter__get_words_from_word_set(&help_word_set,&help_filter);
-        help_list_history_add(tmp.size);
-        index_array__free_content(&tmp);
-    }
-    
-    IndexArray tmp = filter__get_words_from_word_set(&help_word_set,&help_filter);
-    output("[%zu words]\n",tmp.size);
+    output("correctly reverted to step number %d\n",index);
+    help_filter = help_list_history[index].filter;
+
+    IndexArray tmp = filter__get_words_from_word_set(&help_word_set,&help_filter); // TODO write a better function
+    help_list_history_add(tmp.size);
+    output("[%zu words]\n",tmp.size);// TODO print filter too
     index_array__free_content(&tmp);
     return true;
 }
+
+bool cmd_handler__list_parse_all_patterns(size_t arguments_count,char* arguments[],FilterMode mode){
+    char pattern[LETTERS_IN_WORD + 1] = {0};
+    bool invalid_pattern_found = false;
+    for(size_t arg_idx = 1; arg_idx < arguments_count; arg_idx++){
+        bool is_undefined_pattern = false;
+        if(!cmd_list__parse_pattern(arguments[arg_idx], pattern, &is_undefined_pattern)){
+            invalid_pattern_found = true;
+            break;
+        }
+        
+        filter__apply_pattern(&help_filter, pattern, mode);
+    }
+    return !invalid_pattern_found;
+}
+
+
+bool cmd_handler__list_remove(size_t arguments_count,char* arguments[]){
+    if(arguments_count == 1){
+        output("too few arguments\n");
+            return false;
+    }
+    cmd_handler__list_parse_all_patterns(arguments_count-1,arguments+1,REMOVE);
+
+    IndexArray tmp = filter__get_words_from_word_set(&help_word_set,&help_filter); // TODO write a better function
+    help_list_history_add(tmp.size);
+    output("[%zu words]\n",tmp.size);
+    index_array__free_content(&tmp);
+
+    return true;
+
+}
+
+
+bool cmd_handler__list_intersect(size_t arguments_count,char* arguments[]){
+    if(arguments_count == 1){
+        output("too few arguments\n");
+            return false;
+    }
+    cmd_handler__list_parse_all_patterns(arguments_count-1,arguments+1,INTERSECT);
+
+    IndexArray tmp = filter__get_words_from_word_set(&help_word_set,&help_filter); // TODO write a better function
+    help_list_history_add(tmp.size);
+    output("[%zu words]\n",tmp.size);
+    index_array__free_content(&tmp);
+
+    return true;
+
+}
+bool cmd_handler__list(size_t arguments_count,char* arguments[]){
+    char pattern[LETTERS_IN_WORD + 1] = {0};
+
+    if(strcmp(arguments[0],"-p") == 0)
+            return cmd_handler__list_print(arguments_count-1,arguments+1);
+    if(strcmp(arguments[0],"-h") == 0)
+            return cmd_handler__list_history(arguments_count-1, arguments+1);
+    if(strcmp(arguments[0], "-r") == 0)
+            return cmd_handler__list_remove(arguments_count-1,arguments+1);
+    if(strcmp(arguments[0], "-i") == 0)
+            return cmd_handler__list_intersect(arguments_count-1,arguments+1);
+
+    bool undefined_pattern = false;
+    if(!cmd_list__parse_pattern(arguments[0], pattern, &undefined_pattern))
+        return false;
+
+    if(undefined_pattern){
+        cmd_list__init_all_words();
+    } else {
+        cmd_list__set_pattern(pattern);
+    }
+    IndexArray tmp = filter__get_words_from_word_set(&help_word_set,&help_filter);
+    help_list_history_add(tmp.size);
+    index_array__free_content(&tmp);
+    
+    return true;
+}
+
+/*
+{
+    char* name,
+    bool (*no_args_handler)(),
+    CommandSpec valid_arguments,
+    bool(*parametric_args_handler)(size_t argc,char** args),
+    char* help_text
+}
+*/
 
 #define COMMAND_COUNT 3
 const CommandSpec commands[] = {
@@ -361,9 +380,8 @@ Word get_word_from_input(){
 
 void game_start(){
     load_vocabolary();
-
+    help_filter_init();
     bool load_game = false;
-
     if(is_game_data_valid()){
 
         output("load previous game? (y/n)\n");
@@ -416,7 +434,6 @@ void help_filter_init(){
 
 int main(){
     game_start();
-    help_filter_init();
 
     output("Welcome to Cows and Bulls!\n");
     output("Guess the %d-letter word.\n", LETTERS_IN_WORD);
