@@ -1,7 +1,28 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <string.h>
+
 #include "api/cab_api.h"
+
+static bool read_line(char* buffer, size_t buffer_size){
+    if (buffer_size == 0)
+        return false;
+
+    if (fgets(buffer, (int)buffer_size, stdin) == NULL)
+        return false;
+
+    size_t len = strlen(buffer);
+    if (len > 0 && buffer[len - 1] == '\n') {
+        buffer[len - 1] = '\0';
+    } else {
+        int c;
+        while ((c = getchar()) != '\n' && c != EOF) {
+        }
+    }
+
+    return true;
+}
 
 int main(){
     setup_game();
@@ -9,7 +30,7 @@ int main(){
         while(!is_save_load_choice_complete()){
             char buffer[100];
             printf("load previous game? (y/n)\n");
-            if(scanf("%99s", buffer) != 1)
+            if(!read_line(buffer, sizeof(buffer)))
                 break;
             String input_string = {
                 .content = buffer,
@@ -29,7 +50,7 @@ int main(){
     while(!is_game_ended()){
         char buffer[100];
         printf("Enter guess or command: ");
-        if(scanf("%99s", buffer) != 1)
+        if(!read_line(buffer, sizeof(buffer)))
             break;
         String input_string = {
             .content = buffer,
