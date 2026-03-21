@@ -13,7 +13,7 @@
                 "-Isrc",
                 "src/game/cab_game.c",
                 "src/game/cab_session.c",
-                "src/game/cab_guess.c",
+                "src/core/guess.c",
                 "src/game/cab_io.c",
                 "src/files/cab_files.c",
                 "src/core/word_set.c",
@@ -75,6 +75,29 @@
                 "src/game/cab_io.c",
                 "-o",
                 "extract_5_letters_words.exe"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": "build"
+        },
+        {
+            "label": "build: api",
+            "type": "shell",
+            "command": "C:\\MinGw\\bin\\gcc.exe",
+            "args": [
+                "-g",
+                "-Wall",
+                "-Wextra",
+                "-std=c11",
+                "-Isrc",
+                "-c",
+                "src/api/cab_api.c",
+                "-o",
+                "cab_api.o"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"

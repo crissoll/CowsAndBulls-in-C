@@ -5,7 +5,6 @@ RM := rm -f
 CAB_GAME_SRCS := \
 	src/game/cab_game.c \
 	src/game/cab_session.c \
-	src/game/cab_guess.c \
 	src/game/cab_io.c \
 	src/files/cab_files.c \
 	src/files/letter_dispositions.c \
@@ -14,6 +13,7 @@ CAB_GAME_SRCS := \
 	src/core/index_array.c \
 	src/tools/cab_data_analysis.c \
 	src/core/word.c \
+	src/core/guess.c \
 	src/util/utils.c \
 	src/core/attempts.c
 

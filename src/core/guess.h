@@ -1,5 +1,5 @@
-#ifndef CAB_GUESS
-#define CAB_GUESS
+#ifndef GUESS
+#define GUESS
 
 #include <stdlib.h>
 
