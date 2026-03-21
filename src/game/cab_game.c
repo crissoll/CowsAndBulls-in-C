@@ -373,7 +373,7 @@ void game_start(){
     /* ensure secret file exists with the current secret word regardless of
        whether a previous game was loaded */
 
-    word_set__init_from_file(&help_word_set,EN_FILE_NAME);
+    word_set__init_from_vocabolary(&help_word_set, used_vocabolary);
 }
 
 void _start_new_game(){

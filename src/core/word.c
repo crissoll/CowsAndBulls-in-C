@@ -66,6 +66,28 @@ void vocabolary__init_from_file(Vocabolary* vocabolary,const char* file_name){
 }
 
 
+void vocab__get_words_frequencies(
+    const Vocabolary* vocabolary,
+    size_t matrix[ALPHABET_SIZE][LETTERS_IN_WORD]
+){
+    for(size_t letter_idx = 0; letter_idx < ALPHABET_SIZE; letter_idx++){
+        for(size_t pos = 0; pos < LETTERS_IN_WORD; pos++){
+            matrix[letter_idx][pos] = 0;
+        }
+    }
+
+    for(size_t word_idx = 0; word_idx < vocabolary->size; word_idx++){
+        const Word word = vocabolary->words[word_idx];
+        for(size_t pos = 0; pos < LETTERS_IN_WORD; pos++){
+            const unsigned char c = (unsigned char)word.letters[pos];
+            if(c >= 'a' && c <= 'z'){
+                matrix[(size_t)(c - 'a')][pos]++;
+            }
+        }
+    }
+}
+
+
 bool vocabolary__contains_word(const Vocabolary* vocabolary,Word word){
     if (vocabolary->size == 0)
         return false;

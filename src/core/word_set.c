@@ -9,7 +9,6 @@
 #include "util/cab_consts.h"
 #include "core/index_array.h"
 #include "core/word.h"
-#include "tools/cab_data_analysis.h"
 #include "files/letter_dispositions.h"
 
 
@@ -26,10 +25,10 @@ IndexArray word_set__get_words_with_letter_at_pos(
 }
 
 
-void word_set__init_from_file(WordSet* word_set,const char* file_name){
-    int matrix[ALPHABET_SIZE][LETTERS_IN_WORD];
+void word_set__init_from_vocabolary(WordSet* word_set,const Vocabolary* vocabolary){
+    size_t matrix[ALPHABET_SIZE][LETTERS_IN_WORD];
 
-    get_frequencies(matrix,file_name);
+    vocab__get_words_frequencies(vocabolary, matrix);
 
     for(size_t i = 0; i < LETTERS_IN_WORD; i++){
         for(size_t j = 0; j < ALPHABET_SIZE; j++){
@@ -39,10 +38,8 @@ void word_set__init_from_file(WordSet* word_set,const char* file_name){
         }
     }
 
-    Vocabolary vocabolary;
-    vocabolary__init_from_file(&vocabolary,file_name);
-    for(size_t i = 0; i < vocabolary.size;i++){
-        Word word = vocabolary.words[i];
+    for(size_t i = 0; i < vocabolary->size;i++){
+        Word word = vocabolary->words[i];
         for(size_t p = 0; p < LETTERS_IN_WORD; p++){
             size_t letter_idx = (size_t)((unsigned char)word.letters[p] - 'a');
             if(matrix[letter_idx][p] == 0){
@@ -55,7 +52,6 @@ void word_set__init_from_file(WordSet* word_set,const char* file_name){
             matrix[letter_idx][p]--;
         }
     }
-    free(vocabolary.words);
 }
 
 /*
