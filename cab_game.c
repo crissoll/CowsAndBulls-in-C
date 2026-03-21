@@ -447,7 +447,11 @@ bool _play_turn(){
         free(input_tokens);
         return false;
     }
-    
+    if(is_word_already_attempted(word)){
+        output("word already attempted\n");
+        free(input_tokens);
+        return false;
+    }
     const bool game_ended = play_word(word);
     store_attempts();
 
