@@ -7,6 +7,7 @@
 #include "core/attempts.h"
 #include "game/cab_output.h"
 
+
 # define SECRET_FILE_NAME "data/saves/secret_word.saves"
 
 # define ATTEMPTS_FILE_NAME "data/saves/attempts.saves"
@@ -139,7 +140,7 @@ void delete_game_data(){
 
 
 void print_attempts(void){
-    print_attempt_array(attempts, &attempt_number);
+    print_attempt_array(attempts, attempt_number);
 }
 
 void compare_attempts_to_word(Word word){
@@ -162,11 +163,11 @@ void compare_attempts_to_word(Word word){
 }
 
 bool is_word_already_attempted(Word word){
-    return is_word_in_attempt_array(word,attempts,&attempt_number);
+    return is_word_in_attempt_array(word,attempts,attempt_number);
 }
 
 void store_attempts(){
-    store_attempt_array(attempts, &attempt_number,ATTEMPTS_FILE_NAME, session_id);
+    store_attempt_array(attempts, attempt_number,ATTEMPTS_FILE_NAME, session_id);
 }
 
 
