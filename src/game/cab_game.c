@@ -46,24 +46,30 @@ static bool is_valid_single_letter_query(const char pattern[LETTERS_IN_WORD + 1]
     return c >= 'a' && c <= 'z';
 }
 
-/* Initialize help_filter to allow all words (all letters at all positions) */
-static void cmd_list__init_all_words(void){
-    filter__init(&help_filter);
-    
-    /* Build a JOIN filter that allows every letter at every position */
-    for(char c = 'a'; c <= 'z'; c++){
-        for(size_t i = 0; i < LETTERS_IN_WORD; i++){
-            char pattern_single[LETTERS_IN_WORD + 1];
-            set_undefined_pattern(pattern_single);
-            pattern_single[i] = c;
-            filter__apply_pattern(&help_filter, pattern_single, JOIN);
+static bool check_pattern(const char pattern[LETTERS_IN_WORD + 1]){
+
+    if(pattern[LETTERS_IN_WORD] != '\0')
+        return false;
+
+    for (size_t k = 0; k < LETTERS_IN_WORD; k++) {
+        char c = pattern[k];
+        if (c == '\0' || ((c < 'a' || c > 'z') && c != UNDEFINED_LETTER)){
+            return false;
         }
     }
+    return true;
+}
+
+static void set_undefined_pattern(char pattern[LETTERS_IN_WORD + 1]){
+    for(size_t i = 0; i < LETTERS_IN_WORD; i++)
+        pattern[i] = UNDEFINED_LETTER;
+    pattern[LETTERS_IN_WORD] = '\0';
+    
 }
 
 /* Set help_filter based on a single pattern */
 static void cmd_list__set_pattern(const char pattern[LETTERS_IN_WORD + 1]){
-    cmd_list__init_all_words();
+    filter__init(&help_filter);
     filter__apply_pattern(&help_filter, pattern, JOIN);
 }
 
@@ -105,8 +111,6 @@ bool check_string_and_get_word(char* string, Word* word){
         output("word too short\n");
         return false;
     }
-
-    to_lower(string, attempt_word_len);
 
     if(!string_is_valid_word(string)){
         output("word contains invalid characters\n");
@@ -192,7 +196,7 @@ bool cmd_handler__list_print(size_t arguments_count,char* arguments[]){
     (void)arguments_count;
     (void)arguments;
     IndexArray filtered = cmd_list__get_filtered_words();
-    index_array__print(filtered, *used_vocabolary);
+    index_array__print(filtered, used_vocabolary);
     index_array__free_content(&filtered);
     return true;
 }
@@ -309,7 +313,7 @@ bool cmd_handler__list(size_t arguments_count,char* arguments[]){
         return false;
 
     if(undefined_pattern){
-        cmd_list__init_all_words();
+        filter__init(&help_filter);
     } else {
         cmd_list__set_pattern(pattern);
     }
@@ -461,7 +465,7 @@ bool _play_turn(){
 
 void help_filter_init(){
     help_list_history_clear();
-    cmd_list__init_all_words();
+    filter__init(&help_filter);
 }
 
 void win_game(){

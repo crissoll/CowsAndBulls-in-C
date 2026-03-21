@@ -2,7 +2,7 @@
 
 #define INDEX_ARRAY
 
-#include "core/word.h"
+#include "core/vocabolary.h"
 
 typedef struct {
     size_t size;
@@ -29,12 +29,5 @@ IndexArray intersect(const IndexArray a,const IndexArray b);
 IndexArray join(const IndexArray a, const IndexArray b);
 
 IndexArray subtract(const IndexArray a,const IndexArray b);
-
-IndexArray index_array__match_letters(
-        const IndexArray* index_array,
-    char* letters,
-        const Vocabolary* vocabolary
-    );
-
 
 #endif

@@ -3,7 +3,7 @@
 
 #include "util/cab_consts.h"
 #include "core/index_array.h"
-#include "core/word.h"
+#include "core/vocabolary.h"
 
 
 typedef struct {

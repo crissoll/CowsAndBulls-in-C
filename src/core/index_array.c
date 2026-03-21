@@ -118,10 +118,10 @@ IndexArray join(const IndexArray a, const IndexArray b){
 }
 
 
-void index_array__print(IndexArray index_array,Vocabolary vocabolary){
+void index_array__print(IndexArray index_array,const Vocabolary* vocabolary){
     size_t j = 0;
     for(size_t i = 0; i < index_array.size;i++){
-        word__print(vocabolary.words[index_array.indexes[i]]);
+        word__print(vocabolary->words[index_array.indexes[i]]);
         output(" ");
         if(++j > 10){
             output("\n");

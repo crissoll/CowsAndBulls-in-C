@@ -9,6 +9,7 @@
 #include "util/cab_consts.h"
 #include "core/index_array.h"
 #include "core/word.h"
+#include "core/vocabolary.h"
 
 
 typedef struct {
@@ -27,7 +28,7 @@ IndexArray word_set__get_words_with_letter_at_pos(
 void word_set__init_from_vocabolary(WordSet* word_set,const Vocabolary* vocabolary){
     size_t matrix[ALPHABET_SIZE][LETTERS_IN_WORD];
 
-    vocab__get_words_frequencies(vocabolary, matrix);
+    vocabolary__get_words_frequencies(vocabolary, matrix);
 
     for(size_t i = 0; i < LETTERS_IN_WORD; i++){
         for(size_t j = 0; j < ALPHABET_SIZE; j++){

@@ -2,6 +2,7 @@
 #define CAB_SESSION
 
 #include "core/guess.h"
+#include "core/vocabolary.h"
 
 typedef unsigned long SessionId;
 

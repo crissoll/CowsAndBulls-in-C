@@ -2,7 +2,7 @@
 #include <time.h>
 #include <string.h>
 
-
+#include "core/vocabolary.h"
 #include "core/guess.h"
 #include "core/attempts.h"
 #include "game/cab_output.h"
@@ -23,7 +23,7 @@ Attempt attempts[MAX_ATTEMPTS];
 size_t attempt_number = 0;
 
 
-Vocabolary vocab_storage;
+static Vocabolary vocab_storage;
 Vocabolary *used_vocabolary = &vocab_storage;
 
 

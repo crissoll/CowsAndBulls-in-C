@@ -35,7 +35,7 @@ static IndexArray filter__words_with_letter_anywhere(const WordSet* word_set, si
 void filter__init(WordSetFilter* filter){
     for(size_t i = 0; i < LETTERS_IN_WORD; i++)
         for(size_t j = 0; j < ALPHABET_SIZE; j++)
-            filter->present_letters[i][j] = false;
+            filter->present_letters[i][j] = true;
 
     for(size_t i = 0; i < ALPHABET_SIZE; i++){
         filter->required_letters[i] = false;

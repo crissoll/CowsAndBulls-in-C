@@ -5,7 +5,7 @@
 #include "core/index_array.h"
 #include "core/guess.h"
 #include "core/attempts.h"
-
+#include "core/vocabolary.h"
 
 Attempt attempt__new(Word word, GuessResult result){
     Attempt attempt = {.word = word, .result = result};
