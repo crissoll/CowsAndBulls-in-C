@@ -40,7 +40,7 @@ int main(){
 
             String output_string = handle_saves_load_choice(input_string);
             printf("%s", output_string.content);
-            string__free(output_string);
+            string__free_content(output_string);
         }
     }
     else{
@@ -60,7 +60,7 @@ int main(){
 
         String output_string = play_turn(input_string);
         printf("%s", output_string.content);
-        string__free(output_string);
+        string__free_content(output_string);
     }
     
     shutdown_game();
