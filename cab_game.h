@@ -1,19 +1,14 @@
 #ifndef CAB_GAME
 #define CAB_GAME
 
-#include "word.h"
 
+void game_start();
 
-typedef struct{
-    size_t cows;
-    size_t bulls;
-} GuessResult;
+void _start_new_game();
 
+bool _load_game();
 
-Vocabolary* used_vocabolary;
+bool _play_turn();
 
-void setup_game();
-
-GuessResult guess_word(Word attempt);
-
+void win_game();
 #endif

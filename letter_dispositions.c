@@ -21,7 +21,11 @@ void iterator__init(LetterDispositionsIterator* iterator,size_t length){
 }
 
 
-bool iterator__step(LetterDispositionsIterator* iterator,const char* letters,char* pattern){
+bool iterator__step(
+        LetterDispositionsIterator* iterator,
+        const char* letters,
+        char pattern[LETTERS_IN_WORD + 1]
+    ){
     for(size_t i = 0; i < iterator->length-1; i++){
         if(iterator->current[i] == iterator->limits[i]){
             iterator->current[i] = 0;

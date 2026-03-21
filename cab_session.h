@@ -31,7 +31,10 @@ void store_attempts(void);
 
 bool is_word_already_attempted(Word word);
 
+size_t attempt_number;
 
 bool play_word(Word word);
+
+void compare_attempts_to_word(Word word);
 
 #endif

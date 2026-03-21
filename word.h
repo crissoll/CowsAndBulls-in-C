@@ -6,11 +6,11 @@
 
 #include "cab_consts.h"
 
-# define UNDEFINED_LETTER '-'
+# define UNDEFINED_LETTER '*'
 
 
 typedef struct{
-    char letters[LETTERS_IN_WORD];
+    char letters[LETTERS_IN_WORD + 1];
 } Word;
 
 typedef struct{
@@ -18,9 +18,9 @@ typedef struct{
     size_t size;
 } Vocabolary;
 
-Word word__new(char letters[LETTERS_IN_WORD]);
+Word word__new(const char letters[LETTERS_IN_WORD + 1]);
 
-bool string_is_valid_word(char* string);
+bool string_is_valid_word(const char* string);
 
 void word__print(Word word);
 
@@ -32,9 +32,9 @@ void vocabolary__init_from_file(Vocabolary* vocabolary,const char* file_name);
 bool vocabolary__contains_word(const Vocabolary* vocabolary,Word word);
 
 
-bool check_pattern(const char pattern[LETTERS_IN_WORD]);
+bool check_pattern(const char pattern[LETTERS_IN_WORD + 1]);
 
-void set_undefined_pattern(char * pattern);
+void set_undefined_pattern(char pattern[LETTERS_IN_WORD + 1]);
 
-bool word__contains_letters(Word word,const char *letters);
+bool word__contains_letters(Word word,char *letters);
 #endif /* WORD_H */

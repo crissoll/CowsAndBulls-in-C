@@ -1,3 +1,4 @@
+#include "cab_io.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -18,7 +19,7 @@ Attempt attempt__new(Word word, GuessResult result){
 
 void attempt__print(Attempt attempt){
     word__print(attempt.word);
-    printf("\t");
+    output("\t");
     guess_result__print(attempt.result);
 }
 
@@ -61,7 +62,7 @@ IndexArray get_possible_words_from_attempt(Attempt attempt,Vocabolary* used_voca
 void print_attempt_array(Attempt* attempts, size_t* attempt_number){
     for(size_t i = 0; i < *attempt_number;i++){
         attempt__print(attempts[i]);
-        printf("\n");
+        output("\n");
     }
 }
 
@@ -135,12 +136,13 @@ bool load_attempt_array(Attempt* attempts,size_t* attempt_number,unsigned long* 
     fclose(attempts_file);
     return true;
 }
-
+/*
 bool is_word_valid(
         Word word,
         Attempt* attempt_array,
         size_t attempt_array_size
     ){
+    (void)used_vocabolary;
     for(size_t j = 0; j < attempt_array_size;j++){
         Attempt attempt = attempt_array[j];
         GuessResult r = compare_words(attempt.word, word);
@@ -158,7 +160,7 @@ IndexArray get_possible_words_from_attempt_array(
         Vocabolary* used_vocabolary){
     IndexArray result;
 
-    /* allocate the maximum possible size; we'll trim by updating result.size */
+    // allocate the maximum possible size; we'll trim by updating result.size
     index_array__init(&result, used_vocabolary->size);
 
     size_t count = 0;
@@ -172,3 +174,4 @@ IndexArray get_possible_words_from_attempt_array(
 
     return result;
 }
+*/

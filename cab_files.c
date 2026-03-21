@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include "cab_io.h"
 #include <stdio.h>
 
 // Controllo per assicurarsi che il file esista

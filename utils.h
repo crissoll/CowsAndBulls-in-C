@@ -4,19 +4,13 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
-#define MAX_ARGUMENT_SIZE 100
 
 void set_bool_array_to_false(bool array[],size_t length);
 
-
-bool get_input(
-        const char* prefix,
-        const char* output_name,
-        char buffer[100],
-        size_t desired_size,
-        bool repeat);
+void to_lower(char* string,size_t max_length);
 
 size_t get_multiple_input(
-        char variables[][MAX_ARGUMENT_SIZE],
-        size_t variable_count);
+        char input_buffer[],
+        size_t input_buffer_size,
+        char*** arguments);
 #endif

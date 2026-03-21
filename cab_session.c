@@ -1,3 +1,4 @@
+#include "cab_io.h"
 #include <stdio.h>
 #include <time.h>
 #include <string.h>
@@ -138,6 +139,25 @@ void print_attempts(void){
     print_attempt_array(attempts, &attempt_number);
 }
 
+void compare_attempts_to_word(Word word){
+    for(size_t i = 0; i < attempt_number; i++){
+        GuessResult expected = compare_words(attempts[i].word, word);
+
+        attempt__print(attempts[i]);
+        if(attempts[i].result.cows == expected.cows &&
+            attempts[i].result.bulls == expected.bulls
+        ){
+            output("\tV\n");
+        }
+        else{
+            output("\tX\t");
+            output("expected: ");
+            guess_result__print(expected);
+            output("\n");
+        }
+    }
+}
+
 bool is_word_already_attempted(Word word){
     return is_word_in_attempt_array(word,attempts,&attempt_number);
 }
@@ -152,7 +172,7 @@ bool play_word(Word word){
     attempts[attempt_number++] = attempt__new(word,result);
     store_attempts();
     guess_result__print(result);
-    printf("\n");
+    output("\n");
 
     return (result.bulls >= LETTERS_IN_WORD);
 }

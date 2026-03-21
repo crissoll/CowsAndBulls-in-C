@@ -1,3 +1,4 @@
+#include "cab_io.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -10,7 +11,7 @@ int main() {
     FILE* five_letters_word_list = fopen("5_letters_it_words.txt", "w");
 
     if (!complete_word_list || !five_letters_word_list) {
-        printf("Error opening file\n");
+        output("Error opening file\n");
         return 1;
     }
 
@@ -19,7 +20,7 @@ int main() {
 
     while (fgets(buffer, 100, complete_word_list) != NULL) {
         buffer[strcspn(buffer, "\n")] = '\0';  // remove newline
-        printf("RAW: '%s' (len=%zu)\n", buffer, strlen(buffer));
+        output("RAW: '%s' (len=%zu)\n", buffer, strlen(buffer));
         if (strlen(buffer) != 5)
             continue;
 
@@ -28,7 +29,7 @@ int main() {
         i++;
     }
 
-    printf("%u words\n", i);
+    output("%u words\n", i);
 
     fclose(complete_word_list);
     fclose(five_letters_word_list);

@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
-#include <stdio.h>              /* for perror */
+#include <stdio.h>
+#include "cab_io.h"              /* for perror */
 #include <string.h>
 
 
@@ -22,32 +23,6 @@ IndexArray word_set__get_words_with_letter_at_pos(
         size_t position_in_word,
         WordSet words){
     return words.words[position_in_word][(size_t)(letter - 'a')];
-}
-
-
-IndexArray word_set__get_words_by_pattern(const WordSet* word_set, const char pattern[LETTERS_IN_WORD]){
-    IndexArray result;
-    index_array__init(&result, 0);
-    bool have_result = false;
-
-    for (size_t i = 0; i < LETTERS_IN_WORD; i++) {
-        if (pattern[i] == UNDEFINED_LETTER)
-            continue;
-        
-        IndexArray source = word_set__get_words_with_letter_at_pos(pattern[i], i, *word_set);
-        IndexArray temp = index_array__copy(&source);
-
-        if (!have_result) {
-            result = temp;          
-            have_result = true;
-        } else {
-            IndexArray new_result = intersect(result, temp);
-            index_array__free_content(&result);
-            index_array__free_content(&temp);
-            result = new_result;
-        }
-    }
-    return result;
 }
 
 
@@ -101,7 +76,7 @@ IndexArray word_set__get_words_that_contains_letters(
     index_array__init(&returned_array,0);
 
     while(true){
-        char pattern[LETTERS_IN_WORD];
+        char pattern[LETTERS_IN_WORD + 1];
 
         if(iterator__step(&iterator,letters,pattern) == ITERATOR_STOP)
             break;

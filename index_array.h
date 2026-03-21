@@ -32,7 +32,7 @@ IndexArray subtract(const IndexArray a,const IndexArray b);
 
 IndexArray index_array__match_letters(
         const IndexArray* index_array,
-        const char* letters,
+    char* letters,
         const Vocabolary* vocabolary
     );
 

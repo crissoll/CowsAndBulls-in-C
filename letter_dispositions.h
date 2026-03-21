@@ -21,7 +21,11 @@ typedef struct {
 void iterator__init(LetterDispositionsIterator* iterator,size_t length);
 
 
-bool iterator__step(LetterDispositionsIterator* iterator,const char* letters,char* pattern);
+bool iterator__step(
+        LetterDispositionsIterator* iterator,
+        const char* letters,
+        char pattern[LETTERS_IN_WORD + 1]
+    );
 
 
 

@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include "cab_io.h"
 
 
 // Controllo per assicurarsi che il file esista
