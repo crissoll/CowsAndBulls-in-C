@@ -1,5 +1,5 @@
 #include <stdlib.h>
-#include "game/cab_io.h"
+#include "game/cab_output.h"
 #include <stdio.h>
 
 // Controllo per assicurarsi che il file esista

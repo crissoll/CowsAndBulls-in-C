@@ -1,7 +1,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
-#include "game/cab_io.h"
+#include "game/cab_output.h"
 
 #include "util/cab_consts.h"
 #include "core/word.h"

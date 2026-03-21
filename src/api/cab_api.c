@@ -1,7 +1,7 @@
 
 
 #include "api/cab_api.h"
-#include "game/cab_io.h"
+#include "game/cab_io_core.h"
 #include "game/cab_game.h"
 #include "game/cab_session.h"
 
@@ -23,8 +23,8 @@ void setup_game(){
     game_ended = false;
     saves_handled = false;
     io__setup();
-    io__set_input_mode(FUNCTION_INPUT);
-    io__set_output_mode(TEXT);
+    io__set_input_mode(API_IN);
+    io__set_output_mode(API_OUT);
     game_start();
 }
 
