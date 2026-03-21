@@ -197,7 +197,7 @@ bool cmd_handler__list_print(size_t arguments_count,char* arguments[]){
 }
 
 bool cmd_handler__list_history(size_t arguments_count,char* arguments[]){
-    if(arguments_count == 0)
+    if(arguments_count == 0){
         output("List history (%zu entries):\n", help_list_history_count);
         for(size_t hist_idx = 0; hist_idx < help_list_history_count; hist_idx++){
             output("\n--- Step %zu: [%zu words] ---\n", hist_idx + 1, help_list_history[hist_idx].word_count);
@@ -206,9 +206,19 @@ bool cmd_handler__list_history(size_t arguments_count,char* arguments[]){
         if(help_list_history_count == 0)
             output("(no history yet)\n");
         return true;
+    }
+
+    if(arguments_count != 1){
+        output("expected one index argument\n");
+        return false;
+    }
+
     int index;
 
-    sscanf(arguments[1],"%d",&index);
+    if(sscanf(arguments[0],"%d",&index) != 1){
+        output("index must be a number\n");
+        return false;
+    }
 
     if(index < 0){
         output("index must be > 0\n");
@@ -277,6 +287,11 @@ bool cmd_handler__list_intersect(size_t arguments_count,char* arguments[]){
 
 }
 bool cmd_handler__list(size_t arguments_count,char* arguments[]){
+    if(arguments_count == 0){
+        output("too few arguments\n");
+        return false;
+    }
+
     char pattern[LETTERS_IN_WORD + 1] = {0};
 
     if(strcmp(arguments[0],"-p") == 0)
@@ -344,76 +359,15 @@ bool parse_command(char* tokens[], size_t token_count){
     return false;
 }
 
-
-Word get_word_from_input(){
-    Word result;
-    /* read until user types a valid five‑letter word
-       that is contained in the vocabulary */
-    while(true){
-        char input_buffer[1024];
-        char** input_tokens = NULL;
-        output("Enter guess or command: ");
-        const size_t token_count = get_multiple_input(input_buffer, sizeof(input_buffer), &input_tokens);
-        output("%zu\n",token_count); // debug
-        
-        if(token_count == 0){
-            free(input_tokens);
-            continue;
-        }
-        
-        if(parse_command(input_tokens,token_count)){
-            free(input_tokens);
-            continue;
-        }
-
-
-        if(check_string_and_get_word(input_tokens[0],&result)){
-            free(input_tokens);
-            break;
-        }
-        
-    }
-    return result;
-}
-
-
+static bool game_loaded = false;
+static bool first_turn = true;
 
 void game_start(){
     load_vocabolary();
     help_filter_init();
-    bool load_game = false;
-    if(is_game_data_valid()){
-
-        output("load previous game? (y/n)\n");
-        char buffer[100];
-        char** input_tokens = NULL;
-
-        if (get_multiple_input(buffer, sizeof(buffer), &input_tokens) == EMPTY_INPUT) {
-            buffer[0] = '\0';
-        }
-        free(input_tokens);
-
-        while(buffer[0] != 'y' && buffer[0] != 'n'){
-            output("input must be y or n\n");
-            if (get_multiple_input(buffer, sizeof(buffer), &input_tokens) == EMPTY_INPUT) {
-                buffer[0] = '\0';
-            }
-            free(input_tokens);
-        }
-
-        if(buffer[0] == 'y'){
-            load_game = true;
-        }
-
-    }
-
-    if (load_game){
-        load_secret_word();
-        load_attempts();
-    } else {
-        generate_secret_word();
-        output("generated secret word\n");
-    }
+    game_loaded = false;
+    first_turn = true;
+    attempt_number = 0;
 
     /* ensure secret file exists with the current secret word regardless of
        whether a previous game was loaded */
@@ -421,10 +375,83 @@ void game_start(){
     word_set__init_from_file(&help_word_set,EN_FILE_NAME);
 }
 
-bool play_turn(){
-    Word word = get_word_from_input();
+void _start_new_game(){
+    game_loaded = false;
+    first_turn = false;
+    attempt_number = 0;
+    generate_secret_word();
+    store_secret_word();
+}
+
+bool _load_game(){
+    if(!is_game_data_valid()){
+        game_loaded = false;
+        return true;
+    }
+
+    char buffer[100];
+    char** input_tokens = NULL;
     
-    return play_word(word);
+    size_t output_size = get_multiple_input(buffer,sizeof(buffer),&input_tokens);
+
+    if (output_size == EMPTY_INPUT || (buffer[0] != 'y' && buffer[0] != 'n')) {
+        output("input must be y or n\n");
+        buffer[0] = '\0';
+        free(input_tokens);
+        return false;
+    }
+    free(input_tokens);
+
+    if(buffer[0] == 'y'){
+        game_loaded = true;
+    }
+    else{
+        game_loaded = false;
+    }
+    return true;
+}
+
+
+
+bool _play_turn(){
+    
+    if(first_turn){
+        if(game_loaded){
+            load_secret_word();
+            load_attempts();
+        }
+        else{
+            generate_secret_word();
+            store_secret_word();
+        }
+        first_turn = false;
+    }
+
+    char input_buffer[1024];
+    char** input_tokens = NULL;
+    const size_t token_count = get_multiple_input(input_buffer, sizeof(input_buffer), &input_tokens);
+    
+    if(token_count == EMPTY_INPUT || token_count == 0){
+        free(input_tokens);
+        return false;
+    }
+    
+    if(parse_command(input_tokens,token_count)){
+        free(input_tokens);
+        return false;
+    }
+
+    Word word;
+    
+    if(!check_string_and_get_word(input_tokens[0],&word)){
+        free(input_tokens);
+        return false;
+    }
+    
+    const bool game_ended = play_word(word);
+    store_attempts();
+
+    return game_ended;
 }
 
 void help_filter_init(){
@@ -432,8 +459,26 @@ void help_filter_init(){
     cmd_list__init_all_words();
 }
 
+void win_game(){
+    output("Congratulations, you found the word in %zu attempts!\n",attempt_number);
+    delete_game_data();
+}
+
 int main(){
     game_start();
+
+    if(is_game_data_valid()){
+        while(true){
+            output("load previous game? (y/n)\n");
+            if(_load_game())
+                break;
+        }
+        if(!game_loaded)
+            _start_new_game();
+    }
+    else{
+        _start_new_game();
+    }
 
     output("Welcome to Cows and Bulls!\n");
     output("Guess the %d-letter word.\n", LETTERS_IN_WORD);
@@ -441,14 +486,10 @@ int main(){
 
     bool game_ended = false;
     while(!game_ended){
-        game_ended = play_turn();
-
-        store_secret_word();
-        store_attempts();
+        game_ended = _play_turn();
     };
     
-    output("Congratulations, you found the word in %zu attempts!\n",attempt_number);
-    delete_game_data();
+    win_game();
     return 0;
 }
 

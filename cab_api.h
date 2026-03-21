@@ -6,20 +6,24 @@
 #include "cab_string.h"
 
 
-// you have to call this to initialize everything
+
 void setup_game();
 
-// (optional: ) then check this
+
 bool are_there_previous_saves();
 
-// (optional: ) will try to load previous saves,
-// and return true in case of success
-bool load_previous_saves();
+String handle_saves_load_choice(String input_string);
 
-// this is the main loop iteration.
-// input: a 
-String play_turn(String input);
+bool is_save_load_choice_complete();
+
+void start_new_game();
+
+
+String play_turn(String input_string);
 
 bool is_game_ended();
+
+
+void shutdown_game();
 
 #endif

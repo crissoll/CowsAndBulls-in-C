@@ -159,7 +159,7 @@ static bool get_input(char* buffer, size_t buffer_size){
             do {
                 
                 if (fgets(buffer, buffer_size, stdin) == NULL)
-                    exit(EXIT_FAILURE);
+                    return false;
             } while (buffer[0] == '\n');
 
             const size_t len = strlen(buffer);
