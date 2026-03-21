@@ -726,6 +726,8 @@ dealt
 deans
 dears
 death
+debag
+debug
 debar
 debit
 debts
