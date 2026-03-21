@@ -467,35 +467,3 @@ void win_game(){
     output("Congratulations, you found the word in %zu attempts!\n",attempt_number);
     delete_game_data();
 }
-
-#ifndef CAB_API
-int main(){
-    game_start();
-
-    if(is_game_data_valid()){
-        while(true){
-            output("load previous game? (y/n)\n");
-            if(_load_game())
-                break;
-        }
-        if(!game_loaded)
-            _start_new_game();
-    }
-    else{
-        _start_new_game();
-    }
-
-    output("Welcome to Cows and Bulls!\n");
-    output("Guess the %d-letter word.\n", LETTERS_IN_WORD);
-    output(HELP_TEXT);
-
-    bool game_ended = false;
-    while(!game_ended){
-        game_ended = _play_turn();
-    };
-    
-    win_game();
-    return 0;
-}
-#endif
-
