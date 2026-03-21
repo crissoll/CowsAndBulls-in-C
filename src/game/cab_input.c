@@ -5,13 +5,22 @@
 
 #include "game/cab_input.h"
 
+
 static InputMode input_mode = CONSOLE;
 
 /* Access API input buffer */
 extern const char* cab_io__get_input_buffer(void);
 extern size_t cab_io__get_input_buffer_size(void);
 
-static void normalize_spaces_in_place(char* string){
+static void to_lower(char* string,size_t max_length){
+    for (size_t k = 0; k < max_length && string[k] != '\0'; k++) {
+            if(string[k] >= 'A' && string[k] <= 'Z')
+                string[k] = string[k] - 'A' + 'a';
+        }
+}
+
+
+static size_t normalize_spaces_in_place(char* string){
     size_t src_idx = 0;
     size_t dst_idx = 0;
 
@@ -36,6 +45,7 @@ static void normalize_spaces_in_place(char* string){
         dst_idx--;
 
     string[dst_idx] = '\0';
+    return dst_idx;
 }
 
 static bool get_input(char* buffer, size_t buffer_size){
@@ -97,15 +107,15 @@ size_t get_multiple_input(
     char*** arguments
 ){
     *arguments = NULL;
-    
     bool input_result = get_input(buffer,buffer_size);
     
     if(input_result == false)
         return EMPTY_INPUT;
 
-    normalize_spaces_in_place(buffer);
+    const size_t len = normalize_spaces_in_place(buffer);
     if (buffer[0] == '\0')
         return EMPTY_INPUT;
+    to_lower(buffer,len);
 
     size_t spaces_count = 1;
     for (size_t i = 0; buffer[i] != '\0'; i++) {
