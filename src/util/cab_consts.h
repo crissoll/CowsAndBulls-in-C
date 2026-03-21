@@ -4,21 +4,6 @@
 # define ALPHABET_SIZE 26
 # define LETTERS_IN_WORD 5
 
-# define MAX_ATTEMPTS 255
-
-
-
-/* string literals for the word‑list filenames; using macros avoids
-   multiple‑definition linker errors that occur when a header defines
-   non‑`static` objects. */
-
-# define EN_FILE_NAME "data/words/5_letters_en_words.txt"
-
-
-# define ATTEMPTS_FILE_NAME "data/saves/attempts.saves"
-
-# define MAX_HELP_HISTORY_SIZE 200
-
 # define HELP_CMD_HELP \
 "help\n" \
 "  Print this help message with all available commands and usage examples.\n" \

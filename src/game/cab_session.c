@@ -1,14 +1,17 @@
-#include "game/cab_output.h"
 #include <stdio.h>
 #include <time.h>
 #include <string.h>
 
+
 #include "core/guess.h"
 #include "core/attempts.h"
+#include "game/cab_output.h"
 
 # define SECRET_FILE_NAME "data/saves/secret_word.saves"
 
+# define ATTEMPTS_FILE_NAME "data/saves/attempts.saves"
 
+# define EN_FILE_NAME "data/words/5_letters_en_words.txt"
 
 typedef unsigned long SessionId;
 
@@ -47,7 +50,7 @@ GuessResult guess_word(Word attempt){
 
 
 bool load_attempts(void){
-    return load_attempt_array(attempts, &attempt_number, &session_id);
+    return load_attempt_array(attempts, &attempt_number,ATTEMPTS_FILE_NAME, &session_id);
 }
 
 void store_secret_word(){
@@ -113,7 +116,7 @@ bool is_game_data_valid(){
     size_t dummy_attempt_number = 0;
     SessionId loaded_session_id;
     
-    if (!load_attempt_array(dummy_attempts, &dummy_attempt_number, &loaded_session_id))
+    if (!load_attempt_array(dummy_attempts, &dummy_attempt_number,ATTEMPTS_FILE_NAME, &loaded_session_id))
         return false;
     SessionId dummy_session_id;
     Word dummy_secret_word;
@@ -163,7 +166,7 @@ bool is_word_already_attempted(Word word){
 }
 
 void store_attempts(){
-    store_attempt_array(attempts, &attempt_number, session_id);
+    store_attempt_array(attempts, &attempt_number,ATTEMPTS_FILE_NAME, session_id);
 }
 
 

@@ -4,11 +4,7 @@
 
 #include "core/index_array.h"
 #include "core/guess.h"
-
-typedef struct{
-    Word word;
-    GuessResult result;
-}Attempt;
+#include "core/attempts.h"
 
 
 Attempt attempt__new(Word word, GuessResult result){
@@ -77,8 +73,13 @@ bool is_word_in_attempt_array(Word word,Attempt* attempts,size_t*attempt_number)
     return false;
 }
 
-void store_attempt_array(Attempt* attempts,size_t*attempt_number,unsigned long session_id){
-    FILE* attempts_file = fopen(ATTEMPTS_FILE_NAME,"w");
+void store_attempt_array(
+        Attempt* attempts,
+        size_t*attempt_number,
+        const char* file_name,
+        unsigned long session_id
+    ){
+    FILE* attempts_file = fopen(file_name,"w");
 
     fprintf(attempts_file,"session_id %lu\n", session_id);
 
@@ -92,11 +93,16 @@ void store_attempt_array(Attempt* attempts,size_t*attempt_number,unsigned long s
     fclose(attempts_file);
 }
 
-bool load_attempt_array(Attempt* attempts,size_t* attempt_number,unsigned long* session_id){
+bool load_attempt_array(
+        Attempt* attempts,
+        size_t* attempt_number,
+        const char* file_name,
+        unsigned long* session_id
+    ){
     
     *attempt_number = 0;
 
-    FILE* attempts_file = fopen(ATTEMPTS_FILE_NAME,"r");
+    FILE* attempts_file = fopen(file_name,"r");
     if (attempts_file == NULL) {
         /* nothing to load */
         return false;

@@ -5,6 +5,7 @@
 #include "core/word.h"
 #include "core/guess.h"
 
+#define MAX_ATTEMPTS 255
 
 typedef struct{
     Word word;
@@ -38,9 +39,18 @@ void print_attempt_array(Attempt* attempts, size_t* attempt_number);
 
 bool is_word_in_attempt_array(Word word,Attempt* attempts,size_t*attempt_number);
 
-void store_attempt_array(Attempt* attempts,size_t*attempt_number,unsigned long session_id);
+void store_attempt_array(
+    const Attempt* attempts,
+    size_t* attempt_number,
+    const char* file_path,
+    unsigned long session_id);
 
-bool load_attempt_array(Attempt* attempts,size_t* attempt_number,unsigned long* session_id);
+bool load_attempt_array(
+    Attempt* attempts,
+    size_t* attempt_number,
+    const char* file_path,
+    unsigned long* session_id
+);
 
 /*
 bool is_word_valid(
