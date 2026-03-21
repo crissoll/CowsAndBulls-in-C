@@ -8,5 +8,8 @@ typedef struct {
    size_t size;
 } String;
 
+void string__free(String string){
+   free(string.content);
+}
 
 #endif
