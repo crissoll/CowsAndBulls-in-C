@@ -3,7 +3,7 @@
 #include <time.h>
 #include <string.h>
 
-#include "game/cab_guess.h"
+#include "core/guess.h"
 #include "core/attempts.h"
 
 # define SECRET_FILE_NAME "data/saves/secret_word.saves"

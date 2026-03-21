@@ -3,7 +3,7 @@
 #include <string.h>
 
 #include "core/index_array.h"
-#include "game/cab_guess.h"
+#include "core/guess.h"
 
 typedef struct{
     Word word;

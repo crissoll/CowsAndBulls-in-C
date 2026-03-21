@@ -1,7 +1,7 @@
 #ifndef CAB_SESSION
 #define CAB_SESSION
 
-#include "game/cab_guess.h"
+#include "core/guess.h"
 
 typedef unsigned long SessionId;
 
