@@ -1,5 +1,4 @@
 #include <stdbool.h>
-#include "game/cab_io.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -9,6 +8,7 @@
 #include "core/word_set.h"
 #include "core/word_set_filter.h"
 #include "util/utils.h"
+#include "game/cab_io.h"
 
 #include "game/cab_session.h"
 
@@ -468,6 +468,7 @@ void win_game(){
     delete_game_data();
 }
 
+#ifndef CAB_API
 int main(){
     game_start();
 
@@ -496,4 +497,5 @@ int main(){
     win_game();
     return 0;
 }
+#endif
 

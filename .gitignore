@@ -1,3 +1,5 @@
 *.saves
 *.o
 *.gch
+/rust_example
+Cargo.lock

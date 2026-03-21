@@ -108,12 +108,60 @@
             "group": "build"
         },
         {
+            "label": "build: cab_api.lib",
+            "type": "shell",
+            "command": "cmd",
+            "args": [
+                "/c",
+                "C:\\MinGW\\bin\\gcc.exe -g -Wall -Wextra -std=c11 -Isrc -c src/api/cab_api.c -o cab_api.o && C:\\MinGW\\bin\\ar.exe rcs cab_api.lib cab_api.o"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": "build"
+        },
+        {
+            "label": "build: api_example",
+            "type": "shell",
+            "command": "cmd",
+            "args": [
+                "/c",
+                "C:\\MinGW\\bin\\gcc.exe -g -Wall -Wextra -std=c11 -Isrc -Dmain=cab_game_main -c src/game/cab_game.c -o cab_game_api.o && C:\\MinGW\\bin\\gcc.exe -g -Wall -Wextra -std=c11 -Isrc src/api/api_usage_example.c src/api/cab_api.c src/game/cab_session.c src/core/guess.c src/game/cab_io.c src/files/cab_files.c src/core/word_set.c src/core/word_set_filter.c src/core/index_array.c src/tools/cab_data_analysis.c src/core/word.c src/util/utils.c src/core/attempts.c src/files/letter_dispositions.c cab_game_api.o -o api_usage_example.exe"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": "build"
+        },
+        {
+            "label": "build: rust_game",
+            "type": "shell",
+            "command": "cargo",
+            "args": [
+                "build",
+                "--release"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/rust_example"
+            },
+            "problemMatcher": [
+                "$rustc"
+            ],
+            "group": "build"
+        },
+        {
             "label": "clean",
             "type": "shell",
             "command": "cmd",
             "args": [
                 "/c",
-                "del /q *.o cab_game.exe word.exe extract_5_letters_words.exe 2>nul"
+                "del /q *.o cab_game.exe word.exe extract_5_letters_words.exe api_usage_example.exe cab_api.lib 2>nul"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
