@@ -17,25 +17,31 @@ GuessResult compare_words(Word attempt,Word secret_word){
     result.cows = 0;
     result.bulls = 0;
 
-    // characters in secret word that are already been found in attempt
-    bool used_characters[LETTERS_IN_WORD];
+    // Track consumed letters in both words so a bull is never counted again as a cow.
+    bool used_secret_chars[LETTERS_IN_WORD];
+    bool used_attempt_chars[LETTERS_IN_WORD];
 
     for(size_t i = 0; i < LETTERS_IN_WORD; i++){
-        used_characters[i] = false;
+        used_secret_chars[i] = false;
+        used_attempt_chars[i] = false;
     }
 
     for(size_t i = 0; i < LETTERS_IN_WORD; i++){
         if(attempt.letters[i] == secret_word.letters[i]){
             result.bulls++;
-            used_characters[i] = true;
+            used_secret_chars[i] = true;
+            used_attempt_chars[i] = true;
             continue;
         }
     }
     for(size_t i = 0; i < LETTERS_IN_WORD; i++){
+        if(used_attempt_chars[i])
+            continue;
+
         for(size_t j = 0; j < LETTERS_IN_WORD; j++){
-            if(!used_characters[j] && attempt.letters[i] == secret_word.letters[j]){
+            if(!used_secret_chars[j] && attempt.letters[i] == secret_word.letters[j]){
                 result.cows++;
-                used_characters[j] = true;
+                used_secret_chars[j] = true;
                 break;
             }
         }
