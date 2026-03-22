@@ -20,7 +20,7 @@ void index_array__free_content(IndexArray* array);
 IndexArray index_array__copy(const IndexArray *src);
 
 // Display
-void index_array__print(IndexArray index_array,Vocabolary vocabolary);
+void index_array__print(IndexArray index_array,const Vocabolary* vocabolary);
 
 // Operators
 

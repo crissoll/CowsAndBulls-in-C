@@ -2,13 +2,8 @@
 #include "game/cab_output.h"
 
 #include "core/word.h"
+#include "core/index_array.h"
 
-
-typedef struct {
-    size_t size;
-    size_t* indexes;
-
-}IndexArray;
 
 void index_array__init(IndexArray *array, size_t size){
     array->size = size;
@@ -130,28 +125,3 @@ void index_array__print(IndexArray index_array,const Vocabolary* vocabolary){
     }
     output("\n");
 }
-
-
-IndexArray index_array__match_letters(
-        const IndexArray* index_array,
-    char* letters,
-        const Vocabolary* vocabolary
-    ){
-    IndexArray return_value;
-
-    index_array__init(&return_value,index_array->size);
-    
-    size_t return_size = 0;
-    for(size_t i = 0; i < index_array->size; i++){
-        const size_t index = index_array->indexes[i];
-        const Word word = vocabolary->words[index];
-        if(word__contains_letters(word,letters)){
-            return_value.indexes[return_size] = index;
-            return_size++;
-        }
-    }
-
-    return_value.size = return_size;
-    return return_value;
-}
-
