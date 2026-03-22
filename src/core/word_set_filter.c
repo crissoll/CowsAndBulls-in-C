@@ -152,6 +152,54 @@ IndexArray filter__get_words_from_word_set(const WordSet* word_set, const WordSe
 
 
 void filter__print(const WordSetFilter* filter){
+    bool fixed_letters[LETTERS_IN_WORD];
+    size_t fixed_letter_index[LETTERS_IN_WORD];
+    for(size_t i = 0;i < LETTERS_IN_WORD;i++){
+        fixed_letters[i] = false;
+        for(size_t j = 0; j < ALPHABET_SIZE; j++){
+            if(filter->present_letters[i][j] == false){
+                continue;
+            }
+            if(!fixed_letters[i]){
+                fixed_letters[i] = true;
+                fixed_letter_index[i] = j;
+            }
+            else{
+                fixed_letters[i] = false;
+                break;
+            }
+        }
+    }
+
+    {
+        char impossible_letter = '\0';
+
+        for(size_t i = 0; i < ALPHABET_SIZE; i++){
+            if(filter->required_letters[i] == false)
+                continue;
+            bool has_valid_placement = false;
+            for(size_t j = 0; j < LETTERS_IN_WORD; j++){
+                if(fixed_letters[j] && fixed_letter_index[j] != i)
+                    continue;
+                if(filter->present_letters[j][i] == false)
+                    continue;
+                has_valid_placement = true;
+            }
+            if(!has_valid_placement){
+                impossible_letter = (char)('a' + (int)i);
+                break;
+            }
+        }
+
+        if(impossible_letter != '\0'){
+            for(size_t i = 0; i < LETTERS_IN_WORD; i++){
+                output("  [%zu] (none)\n", i + 1);
+            }
+            output("empty pattern: required letter '%c' has no valid placement\n",impossible_letter);
+            return;
+        }
+    }
+
     for(size_t i = 0; i < LETTERS_IN_WORD; i++){
         char not_allowed[ALPHABET_SIZE + 1];
         size_t count = 0;
@@ -162,7 +210,7 @@ void filter__print(const WordSetFilter* filter){
         }
         char fixed_char;
         for(size_t j = 0; j < ALPHABET_SIZE; j++){
-            if(!filter->present_letters[i][j]){
+            if(filter->present_letters[i][j] == false){
                 not_allowed[count] = (char)('a' + (int)j);
                 count++;
                 required_letters[j] = false;

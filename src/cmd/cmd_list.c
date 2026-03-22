@@ -84,6 +84,7 @@ bool print_filter_history(){
     return true;
 }
 
+
 bool load_filter_from_history(size_t token_count,const char* tokens[]){
     if(token_count != 1){
         output("expected one index argument\n");
