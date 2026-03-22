@@ -141,7 +141,6 @@ static bool cmd_list__parse_pattern(
 
     memset(normalized_pattern, 0, LETTERS_IN_WORD + 1);
     strncpy(normalized_pattern, raw_pattern, LETTERS_IN_WORD);
-    to_lower(normalized_pattern, raw_len);
 
     const bool single_letter_query = (raw_len == 1 && normalized_pattern[0] != UNDEFINED_LETTER);
     if(single_letter_query){
