@@ -97,6 +97,9 @@ const CommandSpec const commands[] = {
 
 
 bool print_help_text_from_args(size_t token_count,const char* tokens[]){
+    if(token_count > 1){
+        return too_many_arguments();
+    }
     const CommandSpec* candidate_spec = commands;
     while (candidate_spec->name != NULL)
     {
