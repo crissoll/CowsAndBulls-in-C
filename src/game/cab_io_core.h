@@ -2,7 +2,7 @@
 #define CAB_IO_CORE
 
 #include <stdbool.h>
-#include "util/cab_string.h"
+#include "api/cab_string.h"
 
 /* Enums shared across IO modules */
 typedef enum {
