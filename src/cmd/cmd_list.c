@@ -96,7 +96,14 @@ bool load_filter_from_history(size_t token_count,const char* tokens[]){
         output("index must be a number\n");
         return false;
     }
-
+    if(index < 0){
+        index = ((int)game__help_list_history_count()) + index;
+        if(index <= 0){
+            output("relative index too low\n");
+            return false;
+        }
+    }
+    index--;
     if(index < 0){
         output("index must be > 0\n");
         return false;
@@ -112,7 +119,7 @@ bool load_filter_from_history(size_t token_count,const char* tokens[]){
         return false;
     }
 
-    output("correctly reverted to step number %d\n",index);
+    output("correctly reverted to step number %d\n",index+1);
     *game__help_filter() = entry.filter;
 
     IndexArray tmp = filter__get_words_from_word_set(game__help_word_set(), game__help_filter()); // TODO write a better function
