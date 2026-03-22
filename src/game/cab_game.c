@@ -372,8 +372,6 @@ void _start_new_game(){
     game_loaded = false;
     first_turn = false;
     attempt_number = 0;
-    generate_secret_word();
-    store_secret_word();
 }
 
 bool _load_game(){
@@ -387,7 +385,7 @@ bool _load_game(){
     
     size_t output_size = get_multiple_input(buffer,sizeof(buffer),&input_tokens);
 
-    if (output_size == EMPTY_INPUT || (buffer[0] != 'y' && buffer[0] != 'n')) {
+    if (output_size == 0 || (buffer[0] != 'y' && buffer[0] != 'n')) {
         output("input must be y or n\n");
         buffer[0] = '\0';
         free(input_tokens);
@@ -418,7 +416,7 @@ bool try_word(size_t token_count,const char* tokens[]){
         return false;
     }
     game_ended = play_word(word);
-    store_attempts();
+    
     return true;
 }
 
@@ -431,16 +429,14 @@ bool _play_turn(){
         }
         else{
             generate_secret_word();
-            store_secret_word();
         }
-        first_turn = false;
     }
 
     char input_buffer[1024];
     char** input_tokens = NULL;
     const size_t token_count = get_multiple_input(input_buffer, sizeof(input_buffer), &input_tokens);
     
-    if(token_count == EMPTY_INPUT || token_count == 0){
+    if(token_count == 0){
         free(input_tokens);
         return false;
     }
@@ -450,7 +446,14 @@ bool _play_turn(){
         return false;
     }
     try_word(token_count, input_tokens);
-
+    store_attempts();
+    if(first_turn){
+        if(!game_loaded){
+            store_secret_word();
+        }
+        first_turn = false;
+    }
+    free(input_tokens);
     return game_ended;
 }
 

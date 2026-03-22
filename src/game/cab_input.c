@@ -101,6 +101,7 @@ void io__set_input_mode(InputMode new_mode){
     input_mode = new_mode;
 }
 
+
 size_t get_multiple_input(
     char buffer[],
     size_t buffer_size,
@@ -109,21 +110,26 @@ size_t get_multiple_input(
     *arguments = NULL;
     bool input_result = get_input(buffer,buffer_size);
     
-    if(input_result == false)
-        return EMPTY_INPUT;
-
-    const size_t len = normalize_spaces_in_place(buffer);
-    if (buffer[0] == '\0')
-        return EMPTY_INPUT;
-    to_lower(buffer,len);
-
-    size_t spaces_count = 1;
-    for (size_t i = 0; buffer[i] != '\0'; i++) {
-        if (buffer[i] == ' ')
-            spaces_count++;
+    if(input_result == false){
+        *arguments = NULL;
+        return 0;
     }
 
-    *arguments = malloc(sizeof(**arguments) * spaces_count);
+    const size_t len = normalize_spaces_in_place(buffer);
+    if (buffer[0] == '\0'){
+        *arguments = NULL;
+        return 0;
+    }
+
+    to_lower(buffer,len);
+
+    size_t token_count = 1;
+    for (size_t i = 0; buffer[i] != '\0'; i++) {
+        if (buffer[i] == ' ')
+            token_count++;
+    }
+
+    *arguments = malloc(sizeof(**arguments) * token_count);
     if (*arguments == NULL)
         exit(EXIT_FAILURE);
 
@@ -137,5 +143,5 @@ size_t get_multiple_input(
         }
     }
 
-    return spaces_count;
+    return token_count;
 }
