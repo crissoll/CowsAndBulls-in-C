@@ -50,6 +50,7 @@ agile
 aging
 aglow
 agony
+agora
 agree
 ahead
 ahmed
@@ -131,6 +132,7 @@ arose
 array
 arrow
 arson
+artic
 ashen
 ashes
 aside
@@ -1252,6 +1254,7 @@ gloss
 glove
 glows
 glued
+glute
 gnash
 gnats
 gnaws
@@ -1342,10 +1345,12 @@ gyoza
 gypsy
 habit
 hacks
+hades
 hails
 hairs
 hairy
 haiti
+halal
 haled
 halls
 halts
@@ -1355,6 +1360,7 @@ handy
 hangs
 happy
 hardy
+haram
 harem
 hares
 harms
@@ -1761,6 +1767,7 @@ lutes
 lying
 lymph
 lynch
+lyras
 lyres
 lyric
 maces
@@ -1881,6 +1888,7 @@ moose
 moped
 moral
 mores
+moses
 mossy
 motes
 moths
@@ -2031,6 +2039,7 @@ paddy
 padre
 paean
 pagan
+pager
 pages
 pails
 pains
