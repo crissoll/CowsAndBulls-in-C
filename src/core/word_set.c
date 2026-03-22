@@ -5,7 +5,6 @@
 #include <string.h>
 
 
-#include "util/utils.h"
 #include "util/cab_consts.h"
 #include "core/index_array.h"
 #include "core/word.h"

@@ -14,7 +14,6 @@ CAB_GAME_SRCS := \
 	src/core/index_array.c \
 	src/core/word.c \
 	src/core/guess.c \
-	src/util/utils.c \
 	src/core/attempts.c
 
 .PHONY: all clean help

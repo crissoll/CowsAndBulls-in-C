@@ -7,7 +7,6 @@
 #include "util/cab_consts.h"
 #include "core/word_set.h"
 #include "core/word_set_filter.h"
-#include "util/utils.h"
 #include "game/cab_input.h"
 #include "game/cab_output.h"
 
