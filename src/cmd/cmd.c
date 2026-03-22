@@ -42,12 +42,14 @@ bool too_many_arguments_wrapper(size_t token_count,const char* tokens[]){
 }
 
 
-const CommandSpec commands[] = {
+bool print_help_text_from_args(size_t token_count,const char* tokens[]);
+
+const CommandSpec const commands[] = {
     {
         .name = "help",
         .help_text = HELP_CMD_HELP,
         .case_no_args = print_whole_help_text,
-        .default_handler = cmd__help,
+        .default_handler = print_help_text_from_args,
         .args = NULL
     },
     {
@@ -92,6 +94,22 @@ const CommandSpec commands[] = {
     },
     END_SPEC
 };
+
+
+bool print_help_text_from_args(size_t token_count,const char* tokens[]){
+    const CommandSpec* candidate_spec = commands;
+    while (candidate_spec->name != NULL)
+    {
+        if(strcmp(candidate_spec->name,tokens[0]) == 0){
+            output(candidate_spec->help_text);
+            return true;
+        }
+        candidate_spec++;
+    }
+    output("command not found!\n");
+    return false;
+}
+
 
 const CommandSpec* ROOT = &(CommandSpec){
     .case_no_args = NULL,
