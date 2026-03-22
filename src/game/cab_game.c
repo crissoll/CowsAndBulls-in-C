@@ -41,12 +41,14 @@ static void help_list_history_clear(void){
     help_list_history_count = 0;
 }
 
-static bool is_valid_single_letter_query(const char pattern[LETTERS_IN_WORD + 1]){
-    const char c = pattern[0];
-    return c >= 'a' && c <= 'z';
-}
-
 static bool check_pattern(const char pattern[LETTERS_IN_WORD + 1]){
+    const size_t pattern_len = strlen(pattern);
+
+    if(pattern_len == 1)
+        return pattern[0] >= 'a' && pattern[0] <= 'z';
+    
+    if(pattern_len != LETTERS_IN_WORD)
+        return false;
 
     if(pattern[LETTERS_IN_WORD] != '\0')
         return false;
@@ -58,13 +60,6 @@ static bool check_pattern(const char pattern[LETTERS_IN_WORD + 1]){
         }
     }
     return true;
-}
-
-static void set_undefined_pattern(char pattern[LETTERS_IN_WORD + 1]){
-    for(size_t i = 0; i < LETTERS_IN_WORD; i++)
-        pattern[i] = UNDEFINED_LETTER;
-    pattern[LETTERS_IN_WORD] = '\0';
-    
 }
 
 /* Set help_filter based on a single pattern */
@@ -126,48 +121,11 @@ bool check_string_and_get_word(char* string, Word* word){
     return true;
 }
 
-/* Build a canonical list pattern from raw user input.
-   Supports single-letter queries and fixed-width patterns with '*'. */
-static bool cmd_list__parse_pattern(
-    const char* raw_pattern,
-    char normalized_pattern[LETTERS_IN_WORD + 1],
-    bool* is_undefined_pattern
-){
-    const size_t raw_len = strlen(raw_pattern);
-    if(raw_len > LETTERS_IN_WORD){
-        output("pattern too long!\n");
-        return false;
-    }
 
-    memset(normalized_pattern, 0, LETTERS_IN_WORD + 1);
-    strncpy(normalized_pattern, raw_pattern, LETTERS_IN_WORD);
-
-    const bool single_letter_query = (raw_len == 1 && normalized_pattern[0] != UNDEFINED_LETTER);
-    if(single_letter_query){
-        normalized_pattern[1] = '\0';
-        if(!is_valid_single_letter_query(normalized_pattern)){
-            output("invalid pattern!\n");
+bool is_undefined_pattern(const char* pattern){
+    for(size_t i = 0; i < strlen(pattern); i++)
+        if(pattern[i] != UNDEFINED_LETTER)
             return false;
-        }
-    } else {
-        for(size_t i = raw_len; i < LETTERS_IN_WORD; i++)
-            normalized_pattern[i] = UNDEFINED_LETTER;
-        normalized_pattern[LETTERS_IN_WORD] = '\0';
-
-        if(!check_pattern(normalized_pattern)){
-            output("invalid pattern!\n");
-            return false;
-        }
-    }
-
-    *is_undefined_pattern = true;
-    for(size_t i = 0; i < raw_len; i++){
-        if(normalized_pattern[i] != UNDEFINED_LETTER){
-            *is_undefined_pattern = false;
-            break;
-        }
-    }
-
     return true;
 }
 
@@ -243,18 +201,13 @@ bool cmd_handler__list_history(size_t arguments_count,char* arguments[]){
 }
 
 bool cmd_handler__list_parse_all_patterns(size_t arguments_count,char* arguments[],FilterMode mode){
-    char pattern[LETTERS_IN_WORD + 1] = {0};
-    bool invalid_pattern_found = false;
-    for(size_t arg_idx = 1; arg_idx < arguments_count; arg_idx++){
-        bool is_undefined_pattern = false;
-        if(!cmd_list__parse_pattern(arguments[arg_idx], pattern, &is_undefined_pattern)){
-            invalid_pattern_found = true;
-            break;
-        }
+    for(size_t arg_idx = 0; arg_idx < arguments_count; arg_idx++){
+        if(!check_pattern(arguments[arg_idx]))
+            return false;
         
-        filter__apply_pattern(&help_filter, pattern, mode);
+        filter__apply_pattern(&help_filter, arguments[arg_idx], mode);
     }
-    return !invalid_pattern_found;
+    return true;
 }
 
 
@@ -263,7 +216,7 @@ bool cmd_handler__list_remove(size_t arguments_count,char* arguments[]){
         output("too few arguments\n");
             return false;
     }
-    cmd_handler__list_parse_all_patterns(arguments_count-1,arguments+1,REMOVE);
+    cmd_handler__list_parse_all_patterns(arguments_count,arguments,REMOVE);
 
     IndexArray tmp = filter__get_words_from_word_set(&help_word_set,&help_filter); // TODO write a better function
     help_list_history_add(tmp.size);
@@ -280,7 +233,7 @@ bool cmd_handler__list_intersect(size_t arguments_count,char* arguments[]){
         output("too few arguments\n");
             return false;
     }
-    cmd_handler__list_parse_all_patterns(arguments_count-1,arguments+1,INTERSECT);
+    cmd_handler__list_parse_all_patterns(arguments_count,arguments,INTERSECT);
 
     IndexArray tmp = filter__get_words_from_word_set(&help_word_set,&help_filter); // TODO write a better function
     help_list_history_add(tmp.size);
@@ -296,8 +249,6 @@ bool cmd_handler__list(size_t arguments_count,char* arguments[]){
         return false;
     }
 
-    char pattern[LETTERS_IN_WORD + 1] = {0};
-
     if(strcmp(arguments[0],"-p") == 0)
             return cmd_handler__list_print(arguments_count-1,arguments+1);
     if(strcmp(arguments[0],"-h") == 0)
@@ -307,14 +258,14 @@ bool cmd_handler__list(size_t arguments_count,char* arguments[]){
     if(strcmp(arguments[0], "-i") == 0)
             return cmd_handler__list_intersect(arguments_count-1,arguments+1);
 
-    bool undefined_pattern = false;
-    if(!cmd_list__parse_pattern(arguments[0], pattern, &undefined_pattern))
+    
+    if(!check_pattern(arguments[0]))
         return false;
 
-    if(undefined_pattern){
+    if(is_undefined_pattern(arguments[0])){
         filter__init(&help_filter);
     } else {
-        cmd_list__set_pattern(pattern);
+        cmd_list__set_pattern(arguments[0]);
     }
     IndexArray tmp = filter__get_words_from_word_set(&help_word_set,&help_filter);
     help_list_history_add(tmp.size);
