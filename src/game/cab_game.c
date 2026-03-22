@@ -98,7 +98,7 @@ void game_start(){
 
 void _start_new_game(){
     game_loaded = false;
-    first_turn = false;
+    first_turn = true;
     attempt_number = 0;
 }
 
