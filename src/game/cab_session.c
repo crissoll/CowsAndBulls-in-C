@@ -139,8 +139,9 @@ void delete_game_data(){
 }
 
 
-void print_attempts(void){
+bool print_attempts(void){
     print_attempt_array(attempts, attempt_number);
+    return(attempt_number > 0);
 }
 
 void compare_attempts_to_word(Word word){

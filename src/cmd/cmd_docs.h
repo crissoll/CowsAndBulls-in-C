@@ -1,7 +1,3 @@
-#ifndef CAB_CONSTS
-#define CAB_CONSTS
-
-
 # define HELP_CMD_HELP \
 "help\n" \
 "  Print this help message with all available commands and usage examples.\n" \
@@ -57,5 +53,3 @@ HELP_CMD_HELP \
 HELP_CMD_ATTEMPTS \
 HELP_CMD_LIST \
 HELP_CMD_GUESS
-
-#endif

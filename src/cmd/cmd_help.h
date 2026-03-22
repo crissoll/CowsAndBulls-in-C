@@ -1,0 +1,1 @@
+bool cmd__help(size_t token_count,const char* tokens[]);

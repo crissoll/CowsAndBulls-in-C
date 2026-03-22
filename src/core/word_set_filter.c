@@ -8,6 +8,7 @@
 #include "core/index_array.h"
 #include "core/word_set_filter.h"
 
+
 static IndexArray filter__words_with_letter_anywhere(const WordSet* word_set, size_t letter_idx){
     IndexArray result;
     index_array__init(&result, 0);
