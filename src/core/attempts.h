@@ -18,7 +18,7 @@ Attempt attempt__new(Word word, GuessResult result);
 void attempt__print(Attempt attempt);
 
 
-IndexArray get_possible_words_from_attempt(Attempt attempt,Vocabolary* used_vocabolary);
+IndexArray get_possible_words_from_attempt(Attempt attempt,const Vocabolary* used_vocabolary);
 
 
 void print_attempt_array(const Attempt* attempts, size_t attempt_number);
