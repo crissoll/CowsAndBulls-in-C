@@ -16,7 +16,7 @@ static bool check_pattern(const char pattern[LETTERS_IN_WORD + 1]){
     const size_t pattern_len = strlen(pattern);
 
     if(pattern_len == 1)
-        return pattern[0] >= 'a' && pattern[0] <= 'z';
+        return (pattern[0] >= 'a' && pattern[0] <= 'z') || pattern[0] == UNDEFINED_LETTER;
 
     if(pattern_len != LETTERS_IN_WORD)
         return false;
@@ -44,7 +44,7 @@ static bool is_undefined_pattern(const char* pattern){
 static void cmd_list__set_pattern(const char pattern[LETTERS_IN_WORD + 1]){
     WordSetFilter* help_filter = game__help_filter();
     filter__init(help_filter);
-    filter__apply_pattern(help_filter, pattern, JOIN);
+    filter__apply_pattern(help_filter, pattern, INTERSECT);
 }
 
 bool print_filtered_word_list(){
