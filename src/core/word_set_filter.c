@@ -39,7 +39,6 @@ void filter__init(WordSetFilter* filter){
 
     for(size_t i = 0; i < ALPHABET_SIZE; i++){
         filter->required_letters[i] = false;
-        filter->forbidden_letters[i] = false;
     }
 }
 
@@ -52,11 +51,9 @@ void filter__apply_pattern(
     if(strlen(pattern) == 1){
         const size_t letter_idx = (size_t)(pattern[0] - 'a');
         if(mode == REMOVE){
-            filter->forbidden_letters[letter_idx] = true;
             filter->required_letters[letter_idx] = false;
         } else {
             filter->required_letters[letter_idx] = true;
-            filter->forbidden_letters[letter_idx] = false;
         }
         return;
     }
@@ -147,16 +144,6 @@ IndexArray filter__get_words_from_word_set(const WordSet* word_set, const WordSe
         }
     }
 
-    for(size_t letter_idx = 0; letter_idx < ALPHABET_SIZE; letter_idx++){
-        if(filter->forbidden_letters[letter_idx]){
-            IndexArray has_letter = filter__words_with_letter_anywhere(word_set, letter_idx);
-            IndexArray updated = subtract(result, has_letter);
-            index_array__free_content(&result);
-            index_array__free_content(&has_letter);
-            result = updated;
-        }
-    }
-
     return result;
 }
 
@@ -187,21 +174,14 @@ void filter__print(const WordSetFilter* filter){
     }
 
     char required[ALPHABET_SIZE + 1];
-    char forbidden[ALPHABET_SIZE + 1];
     size_t req_count = 0;
-    size_t forb_count = 0;
 
     for(size_t i = 0; i < ALPHABET_SIZE; i++){
         if(filter->required_letters[i])
             required[req_count++] = (char)('a' + (char)i);
-        if(filter->forbidden_letters[i])
-            forbidden[forb_count++] = (char)('a' + (char)i);
     }
     required[req_count] = '\0';
-    forbidden[forb_count] = '\0';
 
     if(req_count > 0)
         output("Required letters (anywhere): %s\n", required);
-    if(forb_count > 0)
-        output("Forbidden letters (anywhere): %s\n", forbidden);
 }

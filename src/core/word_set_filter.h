@@ -14,7 +14,6 @@ typedef enum {
 typedef struct {
     bool present_letters[LETTERS_IN_WORD][ALPHABET_SIZE];
     bool required_letters[ALPHABET_SIZE];
-    bool forbidden_letters[ALPHABET_SIZE];
 } WordSetFilter;
 
 /* Initialize an empty filter (all positions allow no letters) */
