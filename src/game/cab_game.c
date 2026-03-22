@@ -171,11 +171,8 @@ bool _play_turn(){
         return false;
     }
     
-    if(parse_all_commands((const char**) input_tokens,token_count)){
-        free(input_tokens);
-        return false;
-    }
-    try_word_from_args(token_count, (const char**) input_tokens);
+    parse_all_commands((const char**) input_tokens,token_count);
+    
     store_attempts();
     if(first_turn){
         if(!game_loaded){

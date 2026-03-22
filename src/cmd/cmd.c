@@ -4,23 +4,20 @@
 #include <stddef.h>
 #include <string.h>
 
+#include "game/cab_output.h"
 #include "cmd/cmd_attempts.h"
 #include "cmd/cmd_help.h"
 #include "cmd/cmd_list.h"
 
 #include "cmd/cmd_docs.h"
 
+extern bool print_attempts();
+extern bool try_word_from_args(size_t token_count,const char* tokens[]);
+
+
 typedef bool (*CommandHandler)(size_t token_count,const char* tokens[]);
 typedef bool (*ZeroArgsCommandHandler)(void);
-/*
-{
-    char* name,
-    bool (*no_args_handler)(),
-    CommandSpec valid_arguments,
-    bool(*parametric_args_handler)(size_t argc,char** args),
-    char* help_text
-}
-*/
+
 
 typedef struct CommandSpec{
     const char *name;
@@ -30,32 +27,77 @@ typedef struct CommandSpec{
     const char * help_text;
 } CommandSpec;
 
+#define END_SPEC {.name = NULL}
 
-#define COMMAND_COUNT 3
+bool too_many_arguments(){
+    output("too many arguments\n");
+    return false;
+}
+
+
+bool too_many_arguments_wrapper(size_t token_count,const char* tokens[]){
+    (void) token_count;
+    (void) tokens;
+    return too_many_arguments();
+}
+
+
 const CommandSpec commands[] = {
     {
         .name = "help",
         .help_text = HELP_CMD_HELP,
-        .case_no_args = NULL,
+        .case_no_args = print_whole_help_text,
         .default_handler = cmd__help,
         .args = NULL
     },
     {
         .name = "attempts",
         .help_text = HELP_CMD_ATTEMPTS,
-        .case_no_args = NULL,
-        .default_handler = cmd__attempts,
+        .case_no_args = print_attempts,
+        .default_handler = compare_attemps_to_first_arg,
         .args = NULL
     },
     {
         .name = "list",
         .help_text = HELP_CMD_LIST,
-        .case_no_args = NULL,
-        .default_handler = cmd__list,
-        .args = NULL
-    }
+        .case_no_args = alert_too_few_arguments,
+        .default_handler = setup_list_from_pattern,
+        .args = (const CommandSpec[]){
+            {
+                .name = "-p",
+                .case_no_args = print_filtered_word_list,
+                .default_handler = too_many_arguments_wrapper,
+                .args = NULL
+            },
+            {
+                .name = "-h",
+                .case_no_args = print_filter_history,
+                .default_handler = load_filter_from_history,
+                .args = NULL
+            },
+            {
+                .name = "-r",
+                .case_no_args = alert_too_few_arguments,
+                .default_handler = cmd__list_remove_letters,
+                .args = NULL
+            },
+            {
+                .name = "-i",
+                .case_no_args = alert_too_few_arguments,
+                .default_handler = cmd__list_intersect_letters,
+                .args = NULL
+            },
+            END_SPEC
+        }
+    },
+    END_SPEC
 };
 
+const CommandSpec* ROOT = &(CommandSpec){
+    .case_no_args = NULL,
+    .default_handler = try_word_from_args,
+    .args = commands
+};
 
 bool parse_command(
         const CommandSpec* specifier,
@@ -80,13 +122,5 @@ bool parse_command(
 
 
 bool parse_all_commands(const char* tokens[], size_t token_count){
-    if(tokens == NULL || token_count == 0)
-        return false;
-
-    for(size_t i = 0; i < COMMAND_COUNT; i++){
-        if (strcmp(tokens[0],commands[i].name) == 0){
-            return parse_command(&commands[i], tokens + 1, token_count - 1);
-        }
-    }
-    return false;
+    return parse_command(ROOT,tokens,token_count);
 }

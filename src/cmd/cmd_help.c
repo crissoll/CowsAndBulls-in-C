@@ -9,8 +9,7 @@ bool print_whole_help_text(){
     return true;
 }
 bool cmd__help(size_t token_count,const char* tokens[]){
-    if(token_count == 0)
-        print_whole_help_text();
-    
+    (void) token_count;
+    (void) tokens;
     return true;
 }

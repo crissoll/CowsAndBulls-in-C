@@ -34,8 +34,9 @@ static bool check_pattern(const char pattern[LETTERS_IN_WORD + 1]){
 
 static bool is_undefined_pattern(const char* pattern){
     for(size_t i = 0; i < strlen(pattern); i++){
-        if(pattern[i] != UNDEFINED_LETTER)
+        if(pattern[i] != UNDEFINED_LETTER){
             return false;
+        }
     }
     return true;
 }
@@ -54,15 +55,7 @@ bool print_filtered_word_list(){
 }
 
 
-bool cmd__list_print(size_t token_count,const char* tokens[]){
-    (void) tokens;
-    if(token_count == 0)
-        return print_filtered_word_list();
-    return true;
-}
-
-
-bool print_help_history(){
+bool print_filter_history(){
     const size_t history_count = game__help_list_history_count();
 
     output("List history (%zu entries):\n", history_count);
@@ -79,7 +72,7 @@ bool print_help_history(){
     return true;
 }
 
-bool cmd__list_history_params(size_t token_count,const char* tokens[]){
+bool load_filter_from_history(size_t token_count,const char* tokens[]){
     if(token_count != 1){
         output("expected one index argument\n");
         return false;
@@ -117,13 +110,6 @@ bool cmd__list_history_params(size_t token_count,const char* tokens[]){
     return true;
 }
 
-bool cmd__list_history(size_t token_count,const char* tokens[]){
-    if(token_count == 0){
-        return print_help_history();
-    }
-    return cmd__list_history_params(token_count,tokens);
-
-}
 
 bool cmd__list_parse_all_patterns(size_t patterns_count,const char* patterns[],FilterMode mode){
     WordSetFilter* help_filter = game__help_filter();
@@ -142,7 +128,7 @@ bool alert_too_few_arguments(){
     return false;
 }
 
-bool cmd__list_remove_(size_t token_count,const char* tokens[]){
+bool cmd__list_remove_letters(size_t token_count,const char* tokens[]){
     cmd__list_parse_all_patterns(token_count,tokens,REMOVE);
 
     IndexArray tmp = filter__get_words_from_word_set(game__help_word_set(), game__help_filter()); // TODO write a better function
@@ -152,17 +138,8 @@ bool cmd__list_remove_(size_t token_count,const char* tokens[]){
     return true;
 }
 
-bool cmd__list_remove(size_t token_count,const char* tokens[]){
-    if(token_count == 0){
-        return alert_too_few_arguments();
-    }
 
-    cmd__list_remove_(token_count,tokens);
-    return true;
-
-}
-
-bool cmd__list_intersect_(size_t token_count,const char* tokens[]){
+bool cmd__list_intersect_letters(size_t token_count,const char* tokens[]){
     cmd__list_parse_all_patterns(token_count,tokens,INTERSECT);
 
     IndexArray tmp = filter__get_words_from_word_set(game__help_word_set(), game__help_filter()); // TODO write a better function
@@ -172,15 +149,6 @@ bool cmd__list_intersect_(size_t token_count,const char* tokens[]){
     return true;
 }
 
-bool cmd__list_intersect(size_t token_count,const char* tokens[]){
-    if(token_count == 0){
-        alert_too_few_arguments();
-    }
-    cmd__list_intersect_(token_count,tokens);
-    return true;
-
-}
-
 
 bool setup_list_from_pattern(size_t token_count, const char* tokens[]){
     if(token_count > 1){
@@ -188,35 +156,20 @@ bool setup_list_from_pattern(size_t token_count, const char* tokens[]){
     }
     WordSetFilter* help_filter = game__help_filter();
 
-    if(!check_pattern(tokens[0]))
+    if(!check_pattern(tokens[0])){
+        output("invalid pattern!\n");
         return false;
+    }
 
     if(is_undefined_pattern(tokens[0])){
         filter__init(help_filter);
     } else {
         cmd_list__set_pattern(tokens[0]);
     }
+    
     IndexArray tmp = filter__get_words_from_word_set(game__help_word_set(), help_filter);
     game__help_list_history_add(tmp.size);
+    output("[%zu words]\n",tmp.size);
     index_array__free_content(&tmp);
-    return true;
-}
-
-bool cmd__list(size_t token_count,const char* tokens[]){
-    if(token_count == 0){
-        alert_too_few_arguments();
-    }
-
-    if(strcmp(tokens[0],"-p") == 0)
-            return cmd__list_print(token_count-1,tokens+1);
-    if(strcmp(tokens[0],"-h") == 0)
-            return cmd__list_history(token_count-1, tokens+1);
-    if(strcmp(tokens[0], "-r") == 0)
-            return cmd__list_remove(token_count-1,tokens+1);
-    if(strcmp(tokens[0], "-i") == 0)
-            return cmd__list_intersect(token_count-1,tokens+1);
-
-    setup_list_from_pattern(token_count,tokens);
-    
     return true;
 }
