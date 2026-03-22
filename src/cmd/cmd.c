@@ -62,7 +62,7 @@ const CommandSpec const commands[] = {
     {
         .name = "list",
         .help_text = HELP_CMD_LIST,
-        .case_no_args = alert_too_few_arguments,
+        .case_no_args = print_current_filter,
         .default_handler = setup_list_from_pattern,
         .args = (const CommandSpec[]){
             {

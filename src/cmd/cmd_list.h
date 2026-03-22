@@ -4,6 +4,9 @@
 #include <stdbool.h>
 #include <stddef.h>
 
+
+bool print_current_filter();
+
 bool print_filtered_word_list();
 
 bool alert_too_few_arguments();

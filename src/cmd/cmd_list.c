@@ -47,6 +47,18 @@ static void cmd_list__set_pattern(const char pattern[LETTERS_IN_WORD + 1]){
     filter__apply_pattern(help_filter, pattern, INTERSECT);
 }
 
+
+bool print_current_filter(){
+    WordSetFilter* help_filter = game__help_filter();
+    IndexArray tmp = filter__get_words_from_word_set(game__help_word_set(), game__help_filter()); // TODO write a better function
+    const size_t count = tmp.size;
+    index_array__free_content(&tmp);
+    output("--- [%zu words] ---\n", count);
+    filter__print(help_filter);
+    return true;
+}
+
+
 bool print_filtered_word_list(){
     IndexArray filtered = filter__get_words_from_word_set(game__help_word_set(), game__help_filter());
     index_array__print(filtered, used_vocabolary);
