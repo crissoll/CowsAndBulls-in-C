@@ -1,8 +1,6 @@
 #ifndef CAB_CONSTS
 #define CAB_CONSTS
 
-# define ALPHABET_SIZE 26
-# define LETTERS_IN_WORD 5
 
 # define HELP_CMD_HELP \
 "help\n" \

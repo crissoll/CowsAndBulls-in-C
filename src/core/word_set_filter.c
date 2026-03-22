@@ -3,7 +3,6 @@
 #include <string.h>
 #include "game/cab_output.h"
 
-#include "util/cab_consts.h"
 #include "core/word.h"
 #include "core/word_set.h"
 #include "core/index_array.h"

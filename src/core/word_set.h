@@ -1,7 +1,6 @@
 #ifndef WORDS   
 #define WORDS
 
-#include "util/cab_consts.h"
 #include "core/index_array.h"
 #include "core/vocabolary.h"
 

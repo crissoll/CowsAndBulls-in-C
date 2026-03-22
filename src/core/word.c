@@ -5,9 +5,6 @@
 
 #include "core/word.h"
 
-#include "util/cab_consts.h"
-
-
 
 Word word__new(const char letters[LETTERS_IN_WORD + 1]){
     Word word;

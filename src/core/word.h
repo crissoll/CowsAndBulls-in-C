@@ -4,10 +4,9 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-#include "util/cab_consts.h"
-
+# define ALPHABET_SIZE 26
+# define LETTERS_IN_WORD 5
 # define UNDEFINED_LETTER '*'
-
 
 typedef struct{
     char letters[LETTERS_IN_WORD + 1];
@@ -21,8 +20,6 @@ bool string_is_valid_word(const char* string);
 void word__print(Word word);
 
 int word__compare(Word a, Word b);
-
-
 
 
 #endif /* WORD_H */
