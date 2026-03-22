@@ -171,7 +171,7 @@ bool _play_turn(){
         return false;
     }
     
-    if(parse_command((const char**) input_tokens,token_count)){
+    if(parse_all_commands((const char**) input_tokens,token_count)){
         free(input_tokens);
         return false;
     }

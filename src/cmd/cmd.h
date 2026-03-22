@@ -2,6 +2,6 @@
 #define CAB_CMD
 
 
-bool parse_command(const char* tokens[], size_t token_count);
+bool parse_all_commands(const char* tokens[], size_t token_count);
 
 #endif
