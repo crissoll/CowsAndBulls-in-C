@@ -68,12 +68,8 @@ static void cmd_list__set_pattern(const char pattern[LETTERS_IN_WORD + 1]){
     filter__apply_pattern(&help_filter, pattern, JOIN);
 }
 
-/* Convert help_filter to IndexArray for printing */
-static IndexArray cmd_list__get_filtered_words(void){
-    return filter__get_words_from_word_set(&help_word_set, &help_filter);
-}
 
-bool check_arguments_bounds(size_t args,size_t min_count, size_t max_count){
+bool check_tokens_bounds(size_t args,size_t min_count, size_t max_count){
     if (args > max_count){
         output("too many arguments\n");
         return false;
@@ -86,11 +82,23 @@ bool check_arguments_bounds(size_t args,size_t min_count, size_t max_count){
 }
 
 
-typedef bool (*CommandHandler)(size_t arguments_count,char* arguments[]);
+typedef bool (*CommandHandler)(size_t token_count,const char* tokens[]);
+typedef bool (*ZeroArgsCommandHandler)(void);
+/*
+{
+    char* name,
+    bool (*no_args_handler)(),
+    CommandSpec valid_arguments,
+    bool(*parametric_args_handler)(size_t argc,char** args),
+    char* help_text
+}
+*/
 
-typedef struct {
+typedef struct CommandSpec{
     const char *name;
+    struct CommandSpec* args;
     CommandHandler handler;
+    ZeroArgsCommandHandler case_no_args;
     const char * help_text;
 } CommandSpec;
 
@@ -129,55 +137,71 @@ bool is_undefined_pattern(const char* pattern){
     return true;
 }
 
-
-bool cmd_handler__help(size_t arguments_count,char* arguments[]){
-    (void)arguments_count;
-    (void)arguments;
+bool print_whole_help_text(){
     output(HELP_TEXT);
     return true;
 }
-
-bool cmd_handler__attempts(size_t arguments_count,char* arguments[]){
-    if(arguments_count == 0)
-        print_attempts();
-    if(arguments_count == 1){
-        Word candidate_word;
-        if (check_string_and_get_word(arguments[0],&candidate_word))
-            compare_attempts_to_word(candidate_word);
-    }
+bool cmd__help(size_t token_count,const char* tokens[]){
+    if(token_count == 0)
+        print_whole_help_text();
+    
     return true;
 }
 
 
-bool cmd_handler__list_print(size_t arguments_count,char* arguments[]){
-    (void)arguments_count;
-    (void)arguments;
-    IndexArray filtered = cmd_list__get_filtered_words();
+bool cmd_attempts_compare_word(size_t token_count,const char* tokens[]){
+    if(token_count > 1)
+        return false;
+        
+    Word candidate_word;
+    if (check_string_and_get_word(tokens[0],&candidate_word))
+        compare_attempts_to_word(candidate_word);
+    return true;
+}
+
+bool cmd__attempts(size_t token_count,const char* tokens[]){
+    if(token_count == 0)
+        print_attempts();
+    cmd_attempts_compare_word(token_count,tokens);
+    return true;
+}
+
+
+bool print_filtered_word_list(){
+    IndexArray filtered = filter__get_words_from_word_set(&help_word_set, &help_filter);  
     index_array__print(filtered, used_vocabolary);
     index_array__free_content(&filtered);
     return true;
 }
 
-bool cmd_handler__list_history(size_t arguments_count,char* arguments[]){
-    if(arguments_count == 0){
-        output("List history (%zu entries):\n", help_list_history_count);
-        for(size_t hist_idx = 0; hist_idx < help_list_history_count; hist_idx++){
-            output("\n--- Step %zu: [%zu words] ---\n", hist_idx + 1, help_list_history[hist_idx].word_count);
-            filter__print(&help_list_history[hist_idx].filter);
-        }
-        if(help_list_history_count == 0)
-            output("(no history yet)\n");
-        return true;
-    }
 
-    if(arguments_count != 1){
+bool cmd__list_print(size_t token_count,const char* tokens[]){
+    if(token_count == 1)
+        return print_filtered_word_list();
+    return true;
+}
+
+
+bool print_help_history(){
+    output("List history (%zu entries):\n", help_list_history_count);
+    for(size_t hist_idx = 0; hist_idx < help_list_history_count; hist_idx++){
+        output("\n--- Step %zu: [%zu words] ---\n", hist_idx + 1, help_list_history[hist_idx].word_count);
+        filter__print(&help_list_history[hist_idx].filter);
+    }
+    if(help_list_history_count == 0)
+        output("(no history yet)\n");
+    return true;
+}
+
+bool cmd__list_history_params(size_t token_count,const char* tokens[]){
+    if(token_count != 1){
         output("expected one index argument\n");
         return false;
     }
 
     int index;
 
-    if(sscanf(arguments[0],"%d",&index) != 1){
+    if(sscanf(tokens[0],"%d",&index) != 1){
         output("index must be a number\n");
         return false;
     }
@@ -200,105 +224,119 @@ bool cmd_handler__list_history(size_t arguments_count,char* arguments[]){
     return true;
 }
 
-bool cmd_handler__list_parse_all_patterns(size_t arguments_count,char* arguments[],FilterMode mode){
-    for(size_t arg_idx = 0; arg_idx < arguments_count; arg_idx++){
-        if(!check_pattern(arguments[arg_idx]))
+bool cmd__list_history(size_t token_count,const char* tokens[]){
+    if(token_count == 0){
+        return print_help_history();
+    }
+    return cmd__list_history_params(token_count,tokens);
+
+}
+
+bool cmd__list_parse_all_patterns(size_t patterns_count,const char* patterns[],FilterMode mode){
+    for(size_t arg_idx = 0; arg_idx < patterns_count; arg_idx++){
+        if(!check_pattern(patterns[arg_idx]))
             return false;
         
-        filter__apply_pattern(&help_filter, arguments[arg_idx], mode);
+        filter__apply_pattern(&help_filter, patterns[arg_idx], mode);
     }
     return true;
 }
 
+bool alert_too_few_arguments(){
+    output("too few arguments\n");
+    return false;
+}
 
-bool cmd_handler__list_remove(size_t arguments_count,char* arguments[]){
-    if(arguments_count == 0){
-        output("too few arguments\n");
-            return false;
-    }
-    cmd_handler__list_parse_all_patterns(arguments_count,arguments,REMOVE);
+bool cmd__list_remove_(size_t token_count,const char* tokens[]){
+    cmd__list_parse_all_patterns(token_count,tokens,REMOVE);
 
     IndexArray tmp = filter__get_words_from_word_set(&help_word_set,&help_filter); // TODO write a better function
     help_list_history_add(tmp.size);
     output("[%zu words]\n",tmp.size);
     index_array__free_content(&tmp);
+    return true;
+}
 
+bool cmd__list_remove(size_t token_count,const char* tokens[]){
+    if(token_count == 0){
+        return alert_too_few_arguments();
+    }
+
+    cmd__list_remove_(token_count,tokens);
     return true;
 
 }
 
-
-bool cmd_handler__list_intersect(size_t arguments_count,char* arguments[]){
-    if(arguments_count == 0){
-        output("too few arguments\n");
-            return false;
-    }
-    cmd_handler__list_parse_all_patterns(arguments_count,arguments,INTERSECT);
+bool cmd__list_intersect_(size_t token_count,const char* tokens[]){
+    cmd__list_parse_all_patterns(token_count,tokens,INTERSECT);
 
     IndexArray tmp = filter__get_words_from_word_set(&help_word_set,&help_filter); // TODO write a better function
     help_list_history_add(tmp.size);
     output("[%zu words]\n",tmp.size);
     index_array__free_content(&tmp);
+    return true;
+}
 
+bool cmd__list_intersect(size_t token_count,const char* tokens[]){
+    if(token_count == 0){
+        alert_too_few_arguments();
+    }
+    cmd__list_intersect_(token_count,tokens);
     return true;
 
 }
-bool cmd_handler__list(size_t arguments_count,char* arguments[]){
-    if(arguments_count == 0){
-        output("too few arguments\n");
-        return false;
-    }
 
-    if(strcmp(arguments[0],"-p") == 0)
-            return cmd_handler__list_print(arguments_count-1,arguments+1);
-    if(strcmp(arguments[0],"-h") == 0)
-            return cmd_handler__list_history(arguments_count-1, arguments+1);
-    if(strcmp(arguments[0], "-r") == 0)
-            return cmd_handler__list_remove(arguments_count-1,arguments+1);
-    if(strcmp(arguments[0], "-i") == 0)
-            return cmd_handler__list_intersect(arguments_count-1,arguments+1);
 
-    
-    if(!check_pattern(arguments[0]))
+bool setup_list_from_pattern(size_t token_count, const char* tokens[]){
+    if(!check_pattern(tokens[0]))
         return false;
 
-    if(is_undefined_pattern(arguments[0])){
+    if(is_undefined_pattern(tokens[0])){
         filter__init(&help_filter);
     } else {
-        cmd_list__set_pattern(arguments[0]);
+        cmd_list__set_pattern(tokens[0]);
     }
     IndexArray tmp = filter__get_words_from_word_set(&help_word_set,&help_filter);
     help_list_history_add(tmp.size);
     index_array__free_content(&tmp);
+    return true;
+}
+
+bool cmd__list(size_t token_count,const char* tokens[]){
+    if(token_count == 0){
+        alert_too_few_arguments();
+    }
+
+    if(strcmp(tokens[0],"-p") == 0)
+            return cmd__list_print(token_count-1,tokens+1);
+    if(strcmp(tokens[0],"-h") == 0)
+            return cmd__list_history(token_count-1, tokens+1);
+    if(strcmp(tokens[0], "-r") == 0)
+            return cmd__list_remove(token_count-1,tokens+1);
+    if(strcmp(tokens[0], "-i") == 0)
+            return cmd__list_intersect(token_count-1,tokens+1);
+
+    setup_list_from_pattern(token_count,tokens);
     
     return true;
 }
 
-/*
-{
-    char* name,
-    bool (*no_args_handler)(),
-    CommandSpec valid_arguments,
-    bool(*parametric_args_handler)(size_t argc,char** args),
-    char* help_text
-}
-*/
 
 #define COMMAND_COUNT 3
 const CommandSpec commands[] = {
     {
         .name = "help",
-        .handler = cmd_handler__help,
+        .handler = cmd__help,
         .help_text = HELP_CMD_HELP
     },
     {
         .name = "attempts",
-        .handler = cmd_handler__attempts,
+        .handler = cmd__attempts,
         .help_text = HELP_CMD_ATTEMPTS
     },
     {
         .name = "list",
-        .handler = cmd_handler__list,
+        .handler = cmd__list,
         .help_text = HELP_CMD_LIST
     }
 };
@@ -366,7 +404,23 @@ bool _load_game(){
     return true;
 }
 
-
+bool game_ended = false;
+bool try_word(size_t token_count,const char* tokens[]){
+    Word word;
+    
+    if(!check_string_and_get_word(tokens[0],&word)){
+        free(tokens);
+        return false;
+    }
+    if(is_word_already_attempted(word)){
+        output("word already attempted\n");
+        free(tokens);
+        return false;
+    }
+    game_ended = play_word(word);
+    store_attempts();
+    return true;
+}
 
 bool _play_turn(){
     
@@ -395,20 +449,7 @@ bool _play_turn(){
         free(input_tokens);
         return false;
     }
-
-    Word word;
-    
-    if(!check_string_and_get_word(input_tokens[0],&word)){
-        free(input_tokens);
-        return false;
-    }
-    if(is_word_already_attempted(word)){
-        output("word already attempted\n");
-        free(input_tokens);
-        return false;
-    }
-    const bool game_ended = play_word(word);
-    store_attempts();
+    try_word(token_count, input_tokens);
 
     return game_ended;
 }
