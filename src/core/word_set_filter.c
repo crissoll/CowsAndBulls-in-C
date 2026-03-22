@@ -51,7 +51,9 @@ void filter__apply_pattern(
     if(strlen(pattern) == 1){
         const size_t letter_idx = (size_t)(pattern[0] - 'a');
         if(mode == REMOVE){
-            filter->required_letters[letter_idx] = false;
+            for(size_t i = 0; i < LETTERS_IN_WORD; i++){
+                filter->present_letters[i][letter_idx] = false;
+            }
         } else {
             filter->required_letters[letter_idx] = true;
         }
@@ -150,38 +152,56 @@ IndexArray filter__get_words_from_word_set(const WordSet* word_set, const WordSe
 
 
 void filter__print(const WordSetFilter* filter){
-    output("Filter by position:\n");
     for(size_t i = 0; i < LETTERS_IN_WORD; i++){
-        char allowed[ALPHABET_SIZE + 1];
+        char not_allowed[ALPHABET_SIZE + 1];
         size_t count = 0;
 
+        bool required_letters[ALPHABET_SIZE];
         for(size_t j = 0; j < ALPHABET_SIZE; j++){
-            if(filter->present_letters[i][j]){
-                allowed[count] = (char)('a' + (int)j);
+            required_letters[j] = filter->required_letters[j];
+        }
+        char fixed_char;
+        for(size_t j = 0; j < ALPHABET_SIZE; j++){
+            if(!filter->present_letters[i][j]){
+                not_allowed[count] = (char)('a' + (int)j);
                 count++;
+                required_letters[j] = false;
+            }
+            else{
+                fixed_char = (char)('a' + (int)j);
             }
         }
-        allowed[count] = '\0';
+
+        not_allowed[count] = '\0';
 
         output("  [%zu] ", i + 1);
-        if(count == 0){
-            output("(none) 0/%d\n", ALPHABET_SIZE);
-        } else if(count == ALPHABET_SIZE){
-            output("* %zu/%d\n", count, ALPHABET_SIZE);
-        } else {
-            output("%s %zu/%d\n", allowed, count, ALPHABET_SIZE);
+        if(count == ALPHABET_SIZE){
+            output("(none)\n");
+            continue;;
         }
+        if (count == ALPHABET_SIZE - 1){
+            output("%c\n",fixed_char);
+            continue;
+        }
+        
+        if(count == 0){
+            output("* ");
+        }
+        else{
+            output("!%s ", not_allowed);
+        }
+
+        char candidate_chars[ALPHABET_SIZE + 1];
+        size_t candidate_count = 0;
+
+        for(size_t j = 0; j < ALPHABET_SIZE; j++){
+            if(required_letters[j])
+                candidate_chars[candidate_count++] = (char)('a' + (int)j);
+        }
+        candidate_chars[candidate_count] = '\0';
+        if(candidate_count > 0){
+            output("?%s",candidate_chars);
+        }
+        output("\n");
     }
-
-    char required[ALPHABET_SIZE + 1];
-    size_t req_count = 0;
-
-    for(size_t i = 0; i < ALPHABET_SIZE; i++){
-        if(filter->required_letters[i])
-            required[req_count++] = (char)('a' + (char)i);
-    }
-    required[req_count] = '\0';
-
-    if(req_count > 0)
-        output("Required letters (anywhere): %s\n", required);
 }
