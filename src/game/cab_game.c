@@ -154,8 +154,15 @@ bool process_turn(){
     
     if(first_turn){
         if(game_loaded){
-            load_secret_word();
-            load_attempts();
+            if(is_game_data_valid()){
+                load_secret_word();
+                load_attempts();
+            }
+            else{
+                generate_secret_word();
+                output("no valid game saves found. generated new saves instead\n");
+            }
+            
         }
         else{
             generate_secret_word();
