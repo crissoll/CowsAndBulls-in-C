@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdio.h>
-#include "game/cab_output.h"              /* for output() */
+#include "io/cab_output.h"              /* for output() */
 #include <string.h>
 
 

@@ -3,7 +3,6 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include "game/cab_output.h"
 
 
 // Controllo per assicurarsi che il file esista

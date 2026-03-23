@@ -2,7 +2,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-#include "game/cab_output.h"
+#include "io/cab_output.h"
 #include "core/word.h"
 
 

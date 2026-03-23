@@ -3,7 +3,7 @@
 #include <string.h>
 #include <stdbool.h>
 
-#include "game/cab_input.h"
+#include "io/cab_input.h"
 
 
 static InputMode input_mode = CONSOLE;

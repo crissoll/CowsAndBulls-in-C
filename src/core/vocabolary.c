@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 #include "core/vocabolary.h"
-#include "files/cab_files.h"
+#include "io/cab_files.h"
 
 
 void vocabolary__init_from_file(Vocabolary* vocabolary,const char* file_name){

@@ -2,7 +2,7 @@
 #define CAB_INPUT
 
 #include <stddef.h>
-#include "cab_io_core.h"
+#include "api/cab_io_api.h"
 
 
 void io__set_input_mode(InputMode new_mode);

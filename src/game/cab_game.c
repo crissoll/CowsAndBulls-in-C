@@ -6,8 +6,8 @@
 
 #include "core/word_set.h"
 #include "core/word_set_filter.h"
-#include "game/cab_input.h"
-#include "game/cab_output.h"
+#include "io/cab_input.h"
+#include "io/cab_output.h"
 
 #include "game/cab_session.h"
 #include "game/cab_game.h"

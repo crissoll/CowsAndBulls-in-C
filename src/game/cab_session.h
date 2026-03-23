@@ -26,7 +26,7 @@ void store_secret_word();
 
 void delete_game_data();
 
-void print_attempts(void);
+bool print_attempts(void);
 
 void store_attempts(void);
 

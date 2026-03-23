@@ -1,7 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "game/cab_output.h"
 
 // Controllo per assicurarsi che il file esista
 FILE* open_file_safe(const char* filename, const char* mode) {

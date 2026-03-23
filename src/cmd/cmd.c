@@ -4,7 +4,7 @@
 #include <stddef.h>
 #include <string.h>
 
-#include "game/cab_output.h"
+#include "io/cab_output.h"
 #include "cmd/cmd_attempts.h"
 #include "cmd/cmd_help.h"
 #include "cmd/cmd_list.h"

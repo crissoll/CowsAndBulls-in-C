@@ -1,4 +1,4 @@
-#include "game/cab_output.h"
+#include "io/cab_output.h"
 #include <stdio.h>
 #include <string.h>
 

@@ -5,7 +5,7 @@
 #include "core/vocabolary.h"
 #include "core/guess.h"
 #include "core/attempts.h"
-#include "game/cab_output.h"
+#include "io/cab_output.h"
 
 
 # define SECRET_FILE_NAME "data/saves/secret_word.saves"

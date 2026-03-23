@@ -1,8 +1,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "game/cab_io_core.h"
-#include "game/cab_output.h"
+#include "api/cab_io_api.h"
+#include "io/cab_output.h"
 
 # define MAX_INPUT_BUFFER_SIZE 1024
 static char input_buffer[MAX_INPUT_BUFFER_SIZE];

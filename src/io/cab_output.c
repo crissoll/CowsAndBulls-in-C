@@ -3,11 +3,11 @@
 #include <string.h>
 #include <stdarg.h>
 
-#include "game/cab_output.h"
+#include "io/cab_output.h"
 
 static OutputMode output_mode = PRINT;
 
-/* Get pointers from cab_io_core to access shared output buffer */
+/* Get pointers from api/cab_io_api to access shared output buffer */
 extern char** cab_io__get_output_buffer_ptr(void);
 extern size_t* cab_io__get_output_buffer_size_ptr(void);
 extern size_t* cab_io__get_output_buffer_allocated_size_ptr(void);

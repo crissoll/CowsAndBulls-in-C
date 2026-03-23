@@ -7,7 +7,7 @@
 #include "core/word_set_filter.h"
 
 #include "game/cab_game.h"
-#include "game/cab_output.h"
+#include "io/cab_output.h"
 #include "game/cab_session.h"
 
 #include "cmd/cmd_list.h"
