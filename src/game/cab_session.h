@@ -6,11 +6,17 @@
 
 typedef unsigned long SessionId;
 
+void init_file_paths();
+
+bool set_saves_folder_path(const char *path);
+
+bool set_vocabolary_file_path(const char *path);
+
 void load_vocabolary();
 
 void generate_secret_word();
 
-SessionId get_session_id(void);
+SessionId get_session_id();
 
 GuessResult guess_word(Word attempt);
 

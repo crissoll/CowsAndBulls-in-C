@@ -86,6 +86,7 @@ static bool game_loaded = false;
 static bool first_turn = true;
 
 void game_start(){
+    init_file_paths();
     load_vocabolary();
     help_list_history_clear();
     filter__init(&help_filter);

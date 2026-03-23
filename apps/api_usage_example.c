@@ -25,6 +25,22 @@ static bool read_line(char* buffer, size_t buffer_size){
 }
 
 int main(){
+    while (true) {
+        char saves_path[260];
+        // this is for demonstration purposes. it's not meant to be asked every time
+        printf("Enter saves folder path: ");
+        if (!read_line(saves_path, sizeof(saves_path))) {
+            fprintf(stderr, "Failed to read saves folder path.\n");
+            return 1;
+        }
+
+        if (set_saves_folder_path(saves_path)) {
+            break;
+        }
+
+        fprintf(stderr, "Invalid saves folder path. Try again.\n");
+    }
+
     setup_game();
     if(are_there_previous_saves()){
         while(!is_save_load_choice_complete()){
