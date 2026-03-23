@@ -14,11 +14,11 @@ typedef struct {
 
 void game_start();
 
-void _start_new_game();
+void reset_game_vars();
 
-bool _load_game();
+bool prompt_to_load_game();
 
-bool _play_turn();
+bool process_turn();
 
 void win_game();
 

@@ -11,7 +11,7 @@ static bool saves_handled = false;
 String play_turn(String input_string){
     if(!input(input_string))
         return get_output();
-    game_ended = _play_turn();
+    game_ended = process_turn();
     return get_output();
 }
 
@@ -35,7 +35,7 @@ bool are_there_previous_saves(){
 String handle_saves_load_choice(String input_string){
     if(!input(input_string))
         return get_output();
-    saves_handled = _load_game();
+    saves_handled = prompt_to_load_game();
     return get_output();
 }
 
@@ -45,7 +45,7 @@ bool is_save_load_choice_complete(){
 }
 
 void start_new_game(){
-    _start_new_game();
+    reset_game_vars();
     saves_handled = true;
 }
 

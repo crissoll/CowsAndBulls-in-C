@@ -96,13 +96,13 @@ void game_start(){
     word_set__init_from_vocabolary(&help_word_set, used_vocabolary);
 }
 
-void _start_new_game(){
+void reset_game_vars(){
     game_loaded = false;
     first_turn = true;
     attempt_number = 0;
 }
 
-bool _load_game(){
+bool prompt_to_load_game(){
     if(!is_game_data_valid()){
         game_loaded = false;
         return true;
@@ -150,7 +150,7 @@ bool try_word_from_args(size_t token_count,const char* tokens[]){
     return true;
 }
 
-bool _play_turn(){
+bool process_turn(){
     
     if(first_turn){
         if(game_loaded){
