@@ -1,6 +1,4 @@
-#include <stdlib.h>
 #include <stdbool.h>
-#include <stdio.h>
 
 #include "io/cab_output.h"
 #include "core/word.h"

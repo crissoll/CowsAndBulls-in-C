@@ -1,7 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "api/cab_io_api.h"
 #include "io/cab_output.h"
 
 # define MAX_INPUT_BUFFER_SIZE 1024

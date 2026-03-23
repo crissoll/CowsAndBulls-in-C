@@ -1,8 +1,6 @@
 #include <stdlib.h>
-#include <stdbool.h>
 #include <stdio.h>
 #include "io/cab_output.h"              /* for output() */
-#include <string.h>
 
 
 #include "core/index_array.h"
@@ -51,41 +49,3 @@ void word_set__init_from_vocabolary(WordSet* word_set,const Vocabolary* vocabola
         }
     }
 }
-
-/*
-IndexArray word_set__get_words_that_contains_letters(
-           const WordSet* word_set,
-            const char letters[LETTERS_IN_WORD+1]
-    ){
-    const int len = strlen(letters);
-    if(len > LETTERS_IN_WORD){
-        perror("too many letters were passed\n");
-        exit(EXIT_FAILURE);
-    }
-    
-    LetterDispositionsIterator iterator;
-    iterator__init(&iterator,len);
-
-    IndexArray returned_array;
-    index_array__init(&returned_array,0);
-
-    while(true){
-        char pattern[LETTERS_IN_WORD + 1];
-
-        if(iterator__step(&iterator,letters,pattern) == ITERATOR_STOP)
-            break;
-        
-        IndexArray single_query = word_set__get_words_by_pattern(word_set,pattern);
-        IndexArray tmp = join(single_query,returned_array);
-
-        index_array__free_content(&returned_array);
-
-        returned_array = index_array__copy(&tmp);
-
-        index_array__free_content(&tmp);
-        index_array__free_content(&single_query);
-    }
-
-    return returned_array;
-}*/
-

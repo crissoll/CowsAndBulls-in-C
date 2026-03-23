@@ -26,4 +26,6 @@ bool is_game_ended();
 
 void shutdown_game();
 
+
+
 #endif
