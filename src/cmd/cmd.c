@@ -6,7 +6,6 @@
 
 #include "io/cab_output.h"
 #include "cmd/cmd_attempts.h"
-#include "cmd/cmd_help.h"
 #include "cmd/cmd_list.h"
 
 #include "cmd/cmd_docs.h"
@@ -41,6 +40,10 @@ bool too_many_arguments_wrapper(size_t token_count,const char* tokens[]){
     return too_many_arguments();
 }
 
+bool print_whole_help_text(){
+    output(HELP_TEXT);
+    return true;
+}
 
 bool print_help_text_from_args(size_t token_count,const char* tokens[]);
 

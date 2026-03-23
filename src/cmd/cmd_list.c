@@ -123,9 +123,9 @@ bool load_filter_from_history(size_t token_count,const char* tokens[]){
     output("correctly reverted to step number %d\n",index+1);
     *game__help_filter() = entry.filter;
 
-    IndexArray tmp = filter__get_words_from_word_set(game__help_word_set(), game__help_filter()); // TODO write a better function
+    IndexArray tmp = filter__get_words_from_word_set(game__help_word_set(), game__help_filter());
     game__help_list_history_add(tmp.size);
-    output("[%zu words]\n",tmp.size);// TODO print filter too
+    output("[%zu words]\n",tmp.size);
     index_array__free_content(&tmp);
     return true;
 }
@@ -151,7 +151,7 @@ bool alert_too_few_arguments(){
 bool cmd__list_remove_letters(size_t token_count,const char* tokens[]){
     cmd__list_parse_all_patterns(token_count,tokens,REMOVE);
 
-    IndexArray tmp = filter__get_words_from_word_set(game__help_word_set(), game__help_filter()); // TODO write a better function
+    IndexArray tmp = filter__get_words_from_word_set(game__help_word_set(), game__help_filter());
     game__help_list_history_add(tmp.size);
     output("[%zu words]\n",tmp.size);
     index_array__free_content(&tmp);
@@ -162,7 +162,7 @@ bool cmd__list_remove_letters(size_t token_count,const char* tokens[]){
 bool cmd__list_intersect_letters(size_t token_count,const char* tokens[]){
     cmd__list_parse_all_patterns(token_count,tokens,INTERSECT);
 
-    IndexArray tmp = filter__get_words_from_word_set(game__help_word_set(), game__help_filter()); // TODO write a better function
+    IndexArray tmp = filter__get_words_from_word_set(game__help_word_set(), game__help_filter());
     game__help_list_history_add(tmp.size);
     output("[%zu words]\n",tmp.size);
     index_array__free_content(&tmp);
