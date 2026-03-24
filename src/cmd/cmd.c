@@ -41,10 +41,7 @@ bool too_many_arguments_wrapper(size_t token_count,const char* tokens[]){
     return too_many_arguments();
 }
 
-bool print_whole_help_text(){
-    output(HELP_TEXT);
-    return true;
-}
+bool print_whole_help_text();
 
 bool print_help_text_from_args(size_t token_count,const char* tokens[]);
 
@@ -177,6 +174,17 @@ bool disable_command(size_t token_count,const char* tokens[]){
 }
 
 
+bool print_whole_help_text(){
+    const CommandSpec* candidate_spec = commands;
+    while (candidate_spec->name != NULL)
+    {
+        if(!(*candidate_spec->allowed))
+                continue;
+        output(candidate_spec->help_text);
+        candidate_spec++;
+    }
+    return true;
+}
 
 bool parse_command(
         const CommandSpec* specifier,
