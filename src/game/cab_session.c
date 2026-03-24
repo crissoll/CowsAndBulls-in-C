@@ -9,6 +9,14 @@
 #include "core/attempts.h"
 #include "io/cab_output.h"
 
+#ifndef S_ISDIR
+#if defined(_S_IFMT) && defined(_S_IFDIR)
+#define S_ISDIR(mode) (((mode) & _S_IFMT) == _S_IFDIR)
+#elif defined(S_IFMT) && defined(S_IFDIR)
+#define S_ISDIR(mode) (((mode) & S_IFMT) == S_IFDIR)
+#endif
+#endif
+
 
 #define SECRET_FILE_NAME "secret_word.saves"
 #define ATTEMPTS_FILE_NAME "attempts.saves"
