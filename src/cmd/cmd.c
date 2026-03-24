@@ -24,6 +24,7 @@ typedef struct CommandSpec{
     const CommandHandler default_handler;
     const ZeroArgsCommandHandler case_no_args;
     const char * help_text;
+    bool* const allowed;
 } CommandSpec;
 
 #define END_SPEC {.name = NULL}
@@ -47,10 +48,21 @@ bool print_whole_help_text(){
 
 bool print_help_text_from_args(size_t token_count,const char* tokens[]);
 
+bool disable_command(size_t token_count,const char* tokens[]);
+
 const CommandSpec const commands[] = {
+    {
+        .name = "disable",
+        .help_text = "disable_TMP\n",
+        .case_no_args = alert_too_few_arguments,
+        .allowed = &(bool){true},
+        .default_handler = disable_command,
+        .args = NULL
+    },
     {
         .name = "help",
         .help_text = HELP_CMD_HELP,
+        .allowed = &(bool){true},
         .case_no_args = print_whole_help_text,
         .default_handler = print_help_text_from_args,
         .args = NULL
@@ -58,6 +70,7 @@ const CommandSpec const commands[] = {
     {
         .name = "attempts",
         .help_text = HELP_CMD_ATTEMPTS,
+        .allowed = &(bool){true},
         .case_no_args = print_attempts,
         .default_handler = compare_attemps_to_first_arg,
         .args = NULL
@@ -65,29 +78,34 @@ const CommandSpec const commands[] = {
     {
         .name = "list",
         .help_text = HELP_CMD_LIST,
+        .allowed = &(bool){true},
         .case_no_args = print_current_filter,
         .default_handler = setup_list_from_pattern,
         .args = (const CommandSpec[]){
             {
                 .name = "-p",
+                .allowed = &(bool){true},
                 .case_no_args = print_filtered_word_list,
                 .default_handler = too_many_arguments_wrapper,
                 .args = NULL
             },
             {
                 .name = "-h",
+                .allowed = &(bool){true},
                 .case_no_args = print_filter_history,
                 .default_handler = load_filter_from_history,
                 .args = NULL
             },
             {
                 .name = "-r",
+                .allowed = &(bool){true},
                 .case_no_args = alert_too_few_arguments,
                 .default_handler = cmd__list_remove_letters,
                 .args = NULL
             },
             {
                 .name = "-i",
+                .allowed = &(bool){true},
                 .case_no_args = alert_too_few_arguments,
                 .default_handler = cmd__list_intersect_letters,
                 .args = NULL
@@ -98,6 +116,12 @@ const CommandSpec const commands[] = {
     END_SPEC
 };
 
+const CommandSpec* ROOT = &(CommandSpec){
+    .case_no_args = NULL,
+    .default_handler = try_word_from_args,
+    .args = commands
+};
+
 
 bool print_help_text_from_args(size_t token_count,const char* tokens[]){
     if(token_count > 1){
@@ -106,7 +130,10 @@ bool print_help_text_from_args(size_t token_count,const char* tokens[]){
     const CommandSpec* candidate_spec = commands;
     while (candidate_spec->name != NULL)
     {
-        if(strcmp(candidate_spec->name,tokens[0]) == 0){
+        if(!(*candidate_spec->allowed)){
+            candidate_spec++;
+            continue;
+        }if(strcmp(candidate_spec->name,tokens[0]) == 0){
             output(candidate_spec->help_text);
             return true;
         }
@@ -116,12 +143,40 @@ bool print_help_text_from_args(size_t token_count,const char* tokens[]){
     return false;
 }
 
+bool _disable_command(
+        size_t token_count,
+        const char* tokens[],
+        const CommandSpec* base_spec
+    ){
+    const CommandSpec* candidate_spec = base_spec-> args;
+    while (candidate_spec->name != NULL)
+    {   
+        if(!(*candidate_spec->allowed)){
+            candidate_spec++;
+            continue;
+        }if(strcmp(candidate_spec->name,tokens[0]) == 0){
+            if(token_count == 1){
+                *candidate_spec->allowed = false;
+                return true;
+            }
+            output("%s\n",candidate_spec->name);
+            if(candidate_spec->args == NULL){
+                return too_many_arguments();
+            }
+            return _disable_command(token_count-1,tokens+1,candidate_spec);
+        }
+        candidate_spec++;
+    }
+    output("command not found!\n");
+    return false;
+}
 
-const CommandSpec* ROOT = &(CommandSpec){
-    .case_no_args = NULL,
-    .default_handler = try_word_from_args,
-    .args = commands
-};
+
+bool disable_command(size_t token_count,const char* tokens[]){
+    return _disable_command(token_count,tokens,ROOT);
+}
+
+
 
 bool parse_command(
         const CommandSpec* specifier,
@@ -134,7 +189,11 @@ bool parse_command(
     if(token_count > 0 && specifier->args != NULL){
         const CommandSpec* candidate_arg = specifier->args;
         while(candidate_arg->name != NULL){
-            if (strcmp(tokens[0],candidate_arg->name) == 0){
+            if(!(*candidate_arg->allowed)){
+                candidate_arg++;
+                output("command is not allowed\n");
+                return true;
+            }if (strcmp(tokens[0],candidate_arg->name) == 0){
                 return parse_command(candidate_arg, tokens + 1, token_count - 1);
             }
             candidate_arg++;
