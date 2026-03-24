@@ -26,7 +26,7 @@ static bool read_line(char* buffer, size_t buffer_size){
 
 int main(){
     while (true) {
-        char saves_path[260];
+        char saves_path[1000];
         // this is for demonstration purposes. it's not meant to be asked every time
         printf("Enter saves folder path: ");
         if (!read_line(saves_path, sizeof(saves_path))) {

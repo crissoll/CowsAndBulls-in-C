@@ -1,6 +1,6 @@
 #include <stdlib.h>
-#include "io/cab_output.h"
 
+#include "io/cab_output.h"
 #include "core/word.h"
 #include "core/index_array.h"
 

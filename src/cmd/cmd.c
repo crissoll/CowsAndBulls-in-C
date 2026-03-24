@@ -148,10 +148,7 @@ bool _disable_command(
     const CommandSpec* candidate_spec = base_spec-> args;
     while (candidate_spec->name != NULL)
     {   
-        if(!(*candidate_spec->allowed)){
-            candidate_spec++;
-            continue;
-        }if(strcmp(candidate_spec->name,tokens[0]) == 0){
+        if(strcmp(candidate_spec->name,tokens[0]) == 0){
             if(token_count == 1){
                 *candidate_spec->allowed = false;
                 return true;
@@ -185,6 +182,7 @@ bool print_whole_help_text(){
     }
     return true;
 }
+
 
 bool parse_command(
         const CommandSpec* specifier,
