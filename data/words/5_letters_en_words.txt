@@ -260,6 +260,7 @@ bevel
 bible
 bided
 bides
+biggy
 bight
 bigot
 bilge
@@ -418,6 +419,7 @@ burrs
 burst
 bushy
 busts
+busty
 butte
 butts
 buxom
@@ -1613,6 +1615,7 @@ korai
 krait
 krill
 label
+labia
 laced
 laces
 lacks
@@ -1653,6 +1656,7 @@ laxed
 laxes
 laxly
 layer
+leach
 leads
 leafy
 leaks
@@ -1683,6 +1687,7 @@ liars
 libel
 libya
 licks
+licky
 liege
 liens
 lifts
@@ -1859,6 +1864,7 @@ minus
 mirth
 miser
 mists
+misty
 mites
 mixed
 mixes
@@ -1948,6 +1954,7 @@ nepal
 nerve
 nests
 never
+newby
 newer
 newly
 nicer
@@ -1964,6 +1971,7 @@ noisy
 nolan
 nomad
 nonce
+noobs
 nooks
 noose
 north
@@ -2934,6 +2942,7 @@ teach
 teams
 tears
 tease
+teats
 teems
 teens
 teeth
@@ -3002,6 +3011,7 @@ tired
 tires
 tithe
 title
+titty
 toads
 toast
 today
@@ -3139,14 +3149,22 @@ usurp
 usury
 utter
 vague
+vails
 vales
 valet
 valid
+valor
 value
 valve
+vamps
 vanes
 vapid
+vapor
 vases
+vasts
+vates
+vatic
+vauch
 vault
 vaunt
 veils
@@ -3251,6 +3269,7 @@ welch
 wells
 wench
 wendy
+wetty
 whack
 whale
 wharf
@@ -3284,6 +3303,7 @@ wight
 wilds
 wiles
 wills
+willy
 wince
 winch
 winds
