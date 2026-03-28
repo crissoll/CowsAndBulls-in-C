@@ -31,6 +31,6 @@ bool is_game_ended();
 
 void shutdown_game();
 
-
+size_t get_attempt_number();
 
 #endif

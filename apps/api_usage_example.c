@@ -25,7 +25,8 @@ static bool read_line(char* buffer, size_t buffer_size){
 }
 
 int main(){
-    while (true) {
+    /*while (true) {
+        
         char saves_path[1000];
         // this is for demonstration purposes. it's not meant to be asked every time
         printf("Enter saves folder path: ");
@@ -39,7 +40,7 @@ int main(){
         }
 
         fprintf(stderr, "Invalid saves folder path. Try again.\n");
-    }
+    }*/
 
     setup_game();
     if(are_there_previous_saves()){
@@ -78,7 +79,7 @@ int main(){
         printf("%s", output_string.content);
         string__free_content(output_string);
     }
-    
+    printf("Congratulations! You won in %d attempts!",get_attempt_number());
     shutdown_game();
     return 0;
 }

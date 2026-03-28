@@ -34,6 +34,8 @@ void delete_game_data();
 
 bool print_attempts(void);
 
+size_t get_attempt_number();
+
 void store_attempts(void);
 
 bool is_word_already_attempted(Word word);

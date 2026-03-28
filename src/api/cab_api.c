@@ -4,6 +4,7 @@
 #include "api/cab_io_api.h"
 #include "game/cab_game.h"
 #include "game/cab_session.h"
+#include "io/cab_output.h"
 
 static bool game_ended = false;
 static bool saves_handled = false;
@@ -50,7 +51,8 @@ void start_new_game(){
 }
 
 void shutdown_game(){
-    if(is_game_ended())
+    if(is_game_ended()){
         win_game();
+    }
     io__shutdown();
 }

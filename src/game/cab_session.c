@@ -424,3 +424,7 @@ bool play_word(Word word){
 
     return (result.bulls >= LETTERS_IN_WORD);
 }
+
+size_t get_attempt_number(){
+    return attempt_number;
+}
