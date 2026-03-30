@@ -1,10 +1,13 @@
 
+#include <string.h>
 
 #include "api/cab_api.h"
 #include "api/cab_io_api.h"
 #include "game/cab_game.h"
 #include "game/cab_session.h"
 #include "io/cab_output.h"
+
+
 
 static bool game_ended = false;
 static bool saves_handled = false;
@@ -14,6 +17,13 @@ String play_turn(String input_string){
         return get_output();
     game_ended = process_turn();
     return get_output();
+}
+
+char* play_turn_charptr(char* input_string){
+    return play_turn((String){
+        .content = input_string,
+        .size = strlen(input_string)
+    }).content;
 }
 
 bool is_game_ended(){

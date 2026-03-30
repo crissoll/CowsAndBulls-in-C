@@ -26,6 +26,9 @@ void start_new_game();
 
 String play_turn(String input_string);
 
+char* play_turn_charptr(char* input_string);
+
+
 bool is_game_ended();
 
 
