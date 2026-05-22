@@ -46,10 +46,3 @@
 "  The word must contain valid letters, exist in vocabulary,\n" \
 "  and must not have been attempted already.\n" \
 "  Usage: crane\n"
-
-# define HELP_TEXT \
-"Available commands:\n\n" \
-HELP_CMD_HELP \
-HELP_CMD_ATTEMPTS \
-HELP_CMD_LIST \
-HELP_CMD_GUESS

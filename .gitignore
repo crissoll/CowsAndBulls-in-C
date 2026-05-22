@@ -1,5 +1,4 @@
 *.saves
 *.o
-*.gch
-Cargo.lock
+*.exe
 /.vscode
