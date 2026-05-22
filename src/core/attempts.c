@@ -52,7 +52,7 @@ void print_attempt_array(const Attempt* attempts, size_t attempt_number){
 bool is_word_in_attempt_array(Word word,const Attempt* attempts,size_t attempt_number){
     /* return true if the given word has already been guessed earlier */
     for(size_t i = 0; i < attempt_number; i++){
-        if (word__compare(attempts[i].word, word) == 0){
+        if (word__sort_cmp(attempts[i].word, word) == 0){
             return true;
         }
     }

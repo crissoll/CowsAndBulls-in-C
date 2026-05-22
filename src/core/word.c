@@ -32,7 +32,7 @@ void word__print(Word word){
 }
 
 
-int word__compare(Word a, Word b){
+int word__sort_cmp(Word a, Word b){
     for(size_t i = 0; i < LETTERS_IN_WORD;i++){
         if(a.letters[i]>b.letters[i])
             return +1;

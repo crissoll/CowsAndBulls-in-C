@@ -54,7 +54,7 @@ bool vocabolary__contains_word(const Vocabolary* vocabolary,Word word){
     size_t l = 0, r = vocabolary->size - 1;
     while (l <= r) {
         size_t m = l + (r - l) / 2;
-        int cmp = word__compare(vocabolary->words[m], word);
+        int cmp = word__sort_cmp(vocabolary->words[m], word);
         if (cmp == 0)
             return true;
         if (cmp < 0) {
