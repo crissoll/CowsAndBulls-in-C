@@ -82,30 +82,29 @@ bool check_string_and_get_word(const char* string, Word* word){
     return true;
 }
 
-static bool game_loaded = false;
-static bool first_turn = true;
+static bool loading_game_data = false;
+
+void reset_game_vars();
 
 void game_start(){
     init_file_paths();
     load_vocabolary();
     help_list_history_clear();
     filter__init(&help_filter);
-    game_loaded = false;
-    first_turn = true;
-    attempt_number = 0;
+   
+    reset_game_vars();
     
     word_set__init_from_vocabolary(&help_word_set, used_vocabolary);
 }
 
 void reset_game_vars(){
-    game_loaded = false;
-    first_turn = true;
-    attempt_number = 0;
+    loading_game_data = false;
+    reset_attempts();
 }
 
 bool prompt_to_load_game(){
     if(!is_game_data_valid()){
-        game_loaded = false;
+        loading_game_data = false;
         return true;
     }
 
@@ -114,19 +113,18 @@ bool prompt_to_load_game(){
     
     size_t output_size = get_multiple_input(buffer,sizeof(buffer),&input_tokens);
 
-    if (output_size == 0 || (buffer[0] != 'y' && buffer[0] != 'n')) {
-        output("input must be y or n\n");
-        buffer[0] = '\0';
-        free(input_tokens);
-        return false;
-    }
     free(input_tokens);
 
+    if (output_size == 0 || (buffer[0] != 'y' && buffer[0] != 'n')) {
+        output("input must be y or n\n");
+        return false;
+    }
+
     if(buffer[0] == 'y'){
-        game_loaded = true;
+        loading_game_data = true;
     }
     else{
-        game_loaded = false;
+        loading_game_data = false;
     }
     return true;
 }
@@ -151,24 +149,28 @@ bool try_word_from_args(size_t token_count,const char* tokens[]){
     return true;
 }
 
-bool process_turn(){
-    
-    if(first_turn){
-        if(game_loaded){
-            if(is_game_data_valid()){
-                load_secret_word();
-                load_attempts();
-            }
-            else{
-                generate_secret_word();
-                output("no valid game saves found. generated new saves instead\n");
-            }
-            
-        }
-        else{
-            generate_secret_word();
-        }
+
+static void handle_first_turn(){
+    if(get_attempt_number() > 1){
+        return;
     }
+    if(!loading_game_data){
+        generate_secret_word();
+        return;
+    }
+    if(is_game_data_valid()){
+        load_secret_word();
+        load_attempts();
+    }
+    else{
+        output("no valid game saves found. generated new saves instead\n");
+        generate_secret_word();
+    }
+
+}
+
+bool process_turn(){
+    handle_first_turn();
 
     char input_buffer[1024];
     char** input_tokens = NULL;
@@ -181,19 +183,23 @@ bool process_turn(){
     
     parse_all_commands((const char**) input_tokens,token_count);
     
-    store_attempts();
-    if(first_turn){
-        if(!game_loaded){
-            store_secret_word();
-        }
-        first_turn = false;
-    }
     free(input_tokens);
+
+    if(get_attempt_number() == 0){
+        return false;
+    }
+    store_attempts();
+
+    if(get_attempt_number() == 1){
+        store_secret_word();
+    }
+
+    
     return game_ended;
 }
 
 
 void win_game(){
-    output("Congratulations, you found the word in %zu attempts!\n",attempt_number);
+    output("Congratulations, you found the word in %zu attempts!\n",get_attempt_number());
     delete_game_data();
 }

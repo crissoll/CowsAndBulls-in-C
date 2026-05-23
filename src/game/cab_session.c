@@ -37,6 +37,10 @@ static bool game_started = false;
 Attempt attempts[MAX_ATTEMPTS];
 size_t attempt_number = 0;
 
+void reset_attempts(){
+    attempt_number = 0;
+}
+
 static Vocabolary vocab_storage;
 Vocabolary *used_vocabolary = &vocab_storage;
 
@@ -81,18 +85,9 @@ static bool is_valid_saves_folder_path(const char *path){
     memcpy(normalized_path, path, trimmed_len);
     normalized_path[trimmed_len] = '\0';
 
-    if (!is_existing_directory(normalized_path)) {
-        free(normalized_path);
-        return false;
-    }
-
+    const bool result = is_existing_directory(normalized_path);
     free(normalized_path);
-    return true;
-}
-
-
-static bool validate_save_folder_path(){
-    return is_valid_saves_folder_path(saves_folder_path);
+    return result;
 }
 
 
@@ -122,7 +117,7 @@ static void init_save_file_paths(void){
             exit(EXIT_FAILURE);
         }
     }
-    if (!validate_save_folder_path()) {
+    if (!is_valid_saves_folder_path(saves_folder_path)) {
         output("invalid saves folder path\n");
         if (secret_file_path == NULL || attempts_file_path == NULL) {
             output("no valid paths could be provided for saves, game setup impossible\n");
@@ -159,6 +154,7 @@ static void init_save_file_paths(void){
 static void init_vocabolary_file_path(void){
     if (vocabolary_file_path == NULL) {
         if (!set_path_string(&vocabolary_file_path, DEFAULT_VOCAB_PATH)) {
+            output("couldn't load default vocabolary. game can't start\n");
             exit(EXIT_FAILURE);
         }
     }
@@ -245,7 +241,7 @@ void load_vocabolary(void){
 }
 
 
-GuessResult guess_word(Word attempt){
+GuessResult compare_with_secret_word(Word attempt){
     return compare_words(attempt, secret_word);
 }
 
@@ -415,7 +411,7 @@ void store_attempts(void){
 
 
 bool play_word(Word word){
-    GuessResult result = guess_word(word);
+    GuessResult result = compare_with_secret_word(word);
     attempts[attempt_number++] = attempt__new(word, result);
     store_attempts();
     guess_result__print(result);
