@@ -14,11 +14,10 @@ extern size_t cab_io__get_input_buffer_size(void);
 
 static void to_lower(char* string,size_t max_length){
     for (size_t k = 0; k < max_length && string[k] != '\0'; k++) {
-            if(string[k] >= 'A' && string[k] <= 'Z')
-                string[k] = string[k] - 'A' + 'a';
-        }
+        if (string[k] >= 'A' && string[k] <= 'Z')
+            string[k] = string[k] - 'A' + 'a';
+    }
 }
-
 
 static size_t normalize_spaces_in_place(char* string){
     size_t src_idx = 0;
@@ -46,6 +45,30 @@ static size_t normalize_spaces_in_place(char* string){
 
     string[dst_idx] = '\0';
     return dst_idx;
+}
+
+static size_t count_tokens(const char* string){
+    if (string[0] == '\0')
+        return 0;
+
+    size_t tokens = 1;
+    for (size_t i = 0; string[i] != '\0'; i++) {
+        if (string[i] == ' ')
+            tokens++;
+    }
+    return tokens;
+}
+
+static void split_tokens(char* buffer, char** arguments){
+    size_t arg_index = 0;
+    arguments[arg_index++] = buffer;
+
+    for (size_t i = 0; buffer[i] != '\0'; i++) {
+        if (buffer[i] == ' ') {
+            buffer[i] = '\0';
+            arguments[arg_index++] = &buffer[i + 1];
+        }
+    }
 }
 
 static bool get_input(char* buffer, size_t buffer_size){
@@ -108,40 +131,20 @@ size_t get_multiple_input(
     char*** arguments
 ){
     *arguments = NULL;
-    bool input_result = get_input(buffer,buffer_size);
-    
-    if(input_result == false){
-        *arguments = NULL;
+    if (!get_input(buffer, buffer_size))
         return 0;
-    }
 
     const size_t len = normalize_spaces_in_place(buffer);
-    if (buffer[0] == '\0'){
-        *arguments = NULL;
+    if (buffer[0] == '\0')
         return 0;
-    }
 
-    to_lower(buffer,len);
+    to_lower(buffer, len);
 
-    size_t token_count = 1;
-    for (size_t i = 0; buffer[i] != '\0'; i++) {
-        if (buffer[i] == ' ')
-            token_count++;
-    }
-
-    *arguments = malloc(sizeof(**arguments) * token_count);
+    const size_t token_count = count_tokens(buffer);
+    *arguments = malloc(token_count * sizeof **arguments);
     if (*arguments == NULL)
         exit(EXIT_FAILURE);
 
-    size_t arg_index = 0;
-    (*arguments)[arg_index++] = buffer;
-
-    for (size_t i = 0; buffer[i] != '\0'; i++) {
-        if (buffer[i] == ' ') {
-            buffer[i] = '\0';
-            (*arguments)[arg_index++] = &buffer[i + 1];
-        }
-    }
-
+    split_tokens(buffer, *arguments);
     return token_count;
 }
