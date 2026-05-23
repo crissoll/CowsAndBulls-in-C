@@ -1530,6 +1530,7 @@ jerks
 jerky
 jerry
 jests
+jesus
 jetty
 jewel
 jewes
@@ -2162,6 +2163,7 @@ plank
 plans
 plant
 plate
+plato
 plays
 plaza
 plead
@@ -2251,6 +2253,7 @@ puree
 purer
 purge
 purse
+pushy
 pussy
 putty
 pyrex
@@ -3246,7 +3249,9 @@ wards
 wares
 warms
 warns
+warps
 warts
+washy
 wasps
 waste
 watch
