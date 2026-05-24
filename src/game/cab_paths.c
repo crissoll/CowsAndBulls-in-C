@@ -72,7 +72,7 @@ static bool is_existing_directory(const char *path){
 
 // get length  
 static size_t get_normalized_path_len(const char *path){
-    char* last = path[strlen(path) - 1];
+    char* last = path + strlen(path) - 1;
 
     while (last > path + 1 && (*last == ' ' || *last == '\t'))
         last--;
