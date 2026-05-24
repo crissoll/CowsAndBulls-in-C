@@ -15,9 +15,11 @@ typedef struct{
 
 Word word__new(const char letters[LETTERS_IN_WORD + 1]);
 
-bool string_is_valid_word(const char* string);
+bool string_is_alpha(const char* string);
 
 void word__print(Word word);
+
+int string_check_length(const char* string);
 
 int word__sort_cmp(Word a, Word b);
 

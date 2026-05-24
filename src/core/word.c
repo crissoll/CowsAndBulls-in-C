@@ -1,8 +1,10 @@
 #include <stdlib.h>
-#include "io/cab_output.h"
 #include <stdio.h>
 #include <stdbool.h>
+#include <string.h>
 
+
+#include "io/cab_output.h"
 #include "core/word.h"
 
 
@@ -19,13 +21,16 @@ Word word__new(const char letters[LETTERS_IN_WORD + 1]){
     return word;
 }
 
-bool string_is_valid_word(const char* letters){
+bool string_is_alpha(const char* letters){
     for(size_t i = 0; i < LETTERS_IN_WORD; i++)
         if (letters[i] < 'a' || letters[i] > 'z')
             return false;
     return true;
 }
 
+int string_check_length(const char* string){
+    return (int)strlen(string) - (int)LETTERS_IN_WORD;
+}
 
 void word__print(Word word){
     output("%s",word.letters);

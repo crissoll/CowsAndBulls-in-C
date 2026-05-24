@@ -57,18 +57,21 @@ static void help_list_history_clear(void){
 
 
 bool check_string_and_get_word(const char* string, Word* word){
-    const size_t attempt_word_len = strlen(string);
 
-    if (attempt_word_len > LETTERS_IN_WORD){
-        output("word too long\n");
-        return false;
-    }
-    if (attempt_word_len < LETTERS_IN_WORD){
-        output("word too short\n");
-        return false;
+    {
+        const int attempt_cmp = string_check_length(string);
+
+        if (attempt_cmp > 0){
+            output("word too long\n");
+            return false;
+        }
+        if (attempt_cmp < 0){
+            output("word too short\n");
+            return false;
+        }
     }
 
-    if(!string_is_valid_word(string)){
+    if(!string_is_alpha(string)){
         output("word contains invalid characters\n");
         return false;
     }

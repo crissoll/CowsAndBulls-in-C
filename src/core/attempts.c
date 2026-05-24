@@ -112,7 +112,7 @@ bool load_attempt_array(
         if (scanned != 3)
             break;
 
-        if (!string_is_valid_word(letters))
+        if (!string_is_alpha(letters))
             break;
 
         result.cows = (size_t)cows;
