@@ -9,6 +9,7 @@
 #include "game/cab_game.h"
 #include "io/cab_output.h"
 #include "game/cab_session.h"
+#include "cab_used_vocabolary.h"
 
 #include "cmd/cmd_list.h"
 
@@ -61,7 +62,8 @@ bool print_current_filter(){
 
 bool print_filtered_word_list(){
     IndexArray filtered = filter__get_words_from_word_set(game__help_word_set(), game__help_filter());
-    index_array__print(filtered, used_vocabolary);
+    Vocabolary voc = get_used_vocabolary();
+    index_array__print(filtered, &voc);
     index_array__free_content(&filtered);
     return true;
 }

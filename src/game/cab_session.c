@@ -9,6 +9,7 @@
 #include "core/attempts.h"
 #include "io/cab_output.h"
 #include "game/cab_paths.h"
+#include "cab_used_vocabolary.h"
 
 #ifndef S_ISDIR
 #if defined(_S_IFMT) && defined(_S_IFDIR)
@@ -31,13 +32,9 @@ void reset_attempts(){
     attempt_number = 0;
 }
 
-static Vocabolary vocab_storage;
-Vocabolary *used_vocabolary = &vocab_storage;
-
-
 void generate_secret_word(void){
     srand((unsigned int)time(NULL));
-    secret_word = used_vocabolary->words[rand() % used_vocabolary->size];
+    secret_word = get_word_from_used_vocabolary(rand() % get_used_vocabolary_size());
     session_id = ((SessionId)rand() << 16) ^ (SessionId)rand() ^ (SessionId)time(NULL);
     set_file_paths_editing(false);
 }
@@ -45,14 +42,6 @@ void generate_secret_word(void){
 
 SessionId get_session_id(void){
     return session_id;
-}
-
-
-void load_vocabolary(void){
-    vocabolary__init_from_file(
-        used_vocabolary,
-        get_vocabolary_file_path()
-    );
 }
 
 
@@ -88,7 +77,7 @@ void store_secret_word(void){
 
 
 bool load_test_secret_word(Word *test_secret_word, SessionId *session_id_ptr){
-    
+
     FILE *file = fopen(get_secret_file_path(), "r");
 
     if (file == NULL) {
@@ -104,7 +93,7 @@ bool load_test_secret_word(Word *test_secret_word, SessionId *session_id_ptr){
     if (scan_success_count < 3 || strcmp(label, "session_id") != 0) // checks for malformed file
         return false;
     
-    if (!string_is_valid_word(letters)) {
+    if (!string_is_alpha(letters)) {
         return false;
     }
     *test_secret_word = word__new(letters);

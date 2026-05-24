@@ -11,8 +11,10 @@
 
 #include "game/cab_session.h"
 #include "game/cab_game.h"
+#include "cab_used_vocabolary.h"
 
 #include "cmd/cmd.h"
+
 
 WordSet help_word_set;
 WordSetFilter help_filter;
@@ -77,7 +79,7 @@ bool check_string_and_get_word(const char* string, Word* word){
     }
 
     Word candidate_word = word__new(string);
-    if (!vocabolary__contains_word(used_vocabolary, candidate_word)){
+    if (!word_is_in_used_vocabolary(candidate_word)){
         output("word not contained in vocabolary\n");
         return false;
     }
@@ -97,7 +99,8 @@ void game_start(){
    
     reset_game_vars();
     
-    word_set__init_from_vocabolary(&help_word_set, used_vocabolary);
+    const Vocabolary voc = get_used_vocabolary();
+    word_set__init_from_vocabolary(&help_word_set, &voc);
 }
 
 void reset_game_vars(){

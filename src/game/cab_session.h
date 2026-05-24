@@ -14,8 +14,6 @@ typedef unsigned long SessionId;
 
 // =====DATA INIT=====
 
-extern Vocabolary *used_vocabolary; // really bad smell!
-
 void init_file_paths();
 
 void load_vocabolary();
