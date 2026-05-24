@@ -34,16 +34,6 @@ void reset_attempts(){
 static Vocabolary vocab_storage;
 Vocabolary *used_vocabolary = &vocab_storage;
 
-// get length  
-static size_t get_normalized_path_len(const char *path){
-    size_t len = strlen(path);
-
-    while (len > 0 && (path[len - 1] == '\\' || path[len - 1] == '/')) {
-        len--;
-    }
-    return len;
-}
-
 
 void generate_secret_word(void){
     srand((unsigned int)time(NULL));
@@ -61,7 +51,7 @@ SessionId get_session_id(void){
 void load_vocabolary(void){
     vocabolary__init_from_file(
         used_vocabolary,
-        vocabolary_file_path
+        get_vocabolary_file_path()
     );
 }
 
@@ -75,14 +65,14 @@ bool load_attempts(void){
     return load_attempt_array(
         attempts,
         &attempt_number,
-        attempts_file_path,
+        get_attempts_file_path(),
         &session_id
     );
 }
 
 
 void store_secret_word(void){
-    FILE *file = fopen(secret_file_path, "w");
+    FILE *file = fopen(get_secret_file_path(), "w");
 
     if (file == NULL) {
         output("secret word couldn't be stored. save files will be corrupted");
@@ -98,7 +88,7 @@ void store_secret_word(void){
 
 
 bool load_test_secret_word(Word *test_secret_word, SessionId *session_id_ptr){
-    FILE *file = fopen(secret_file_path, "r");
+    FILE *file = fopen(get_secret_file_path(), "r");
 
     if (file == NULL) {
         return false;
@@ -131,8 +121,8 @@ bool load_secret_word(){
 
 
 bool is_there_previous_game_data(void){
-    FILE *attempts_file = fopen(attempts_file_path, "r");
-    FILE *secret_file = fopen(secret_file_path, "r");
+    FILE *attempts_file = fopen(get_attempts_file_path(), "r");
+    FILE *secret_file = fopen(get_secret_file_path(), "r");
 
     if (attempts_file != NULL){
         fclose(attempts_file);
@@ -158,7 +148,7 @@ bool is_game_data_valid(void){
     if (!load_attempt_array(
             dummy_attempts,
             &dummy_attempt_number,
-            attempts_file_path,
+            get_attempts_file_path(),
             &loaded_session_id)) {
         return false;
     }
@@ -176,12 +166,12 @@ bool is_game_data_valid(void){
 
 
 void delete_game_data(void){
-    if (remove(secret_file_path) != 0) {
-        perror("remove secret_word.txt");
+    if (remove(get_secret_file_path()) != 0) {
+        perror("error while removing secret_word.txt");
     }
 
-    if (remove(attempts_file_path) != 0) {
-        perror("remove attempts.txt");
+    if (remove(get_attempts_file_path()) != 0) {
+        perror("error while removing attempts.txt");
     }
 }
 
@@ -221,7 +211,7 @@ void store_attempts(void){
     store_attempt_array(
         attempts,
         attempt_number,
-        attempts_file_path,
+        get_attempts_file_path(),
         session_id
     );
 }

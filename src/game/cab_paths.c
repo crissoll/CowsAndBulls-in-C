@@ -10,6 +10,39 @@
 #define DEFAULT_VOCAB_PATH "data/words/5_letters_en_words.txt"
 #define DEFAULT_SAVES_FOLDER_PATH "data/saves/"
 
+char *saves_folder_path = NULL;
+char *secret_file_path = NULL;
+char *attempts_file_path = NULL;
+char *vocabolary_file_path = NULL;
+
+static bool file_paths_editing_enabled = true;
+
+static bool file_paths_initialized = false;
+
+
+char * get_saves_folder_path(){
+    if(!file_paths_initialized)
+        perror("file paths not initialized");
+    return saves_folder_path;
+}
+char * get_vocabolary_file_path(){
+    if(!file_paths_initialized)
+        perror("file paths not initialized");
+    return vocabolary_file_path;
+}
+
+char * get_secret_file_path(){
+    if(!file_paths_initialized)
+        perror("file paths not initialized");
+    return secret_file_path;
+}
+
+char * get_attempts_file_path(){
+    if(!file_paths_initialized)
+        perror("file paths not initialized");
+    return attempts_file_path;
+}
+
 bool set_path_string(char **path, const char *value){
     if (value == NULL || value[0] == '\0') {
         output("tried assigning empty value to path\n");
@@ -33,14 +66,24 @@ static bool is_existing_directory(const char *path){
     return (stat(path, &statbuf) == 0) && S_ISDIR(statbuf.st_mode);
 }
 
+// get length  
+static size_t get_normalized_path_len(const char *path){
+    char* last = path[strlen(path) - 1];
+
+    while (last > path + 1 && (*last == ' ' || *last == '\t'))
+        last--;
+    
+    if(last > path && (*last == '\\' || *last == '/' || *last == ' ' || *last == '\t'))
+        last--;
+    
+    return last - path + 1;
+}
+
+
 
 bool is_valid_saves_folder_path(const char *path){
     if (path == NULL) {
         return false;
-    }
-
-    if (is_existing_directory(path)) {
-        return true;
     }
 
     const size_t trimmed_len = get_normalized_path_len(path);
@@ -132,4 +175,52 @@ void init_vocabolary_file_path(){
         exit(EXIT_FAILURE);
     }
     fclose(vocab_file);
+}
+
+
+void set_file_paths_editing(bool value){
+    file_paths_editing_enabled = value;
+}
+
+bool set_saves_folder_path(const char *path){
+    if (file_paths_editing_enabled == false) {
+        output("cannot change file paths after the game is started\n");
+        return false;
+    }
+
+    if (!is_valid_saves_folder_path(path)) {
+        output("invalid saves folder path\n");
+        return false;
+    }
+
+    if (!set_path_string(&saves_folder_path, path)) {
+        return false;
+    }
+
+    init_save_file_paths();
+    return true;
+}
+
+
+bool set_vocabolary_file_path(const char *path){
+    if (file_paths_editing_enabled == false) {
+        output("cannot change file paths after the game is started\n");
+        return false;
+    }
+
+    if (!set_path_string(&vocabolary_file_path, path)) {
+        return false;
+    }
+
+    init_vocabolary_file_path();
+    return true;
+}
+
+
+
+
+void init_file_paths(){
+    init_save_file_paths();
+    init_vocabolary_file_path();
+    file_paths_initialized = true;
 }
