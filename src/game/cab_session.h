@@ -12,7 +12,7 @@
 typedef unsigned long SessionId;
 
 
-// data init
+// =====DATA INIT=====
 
 extern Vocabolary *used_vocabolary; // really bad smell!
 
@@ -24,41 +24,38 @@ bool set_vocabolary_file_path(const char *path);
 
 void load_vocabolary();
 
-// game setup
+// =====GAME SETUP=====
 bool is_game_data_valid();
-
-SessionId get_session_id();
-
-void generate_secret_word();
 
 bool load_secret_word();
 
 bool load_attempts();
 
+void generate_secret_word();
+
 void delete_game_data();
-
-// game turn
-GuessResult compare_with_secret_word(Word attempt);
-
-bool play_word(Word word); // wrapper
-
-bool is_word_already_attempted(Word word);
-
-
-bool print_attempts(void);
-
-size_t get_attempt_number();
-
-void store_secret_word();
-
-void store_attempts(void);
-
-
 
 void reset_attempts();
 
+// =====GAME TURN=====
+GuessResult compare_with_secret_word(Word attempt);
 
+bool play_word(Word attempt); // wrapper of compare_with_secret_word
 
+bool is_word_already_attempted(Word word);
+
+// used in a command... it's a little smelly
 void compare_attempts_to_word(Word word);
+
+// used for display
+bool print_attempts(void);
+
+// used at the end of the game; it could be used in other places
+size_t get_attempt_number();
+
+// storage fase at the end of each turn
+void store_secret_word();
+
+void store_attempts(void);
 
 #endif
