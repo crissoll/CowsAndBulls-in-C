@@ -1,44 +1,49 @@
 CC := gcc
-CFLAGS := -g -Wall -Wextra -std=c11 -Isrc
+# Add project include directories so headers can be included without subpaths,
+# e.g. `#include "cab_files.h"` from any source file.
+CFLAGS := -g -Wall -Wextra -std=c11 \
+	-Isrc \
+	-Isrc/core \
+	-Isrc/io \
+	-Isrc/game \
+	-Isrc/api \
+	-Isrc/cmd
 RM := rm -f
+AR := ar rcs
 
-GAME_SRCS := \
-	apps/api_usage_example.c \
-	src/api/cab_api.c \
-	src/api/cab_io_api.c \
-	src/api/cab_string.c \
-	src/cmd/cmd.c \
-	src/cmd/cmd_attempts.c \
-	src/cmd/cmd_list.c \
-	src/core/attempts.c \
-	src/core/guess.c \
-	src/core/index_array.c \
-	src/core/vocabolary.c \
-	src/core/word.c \
-	src/core/word_set.c \
-	src/core/word_set_filter.c \
-	src/game/cab_game.c \
-	src/game/cab_session.c \
-	src/io/cab_files.c \
-	src/io/cab_input.c \
-	src/io/cab_output.c
+rwildcard = $(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2)$(filter $(subst *,%,$2),$d))
 
-.PHONY: all clean help game
+CAB_GAME_APP_SRCS := \
+	apps/api_usage_example.c
+
+CAB_GAME_SHARED_SRCS := $(call rwildcard,src/,*.c)
+
+CAB_GAME_EXEC_SRCS := $(CAB_GAME_APP_SRCS) $(CAB_GAME_SHARED_SRCS)
+CAB_GAME_LIB_OBJS := $(CAB_GAME_SHARED_SRCS:.c=.o)
+
+.PHONY: all clean help game game-lib
 
 all: game
 
-cab_game: $(CAB_GAME_SRCS)
+game: cab_game
+
+game-lib: libcab_game.a
+
+cab_game: $(CAB_GAME_EXEC_SRCS)
 	$(CC) $(CFLAGS) -o $@ $^
 
-game: $(GAME_SRCS)
-	$(CC) $(CFLAGS) -o $@ $^
+libcab_game.a: $(CAB_GAME_LIB_OBJS)
+	$(AR) $@ $^
+
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
 
 word.o: src/core/word.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	$(RM) cab_game game word.o *.exe
+	$(RM) cab_game libcab_game.a word.o $(CAB_GAME_LIB_OBJS) *.exe
 
 help:
 	@echo "make [target]"
-	@echo "Targets: cab_game, game, word.o, clean"
+	@echo "Targets: game, game-lib, cab_game, libcab_game.a, word.o, clean"
