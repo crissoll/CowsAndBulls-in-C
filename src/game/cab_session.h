@@ -18,10 +18,6 @@ extern Vocabolary *used_vocabolary; // really bad smell!
 
 void init_file_paths();
 
-bool set_saves_folder_path(const char *path);
-
-bool set_vocabolary_file_path(const char *path);
-
 void load_vocabolary();
 
 // =====GAME SETUP=====

@@ -88,6 +88,7 @@ void store_secret_word(void){
 
 
 bool load_test_secret_word(Word *test_secret_word, SessionId *session_id_ptr){
+    
     FILE *file = fopen(get_secret_file_path(), "r");
 
     if (file == NULL) {

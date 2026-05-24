@@ -5,6 +5,7 @@
 #include "api/cab_io_api.h"
 #include "game/cab_game.h"
 #include "game/cab_session.h"
+#include "game/cab_paths.h"
 #include "io/cab_output.h"
 
 
