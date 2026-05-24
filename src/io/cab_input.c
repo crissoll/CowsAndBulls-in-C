@@ -102,7 +102,7 @@ void io__set_input_mode(InputMode new_mode){
 }
 
 
-size_t get_multiple_input(
+size_t get_args_from_input(
     char buffer[],
     size_t buffer_size,
     char*** arguments
