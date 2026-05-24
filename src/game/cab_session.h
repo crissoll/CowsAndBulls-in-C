@@ -6,17 +6,10 @@
 
 
 // it handles three different things:
-// data init, that set vocabolary and file paths;
+// data init, that set vocabolary and file paths; MOVED OUT V
 // game setup, that setup secret word and attempts;
 // game turn, that handles turn logic
 typedef unsigned long SessionId;
-
-
-// =====DATA INIT=====
-
-void init_file_paths();
-
-void load_vocabolary();
 
 // =====GAME SETUP=====
 bool is_game_data_valid();

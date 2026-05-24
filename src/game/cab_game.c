@@ -12,7 +12,7 @@
 #include "game/cab_session.h"
 #include "game/cab_game.h"
 #include "cab_used_vocabolary.h"
-
+#include "cab_paths.h"
 #include "cmd/cmd.h"
 
 

@@ -13,4 +13,5 @@ Word get_word_from_used_vocabolary(size_t index);
 
 size_t get_used_vocabolary_size();
 
+void load_vocabolary();
 #endif
