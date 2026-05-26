@@ -9,7 +9,7 @@ extern bool check_string_and_get_word(const char* string, Word* word);
 extern bool too_many_arguments();
 
 
-bool compare_attemps_to_first_arg(size_t token_count,const char* tokens[]){
+bool compare_attempts_to_first_arg(size_t token_count,const char* tokens[]){
     if(token_count > 1){
         return too_many_arguments();
     }

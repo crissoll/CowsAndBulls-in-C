@@ -4,15 +4,13 @@
 #include <stddef.h>
 #include <string.h>
 
+#include "cab_game.h"
+#include "cab_attempts_manager.h"
+
 #include "io/cab_output.h"
 #include "cmd/cmd_attempts.h"
 #include "cmd/cmd_list.h"
-
 #include "cmd/cmd_docs.h"
-
-extern bool print_attempts();
-extern bool try_word_from_args(size_t token_count,const char* tokens[]);
-
 
 typedef bool (*CommandHandler)(size_t token_count,const char* tokens[]);
 typedef bool (*ZeroArgsCommandHandler)(void);
@@ -69,7 +67,7 @@ const CommandSpec const commands[] = {
         .help_text = HELP_CMD_ATTEMPTS,
         .allowed = &(bool){true},
         .case_no_args = print_attempts,
-        .default_handler = compare_attemps_to_first_arg,
+        .default_handler = compare_attempts_to_first_arg,
         .args = NULL
     },
     {
