@@ -58,37 +58,6 @@ bool game__help_list_history_entry(size_t index, ListHistoryEntry* out_entry){
 static void help_list_history_clear(void){
     help_list_history_count = 0;
 }
-
-
-bool check_string_and_get_word(const char* string, Word* word){
-
-    {
-        const int attempt_cmp = string_check_length(string);
-
-        if (attempt_cmp > 0){
-            output("word too long\n");
-            return false;
-        }
-        if (attempt_cmp < 0){
-            output("word too short\n");
-            return false;
-        }
-    }
-
-    if(!string_is_alpha(string)){
-        output("word contains invalid characters\n");
-        return false;
-    }
-
-    Word candidate_word = word__new(string);
-    if (!word_is_in_used_vocabolary(candidate_word)){
-        output("word not contained in vocabolary\n");
-        return false;
-    }
-    *word = candidate_word;
-    return true;
-}
-
 static bool loading_game_data = false;
 
 void reset_game_vars();

@@ -34,3 +34,14 @@ void load_vocabolary(void){
         get_vocabolary_file_path()
     );
 }
+
+bool check_string_and_get_word(const char* string, Word* word){
+
+    Word candidate_word = word__new(string);
+    if (!word_is_in_used_vocabolary(candidate_word)){
+        output("word not contained in vocabolary\n");
+        return false;
+    }
+    *word = candidate_word;
+    return true;
+}
