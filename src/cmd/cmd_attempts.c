@@ -14,9 +14,15 @@ bool compare_attempts_to_first_arg(size_t token_count,const char* tokens[]){
     if(token_count > 1){
         return too_many_arguments();
     }
-        
-    Word candidate_word;
-    if (check_string_and_get_word(tokens[0],&candidate_word))
-        compare_attempts_to_word(candidate_word);
+    
+    if (!can_string_be_word(tokens[0]))
+        return false;
+    
+    Word candidate_word = word__new(tokens[0]);
+    if (!word_is_in_used_vocabolary(candidate_word)){
+        output("word not contained in vocabolary\n");
+        return false;
+    }
+    compare_attempts_to_word(candidate_word);
     return true;
 }
