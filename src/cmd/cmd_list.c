@@ -8,7 +8,7 @@
 
 #include "game/cab_game.h"
 #include "io/cab_output.h"
-#include "game/cab_session.h"
+#include "game/cab_secret_word.h"
 #include "cab_used_vocabolary.h"
 
 #include "cmd/cmd_list.h"

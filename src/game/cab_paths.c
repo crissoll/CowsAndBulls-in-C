@@ -2,8 +2,20 @@
 #include <sys/stat.h>
 #include <stdio.h>
 
+#include "cab_files.h"
+
 #include "cab_paths.h"
 #include "cab_output.h"
+
+
+#ifndef S_ISDIR
+#if defined(_S_IFMT) && defined(_S_IFDIR)
+#define S_ISDIR(mode) (((mode) & _S_IFMT) == _S_IFDIR)
+#elif defined(S_IFMT) && defined(S_IFDIR)
+#define S_ISDIR(mode) (((mode) & S_IFMT) == S_IFDIR)
+#endif
+#endif
+
 
 #define SECRET_FILE_NAME "secret_word.saves"
 #define ATTEMPTS_FILE_NAME "attempts.saves"
@@ -70,6 +82,7 @@ static bool is_existing_directory(const char *path){
     return (stat(path, &statbuf) == 0) && S_ISDIR(statbuf.st_mode);
 }
 
+
 // get length  
 static size_t get_normalized_path_len(const char *path){
     char* last = (char*) path + strlen(path) - 1;
@@ -82,6 +95,7 @@ static size_t get_normalized_path_len(const char *path){
     
     return last - path + 1;
 }
+
 
 
 bool is_valid_saves_folder_path(const char *path){
@@ -161,7 +175,7 @@ void init_vocabolary_file_path(){
         }
     }
 
-    FILE *vocab_file = fopen(vocabolary_file_path, "r");
+    FILE *vocab_file = open_file_safe(vocabolary_file_path, "r");
     if (vocab_file != NULL) {
         fclose(vocab_file);
         return;
@@ -172,7 +186,7 @@ void init_vocabolary_file_path(){
         exit(EXIT_FAILURE);
     }
 
-    vocab_file = fopen(vocabolary_file_path, "r");
+    vocab_file = open_file_safe(vocabolary_file_path, "r");
     if (vocab_file == NULL) {
         output("couldn't load default vocabolary. game can't start\n");
         exit(EXIT_FAILURE);

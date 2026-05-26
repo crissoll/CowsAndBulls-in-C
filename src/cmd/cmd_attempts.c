@@ -3,8 +3,10 @@
 
 #include "core/word.h"
 
-extern void compare_attempts_to_word(Word word);
-extern bool print_attempts();
+#include "cab_output.h"
+#include "cab_attempts_manager.h"
+
+
 extern bool check_string_and_get_word(const char* string, Word* word);
 extern bool too_many_arguments();
 
@@ -17,12 +19,5 @@ bool compare_attempts_to_first_arg(size_t token_count,const char* tokens[]){
     Word candidate_word;
     if (check_string_and_get_word(tokens[0],&candidate_word))
         compare_attempts_to_word(candidate_word);
-    return true;
-}
-
-bool cmd__attempts(size_t token_count,const char* tokens[]){
-    if(token_count == 0)
-        print_attempts();
-    compare_attemps_to_first_arg(token_count,tokens);
     return true;
 }

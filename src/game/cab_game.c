@@ -9,11 +9,13 @@
 #include "io/cab_input.h"
 #include "io/cab_output.h"
 
-#include "game/cab_session.h"
+#include "game/cab_secret_word.h"
 #include "game/cab_game.h"
 #include "cab_used_vocabolary.h"
 #include "cab_paths.h"
 #include "cmd/cmd.h"
+#include "cab_attempts_manager.h"
+#include "cab_load_store.h"
 
 
 WordSet help_word_set;
