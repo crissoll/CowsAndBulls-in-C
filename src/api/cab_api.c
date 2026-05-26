@@ -7,17 +7,91 @@
 #include "game/cab_secret_word.h"
 #include "game/cab_paths.h"
 #include "io/cab_output.h"
+#include "io/cab_input.h"
 #include "cab_load_store.h"
+#include "cmd.h"
+#include "cab_attempts_manager.h"
 
 
-
-static bool game_ended = false;
 static bool saves_handled = false;
+
+static bool loading_game_data = false;
+
+
+void reset_game_vars(){
+    loading_game_data = false;
+    reset_attempts();
+}
+
+bool prompt_to_load_game(){
+    if(!is_game_data_valid()){
+        loading_game_data = false;
+        return true;
+    }
+
+    char buffer[100];
+    char** input_tokens = NULL;
+    
+    size_t output_size = get_args_from_input(buffer,sizeof(buffer),&input_tokens);
+
+    free(input_tokens);
+
+    if (output_size == 0 || (buffer[0] != 'y' && buffer[0] != 'n')) {
+        output("input must be y or n\n");
+        return false;
+    }
+
+    if(buffer[0] == 'y'){
+        loading_game_data = true;
+    }
+    else{
+        loading_game_data = false;
+    }
+    return true;
+}
+
+static void handle_first_turn(){
+    if(get_attempt_number() > 1){
+        return;
+    }
+    if(!loading_game_data){
+        generate_secret_word();
+        return;
+    }
+    if(is_game_data_valid()){
+        load_secret_word();
+        load_attempts();
+    }
+    else{
+        output("no valid game saves found. generated new saves instead\n");
+        generate_secret_word();
+    }
+
+}
+
+void process_turn(){
+    handle_first_turn();
+
+    char input_buffer[1024];
+    char** input_tokens = NULL;
+    const size_t token_count = get_args_from_input(input_buffer, sizeof(input_buffer), &input_tokens);
+    
+    if(token_count == 0){
+        free(input_tokens);
+        return;
+    }
+    
+    parse_all_commands((const char**) input_tokens,token_count);
+    
+    free(input_tokens);
+
+    store_attempts();
+}
 
 String play_turn(String input_string){
     if(!input(input_string))
         return get_output();
-    game_ended = process_turn();
+    process_turn();
     return get_output();
 }
 
@@ -28,16 +102,13 @@ char* play_turn_charptr(char* input_string){
     }).content;
 }
 
-bool is_game_ended(){
-    return game_ended;
-}
 
 void setup_game(){
-    game_ended = false;
     saves_handled = false;
     io__setup();
     io__set_input_mode(API_IN);
     io__set_output_mode(API_OUT);
+    reset_game_vars();
     game_start();
 }
 
@@ -63,8 +134,5 @@ void start_new_game(){
 }
 
 void shutdown_game(){
-    if(is_game_ended()){
-        win_game();
-    }
     io__shutdown();
 }

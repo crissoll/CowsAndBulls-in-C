@@ -58,125 +58,41 @@ bool game__help_list_history_entry(size_t index, ListHistoryEntry* out_entry){
 static void help_list_history_clear(void){
     help_list_history_count = 0;
 }
-static bool loading_game_data = false;
-
-void reset_game_vars();
-
 void game_start(){
     init_file_paths();
     load_vocabolary();
     help_list_history_clear();
     filter__init(&help_filter);
-   
-    reset_game_vars();
     
     const Vocabolary voc = get_used_vocabolary();
     word_set__init_from_vocabolary(&help_word_set, &voc);
 }
 
-void reset_game_vars(){
-    loading_game_data = false;
-    reset_attempts();
-}
-
-bool prompt_to_load_game(){
-    if(!is_game_data_valid()){
-        loading_game_data = false;
-        return true;
-    }
-
-    char buffer[100];
-    char** input_tokens = NULL;
-    
-    size_t output_size = get_args_from_input(buffer,sizeof(buffer),&input_tokens);
-
-    free(input_tokens);
-
-    if (output_size == 0 || (buffer[0] != 'y' && buffer[0] != 'n')) {
-        output("input must be y or n\n");
-        return false;
-    }
-
-    if(buffer[0] == 'y'){
-        loading_game_data = true;
-    }
-    else{
-        loading_game_data = false;
-    }
-    return true;
-}
-
 bool game_ended = false;
-bool try_word_from_args(size_t token_count,const char* tokens[]){
-    if(token_count > 1){
-        output("too many arguments!\n");
-        return false;
-    }
-    Word word;
-    
-    if(!check_string_and_get_word(tokens[0],&word)){
-        return false;
-    }
+
+void play_word(Word word){
     if(is_word_already_attempted(word)){
         output("word already attempted\n");
-        return false;
-    }
-    game_ended = play_word(word);
-    
-    return true;
-}
-
-
-static void handle_first_turn(){
-    if(get_attempt_number() > 1){
         return;
     }
-    if(!loading_game_data){
-        generate_secret_word();
-        return;
-    }
-    if(is_game_data_valid()){
-        load_secret_word();
-        load_attempts();
-    }
-    else{
-        output("no valid game saves found. generated new saves instead\n");
-        generate_secret_word();
-    }
+    GuessResult result = compare_with_secret_word(word);
 
-}
-
-bool process_turn(){
-    handle_first_turn();
-
-    char input_buffer[1024];
-    char** input_tokens = NULL;
-    const size_t token_count = get_args_from_input(input_buffer, sizeof(input_buffer), &input_tokens);
-    
-    if(token_count == 0){
-        free(input_tokens);
-        return false;
-    }
-    
-    parse_all_commands((const char**) input_tokens,token_count);
-    
-    free(input_tokens);
-
-    if(get_attempt_number() == 0){
-        return false;
-    }
+    add_attempt(word, result);
     store_attempts();
+    guess_result__print(result);
+    output("\n");
 
-    if(get_attempt_number() == 1){
-        store_secret_word();
+    set_file_paths_editing(false);// i am not sure if this is needed...
+
+    if(result.bulls >= LETTERS_IN_WORD){
+        output("Congratulations, you found the word in %zu attempts!\n",get_attempt_number());
+        delete_game_data();
+        game_ended = true;
     }
+}
 
-    
+
+bool is_game_ended(){
     return game_ended;
 }
 
-
-void win_game(){
-    output("Congratulations, you found the word in %zu attempts!\n",get_attempt_number());
-    delete_game_data();
-}

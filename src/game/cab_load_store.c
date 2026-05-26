@@ -40,6 +40,9 @@ void store_attempts(void){
         /* cannot store without a valid path */
         return;
     }
+
+    if(attempt_number == 0)
+        return;
     store_attempt_array(
         attempts,
         attempt_number,
@@ -54,6 +57,9 @@ void generate_session_id(){
 }
 
 void store_secret_word(void){
+    if(get_attempt_number() == 1){
+        return;
+    }
     FILE *file = open_file_safe(get_secret_file_path(), "w");
 
     if (file == NULL) {
@@ -66,6 +72,11 @@ void store_secret_word(void){
         fprintf(file, "%c", secret_word.letters[j]);
     }
     fclose(file);
+}
+
+void store_data(){
+    store_secret_word();
+    store_attempts();
 }
 
 

@@ -10,6 +10,7 @@
 #include "cab_used_vocabolary.h"
 #include "cab_attempts_manager.h"
 #include "cab_load_store.h"
+#include "cab_paths.h"
 
 Word secret_word;
 
@@ -25,16 +26,5 @@ GuessResult compare_with_secret_word(Word attempt){
     return compare_words(attempt, secret_word);
 }
 
-bool play_word(Word word){
-    GuessResult result = compare_with_secret_word(word);
-    add_attempt(word, result);
-    store_attempts();
-    guess_result__print(result);
-    output("\n");
-
-    set_file_paths_editing(false);// i am not sure if this is needed...
-
-    return (result.bulls >= LETTERS_IN_WORD);
-}
 
 

@@ -9,6 +9,4 @@ void generate_secret_word();
 
 GuessResult compare_with_secret_word(Word attempt);
 
-bool play_word(Word attempt); // wrapper of compare_with_secret_word
-
 #endif

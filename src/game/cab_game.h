@@ -12,16 +12,12 @@ typedef struct {
 	size_t word_count;
 } ListHistoryEntry;
 
-bool try_word_from_args(size_t token_count,const char* tokens[]);
+
 void game_start();
 
-void reset_game_vars();
+void play_word(Word attempt);
 
-bool prompt_to_load_game();
-
-bool process_turn();
-
-void win_game();
+bool is_game_ended();
 
 WordSet* game__help_word_set(void);
 WordSetFilter* game__help_filter(void);

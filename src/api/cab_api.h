@@ -14,6 +14,10 @@ bool set_vocabolary_file_path(const char *path);
 
 void setup_game();
 
+
+void reset_game_vars();
+
+
 bool are_there_previous_saves();
 
 String handle_saves_load_choice(String input_string);

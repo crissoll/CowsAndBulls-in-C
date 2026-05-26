@@ -11,6 +11,7 @@
 #include "cmd/cmd_attempts.h"
 #include "cmd/cmd_list.h"
 #include "cmd/cmd_docs.h"
+#include "cmd_try_word.h"
 
 typedef bool (*CommandHandler)(size_t token_count,const char* tokens[]);
 typedef bool (*ZeroArgsCommandHandler)(void);
@@ -113,7 +114,7 @@ const CommandSpec const commands[] = {
 
 const CommandSpec* ROOT = &(CommandSpec){
     .case_no_args = NULL,
-    .default_handler = try_word_from_args,
+    .default_handler = cmd__try_word_from_args,
     .args = commands
 };
 
