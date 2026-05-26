@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "cab_files.h"
 #include "core/index_array.h"
 #include "core/guess.h"
 #include "core/attempts.h"
@@ -65,13 +66,19 @@ void store_attempt_array(
         const char* file_name,
         unsigned long session_id
     ){
-    FILE* attempts_file = fopen(file_name,"w");
+    if (file_name == NULL) {
+        perror("store_attempt_array: file_name is NULL");
+        return;
+    }
 
+    FILE* attempts_file = open_file_safe(file_name,"w");
     fprintf(attempts_file,"session_id %lu\n", session_id);
 
     for(size_t i = 0; i < attempt_number;i++){
-        for(size_t j = 0; j < LETTERS_IN_WORD; j++)
-            fprintf(attempts_file,"%c",attempts[i].word.letters[j]);
+        for(size_t j = 0; j < LETTERS_IN_WORD; j++){
+            char chr = attempts[i].word.letters[j];
+            fprintf(attempts_file,"%c",chr);
+        }
         fprintf(attempts_file," %zu %zu\n",
             attempts[i].result.cows,
             attempts[i].result.bulls);
@@ -85,12 +92,15 @@ bool load_attempt_array(
         const char* file_name,
         unsigned long* session_id
     ){
-    
+    if (file_name == NULL || attempt_number == NULL || session_id == NULL) {
+        perror("load_attempt_array: invalid arguments");
+    }
+
     *attempt_number = 0;
 
-    FILE* attempts_file = fopen(file_name,"r");
+    FILE* attempts_file = open_file_safe(file_name,"r");
     if (attempts_file == NULL) {
-        /* nothing to load */
+        /* nothing to load or cannot open - treat as no data */
         return false;
     }
 
