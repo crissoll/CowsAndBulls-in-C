@@ -12,6 +12,7 @@ typedef struct {
 	size_t word_count;
 } ListHistoryEntry;
 
+bool try_word_from_args(size_t token_count,const char* tokens[]);
 void game_start();
 
 void reset_game_vars();
