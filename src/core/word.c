@@ -9,27 +9,33 @@
 
 
 Word word__new(const char letters[LETTERS_IN_WORD + 1]){
-    Word word;
-    for(size_t i = 0; i < LETTERS_IN_WORD; i++){
-        if (letters[i] < 'a' || letters[i] > 'z'){
-            perror("tried creating word with invalid characters in it");
-            exit(EXIT_FAILURE);
-        }
-        word.letters[i] = letters[i];
+    if(!can_string_be_word(letters)){
+        perror("tried creating word with invalid characters in it");
+        exit(EXIT_FAILURE);
     }
-    word.letters[LETTERS_IN_WORD] = '\0';
+    Word word;
+    strcpy(word.letters,letters);
     return word;
 }
 
-bool string_is_alpha(const char* letters){
-    for(size_t i = 0; i < LETTERS_IN_WORD; i++)
-        if (letters[i] < 'a' || letters[i] > 'z')
-            return false;
-    return true;
-}
+bool can_string_be_word(const char* string){
+    const size_t len = strlen(string);
 
-int string_check_length(const char* string){
-    return (int)strlen(string) - (int)LETTERS_IN_WORD;
+    for(size_t i = 0; i < len; i++)
+        if (string[i] < 'a' || string[i] > 'z'){
+            output("word contains invalid characters\n");
+            return false;
+        }
+
+    if (len > LETTERS_IN_WORD){
+        output("word too long\n");
+        return false;
+    }
+    if (len < LETTERS_IN_WORD){
+        output("word too short\n");
+        return false;
+    }
+    return true;
 }
 
 void word__print(Word word){

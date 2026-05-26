@@ -86,7 +86,7 @@ bool load_test_secret_word(Word *test_secret_word, SessionId *session_id_ptr){
     if (scan_success_count < 3 || strcmp(label, "session_id") != 0) // checks for malformed file
         return false;
     
-    if (!string_is_alpha(letters)) {
+    if (!can_string_be_word(letters)) {
         return false;
     }
     *test_secret_word = word__new(letters);

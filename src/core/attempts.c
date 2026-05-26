@@ -8,6 +8,7 @@
 #include "core/attempts.h"
 #include "core/vocabolary.h"
 
+
 Attempt attempt__new(Word word, GuessResult result){
     Attempt attempt = {.word = word, .result = result};
     return attempt;
@@ -122,7 +123,7 @@ bool load_attempt_array(
         if (scanned != 3)
             break;
 
-        if (!string_is_alpha(letters))
+        if (!can_string_be_word(letters))
             break;
 
         result.cows = (size_t)cows;
