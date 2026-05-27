@@ -2,7 +2,7 @@
 
 #define INDEX_ARRAY
 
-#include "core/vocabolary.h"
+#include "vocabolary.h"
 
 typedef struct {
     size_t size;

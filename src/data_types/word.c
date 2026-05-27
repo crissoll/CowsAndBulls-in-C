@@ -4,8 +4,8 @@
 #include <string.h>
 
 
-#include "io/cab_output.h"
-#include "core/word.h"
+#include "cab_output.h"
+#include "word.h"
 
 
 Word word__new(const char letters[LETTERS_IN_WORD + 1]){

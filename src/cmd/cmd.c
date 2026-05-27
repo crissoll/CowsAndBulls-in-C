@@ -7,10 +7,10 @@
 #include "cab_game.h"
 #include "cab_attempts_manager.h"
 
-#include "io/cab_output.h"
-#include "cmd/cmd_attempts.h"
-#include "cmd/cmd_list.h"
-#include "cmd/cmd_docs.h"
+#include "cab_output.h"
+#include "cmd_attempts.h"
+#include "cmd_list.h"
+#include "cmd_docs.h"
 #include "cmd_try_word.h"
 
 typedef bool (*CommandHandler)(size_t token_count,const char* tokens[]);

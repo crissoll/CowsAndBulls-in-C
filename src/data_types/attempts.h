@@ -1,9 +1,9 @@
 #ifndef ATTEMPTS
 #define ATTEMPTS
 
-#include "core/index_array.h"
-#include "core/word.h"
-#include "core/guess.h"
+#include "index_array.h"
+#include "word.h"
+#include "guess.h"
 
 #define MAX_ATTEMPTS 255
 

@@ -4,8 +4,8 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-#include "core/word_set.h"
-#include "core/word_set_filter.h"
+#include "word_set.h"
+#include "word_set_filter.h"
 
 typedef struct {
 	WordSetFilter filter;

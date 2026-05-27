@@ -3,7 +3,7 @@
 
 #include <stddef.h>
 
-#include "core/word.h"
+#include "word.h"
 
 typedef struct{
     Word* words;

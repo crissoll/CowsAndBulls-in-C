@@ -1,8 +1,8 @@
 #include <stdlib.h>
 
-#include "io/cab_output.h"
-#include "core/word.h"
-#include "core/index_array.h"
+#include "cab_output.h"
+#include "word.h"
+#include "index_array.h"
 
 
 void index_array__init(IndexArray *array, size_t size){

@@ -1,12 +1,12 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
-#include "io/cab_output.h"
+#include "cab_output.h"
 
-#include "core/word.h"
-#include "core/word_set.h"
-#include "core/index_array.h"
-#include "core/word_set_filter.h"
+#include "word.h"
+#include "word_set.h"
+#include "index_array.h"
+#include "word_set_filter.h"
 
 
 static IndexArray filter__words_with_letter_anywhere(const WordSet* word_set, size_t letter_idx){

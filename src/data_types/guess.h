@@ -3,7 +3,7 @@
 
 #include <stdlib.h>
 
-#include "core/word.h"
+#include "word.h"
 
 typedef struct{
     size_t cows;

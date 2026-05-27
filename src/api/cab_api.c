@@ -1,13 +1,13 @@
 
 #include <string.h>
 
-#include "api/cab_api.h"
-#include "api/cab_io_api.h"
-#include "game/cab_game.h"
-#include "game/cab_secret_word.h"
-#include "game/cab_paths.h"
-#include "io/cab_output.h"
-#include "io/cab_input.h"
+#include "cab_api.h"
+#include "cab_io_api.h"
+#include "cab_game.h"
+#include "cab_secret_word.h"
+#include "cab_paths.h"
+#include "cab_output.h"
+#include "cab_input.h"
 #include "cab_load_store.h"
 #include "cmd.h"
 #include "cab_attempts_manager.h"

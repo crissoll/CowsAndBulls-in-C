@@ -1,7 +1,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-#include "core/word.h"
+#include "word.h"
 
 #include "cab_output.h"
 #include "cab_game.h"

@@ -4,16 +4,16 @@
 #include <stdlib.h>
 
 
-#include "core/word_set.h"
-#include "core/word_set_filter.h"
-#include "io/cab_input.h"
-#include "io/cab_output.h"
+#include "word_set.h"
+#include "word_set_filter.h"
+#include "cab_input.h"
+#include "cab_output.h"
 
-#include "game/cab_secret_word.h"
-#include "game/cab_game.h"
+#include "cab_secret_word.h"
+#include "cab_game.h"
 #include "cab_used_vocabolary.h"
 #include "cab_paths.h"
-#include "cmd/cmd.h"
+#include "cmd.h"
 #include "cab_attempts_manager.h"
 #include "cab_load_store.h"
 

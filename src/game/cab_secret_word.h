@@ -1,8 +1,8 @@
 #ifndef cab_secret_word
 #define cab_secret_word
 
-#include "core/guess.h"
-#include "core/vocabolary.h"
+#include "guess.h"
+#include "vocabolary.h"
 
 
 void generate_secret_word();

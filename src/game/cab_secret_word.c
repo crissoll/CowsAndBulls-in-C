@@ -3,10 +3,10 @@
 #include <sys/stat.h>
 #include <time.h>
 
-#include "core/vocabolary.h"
-#include "core/guess.h"
-#include "core/attempts.h"
-#include "io/cab_output.h"
+#include "vocabolary.h"
+#include "guess.h"
+#include "attempts.h"
+#include "cab_output.h"
 #include "cab_used_vocabolary.h"
 #include "cab_attempts_manager.h"
 #include "cab_load_store.h"

@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 
-#include "api/cab_string.h"
+#include "cab_string.h"
 
 // can't be used while the game is running; must be called before setup_game
 bool set_saves_folder_path(const char *path);

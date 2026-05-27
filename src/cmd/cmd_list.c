@@ -3,15 +3,15 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "core/index_array.h"
-#include "core/word_set_filter.h"
+#include "index_array.h"
+#include "word_set_filter.h"
 
-#include "game/cab_game.h"
-#include "io/cab_output.h"
-#include "game/cab_secret_word.h"
+#include "cab_game.h"
+#include "cab_output.h"
+#include "cab_secret_word.h"
 #include "cab_used_vocabolary.h"
 
-#include "cmd/cmd_list.h"
+#include "cmd_list.h"
 
 static bool check_pattern(const char pattern[LETTERS_IN_WORD + 1]){
     const size_t pattern_len = strlen(pattern);

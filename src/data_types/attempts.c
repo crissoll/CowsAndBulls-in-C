@@ -1,12 +1,12 @@
-#include "io/cab_output.h"
+#include "cab_output.h"
 #include <stdio.h>
 #include <string.h>
 
 #include "cab_files.h"
-#include "core/index_array.h"
-#include "core/guess.h"
-#include "core/attempts.h"
-#include "core/vocabolary.h"
+#include "index_array.h"
+#include "guess.h"
+#include "attempts.h"
+#include "vocabolary.h"
 
 
 Attempt attempt__new(Word word, GuessResult result){
