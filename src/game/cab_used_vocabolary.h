@@ -4,6 +4,7 @@
 #include <stdbool.h>
 
 #include "word.h"
+#include "vocabolary.h"
 
 Vocabolary get_used_vocabolary();
 
