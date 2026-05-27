@@ -4,7 +4,7 @@
 #include "word.h"
 
 #include "cab_output.h"
-#include "cab_game.h"
+#include "cab_core.h"
 
 
 

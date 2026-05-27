@@ -4,7 +4,7 @@
 #include <stddef.h>
 #include <string.h>
 
-#include "cab_game.h"
+#include "cab_core.h"
 #include "cab_attempts_manager.h"
 
 #include "cab_output.h"

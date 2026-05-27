@@ -10,7 +10,7 @@
 #include "cab_output.h"
 
 #include "cab_secret_word.h"
-#include "cab_game.h"
+#include "cab_core.h"
 #include "cab_used_vocabolary.h"
 #include "cab_paths.h"
 #include "cmd.h"
