@@ -11,6 +11,7 @@
 #include "cab_load_store.h"
 #include "cmd.h"
 #include "cab_attempts_manager.h"
+#include "cab_used_vocabolary.h"
 
 
 static bool saves_handled = false;
@@ -85,7 +86,11 @@ void process_turn(){
     
     free(input_tokens);
 
-    store_attempts();
+    store_data();
+
+    if(is_game_ended()){
+        delete_game_data();
+    }
 }
 
 String play_turn(String input_string){
@@ -104,12 +109,14 @@ char* play_turn_charptr(char* input_string){
 
 
 void setup_game(){
+    init_file_paths();
+    load_vocabolary();
+    
     saves_handled = false;
     io__setup();
     io__set_input_mode(API_IN);
     io__set_output_mode(API_OUT);
     reset_game_vars();
-    game_start();
 }
 
 bool are_there_previous_saves(){

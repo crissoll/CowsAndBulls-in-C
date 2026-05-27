@@ -6,7 +6,8 @@
 #include "index_array.h"
 #include "word_set_filter.h"
 
-#include "cab_core.h"
+#include "cab_help_filter.h"
+
 #include "cab_output.h"
 #include "cab_secret_word.h"
 #include "cab_used_vocabolary.h"
