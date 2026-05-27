@@ -57,7 +57,7 @@ void generate_session_id(){
 }
 
 void store_secret_word(void){
-    if(get_attempt_number() == 1){
+    if(get_attempt_number() != 1){
         return;
     }
     FILE *file = open_file_safe(get_secret_file_path(), "w");

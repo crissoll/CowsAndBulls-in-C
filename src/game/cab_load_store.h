@@ -14,4 +14,6 @@ bool load_attempts(void);
 void store_attempts(void);
 
 void delete_game_data(void);
+
+void store_data();
 #endif
