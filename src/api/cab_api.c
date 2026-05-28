@@ -12,6 +12,7 @@
 #include "cmd.h"
 #include "cab_attempts_manager.h"
 #include "cab_used_vocabolary.h"
+#include "cab_help_filter.h"
 
 
 static bool saves_handled = false;
@@ -70,7 +71,7 @@ static void handle_first_turn(){
 
 }
 
-void process_turn(){
+static void process_turn(){
     handle_first_turn();
 
     char input_buffer[1024];
@@ -117,6 +118,7 @@ void setup_game(){
     io__set_input_mode(API_IN);
     io__set_output_mode(API_OUT);
     reset_game_vars();
+    setup_help();
 }
 
 bool are_there_previous_saves(){
