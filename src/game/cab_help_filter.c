@@ -41,9 +41,9 @@ bool game__help_list_history_entry(size_t index, ListHistoryEntry* out_entry){
 
 static void help_list_history_clear(void){
     help_list_history_count = 0;
-    help_list_history_clear();
+    /* reset history count and help filter/state (avoid recursion) */
     filter__init(&help_filter);
-    
+
     const Vocabolary voc = get_used_vocabolary();
     word_set__init_from_vocabolary(&help_word_set, &voc);
 }
