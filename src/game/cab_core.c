@@ -14,6 +14,10 @@
 static bool game_ended = false;
 
 void play_word(Word word){
+    if(!word_is_in_used_vocabolary(word)){
+        output("word not contained in vocabolary\n");
+        return;
+    }
     if(is_word_already_attempted(word)){
         output("word already attempted\n");
         return;
