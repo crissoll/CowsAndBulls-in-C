@@ -63,7 +63,7 @@ bool print_current_filter(){
 
 bool print_filtered_word_list(){
     IndexArray filtered = filter__get_words_from_word_set(game__help_word_set(), game__help_filter());
-    Vocabolary voc = get_used_vocabolary();
+    const Vocabolary voc = get_used_vocabolary();
     index_array__print(filtered, &voc);
     index_array__free_content(&filtered);
     return true;
