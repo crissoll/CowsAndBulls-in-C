@@ -47,7 +47,7 @@ bool print_help_text_from_args(size_t token_count,const char* tokens[]);
 
 bool disable_command(size_t token_count,const char* tokens[]);
 
-const CommandSpec const commands[] = {
+const CommandSpec const command_specs[] = {
     {
         .name = "disable",
         .help_text = "disable_TMP\n",
@@ -116,7 +116,7 @@ const CommandSpec const commands[] = {
 const CommandSpec* ROOT = &(CommandSpec){
     .case_no_args = NULL,
     .default_handler = cmd__try_word_from_args,
-    .args = commands
+    .args = command_specs
 };
 
 
@@ -124,7 +124,7 @@ bool print_help_text_from_args(size_t token_count,const char* tokens[]){
     if(token_count > 1){
         return alert_too_many_arguments();
     }
-    const CommandSpec* candidate_spec = commands;
+    const CommandSpec* candidate_spec = command_specs;
     while (candidate_spec->name != NULL)
     {
         if(!(*candidate_spec->allowed)){
@@ -172,7 +172,7 @@ bool disable_command(size_t token_count,const char* tokens[]){
 
 
 bool print_whole_help_text(){
-    const CommandSpec* candidate_spec = commands;
+    const CommandSpec* candidate_spec = command_specs;
     while (candidate_spec->name != NULL)
     {
         if(!(*candidate_spec->allowed))
