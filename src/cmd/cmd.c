@@ -189,11 +189,11 @@ bool parse_command(
         const char* tokens[],
         size_t token_count
     ){
-    if(token_count == 0)
+    if(token_count == 0){
         if(specifier->case_no_args == NULL)
             return alert_too_few_arguments();
         return specifier->case_no_args();
-
+    }
     if(token_count > 0 && specifier->args != NULL){
         const CommandSpec* candidate_arg = specifier->args;
         while(candidate_arg->name != NULL){
