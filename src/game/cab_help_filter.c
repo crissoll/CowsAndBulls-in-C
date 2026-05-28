@@ -7,11 +7,17 @@ WordSetFilter help_filter;
 
 #define HELP_FILTER_HISTORY_MAX 100
 
+
+typedef struct {
+	WordSetFilter filter;
+	size_t word_count;
+} ListHistoryEntry;
+
 ListHistoryEntry help_filter_history[HELP_FILTER_HISTORY_MAX];
 size_t help_filter_history_size = 0;
 
 size_t get_current_help_filter_word_count(){
-    IndexArray tmp = filter__get_words_from_word_set(get_help_word_set(), get_current_help_filter());
+    IndexArray tmp = filter__get_words_from_word_set(&help_word_set, get_current_help_filter());
     size_t result = tmp.size;
     index_array__free_content(&tmp);
     return result;
@@ -29,24 +35,12 @@ void add_current_filter_to_history(){
     help_filter_history_size++;
 }
 
-WordSet* get_help_word_set(void){
-    return &help_word_set;
-}
-
 WordSetFilter* get_current_help_filter(void){
     return &help_filter;
 }
 
 size_t get_filter_history_size(void){
     return help_filter_history_size;
-}
-
-const ListHistoryEntry* get_help_filter_history_entry_ptr(size_t index){
-    if(index >= help_filter_history_size){
-        output("index out of bounds\n");
-        exit(EXIT_FAILURE);
-    }
-    return &help_filter_history[index];
 }
 
 void revert_filter_to_history_step(size_t index){
@@ -73,10 +67,8 @@ void setup_help(){
 
 bool print_current_filter(){
     WordSetFilter* help_filter = get_current_help_filter();
-    IndexArray tmp = filter__get_words_from_word_set(get_help_word_set(), get_current_help_filter()); // TODO write a better function
-    const size_t count = tmp.size;
-    index_array__free_content(&tmp);
-    output("--- [%zu words] ---\n", count);
+    const size_t word_count = get_current_help_filter_word_count();
+    output("--- [%zu words] ---\n", word_count);
     filter__print(help_filter);
     return true;
 }
@@ -97,7 +89,7 @@ bool print_filter_history(){
 }
 
 bool print_filtered_word_list(){
-    IndexArray filtered = filter__get_words_from_word_set(get_help_word_set(), get_current_help_filter());
+    IndexArray filtered = filter__get_words_from_word_set(&help_word_set, get_current_help_filter());
     const Vocabolary voc = get_used_vocabolary();
     index_array__print(filtered, &voc);
     index_array__free_content(&filtered);
