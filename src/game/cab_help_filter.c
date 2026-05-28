@@ -1,46 +1,60 @@
 #include "cab_used_vocabolary.h"
 #include "cab_help_filter.h"
-
+#include "cab_output.h"
 
 WordSet help_word_set;
 WordSetFilter help_filter;
 
 #define HELP_FILTER_HISTORY_MAX 100
 
-ListHistoryEntry help_list_history[HELP_FILTER_HISTORY_MAX];
-size_t help_list_history_count = 0;
+ListHistoryEntry help_filter_history[HELP_FILTER_HISTORY_MAX];
+size_t help_filter_history_size = 0;
 
-
-void game__help_list_history_add(size_t word_count){
-    if(help_list_history_count < HELP_FILTER_HISTORY_MAX){
-        help_list_history[help_list_history_count].filter = help_filter;
-        help_list_history[help_list_history_count].word_count = word_count;
-        help_list_history_count++;
-    }
+size_t get_current_help_filter_word_count(){
+    IndexArray tmp = filter__get_words_from_word_set(get_help_word_set(), get_current_help_filter());
+    size_t result = tmp.size;
+    index_array__free_content(&tmp);
+    return result;
 }
 
-WordSet* game__help_word_set(void){
+void add_current_filter_to_history(){
+    const size_t word_count = get_current_help_filter_word_count();
+    if(help_filter_history_size > HELP_FILTER_HISTORY_MAX){
+        output("help_filter_history overflowed");
+        exit(EXIT_FAILURE);
+    }
+    
+    help_filter_history[help_filter_history_size].filter = help_filter;
+    help_filter_history[help_filter_history_size].word_count = word_count;
+    help_filter_history_size++;
+}
+
+WordSet* get_help_word_set(void){
     return &help_word_set;
 }
 
-WordSetFilter* game__help_filter(void){
+WordSetFilter* get_current_help_filter(void){
     return &help_filter;
 }
 
-size_t game__help_list_history_count(void){
-    return help_list_history_count;
+size_t get_filter_history_size(void){
+    return help_filter_history_size;
 }
 
-bool game__help_list_history_entry(size_t index, ListHistoryEntry* out_entry){
-    if(out_entry == NULL || index >= help_list_history_count){
-        return false;
+const ListHistoryEntry* get_help_filter_history_entry_ptr(size_t index){
+    if(index >= help_filter_history_size){
+        output("index out of bounds\n");
+        exit(EXIT_FAILURE);
     }
-    *out_entry = help_list_history[index];
-    return true;
+    return &help_filter_history[index];
+}
+
+void revert_filter_to_history_step(size_t index){
+    help_filter = help_filter_history[index].filter;
 }
 
 static void help_list_history_clear(void){
-    help_list_history_count = 0;
+    help_filter_history_size = 0;
     /* reset history count and help filter/state (avoid recursion) */
     filter__init(&help_filter);
 
@@ -55,4 +69,37 @@ void setup_help(){
     
     const Vocabolary voc = get_used_vocabolary();
     word_set__init_from_vocabolary(&help_word_set, &voc);
+}
+
+bool print_current_filter(){
+    WordSetFilter* help_filter = get_current_help_filter();
+    IndexArray tmp = filter__get_words_from_word_set(get_help_word_set(), get_current_help_filter()); // TODO write a better function
+    const size_t count = tmp.size;
+    index_array__free_content(&tmp);
+    output("--- [%zu words] ---\n", count);
+    filter__print(help_filter);
+    return true;
+}
+
+bool print_filter_history(){
+    const size_t history_count = get_filter_history_size();
+
+    output("List history (%zu entries):\n", history_count);
+    for(size_t hist_idx = 0; hist_idx < history_count; hist_idx++){
+        const ListHistoryEntry entry = help_filter_history[hist_idx];
+
+        output("\n--- Step %zu: [%zu words] ---\n", hist_idx + 1, entry.word_count);
+        filter__print(&entry.filter);
+    }
+    if(history_count == 0)
+        output("(no history yet)\n");
+    return true;
+}
+
+bool print_filtered_word_list(){
+    IndexArray filtered = filter__get_words_from_word_set(get_help_word_set(), get_current_help_filter());
+    const Vocabolary voc = get_used_vocabolary();
+    index_array__print(filtered, &voc);
+    index_array__free_content(&filtered);
+    return true;
 }

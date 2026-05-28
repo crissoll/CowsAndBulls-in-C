@@ -44,47 +44,9 @@ static bool is_undefined_pattern(const char* pattern){
 }
 
 static void cmd_list__set_pattern(const char pattern[LETTERS_IN_WORD + 1]){
-    WordSetFilter* help_filter = game__help_filter();
+    WordSetFilter* help_filter = get_current_help_filter();
     filter__init(help_filter);
     filter__apply_pattern(help_filter, pattern, INTERSECT);
-}
-
-
-bool print_current_filter(){
-    WordSetFilter* help_filter = game__help_filter();
-    IndexArray tmp = filter__get_words_from_word_set(game__help_word_set(), game__help_filter()); // TODO write a better function
-    const size_t count = tmp.size;
-    index_array__free_content(&tmp);
-    output("--- [%zu words] ---\n", count);
-    filter__print(help_filter);
-    return true;
-}
-
-
-bool print_filtered_word_list(){
-    IndexArray filtered = filter__get_words_from_word_set(game__help_word_set(), game__help_filter());
-    const Vocabolary voc = get_used_vocabolary();
-    index_array__print(filtered, &voc);
-    index_array__free_content(&filtered);
-    return true;
-}
-
-
-bool print_filter_history(){
-    const size_t history_count = game__help_list_history_count();
-
-    output("List history (%zu entries):\n", history_count);
-    for(size_t hist_idx = 0; hist_idx < history_count; hist_idx++){
-        ListHistoryEntry entry;
-        if(!game__help_list_history_entry(hist_idx, &entry))
-            return false;
-
-        output("\n--- Step %zu: [%zu words] ---\n", hist_idx + 1, entry.word_count);
-        filter__print(&entry.filter);
-    }
-    if(history_count == 0)
-        output("(no history yet)\n");
-    return true;
 }
 
 
@@ -101,7 +63,7 @@ bool load_filter_from_history(size_t token_count,const char* tokens[]){
         return false;
     }
     if(index < 0){
-        index = ((int)game__help_list_history_count()) + index;
+        index = ((int)get_filter_history_size()) + index;
         if(index <= 0){
             output("relative index too low\n");
             return false;
@@ -112,30 +74,24 @@ bool load_filter_from_history(size_t token_count,const char* tokens[]){
         output("index must be > 0\n");
         return false;
     }
-    if((size_t)index >= game__help_list_history_count()){
+    if((size_t)index >= get_filter_history_size()){
         output("index too high!\n");
         return false;
     }
-
-    ListHistoryEntry entry;
-    if(!game__help_list_history_entry((size_t)index, &entry)){
-        output("index too high!\n");
-        return false;
-    }
+    
+    revert_filter_to_history_step(index);
 
     output("correctly reverted to step number %d\n",index+1);
-    *game__help_filter() = entry.filter;
-
-    IndexArray tmp = filter__get_words_from_word_set(game__help_word_set(), game__help_filter());
-    game__help_list_history_add(tmp.size);
-    output("[%zu words]\n",tmp.size);
-    index_array__free_content(&tmp);
+    
+    add_current_filter_to_history();
+    const size_t word_count = get_current_help_filter_word_count();
+    output("[%zu words]\n",word_count);
     return true;
 }
 
 
 bool cmd__list_parse_all_patterns(size_t patterns_count,const char* patterns[],FilterMode mode){
-    WordSetFilter* help_filter = game__help_filter();
+    WordSetFilter* help_filter = get_current_help_filter();
 
     for(size_t arg_idx = 0; arg_idx < patterns_count; arg_idx++){
         if(!check_pattern(patterns[arg_idx]))
@@ -146,18 +102,12 @@ bool cmd__list_parse_all_patterns(size_t patterns_count,const char* patterns[],F
     return true;
 }
 
-bool alert_too_few_arguments(){
-    output("too few arguments\n");
-    return false;
-}
-
 bool cmd__list_remove_letters(size_t token_count,const char* tokens[]){
     cmd__list_parse_all_patterns(token_count,tokens,REMOVE);
 
-    IndexArray tmp = filter__get_words_from_word_set(game__help_word_set(), game__help_filter());
-    game__help_list_history_add(tmp.size);
-    output("[%zu words]\n",tmp.size);
-    index_array__free_content(&tmp);
+    add_current_filter_to_history();
+    const size_t word_count = get_current_help_filter_word_count();
+    output("[%zu words]\n",word_count);
     return true;
 }
 
@@ -165,10 +115,9 @@ bool cmd__list_remove_letters(size_t token_count,const char* tokens[]){
 bool cmd__list_intersect_letters(size_t token_count,const char* tokens[]){
     cmd__list_parse_all_patterns(token_count,tokens,INTERSECT);
 
-    IndexArray tmp = filter__get_words_from_word_set(game__help_word_set(), game__help_filter());
-    game__help_list_history_add(tmp.size);
-    output("[%zu words]\n",tmp.size);
-    index_array__free_content(&tmp);
+    add_current_filter_to_history();
+    const size_t word_count = get_current_help_filter_word_count();
+    output("[%zu words]\n",word_count);
     return true;
 }
 
@@ -177,7 +126,7 @@ bool setup_list_from_pattern(size_t token_count, const char* tokens[]){
     if(token_count > 1){
         output("list can only be initialized with a single pattern\n");
     }
-    WordSetFilter* help_filter = game__help_filter();
+    WordSetFilter* help_filter = get_current_help_filter();
 
     if(!check_pattern(tokens[0])){
         output("invalid pattern!\n");
@@ -190,9 +139,8 @@ bool setup_list_from_pattern(size_t token_count, const char* tokens[]){
         cmd_list__set_pattern(tokens[0]);
     }
     
-    IndexArray tmp = filter__get_words_from_word_set(game__help_word_set(), help_filter);
-    game__help_list_history_add(tmp.size);
-    output("[%zu words]\n",tmp.size);
-    index_array__free_content(&tmp);
+    add_current_filter_to_history();
+    const size_t word_count = get_current_help_filter_word_count();
+    output("[%zu words]\n",word_count);
     return true;
 }

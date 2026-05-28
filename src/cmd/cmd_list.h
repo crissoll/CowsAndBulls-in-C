@@ -5,17 +5,6 @@
 #include <stddef.h>
 
 
-bool print_current_filter();
-
-bool print_filtered_word_list();
-
-
-
-bool print_filter_history();
-
-bool print_filtered_word_list();
-
-
 bool load_filter_from_history(
     size_t token_count,
     const char* tokens[]

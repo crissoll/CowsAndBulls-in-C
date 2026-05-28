@@ -12,6 +12,7 @@
 #include "cmd_list.h"
 #include "cmd_docs.h"
 #include "cmd_try_word.h"
+#include "cab_help_filter.h"
 
 
 bool alert_too_few_arguments(){
