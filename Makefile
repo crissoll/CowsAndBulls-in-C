@@ -1,13 +1,4 @@
 CC := gcc
-# Add project include directories so headers can be included without subpaths,
-# e.g. `#include "cab_files.h"` from any source file.
-CFLAGS := -g -Wall -Wextra -std=c11 \
-	-Isrc \
-	-Isrc/core \
-	-Isrc/io \
-	-Isrc/game \
-	-Isrc/api \
-	-Isrc/cmd
 RM := rm -f
 AR := ar rcs
 
@@ -21,9 +12,15 @@ CAB_GAME_SHARED_SRCS := $(call rwildcard,src/,*.c)
 CAB_GAME_EXEC_SRCS := $(CAB_GAME_APP_SRCS) $(CAB_GAME_SHARED_SRCS)
 CAB_GAME_LIB_OBJS := $(CAB_GAME_SHARED_SRCS:.c=.o)
 
+# Compute include directories from all source file directories so the Makefile
+# keeps working when adding/removing subfolders under `src/` or `apps/`.
+SRCDIRS := $(sort $(dir $(CAB_GAME_EXEC_SRCS)))
+INCLUDES := $(addprefix -I,$(SRCDIRS))
+CFLAGS := -g -Wall -Wextra -std=c11 $(INCLUDES)
+
 .PHONY: all clean help game game-lib
 
-all: game
+all: cab_game word.o
 
 game: cab_game
 

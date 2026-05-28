@@ -15,7 +15,7 @@ typedef struct{
 
 Word word__new(const char letters[LETTERS_IN_WORD + 1]);
 
-bool string_is_valid_word(const char* string);
+bool can_string_be_word(const char* string);
 
 void word__print(Word word);
 

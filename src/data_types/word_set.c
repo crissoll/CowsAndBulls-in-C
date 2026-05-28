@@ -1,11 +1,11 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include "io/cab_output.h"              /* for output() */
+#include "cab_output.h"              /* for output() */
 
 
-#include "core/index_array.h"
-#include "core/word.h"
-#include "core/vocabolary.h"
+#include "index_array.h"
+#include "word.h"
+#include "vocabolary.h"
 
 
 typedef struct {

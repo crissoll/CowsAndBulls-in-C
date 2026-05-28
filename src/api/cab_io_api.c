@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "io/cab_output.h"
+#include "cab_output.h"
 
 # define MAX_INPUT_BUFFER_SIZE 1024
 static char input_buffer[MAX_INPUT_BUFFER_SIZE];

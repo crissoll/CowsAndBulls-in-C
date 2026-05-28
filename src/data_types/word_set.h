@@ -1,8 +1,8 @@
 #ifndef WORDS   
 #define WORDS
 
-#include "core/index_array.h"
-#include "core/vocabolary.h"
+#include "index_array.h"
+#include "vocabolary.h"
 
 
 typedef struct {

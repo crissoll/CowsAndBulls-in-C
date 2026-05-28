@@ -4,15 +4,21 @@
 #include <stddef.h>
 #include <string.h>
 
-#include "io/cab_output.h"
-#include "cmd/cmd_attempts.h"
-#include "cmd/cmd_list.h"
+#include "cab_core.h"
+#include "cab_attempts_manager.h"
 
-#include "cmd/cmd_docs.h"
+#include "cab_output.h"
+#include "cmd_attempts.h"
+#include "cmd_list.h"
+#include "cmd_docs.h"
+#include "cmd_try_word.h"
+#include "cab_help_filter.h"
 
-extern bool print_attempts();
-extern bool try_word_from_args(size_t token_count,const char* tokens[]);
 
+bool alert_too_few_arguments(){
+    output("too few arguments\n");
+    return false;
+}
 
 typedef bool (*CommandHandler)(size_t token_count,const char* tokens[]);
 typedef bool (*ZeroArgsCommandHandler)(void);
@@ -69,7 +75,7 @@ const CommandSpec const commands[] = {
         .help_text = HELP_CMD_ATTEMPTS,
         .allowed = &(bool){true},
         .case_no_args = print_attempts,
-        .default_handler = compare_attemps_to_first_arg,
+        .default_handler = compare_attempts_to_first_arg,
         .args = NULL
     },
     {
@@ -115,7 +121,7 @@ const CommandSpec const commands[] = {
 
 const CommandSpec* ROOT = &(CommandSpec){
     .case_no_args = NULL,
-    .default_handler = try_word_from_args,
+    .default_handler = cmd__try_word_from_args,
     .args = commands
 };
 
@@ -210,6 +216,6 @@ bool parse_command(
 }
 
 
-bool parse_all_commands(const char* tokens[], size_t token_count){
+bool parse_tokens(const char* tokens[], size_t token_count){
     return parse_command(ROOT,tokens,token_count);
 }

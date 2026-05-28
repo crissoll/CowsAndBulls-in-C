@@ -2,12 +2,12 @@
 #define CAB_INPUT
 
 #include <stddef.h>
-#include "api/cab_io_api.h"
+#include "cab_io_api.h"
 
 
 void io__set_input_mode(InputMode new_mode);
 
-size_t get_multiple_input(
+size_t get_args_from_input(
     char input_buffer[],
     size_t input_buffer_size,
     char*** arguments
