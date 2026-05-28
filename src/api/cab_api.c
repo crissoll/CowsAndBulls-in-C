@@ -83,7 +83,7 @@ static void process_turn(){
         return;
     }
     
-    parse_all_commands((const char**) input_tokens,token_count);
+    parse_tokens((const char**) input_tokens,token_count);
     
     free(input_tokens);
 

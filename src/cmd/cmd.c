@@ -216,6 +216,6 @@ bool parse_command(
 }
 
 
-bool parse_all_commands(const char* tokens[], size_t token_count){
+bool parse_tokens(const char* tokens[], size_t token_count){
     return parse_command(ROOT,tokens,token_count);
 }
