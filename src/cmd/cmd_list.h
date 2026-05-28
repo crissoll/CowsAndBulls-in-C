@@ -9,7 +9,6 @@ bool print_current_filter();
 
 bool print_filtered_word_list();
 
-bool alert_too_few_arguments();
 
 
 bool print_filter_history();

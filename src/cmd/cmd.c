@@ -13,6 +13,12 @@
 #include "cmd_docs.h"
 #include "cmd_try_word.h"
 
+
+bool alert_too_few_arguments(){
+    output("too few arguments\n");
+    return false;
+}
+
 typedef bool (*CommandHandler)(size_t token_count,const char* tokens[]);
 typedef bool (*ZeroArgsCommandHandler)(void);
 
