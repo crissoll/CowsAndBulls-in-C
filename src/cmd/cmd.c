@@ -35,17 +35,11 @@ typedef struct CommandSpec{
 
 #define END_SPEC {.name = NULL}
 
-bool too_many_arguments(){
+bool alert_too_many_arguments(){
     output("too many arguments\n");
     return false;
 }
 
-
-bool too_many_arguments_wrapper(size_t token_count,const char* tokens[]){
-    (void) token_count;
-    (void) tokens;
-    return too_many_arguments();
-}
 
 bool print_whole_help_text();
 
@@ -89,7 +83,7 @@ const CommandSpec const commands[] = {
                 .name = "-p",
                 .allowed = &(bool){true},
                 .case_no_args = print_filtered_word_list,
-                .default_handler = too_many_arguments_wrapper,
+                .default_handler = NULL,
                 .args = NULL
             },
             {
@@ -128,7 +122,7 @@ const CommandSpec* ROOT = &(CommandSpec){
 
 bool print_help_text_from_args(size_t token_count,const char* tokens[]){
     if(token_count > 1){
-        return too_many_arguments();
+        return alert_too_many_arguments();
     }
     const CommandSpec* candidate_spec = commands;
     while (candidate_spec->name != NULL)
@@ -161,7 +155,7 @@ bool _disable_command(
             }
             output("%s\n",candidate_spec->name);
             if(candidate_spec->args == NULL){
-                return too_many_arguments();
+                return alert_too_many_arguments();
             }
             return _disable_command(token_count-1,tokens+1,candidate_spec);
         }
@@ -195,7 +189,9 @@ bool parse_command(
         const char* tokens[],
         size_t token_count
     ){
-    if(token_count == 0 && specifier->case_no_args != NULL)
+    if(token_count == 0)
+        if(specifier->case_no_args == NULL)
+            return alert_too_few_arguments();
         return specifier->case_no_args();
 
     if(token_count > 0 && specifier->args != NULL){
@@ -211,7 +207,10 @@ bool parse_command(
             candidate_arg++;
         }
     }
-
+    if (specifier->default_handler == NULL){
+        alert_too_many_arguments();
+        return false;
+    }
     return specifier->default_handler(token_count,tokens);
 }
 

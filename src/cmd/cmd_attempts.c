@@ -7,12 +7,9 @@
 #include "cab_attempts_manager.h"
 #include "cab_used_vocabolary.h"
 
-extern bool too_many_arguments();
-
-
 bool compare_attempts_to_first_arg(size_t token_count,const char* tokens[]){
     if(token_count > 1){
-        return too_many_arguments();
+        output("too many arguments, only first will be used\n");
     }
     
     if (!can_string_be_word(tokens[0]))
