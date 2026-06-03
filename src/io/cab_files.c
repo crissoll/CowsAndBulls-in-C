@@ -3,12 +3,12 @@
 
 
 // Controllo per assicurarsi che il file esista
-FILE* open_file_safe(const char* filename, const char* mode) {
-    if (filename == NULL || mode == NULL) {
+FILE* open_file_safe(const char* file_name, const char* mode) {
+    if (file_name == NULL || mode == NULL) {
         perror("Invalid file name or mode");
         exit(EXIT_FAILURE);
     }
-    FILE* f = fopen(filename, mode);
+    FILE* f = fopen(file_name, mode);
     if (f == NULL) {
         perror("Error while opening the file");
         exit(EXIT_FAILURE);

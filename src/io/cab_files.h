@@ -6,7 +6,7 @@
 
 
 // Controllo per assicurarsi che il file esista
-FILE* open_file_safe(const char* filename, const char* mode);
+FILE* open_file_safe(const char* file_name, const char* mode);
 
 size_t get_line_count(const char* file_name);
 
