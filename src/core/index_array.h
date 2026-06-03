@@ -1,0 +1,33 @@
+#ifndef INDEX_ARRAY
+
+#define INDEX_ARRAY
+
+#include "core/vocabolary.h"
+
+typedef struct {
+    size_t size;
+    size_t* indexes;
+}IndexArray;
+
+
+// Creation
+void index_array__init(IndexArray *array, size_t size);
+
+// Deletion
+void index_array__free_content(IndexArray* array);
+
+// Copy
+IndexArray index_array__copy(const IndexArray *src);
+
+// Display
+void index_array__print(IndexArray index_array,const Vocabolary* vocabolary);
+
+// Operators
+
+IndexArray intersect(const IndexArray a,const IndexArray b);
+
+IndexArray join(const IndexArray a, const IndexArray b);
+
+IndexArray subtract(const IndexArray a,const IndexArray b);
+
+#endif
