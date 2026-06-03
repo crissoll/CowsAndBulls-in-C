@@ -3,7 +3,7 @@
 #include <string.h>
 #include <stdarg.h>
 
-#include "io/cab_output.h"
+#include "cab_output.h"
 
 static OutputMode output_mode = PRINT;
 

@@ -1,11 +1,13 @@
-#include "io/cab_output.h"
+#include "cab_output.h"
 #include <stdio.h>
 #include <string.h>
 
-#include "core/index_array.h"
-#include "core/guess.h"
-#include "core/attempts.h"
-#include "core/vocabolary.h"
+#include "cab_files.h"
+#include "index_array.h"
+#include "guess.h"
+#include "attempts.h"
+#include "vocabolary.h"
+
 
 Attempt attempt__new(Word word, GuessResult result){
     Attempt attempt = {.word = word, .result = result};
@@ -20,15 +22,15 @@ void attempt__print(Attempt attempt){
 }
 
 
-IndexArray get_possible_words_from_attempt(Attempt attempt,const Vocabolary* used_vocabolary){
+IndexArray get_possible_words_from_attempt(Attempt attempt, const Vocabolary* vocabolary){
     IndexArray result;
 
     /* allocate the maximum possible size; we'll trim by updating result.size */
-    index_array__init(&result, used_vocabolary->size);
+    index_array__init(&result, vocabolary->size);
 
     size_t count = 0;
-    for(size_t i = 0; i < used_vocabolary->size; i++){
-        Word candidate = used_vocabolary->words[i];
+    for(size_t i = 0; i < vocabolary->size; i++){
+        Word candidate = vocabolary->words[i];
         GuessResult r = compare_words(attempt.word, candidate);
         if(r.bulls == attempt.result.bulls && r.cows == attempt.result.cows){
             result.indexes[count++] = i;
@@ -52,7 +54,7 @@ void print_attempt_array(const Attempt* attempts, size_t attempt_number){
 bool is_word_in_attempt_array(Word word,const Attempt* attempts,size_t attempt_number){
     /* return true if the given word has already been guessed earlier */
     for(size_t i = 0; i < attempt_number; i++){
-        if (word__compare(attempts[i].word, word) == 0){
+        if (word__sort_cmp(attempts[i].word, word) == 0){
             return true;
         }
     }
@@ -65,13 +67,19 @@ void store_attempt_array(
         const char* file_name,
         unsigned long session_id
     ){
-    FILE* attempts_file = fopen(file_name,"w");
+    if (file_name == NULL) {
+        perror("store_attempt_array: file_name is NULL");
+        return;
+    }
 
+    FILE* attempts_file = open_file_safe(file_name,"w");
     fprintf(attempts_file,"session_id %lu\n", session_id);
 
     for(size_t i = 0; i < attempt_number;i++){
-        for(size_t j = 0; j < LETTERS_IN_WORD; j++)
-            fprintf(attempts_file,"%c",attempts[i].word.letters[j]);
+        for(size_t j = 0; j < LETTERS_IN_WORD; j++){
+            char chr = attempts[i].word.letters[j];
+            fprintf(attempts_file,"%c",chr);
+        }
         fprintf(attempts_file," %zu %zu\n",
             attempts[i].result.cows,
             attempts[i].result.bulls);
@@ -85,12 +93,15 @@ bool load_attempt_array(
         const char* file_name,
         unsigned long* session_id
     ){
-    
+    if (file_name == NULL || attempt_number == NULL || session_id == NULL) {
+        perror("load_attempt_array: invalid arguments");
+    }
+
     *attempt_number = 0;
 
-    FILE* attempts_file = fopen(file_name,"r");
+    FILE* attempts_file = open_file_safe(file_name,"r");
     if (attempts_file == NULL) {
-        /* nothing to load */
+        /* nothing to load or cannot open - treat as no data */
         return false;
     }
 
@@ -112,7 +123,7 @@ bool load_attempt_array(
         if (scanned != 3)
             break;
 
-        if (!string_is_valid_word(letters))
+        if (!can_string_be_word(letters))
             break;
 
         result.cows = (size_t)cows;

@@ -4,15 +4,21 @@
 #include <stddef.h>
 #include <string.h>
 
-#include "io/cab_output.h"
-#include "cmd/cmd_attempts.h"
-#include "cmd/cmd_list.h"
+#include "cab_core.h"
+#include "cab_attempts_manager.h"
 
-#include "cmd/cmd_docs.h"
+#include "cab_output.h"
+#include "cmd_attempts.h"
+#include "cmd_list.h"
+#include "cmd_docs.h"
+#include "cmd_try_word.h"
+#include "cab_help_filter.h"
 
-extern bool print_attempts();
-extern bool try_word_from_args(size_t token_count,const char* tokens[]);
 
+bool alert_too_few_arguments(){
+    output("too few arguments\n");
+    return false;
+}
 
 typedef bool (*CommandHandler)(size_t token_count,const char* tokens[]);
 typedef bool (*ZeroArgsCommandHandler)(void);
@@ -29,17 +35,11 @@ typedef struct CommandSpec{
 
 #define END_SPEC {.name = NULL}
 
-bool too_many_arguments(){
+bool alert_too_many_arguments(){
     output("too many arguments\n");
     return false;
 }
 
-
-bool too_many_arguments_wrapper(size_t token_count,const char* tokens[]){
-    (void) token_count;
-    (void) tokens;
-    return too_many_arguments();
-}
 
 bool print_whole_help_text();
 
@@ -47,7 +47,7 @@ bool print_help_text_from_args(size_t token_count,const char* tokens[]);
 
 bool disable_command(size_t token_count,const char* tokens[]);
 
-const CommandSpec const commands[] = {
+const CommandSpec const command_specs[] = {
     {
         .name = "disable",
         .help_text = "disable_TMP\n",
@@ -69,7 +69,7 @@ const CommandSpec const commands[] = {
         .help_text = HELP_CMD_ATTEMPTS,
         .allowed = &(bool){true},
         .case_no_args = print_attempts,
-        .default_handler = compare_attemps_to_first_arg,
+        .default_handler = compare_attempts_to_first_arg,
         .args = NULL
     },
     {
@@ -83,7 +83,7 @@ const CommandSpec const commands[] = {
                 .name = "-p",
                 .allowed = &(bool){true},
                 .case_no_args = print_filtered_word_list,
-                .default_handler = too_many_arguments_wrapper,
+                .default_handler = NULL,
                 .args = NULL
             },
             {
@@ -115,16 +115,16 @@ const CommandSpec const commands[] = {
 
 const CommandSpec* ROOT = &(CommandSpec){
     .case_no_args = NULL,
-    .default_handler = try_word_from_args,
-    .args = commands
+    .default_handler = cmd__try_word_from_args,
+    .args = command_specs
 };
 
 
 bool print_help_text_from_args(size_t token_count,const char* tokens[]){
     if(token_count > 1){
-        return too_many_arguments();
+        return alert_too_many_arguments();
     }
-    const CommandSpec* candidate_spec = commands;
+    const CommandSpec* candidate_spec = command_specs;
     while (candidate_spec->name != NULL)
     {
         if(!(*candidate_spec->allowed)){
@@ -155,7 +155,7 @@ bool _disable_command(
             }
             output("%s\n",candidate_spec->name);
             if(candidate_spec->args == NULL){
-                return too_many_arguments();
+                return alert_too_many_arguments();
             }
             return _disable_command(token_count-1,tokens+1,candidate_spec);
         }
@@ -172,7 +172,7 @@ bool disable_command(size_t token_count,const char* tokens[]){
 
 
 bool print_whole_help_text(){
-    const CommandSpec* candidate_spec = commands;
+    const CommandSpec* candidate_spec = command_specs;
     while (candidate_spec->name != NULL)
     {
         if(!(*candidate_spec->allowed))
@@ -189,9 +189,11 @@ bool parse_command(
         const char* tokens[],
         size_t token_count
     ){
-    if(token_count == 0 && specifier->case_no_args != NULL)
+    if(token_count == 0){
+        if(specifier->case_no_args == NULL)
+            return alert_too_few_arguments();
         return specifier->case_no_args();
-
+    }
     if(token_count > 0 && specifier->args != NULL){
         const CommandSpec* candidate_arg = specifier->args;
         while(candidate_arg->name != NULL){
@@ -205,11 +207,14 @@ bool parse_command(
             candidate_arg++;
         }
     }
-
+    if (specifier->default_handler == NULL){
+        alert_too_many_arguments();
+        return false;
+    }
     return specifier->default_handler(token_count,tokens);
 }
 
 
-bool parse_all_commands(const char* tokens[], size_t token_count){
+bool parse_tokens(const char* tokens[], size_t token_count){
     return parse_command(ROOT,tokens,token_count);
 }

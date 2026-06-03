@@ -2,8 +2,8 @@
 #define WORD_SET_FILTER_H
 
 #include <stdbool.h>
-#include "core/word_set.h"
-#include "core/index_array.h"
+#include "word_set.h"
+#include "index_array.h"
 
 typedef enum {
     JOIN,

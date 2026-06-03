@@ -1,22 +1,23 @@
-#include <stdlib.h>
-#include <string.h>
-
-#include "io/cab_output.h"
+#include "cab_io_api.h"
+#include "cab_output.h"
+#include "string.h"
+#include "malloc.h"
 
 # define MAX_INPUT_BUFFER_SIZE 1024
 static char input_buffer[MAX_INPUT_BUFFER_SIZE];
 static size_t input_buffer_size = 0;
 
-bool input(String input_string){
+bool input(char* input_string){
     input_buffer_size = 0;
-    if(MAX_INPUT_BUFFER_SIZE < input_string.size){
+    const size_t len = strlen(input_string);
+    if(len > MAX_INPUT_BUFFER_SIZE){
         output("Input String Too Long!\n");
         return false;
     }
-    for(size_t i = 0; i < input_string.size;i++){
-        input_buffer[i] = input_string.content[i];
-    }
-    input_buffer_size = input_string.size;
+    
+    strcpy(input_buffer,input_string);
+
+    input_buffer_size = len;
     return true;
 }
 
@@ -25,23 +26,26 @@ size_t output_buffer_allocated_size = INITIAL_OUTPUT_BUFFER_ALLOCATED_SIZE;
 static char* output_buffer = NULL;
 static size_t output_buffer_size = 0;
 
-void io__setup(){
-    output_buffer = malloc(sizeof(*output_buffer) * INITIAL_OUTPUT_BUFFER_ALLOCATED_SIZE);
+void reset_output_buffer(){
+    output_buffer = realloc(output_buffer,sizeof(*output_buffer) * INITIAL_OUTPUT_BUFFER_ALLOCATED_SIZE);
+    output_buffer_allocated_size = INITIAL_OUTPUT_BUFFER_ALLOCATED_SIZE;
+    output_buffer_size = 0;
     output_buffer[0] = '\0';
 }
 
-String get_output(){
-    String result = {
-        .content = malloc(sizeof(*result.content) * (output_buffer_size+1)),
-        .size = output_buffer_size
-    };
-    for(size_t i = 0; i < output_buffer_size + 1; i++){
-        result.content[i] = output_buffer[i];
-    }
-    output_buffer_allocated_size = INITIAL_OUTPUT_BUFFER_ALLOCATED_SIZE;
-    output_buffer_size = 0;
-    output_buffer = realloc(output_buffer,sizeof(*output_buffer) * output_buffer_allocated_size);
-    output_buffer[0] = '\0';
+
+void io__setup(){
+    output_buffer = NULL;
+    reset_output_buffer();
+}
+
+
+char* get_output(){
+    char* result = malloc(sizeof(*result) * (output_buffer_size+1));
+
+    strcpy(result,output_buffer);
+    reset_output_buffer();
+
     return result;
 }
 
