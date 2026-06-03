@@ -60,6 +60,9 @@ bool vocabolary__contains_word(const Vocabolary* vocabolary,Word word){
         if (cmp < 0) {
             /* vocab[m] < word, search right half */
             l = m + 1;
+        } else if(m == 0){
+            // avoids underflow of r
+            return false;
         } else {
             /* vocab[m] > word, search left half */
             r = m - 1;
