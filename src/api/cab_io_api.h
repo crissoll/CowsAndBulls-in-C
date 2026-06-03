@@ -2,7 +2,6 @@
 #define CAB_IO_CORE
 
 #include <stdbool.h>
-#include "cab_string.h"
 
 /* Enums shared across IO modules */
 typedef enum {
@@ -17,8 +16,8 @@ typedef enum {
 
 /* API layer: input(), io__setup(), io__shutdown(), get_output() */
 
-bool input(String input_string);
-String get_output(void);
+bool input(char* input_string);
+char* get_output(void);
 void io__setup(void);
 void io__shutdown(void);
 

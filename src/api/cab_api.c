@@ -94,18 +94,11 @@ static void process_turn(){
     }
 }
 
-String play_turn(String input_string){
+char* play_turn(char* input_string){
     if(!input(input_string))
         return get_output();
     process_turn();
     return get_output();
-}
-
-char* play_turn_charptr(char* input_string){
-    return play_turn((String){
-        .content = input_string,
-        .size = strlen(input_string)
-    }).content;
 }
 
 
@@ -125,10 +118,9 @@ bool are_there_previous_saves(){
     return is_game_data_valid();
 }
 
-String handle_saves_load_choice(String input_string){
-    if(!input(input_string))
-        return get_output();
-    saves_handled = prompt_to_load_game();
+char* handle_saves_load_choice(char* input_string){
+    if(input(input_string))
+        saves_handled = prompt_to_load_game();
     return get_output();
 }
 
