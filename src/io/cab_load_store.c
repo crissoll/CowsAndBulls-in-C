@@ -114,16 +114,11 @@ bool load_secret_word(){
 }
 
 bool is_there_previous_game_data(void){
-    FILE *attempts_file = open_file_safe(get_attempts_file_path(), "r");
-    FILE *secret_file = open_file_safe(get_secret_file_path(), "r");
-
-    if (attempts_file != NULL){
-        fclose(attempts_file);
-    }
-    if (secret_file != NULL){
-        fclose(secret_file);
-    }
-    return attempts_file != NULL && secret_file != NULL;
+    return (
+        check_file_exists(get_attempts_file_path()) && 
+        check_file_exists(get_secret_file_path())
+    );
+    
 }
 
 
