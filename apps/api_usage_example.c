@@ -32,15 +32,11 @@ int main(){
             printf("load previous game? (y/n)\n");
             if(!read_line(buffer, sizeof(buffer)))
                 break;
-            String input_string = {
-                .content = buffer,
-                .size = strlen(buffer)
-            };
 
 
-            String output_string = handle_saves_load_choice(input_string);
-            printf("%s", output_string.content);
-            string__free_content(output_string);
+            char* output_string = handle_saves_load_choice(buffer);
+            printf("%s", output_string);
+            free(output_string);
         }
     }
     else{
@@ -52,15 +48,10 @@ int main(){
         printf("Enter guess or command: ");
         if(!read_line(buffer, sizeof(buffer)))
             break;
-        String input_string = {
-            .content = buffer,
-            .size = strlen(buffer)
-        };
-
-
-        String output_string = play_turn(input_string);
-        printf("%s", output_string.content);
-        string__free_content(output_string);
+        
+        char* output_string = play_turn(buffer);
+        printf("%s", output_string);
+        free(output_string);
     }
     printf("Congratulations! You won in %d attempts!",get_attempt_number());
     shutdown_game();
