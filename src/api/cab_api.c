@@ -53,7 +53,7 @@ bool prompt_to_load_game(){
 }
 
 static void handle_first_turn(){
-    if(get_attempt_number() > 1){
+    if(get_attempt_number() > 0){
         return;
     }
     if(!loading_game_data){
