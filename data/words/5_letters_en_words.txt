@@ -771,6 +771,7 @@ diana
 diary
 diced
 dices
+dicks
 dicta
 diego
 diets
@@ -870,6 +871,7 @@ ducal
 ducat
 duchy
 ducks
+ducky
 ducts
 duels
 duets
@@ -2133,6 +2135,7 @@ phone
 photo
 piano
 picks
+picky
 piece
 piers
 piety
@@ -2377,6 +2380,7 @@ rheum
 rhino
 rhyme
 ricks
+ricky
 rider
 rides
 ridge
@@ -2576,6 +2580,7 @@ ships
 shire
 shirk
 shirt
+shits
 shoah
 shoal
 shock
