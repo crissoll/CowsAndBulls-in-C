@@ -4,6 +4,9 @@
 #include "vocabolary.h"
 #include "cab_files.h"
 
+static int qsort_word_cmp(const void *a, const void *b) {
+  return word__sort_cmp(*(const Word *)a, *(const Word *)b);
+}
 
 void vocabolary__init_from_file(Vocabolary* vocabolary,const char* file_name){
     vocabolary->size = get_line_count(file_name);
@@ -20,8 +23,10 @@ void vocabolary__init_from_file(Vocabolary* vocabolary,const char* file_name){
         i++;
     }
 
-    vocabolary->words = words;
-    fclose(file);
+  vocabolary->size = i;
+  qsort(words, vocabolary->size, sizeof(Word), qsort_word_cmp);
+  vocabolary->words = words;
+  fclose(file);
 }
 
 
