@@ -1,25 +1,24 @@
 #ifndef WORD_H
 #define WORD_H
 
-#include <stdlib.h>
 #include <stdbool.h>
+#include <stdlib.h>
 
-# define ALPHABET_SIZE 26
-# define LETTERS_IN_WORD 5
-# define UNDEFINED_LETTER '*'
 
-typedef struct{
-    char letters[LETTERS_IN_WORD + 1];
+#define ALPHABET_SIZE 26
+#define LETTERS_IN_WORD 5
+#define UNDEFINED_LETTER '*'
+
+typedef struct {
+  char letters[LETTERS_IN_WORD + 1];
 } Word;
-
 
 Word word__new(const char letters[LETTERS_IN_WORD + 1]);
 
-bool can_string_be_word(const char* string);
+bool can_string_be_word(const char *string);
 
 void word__print(Word word);
 
 int word__sort_cmp(Word a, Word b);
-
 
 #endif /* WORD_H */

@@ -17,6 +17,5 @@ void add_attempt(Word word, GuessResult result);
 
 void compare_attempts_to_word(Word word);
 
-
-void init_attempts(Attempt* value, size_t _attempt_number);
+void init_attempts(Attempt *value, size_t _attempt_number);
 #endif

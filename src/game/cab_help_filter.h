@@ -4,7 +4,7 @@
 #include "word_set.h"
 #include "word_set_filter.h"
 
-WordSetFilter* get_current_help_filter(void);
+WordSetFilter *get_current_help_filter(void);
 
 size_t get_current_help_filter_word_count();
 
@@ -23,4 +23,3 @@ bool print_filter_history();
 bool print_filtered_word_list();
 
 #endif
-

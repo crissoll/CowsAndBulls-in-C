@@ -4,7 +4,6 @@
 #include "guess.h"
 #include "vocabolary.h"
 
-
 void generate_secret_word();
 
 GuessResult compare_with_secret_word(Word attempt);
