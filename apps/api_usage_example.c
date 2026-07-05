@@ -54,7 +54,7 @@ int main() {
         printf("%s", output_string);
         free(output_string);
     }
-    printf("Congratulations! You won in %d attempts!", get_attempt_number());
+    printf("Congratulations! You won in %zu attempts!", get_attempt_number());
     shutdown_game();
     return 0;
 }
