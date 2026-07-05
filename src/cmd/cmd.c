@@ -44,7 +44,7 @@ bool print_help_text_from_args(size_t token_count, const char *tokens[]);
 
 bool disable_command(size_t token_count, const char *tokens[]);
 
-const CommandSpec const command_specs[] = {
+const CommandSpec command_specs[] = {
     {.name = "disable",
      .help_text = "disable_TMP\n",
      .case_no_args = alert_too_few_arguments,
