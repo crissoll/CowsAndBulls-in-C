@@ -2,13 +2,11 @@
 #include <string.h>
 #include <time.h>
 
-
 #include "cab_files.h"
 
 #include "cab_attempts_manager.h"
-#include "cab_paths.h"
 #include "cab_output.h"
-
+#include "cab_paths.h"
 
 typedef unsigned long SessionId;
 
@@ -19,48 +17,38 @@ extern size_t attempt_number;
 
 extern Word secret_word;
 
-
-bool load_attempts(void){
+bool load_attempts(void) {
     const char* path = get_attempts_file_path();
     if (path == NULL) {
         return false;
     }
-    return load_attempt_array(
-        attempts,
-        &attempt_number,
-        path,
-        &session_id
-    );
+    return load_attempt_array(attempts, &attempt_number, path, &session_id);
 }
 
-
-void store_attempts(void){
+void store_attempts(void) {
     const char* path = get_attempts_file_path();
     if (path == NULL) {
         /* cannot store without a valid path */
         return;
     }
 
-    if(attempt_number == 0)
-        return;
-    store_attempt_array(
-        attempts,
-        attempt_number,
-        path,
-        session_id
-    );
-}
-
-void generate_session_id(){
-    srand((unsigned int)time(NULL));
-    session_id = ((SessionId)rand() << 16) ^ (SessionId)rand() ^ (SessionId)time(NULL);
-}
-
-void store_secret_word(void){
-    if(get_attempt_number() != 1){
+    if (attempt_number == 0) {
         return;
     }
-    FILE *file = open_file_safe(get_secret_file_path(), "w");
+    store_attempt_array(attempts, attempt_number, path, session_id);
+}
+
+void generate_session_id() {
+    srand((unsigned int)time(NULL));
+    session_id =
+        ((SessionId)rand() << 16) ^ (SessionId)rand() ^ (SessionId)time(NULL);
+}
+
+void store_secret_word(void) {
+    if (get_attempt_number() != 1) {
+        return;
+    }
+    FILE* file = open_file_safe(get_secret_file_path(), "w");
 
     if (file == NULL) {
         output("secret word couldn't be stored. save files will be corrupted");
@@ -74,15 +62,14 @@ void store_secret_word(void){
     fclose(file);
 }
 
-void store_data(){
+void store_data() {
     store_secret_word();
     store_attempts();
 }
 
+bool load_test_secret_word(Word* test_secret_word, SessionId* session_id_ptr) {
 
-bool load_test_secret_word(Word *test_secret_word, SessionId *session_id_ptr){
-
-    FILE *file = open_file_safe(get_secret_file_path(), "r");
+    FILE* file = open_file_safe(get_secret_file_path(), "r");
 
     if (file == NULL) {
         return false;
@@ -91,12 +78,15 @@ bool load_test_secret_word(Word *test_secret_word, SessionId *session_id_ptr){
     char label[16] = "";
     char letters[LETTERS_IN_WORD + 1] = "";
 
-    const int scan_success_count = fscanf(file, "%15s %lu %5s", label, session_id_ptr, letters);
+    const int scan_success_count =
+        fscanf(file, "%15s %lu %5s", label, session_id_ptr, letters);
     fclose(file);
 
-    if (scan_success_count < 3 || strcmp(label, "session_id") != 0) // checks for malformed file
+    if (scan_success_count < 3 ||
+        strcmp(label, "session_id") != 0) {  // checks for malformed file
         return false;
-    
+    }
+
     if (!can_string_be_word(letters)) {
         return false;
     }
@@ -104,8 +94,7 @@ bool load_test_secret_word(Word *test_secret_word, SessionId *session_id_ptr){
     return true;
 }
 
-
-bool load_secret_word(){
+bool load_secret_word() {
     bool loaded = load_test_secret_word(&secret_word, &session_id);
     if (loaded) {
         set_file_paths_editing(false);
@@ -113,16 +102,12 @@ bool load_secret_word(){
     return loaded;
 }
 
-bool is_there_previous_game_data(void){
-    return (
-        check_file_exists(get_attempts_file_path()) && 
-        check_file_exists(get_secret_file_path())
-    );
-    
+bool is_there_previous_game_data(void) {
+    return (check_file_exists(get_attempts_file_path()) &&
+            check_file_exists(get_secret_file_path()));
 }
 
-
-bool is_game_data_valid(void){
+bool is_game_data_valid(void) {
     Attempt dummy_attempts[MAX_ATTEMPTS];
     size_t dummy_attempt_number = 0;
     SessionId loaded_session_id;
@@ -133,11 +118,8 @@ bool is_game_data_valid(void){
         return false;
     }
 
-    if (!load_attempt_array(
-            dummy_attempts,
-            &dummy_attempt_number,
-            get_attempts_file_path(),
-            &(loaded_session_id))) {
+    if (!load_attempt_array(dummy_attempts, &dummy_attempt_number,
+                            get_attempts_file_path(), &(loaded_session_id))) {
         return false;
     }
 
@@ -152,8 +134,7 @@ bool is_game_data_valid(void){
     return true;
 }
 
-
-void delete_game_data(void){
+void delete_game_data(void) {
     if (remove(get_secret_file_path()) != 0) {
         perror("error while removing secret_word.txt");
     }

@@ -1,10 +1,10 @@
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>
+
 
 #include "cab_input.h"
-
 
 static InputMode input_mode = CONSOLE;
 
@@ -12,23 +12,26 @@ static InputMode input_mode = CONSOLE;
 extern const char* cab_io__get_input_buffer(void);
 extern size_t cab_io__get_input_buffer_size(void);
 
-static void to_lower(char* string,size_t max_length){
+static void to_lower(char* string, size_t max_length) {
     for (size_t k = 0; k < max_length && string[k] != '\0'; k++) {
-        if (string[k] >= 'A' && string[k] <= 'Z')
+        if (string[k] >= 'A' && string[k] <= 'Z') {
             string[k] = string[k] - 'A' + 'a';
+        }
     }
 }
 
-static size_t normalize_spaces_in_place(char* string){
+static size_t normalize_spaces_in_place(char* string) {
     size_t src_idx = 0;
     size_t dst_idx = 0;
 
-    while (string[src_idx] == ' ' || string[src_idx] == '\t')
+    while (string[src_idx] == ' ' || string[src_idx] == '\t') {
         src_idx++;
+    }
 
     bool previous_was_space = false;
     for (; string[src_idx] != '\0'; src_idx++) {
-        const bool is_space = (string[src_idx] == ' ' || string[src_idx] == '\t');
+        const bool is_space =
+            (string[src_idx] == ' ' || string[src_idx] == '\t');
         if (is_space) {
             if (!previous_was_space) {
                 string[dst_idx++] = ' ';
@@ -40,26 +43,29 @@ static size_t normalize_spaces_in_place(char* string){
         }
     }
 
-    if (dst_idx > 0 && string[dst_idx - 1] == ' ')
+    if (dst_idx > 0 && string[dst_idx - 1] == ' ') {
         dst_idx--;
+    }
 
     string[dst_idx] = '\0';
     return dst_idx;
 }
 
-static size_t count_tokens(const char* string){
-    if (string[0] == '\0')
+static size_t count_tokens(const char* string) {
+    if (string[0] == '\0') {
         return 0;
+    }
 
     size_t tokens = 1;
     for (size_t i = 0; string[i] != '\0'; i++) {
-        if (string[i] == ' ')
+        if (string[i] == ' ') {
             tokens++;
+        }
     }
     return tokens;
 }
 
-static void split_tokens(char* buffer, char** arguments){
+static void split_tokens(char* buffer, char** arguments) {
     size_t arg_index = 0;
     arguments[arg_index++] = buffer;
 
@@ -71,16 +77,17 @@ static void split_tokens(char* buffer, char** arguments){
     }
 }
 
-static bool get_input(char* buffer, size_t buffer_size){
+static bool get_input(char* buffer, size_t buffer_size) {
     if (buffer_size == 0) {
         return false;
     }
 
-    switch(input_mode){
+    switch (input_mode) {
         case CONSOLE: {
             do {
-                if (fgets(buffer, buffer_size, stdin) == NULL)
+                if (fgets(buffer, buffer_size, stdin) == NULL) {
                     return false;
+                }
             } while (buffer[0] == '\n');
 
             const size_t len = strlen(buffer);
@@ -88,16 +95,15 @@ static bool get_input(char* buffer, size_t buffer_size){
                 buffer[len - 1] = '\0';
             } else {
                 int c;
-                while ((c = getchar()) != '\n' && c != EOF) {
-                }
+                while ((c = getchar()) != '\n' && c != EOF) {}
             }
             return true;
         }
         case API_IN: {
             const char* api_input_buffer = cab_io__get_input_buffer();
             size_t api_input_size = cab_io__get_input_buffer_size();
-            
-            if(api_input_size == 0){
+
+            if (api_input_size == 0) {
                 return false;
             }
             size_t copy_size = api_input_size;
@@ -105,7 +111,7 @@ static bool get_input(char* buffer, size_t buffer_size){
                 copy_size = buffer_size - 1;
             }
 
-            for(size_t i = 0; i < copy_size; i++){
+            for (size_t i = 0; i < copy_size; i++) {
                 buffer[i] = api_input_buffer[i];
             }
             buffer[copy_size] = '\0';
@@ -120,30 +126,29 @@ static bool get_input(char* buffer, size_t buffer_size){
     }
 }
 
-void io__set_input_mode(InputMode new_mode){
+void io__set_input_mode(InputMode new_mode) {
     input_mode = new_mode;
 }
 
-
-size_t get_args_from_input(
-    char buffer[],
-    size_t buffer_size,
-    char*** arguments
-){
+size_t get_args_from_input(char buffer[], size_t buffer_size,
+                           char*** arguments) {
     *arguments = NULL;
-    if (!get_input(buffer, buffer_size))
+    if (!get_input(buffer, buffer_size)) {
         return 0;
+    }
 
     const size_t len = normalize_spaces_in_place(buffer);
-    if (buffer[0] == '\0')
+    if (buffer[0] == '\0') {
         return 0;
+    }
 
     to_lower(buffer, len);
 
     const size_t token_count = count_tokens(buffer);
     *arguments = malloc(token_count * sizeof **arguments);
-    if (*arguments == NULL)
+    if (*arguments == NULL) {
         exit(EXIT_FAILURE);
+    }
 
     split_tokens(buffer, *arguments);
     return token_count;

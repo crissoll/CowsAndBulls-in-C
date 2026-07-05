@@ -5,13 +5,13 @@
 
 bool set_path_string(char **path, const char *value);
 
-char* get_saves_folder_path();
+char *get_saves_folder_path();
 
-char* get_vocabolary_file_path();
+char *get_vocabolary_file_path();
 
-char* get_secret_file_path();
+char *get_secret_file_path();
 
-char* get_attempts_file_path();
+char *get_attempts_file_path();
 
 void init_file_paths();
 

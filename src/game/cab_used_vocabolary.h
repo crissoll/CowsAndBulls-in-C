@@ -1,10 +1,11 @@
 #ifndef CAB_USED_VOCABOLARY
-#define CAB_USED_VOCABOLARY 
+#define CAB_USED_VOCABOLARY
 
 #include <stdbool.h>
 
-#include "word.h"
 #include "vocabolary.h"
+#include "word.h"
+
 
 Vocabolary get_used_vocabolary();
 

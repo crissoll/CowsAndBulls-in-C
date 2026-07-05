@@ -1,6 +1,8 @@
 #ifndef CAB_L_S
 #define CAB_L_S
 
+#include <stdbool.h>
+
 void generate_session_id();
 
 bool is_game_data_valid(void);
