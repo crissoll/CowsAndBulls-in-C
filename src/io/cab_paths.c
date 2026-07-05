@@ -1,6 +1,11 @@
 #include <stdio.h>
+#include <errno.h>
 #include <string.h>
 #include <sys/stat.h>
+
+#ifdef _WIN32
+    #include <direct.h>
+#endif
 
 
 #include "cab_files.h"
@@ -84,6 +89,24 @@ static bool is_existing_directory(const char* path) {
     return (stat(path, &statbuf) == 0) && S_ISDIR(statbuf.st_mode);
 }
 
+static bool create_directory_if_missing(const char* path) {
+    if (is_existing_directory(path)) {
+        return true;
+    }
+
+#ifdef _WIN32
+    if (_mkdir(path) == 0 || errno == EEXIST) {
+        return is_existing_directory(path);
+    }
+#else
+    if (mkdir(path, 0777) == 0 || errno == EEXIST) {
+        return is_existing_directory(path);
+    }
+#endif
+
+    return false;
+}
+
 // get length
 static size_t get_normalized_path_len(const char* path) {
     char* last = (char*)path + strlen(path) - 1;
@@ -120,7 +143,7 @@ bool is_valid_saves_folder_path(const char* path) {
     memcpy(normalized_path, path, trimmed_len);
     normalized_path[trimmed_len] = '\0';
 
-    const bool result = is_existing_directory(normalized_path);
+    const bool result = create_directory_if_missing(normalized_path);
     free(normalized_path);
     return result;
 }
