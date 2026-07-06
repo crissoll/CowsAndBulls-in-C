@@ -74,7 +74,10 @@ void print_current_filter() {
 
 void print_filter_history() {
     const size_t history_count = get_filter_history_size();
-
+    if (history_count == 0) {
+        output("(no history yet)\n");
+        return;
+    }
     output("List history (%zu entries):\n", history_count);
     for (size_t hist_idx = 0; hist_idx < history_count; hist_idx++) {
         const ListHistoryEntry entry = help_filter_history[hist_idx];
@@ -82,9 +85,6 @@ void print_filter_history() {
         output("\n--- Step %zu: [%zu words] ---\n", hist_idx + 1,
                entry.word_count);
         filter__print(&entry.filter);
-    }
-    if (history_count == 0) {
-        output("(no history yet)\n");
     }
 }
 
