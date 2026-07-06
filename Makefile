@@ -1,68 +1,155 @@
-CC := clang
-RM := rm -f
-AR := ar rcs
-COMPILE_COMMANDS := compile_commands.json
-comma := ,
+# =============================================================================
+# 1. TOOLCHAIN & PLATFORM CONFIGURATION
+# =============================================================================
+# Suppresses command echoing globally for a silent build
+.SILENT:
 
+CC := clang
+AR := ar rcs
+
+COMPILE_COMMANDS := compile_commands.json
+
+# Cross-platform definitions
+ifeq ($(OS),Windows_NT)
+    RM      := del /F /Q
+    FIXPATH = $(subst /,\,$1)
+    EXE     := .exe
+    NULL    := NUL
+    RUN_CMD = $(call FIXPATH,$1)
+else
+    RM      := rm -f
+    FIXPATH = $1
+    EXE     :=
+    NULL    := /dev/null
+    RUN_CMD = ./$1
+endif
+
+# =============================================================================
+# 2. MACROS & HELPER FUNCTIONS
+# =============================================================================
 rwildcard = $(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2)$(filter $(subst *,%,$2),$d))
 
-CAB_GAME_APP_SRCS := \
-	apps/api_usage_example.c
+# =============================================================================
+# 3. SOURCE & OBJECT FILES
+# =============================================================================
+APP_SRCS    := apps/api_usage_example.c
+SHARED_SRCS := $(call rwildcard,src/,*.c)
+ALL_SRCS    := $(APP_SRCS) $(SHARED_SRCS)
 
-CAB_GAME_SHARED_SRCS := $(call rwildcard,src/,*.c)
+LIB_OBJS    := $(SHARED_SRCS:.c=.o)
 
-CAB_GAME_EXEC_SRCS := $(CAB_GAME_APP_SRCS) $(CAB_GAME_SHARED_SRCS)
-CAB_GAME_LIB_OBJS := $(CAB_GAME_SHARED_SRCS:.c=.o)
+# =============================================================================
+# 4. COMPILER FLAGS
+# =============================================================================
+SRC_DIRS := $(sort $(dir $(ALL_SRCS)))
+INCLUDES := $(addprefix -I,$(SRC_DIRS))
+CFLAGS   := -g -Wall -Wextra -std=c11 $(INCLUDES)
 
-# Compute include directories from all source file directories so the Makefile
-# keeps working when adding/removing subfolders under `src/` or `apps/`.
-SRCDIRS := $(sort $(dir $(CAB_GAME_EXEC_SRCS)))
-INCLUDES := $(addprefix -I,$(SRCDIRS))
-CFLAGS := -g -Wall -Wextra -std=c11 $(INCLUDES)
-DEBUG_CFLAGS := -O0 -g -Wall -Wextra -std=c11 $(INCLUDES)
-
+# =============================================================================
+# 5. COMPILE_COMMANDS.JSON GENERATOR
+# =============================================================================
+comma := ,
 json_escape = $(subst \,\\,$(subst ",\",$(1)))
 
-define compile_command_entry
-{ "directory": "$(call json_escape,$(CURDIR))", "command": "$(call json_escape,$(CC) $(CFLAGS) -c $(1) -o $(basename $(1)).o)", "file": "$(call json_escape,$(abspath $(1)))" }
+define json_entry
+{ \
+  "directory": "$(call json_escape,$(CURDIR))", \
+  "command": "$(call json_escape,$(CC) $(CFLAGS) -c $(1) -o $(basename $(1)).o)", \
+  "file": "$(call json_escape,$(abspath $(1)))" \
+}
 endef
 
-.PHONY: all clean help game game-lib debug compile_commands.json api_example_lib
+$(COMPILE_COMMANDS): $(ALL_SRCS)
+	$(file >$@,[)
+	$(foreach src,$(ALL_SRCS),\
+		$(file >>$@,$(call json_entry,$(src)))\
+		$(if $(filter $(src),$(lastword $(ALL_SRCS))),,\
+			$(file >>$@,$(comma))\
+		)\
+	)
+	$(file >>$@,])
 
-all: cab_game word.o
+# =============================================================================
+# 6. BUILD TARGETS
+# =============================================================================
+.PHONY: all clean distclean help game game-lib debug api_example_lib rebuild clean-objs app test
 
-game: game-lib cab_game
+# Tells Make to treat these object files as temporary. 
+# They will be automatically deleted when the build finishes.
+.INTERMEDIATE: $(LIB_OBJS) word.o apps/api_usage_example.o
+
+all: cab_game$(EXE) word.o | $(COMPILE_COMMANDS)
+
+game: game-lib cab_game$(EXE)
 
 game-lib: libcab_game.a
 
-debug: CFLAGS := $(DEBUG_CFLAGS)
-debug: cab_game
-	./cab_game
+# Appends -O0 to CFLAGS strictly for the debug target, then executes it
+debug: CFLAGS += -O0
+debug: cab_game$(EXE)
+	$(call RUN_CMD,cab_game$(EXE))
 
-$(COMPILE_COMMANDS):
-	@$(file >$(COMPILE_COMMANDS),[)
-	@$(foreach src,$(CAB_GAME_EXEC_SRCS),$(file >>$(COMPILE_COMMANDS),$(call compile_command_entry,$(src)))$(if $(filter $(src),$(lastword $(CAB_GAME_EXEC_SRCS))),,$(file >>$(COMPILE_COMMANDS),$(comma))))
-	@$(file >>$(COMPILE_COMMANDS),])
-	@:
 
-cab_game: $(CAB_GAME_EXEC_SRCS)
+# Dynamic testing target: Compiles directly with source files to prevent library linking errors
+app: CFLAGS += -O0
+app: | $(COMPILE_COMMANDS)
+	$(if $(f),,$(error "Error: Please specify the app file using f=<filename> (e.g., make app f=my_test)"))
+	$(CC) $(CFLAGS) -o apps/$(f)$(EXE) apps/$(f).c $(SHARED_SRCS)
+	$(call RUN_CMD,apps/$(f)$(EXE))
+
+# Hardcoded testing target for apps/test.c
+test: CFLAGS += -O0
+test: | $(COMPILE_COMMANDS)
+	$(CC) $(CFLAGS) -o apps/test$(EXE) apps/test.c $(SHARED_SRCS)
+	$(call RUN_CMD,apps/test$(EXE))
+
+
+cab_game$(EXE): $(ALL_SRCS) | $(COMPILE_COMMANDS)
 	$(CC) $(CFLAGS) -o $@ $^
 
-libcab_game.a: $(CAB_GAME_LIB_OBJS)
+api_example_lib: libcab_game.a | $(COMPILE_COMMANDS)
+	$(CC) $(CFLAGS) -o apps/api_usage_example_lib$(EXE) apps/api_usage_example_lib.c libcab_game.a
+
+libcab_game.a: $(LIB_OBJS) | $(COMPILE_COMMANDS)
 	$(AR) $@ $^
 
-api_example_lib: libcab_game.a
-	$(CC) $(CFLAGS) -o apps/api_usage_example_lib.exe apps/api_usage_example_lib.c libcab_game.a
-
-%.o: %.c
+%.o: %.c | $(COMPILE_COMMANDS)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-word.o: src/core/word.c
+word.o: src/core/word.c | $(COMPILE_COMMANDS)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-clean:
-	$(RM) cab_game libcab_game.a word.o $(CAB_GAME_LIB_OBJS) *.exe
+# =============================================================================
+# 7. UTILITY TARGETS
+# =============================================================================
+
+# Targeted cleanup just for objects, in case you need to run it manually
+clean-objs:
+	-$(RM) $(call FIXPATH,$(LIB_OBJS)) >$(NULL) 2>&1
+	-$(RM) $(call FIXPATH,apps/*.o) >$(NULL) 2>&1
+	-$(RM) $(call FIXPATH,word.o) >$(NULL) 2>&1
+
+clean: clean-objs
+	-$(RM) $(call FIXPATH,cab_game$(EXE)) >$(NULL) 2>&1
+	-$(RM) $(call FIXPATH,libcab_game.a) >$(NULL) 2>&1
+	-$(RM) $(call FIXPATH,*.exe) >$(NULL) 2>&1
+	-$(RM) $(call FIXPATH,apps/*.exe) >$(NULL) 2>&1
+
+distclean: clean
+	-$(RM) $(COMPILE_COMMANDS) >$(NULL) 2>&1
+
+rebuild: clean all
 
 help:
-	@echo "make [target]"
-	@echo "Targets: game, game-lib, debug, cab_game, libcab_game.a, word.o, clean"
+	echo "Usage: make [target]"
+	echo "Available Targets:"
+	echo "  all             - Builds everything (default)"
+	echo "  game            - Builds library and main game executable"
+	echo "  game-lib        - Builds static library (libcab_game.a)"
+	echo "  app         - Compiles and runs a specific app file. Usage: make app f=test_name"
+	echo "  test            - Compiles and runs apps/test.c"
+	echo "  debug           - Builds with no optimization (-O0) and runs"
+	echo "  clean           - Removes binaries, libraries, and all .o files"
+	echo "  clean-objs      - Removes only the .o files manually"
+	echo "  distclean       - Removes everything, including compile_commands.json"
+	echo "  rebuild         - Cleans entirely and rebuilds from scratch"

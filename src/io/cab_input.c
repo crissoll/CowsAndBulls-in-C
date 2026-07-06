@@ -130,8 +130,8 @@ void io__set_input_mode(InputMode new_mode) {
     input_mode = new_mode;
 }
 
-size_t get_args_from_input(char buffer[], size_t buffer_size,
-                           char*** arguments) {
+size_t get_tokens_from_input(char buffer[], size_t buffer_size,
+                             char*** arguments) {
     *arguments = NULL;
     if (!get_input(buffer, buffer_size)) {
         return 0;

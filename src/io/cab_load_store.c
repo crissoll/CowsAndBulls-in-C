@@ -102,19 +102,19 @@ bool load_secret_word() {
     return loaded;
 }
 
-bool is_there_previous_game_data(void) {
+bool are_there_previous_save_files(void) {
     return (check_file_exists(get_attempts_file_path()) &&
             check_file_exists(get_secret_file_path()));
 }
 
-bool is_game_data_valid(void) {
+bool are_save_files_valid(void) {
     Attempt dummy_attempts[MAX_ATTEMPTS];
     size_t dummy_attempt_number = 0;
     SessionId loaded_session_id;
     SessionId dummy_session_id;
     Word dummy_secret_word;
 
-    if (!is_there_previous_game_data()) {
+    if (!are_there_previous_save_files()) {
         return false;
     }
 
@@ -134,7 +134,7 @@ bool is_game_data_valid(void) {
     return true;
 }
 
-void delete_game_data(void) {
+void delete_save_files(void) {
     if (remove(get_secret_file_path()) != 0) {
         perror("error while removing secret_word.txt");
     }

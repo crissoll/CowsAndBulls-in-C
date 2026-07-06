@@ -12,6 +12,7 @@ typedef enum { CONSOLE, API_IN } InputMode;
 
 bool input(char *input_string);
 char *get_output(void);
+
 void io__setup(void);
 void io__shutdown(void);
 

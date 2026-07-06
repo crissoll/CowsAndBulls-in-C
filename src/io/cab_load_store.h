@@ -5,7 +5,7 @@
 
 void generate_session_id();
 
-bool is_game_data_valid(void);
+bool are_save_files_valid(void);
 
 bool load_secret_word();
 
@@ -15,7 +15,7 @@ bool load_attempts(void);
 
 void store_attempts(void);
 
-void delete_game_data(void);
+void delete_save_files(void);
 
 void store_data();
 #endif

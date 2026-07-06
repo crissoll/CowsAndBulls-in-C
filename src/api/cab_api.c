@@ -16,36 +16,37 @@
 
 static bool saves_handled = false;
 
-static bool loading_game_data = false;
+static bool loading_saves = false;
 
 void reset_game_vars() {
-    loading_game_data = false;
+    loading_saves = false;
     reset_attempts();
 }
 
 bool prompt_to_load_game() {
-    if (!is_game_data_valid()) {
-        loading_game_data = false;
+    if (!are_save_files_valid()) {
+        loading_saves = false;
         return true;
     }
 
     char buffer[100];
     char** input_tokens = NULL;
 
-    size_t output_size =
-        get_args_from_input(buffer, sizeof(buffer), &input_tokens);
+    size_t input_size =
+        get_tokens_from_input(buffer, sizeof(buffer), &input_tokens);
 
     free(input_tokens);
 
-    if (output_size == 0 || (buffer[0] != 'y' && buffer[0] != 'n')) {
+    if (input_size == 0 ||
+        (strcmp(buffer, "y") != 0 && strcmp(buffer, "n") != 0)) {
         output("input must be y or n\n");
         return false;
     }
 
     if (buffer[0] == 'y') {
-        loading_game_data = true;
+        loading_saves = true;
     } else {
-        loading_game_data = false;
+        loading_saves = false;
     }
     return true;
 }
@@ -54,11 +55,11 @@ static void handle_first_turn() {
     if (get_attempt_number() > 0) {
         return;
     }
-    if (!loading_game_data) {
+    if (!loading_saves) {
         generate_secret_word();
         return;
     }
-    if (is_game_data_valid()) {
+    if (are_save_files_valid()) {
         load_secret_word();
         load_attempts();
     } else {
@@ -72,8 +73,8 @@ static void process_turn() {
 
     char input_buffer[1024];
     char** input_tokens = NULL;
-    const size_t token_count =
-        get_args_from_input(input_buffer, sizeof(input_buffer), &input_tokens);
+    const size_t token_count = get_tokens_from_input(
+        input_buffer, sizeof(input_buffer), &input_tokens);
 
     if (token_count == 0) {
         free(input_tokens);
@@ -87,7 +88,7 @@ static void process_turn() {
     store_data();
 
     if (is_game_ended()) {
-        delete_game_data();
+        delete_save_files();
     }
 }
 
@@ -112,7 +113,7 @@ void setup_game() {
 }
 
 bool are_there_previous_saves() {
-    return is_game_data_valid();
+    return are_save_files_valid();
 }
 
 char* handle_saves_load_choice(char* input_string) {
