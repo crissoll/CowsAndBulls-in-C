@@ -1,7 +1,6 @@
 #ifndef CAB_PATHS
 #define CAB_PATHS
 #include <stdbool.h>
-#include <stdlib.h>
 
 bool set_path_string(char **path, const char *value);
 
