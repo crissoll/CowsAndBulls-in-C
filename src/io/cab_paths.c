@@ -22,6 +22,15 @@
     #endif
 #endif
 
+#ifdef _WIN32
+    #include <direct.h>
+    #define MKDIR(path) _mkdir(path)
+#else
+    #include <sys/stat.h>
+    #define MKDIR(path) mkdir(path, 0777)
+#endif
+
+
 #define SECRET_FILE_NAME "secret_word.saves"
 #define ATTEMPTS_FILE_NAME "attempts.saves"
 #define DEFAULT_VOCAB_PATH "data/words/5_letters_en_words.txt"
@@ -85,30 +94,36 @@ bool set_path_string(char** path, const char* value) {
     return true;
 }
 
-static bool is_existing_directory(const char* path) {
-    struct stat statbuf;
-    return (stat(path, &statbuf) == 0) && S_ISDIR(statbuf.st_mode);
+
+bool create_directories_if_missing(const char* path) {
+    char tmp[256];
+    char* p = NULL;
+    size_t len;
+
+    snprintf(tmp, sizeof(tmp), "%s", path);
+    len = strlen(tmp);
+
+    if (len > 0 && tmp[len - 1] == '/') {
+        tmp[len - 1] = '\0';
+    }
+
+    for (p = tmp + 1; *p; p++) {
+        if (*p == '/') {
+            *p = '\0';
+            if (MKDIR(tmp) != 0 && errno != EEXIST) {
+                return false;
+            }
+            *p = '/';
+        }
+    }
+
+    if (MKDIR(tmp) != 0 && errno != EEXIST) {
+        return false;
+    }
+
+    return true;
 }
 
-static bool create_directory_if_missing(const char* path) {
-    if (is_existing_directory(path)) {
-        return true;
-    }
-
-#ifdef _WIN32
-    if (_mkdir(path) == 0 || errno == EEXIST) {
-        return is_existing_directory(path);
-    }
-#else
-    if (mkdir(path, 0777) == 0 || errno == EEXIST) {
-        return is_existing_directory(path);
-    }
-#endif
-
-    return false;
-}
-
-// get length
 static size_t get_normalized_path_len(const char* path) {
     char* last = (char*)path + strlen(path) - 1;
 
@@ -144,7 +159,7 @@ bool is_valid_saves_folder_path(const char* path) {
     memcpy(normalized_path, path, trimmed_len);
     normalized_path[trimmed_len] = '\0';
 
-    const bool result = create_directory_if_missing(normalized_path);
+    const bool result = create_directories_if_missing(normalized_path);
     free(normalized_path);
     return result;
 }

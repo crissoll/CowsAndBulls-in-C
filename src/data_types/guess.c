@@ -6,15 +6,16 @@
 typedef struct {
     size_t cows;
     size_t bulls;
-} GuessResult; /* result of comparing a guess to the secret word */
+} GuessResult; /* result of comparing a word to a target word */
 
 GuessResult compare_words(Word word, Word secret_word) {
     GuessResult result;
     result.cows = 0;
     result.bulls = 0;
 
-    // Track consumed letters in both words so a bull is never counted again as a
-    // cow.
+
+    // bulls are counted first, and aren't be counted as cows
+
     bool used_secret_chars[LETTERS_IN_WORD];
     bool used_word_chars[LETTERS_IN_WORD];
 

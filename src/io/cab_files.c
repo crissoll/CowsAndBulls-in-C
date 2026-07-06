@@ -1,7 +1,6 @@
 
 #include "cab_files.h"
 
-// Controllo per assicurarsi che il file esista
 FILE* open_file_safe(const char* file_name, const char* mode) {
     if (file_name == NULL || mode == NULL) {
         perror("Invalid file name or mode");

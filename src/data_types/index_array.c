@@ -16,7 +16,7 @@ void index_array__init(IndexArray* array, size_t size) {
 void index_array__free_content(IndexArray* array) {
     if (array->size > 0 && array->indexes != NULL) {
         free(array->indexes);
-        array->indexes = NULL;  // Evita dangling pointer
+        array->indexes = NULL;  // avoids dangling pointer
     }
 }
 
@@ -45,7 +45,7 @@ IndexArray intersect(const IndexArray a, const IndexArray b) {
             j++;
         }
     }
-    result.size = k;  // Aggiorna la dimensione del risultato
+    result.size = k;  // update result size
     return result;
 }
 
