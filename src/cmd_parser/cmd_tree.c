@@ -24,7 +24,7 @@ const CommandSpec command_specs[] = {
         .help_text = HELP_CMD_HELP,
         .allowed = &(bool){true},
         .case_no_args = print_whole_help_text,
-        .default_handler = print_help_text_from_args,
+        .default_handler = print_help_text_from_tokens,
         .args = NULL,
     },
     {
@@ -80,7 +80,7 @@ const CommandSpec command_specs[] = {
 
 const CommandSpec* ROOT =
     &(CommandSpec){.case_no_args = NULL,
-                   .default_handler = cmd__try_word_from_args,
+                   .default_handler = cmd__try_word_from_tokens,
                    .args = command_specs};
 
 
