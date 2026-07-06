@@ -175,34 +175,53 @@ bool print_whole_help_text() {
     return true;
 }
 
-bool parse_command(const CommandSpec* specifier, const char* tokens[],
+void parse_command(const CommandSpec* specifier, const char* tokens[],
+                   size_t token_count);
+
+bool parse_args(const CommandSpec* specifier, const char* tokens[],
+                size_t token_count) {
+    if (specifier->args == NULL) {
+        return false;
+    }
+
+    const CommandSpec* candidate_arg = specifier->args;
+    while (candidate_arg->name != NULL) {
+        if (!(*candidate_arg->allowed)) {
+            candidate_arg++;
+            output("command is not allowed\n");
+            return true;
+        }
+        if (strcmp(tokens[0], candidate_arg->name) == 0) {
+            parse_command(candidate_arg, tokens + 1, token_count - 1);
+            return true;
+        }
+        candidate_arg++;
+    }
+    return false;
+}
+
+void parse_command(const CommandSpec* specifier, const char* tokens[],
                    size_t token_count) {
     if (token_count == 0) {
         if (specifier->case_no_args == NULL) {
-            return alert_too_few_arguments();
+            alert_too_few_arguments();
+            return;
         }
-        return specifier->case_no_args();
+        specifier->case_no_args();
+        return;
     }
-    if (token_count > 0 && specifier->args != NULL) {
-        const CommandSpec* candidate_arg = specifier->args;
-        while (candidate_arg->name != NULL) {
-            if (!(*candidate_arg->allowed)) {
-                candidate_arg++;
-                output("command is not allowed\n");
-                return true;
-            }
-            if (strcmp(tokens[0], candidate_arg->name) == 0) {
-                return parse_command(candidate_arg, tokens + 1,
-                                     token_count - 1);
-            }
-            candidate_arg++;
-        }
+    const bool args_correctly_parsed =
+        parse_args(specifier, tokens, token_count);
+
+    if (args_correctly_parsed) {
+        return;
     }
     if (specifier->default_handler == NULL) {
         alert_too_many_arguments();
-        return false;
+        return;
     }
-    return specifier->default_handler(token_count, tokens);
+    specifier->default_handler(token_count, tokens);
+    return;
 }
 
 void parse(const char* tokens[], size_t token_count) {
