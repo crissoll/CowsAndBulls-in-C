@@ -24,12 +24,12 @@ bool input(char* input_string) {
 }
 
 void io__setup() {
-    reset_output_buffer();
+    output__setup();
 }
 
 
 void io__shutdown() {
-    free_output_buffer();
+    output__shutdown();
 }
 
 

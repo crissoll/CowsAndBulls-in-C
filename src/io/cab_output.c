@@ -40,7 +40,7 @@ void output(const char* format_string, ...) {
             }
             vsnprintf(tmp, tmp_size, format_string, args);
 
-            print_to_buffer(tmp);
+            print_to_default_buffer(tmp);
             free(tmp);
             break;
         }
