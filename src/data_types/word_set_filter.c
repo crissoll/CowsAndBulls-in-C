@@ -4,7 +4,6 @@
 #include "cab_output.h"
 
 
-
 #include "index_array.h"
 #include "word.h"
 #include "word_set.h"
