@@ -71,7 +71,7 @@ void _disable_command(size_t token_count, const char* tokens[],
                 *candidate_spec->allowed = false;
                 return;
             }
-            output("%s\n", candidate_spec->name);
+            output("%s has been disabled\n", candidate_spec->name);
             if (candidate_spec->args == NULL) {
                 alert_too_many_arguments();
                 return;
