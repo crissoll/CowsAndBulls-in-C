@@ -7,7 +7,7 @@
 void index_array__init(IndexArray* array, size_t size) {
     array->size = size;
     if (size > 0) {
-        array->indexes = malloc(size * sizeof(*array->indexes));
+        array->indexes = malloc(size * sizeof(array->indexes[0]));
     } else {
         array->indexes = NULL;
     }

@@ -11,7 +11,7 @@ static int qsort_word_cmp(const void* a, const void* b) {
 
 void vocabolary__init_from_file(Vocabolary* vocabolary, const char* file_name) {
     vocabolary->size = get_line_count(file_name);
-    Word* words = malloc(sizeof(*words) * vocabolary->size);
+    Word* words = malloc(sizeof(words[0]) * vocabolary->size);
     FILE* file = open_file_safe(file_name, "r");
     char buffer[100];
     size_t i = 0;

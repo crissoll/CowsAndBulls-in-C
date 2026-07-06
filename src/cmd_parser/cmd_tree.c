@@ -77,10 +77,12 @@ const CommandSpec command_specs[] = {
     END_SPEC,
 };
 
+
 const CommandSpec* ROOT =
     &(CommandSpec){.case_no_args = NULL,
                    .default_handler = cmd__try_word_from_args,
                    .args = command_specs};
+
 
 const CommandSpec* get_cmd_tree_root() {
     return ROOT;
