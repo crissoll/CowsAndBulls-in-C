@@ -3,3 +3,6 @@
 *.exe
 /.vscode
 *.a
+compile_commands.json
+.clang-format
+.clangd

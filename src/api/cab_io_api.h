@@ -4,20 +4,14 @@
 #include <stdbool.h>
 
 /* Enums shared across IO modules */
-typedef enum {
-   PRINT,
-   API_OUT
-} OutputMode;
+typedef enum { PRINT, API_OUT } OutputMode;
 
-typedef enum {
-   CONSOLE,
-   API_IN
-} InputMode;
+typedef enum { CONSOLE, API_IN } InputMode;
 
 /* API layer: input(), io__setup(), io__shutdown(), get_output() */
 
-bool input(char* input_string);
-char* get_output(void);
+bool input(char *input_string);
+char *get_output(void);
 void io__setup(void);
 void io__shutdown(void);
 

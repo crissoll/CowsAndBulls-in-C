@@ -11,12 +11,11 @@ void reset_attempts();
 
 bool is_word_already_attempted(Word word);
 
-bool print_attempts(void);
+void print_attempts(void);
 
 void add_attempt(Word word, GuessResult result);
 
 void compare_attempts_to_word(Word word);
 
-
-void init_attempts(Attempt* value, size_t _attempt_number);
+void init_attempts(Attempt *value, size_t _attempt_number);
 #endif

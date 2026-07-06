@@ -1,55 +1,57 @@
+#include <malloc.h>
+#include <string.h>
+
 #include "cab_io_api.h"
 #include "cab_output.h"
-#include "string.h"
-#include "malloc.h"
 
-# define MAX_INPUT_BUFFER_SIZE 1024
+
+#define MAX_INPUT_BUFFER_SIZE 1024
 static char input_buffer[MAX_INPUT_BUFFER_SIZE];
 static size_t input_buffer_size = 0;
 
-bool input(char* input_string){
+bool input(char* input_string) {
     input_buffer_size = 0;
     const size_t len = strlen(input_string);
-    if(len > MAX_INPUT_BUFFER_SIZE){
+    if (len > MAX_INPUT_BUFFER_SIZE) {
         output("Input String Too Long!\n");
         return false;
     }
-    
-    strcpy(input_buffer,input_string);
+
+    strcpy(input_buffer, input_string);
 
     input_buffer_size = len;
     return true;
 }
 
-# define INITIAL_OUTPUT_BUFFER_ALLOCATED_SIZE 128
+#define INITIAL_OUTPUT_BUFFER_ALLOCATED_SIZE 128
 size_t output_buffer_allocated_size = INITIAL_OUTPUT_BUFFER_ALLOCATED_SIZE;
 static char* output_buffer = NULL;
 static size_t output_buffer_size = 0;
 
-void reset_output_buffer(){
-    output_buffer = realloc(output_buffer,sizeof(*output_buffer) * INITIAL_OUTPUT_BUFFER_ALLOCATED_SIZE);
+void reset_output_buffer() {
+    output_buffer =
+        realloc(output_buffer,
+                sizeof(*output_buffer) * INITIAL_OUTPUT_BUFFER_ALLOCATED_SIZE);
     output_buffer_allocated_size = INITIAL_OUTPUT_BUFFER_ALLOCATED_SIZE;
     output_buffer_size = 0;
     output_buffer[0] = '\0';
 }
 
-
-void io__setup(){
+void io__setup() {
     output_buffer = NULL;
     reset_output_buffer();
 }
 
+char* get_output() {
+    char* result = malloc(sizeof(*result) * (output_buffer_size + 1));
 
-char* get_output(){
-    char* result = malloc(sizeof(*result) * (output_buffer_size+1));
-
-    strcpy(result,output_buffer);
+    strcpy(result, output_buffer);
     reset_output_buffer();
 
     return result;
 }
 
-void io__shutdown(){
+void io__shutdown() {
     free(output_buffer);
 }
 
