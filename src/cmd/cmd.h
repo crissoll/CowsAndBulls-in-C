@@ -4,6 +4,6 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-bool parse_tokens(const char *tokens[], size_t token_count);
+void parse(const char *tokens[], size_t token_count);
 
 #endif

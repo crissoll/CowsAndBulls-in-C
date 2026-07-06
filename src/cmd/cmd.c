@@ -205,6 +205,6 @@ bool parse_command(const CommandSpec* specifier, const char* tokens[],
     return specifier->default_handler(token_count, tokens);
 }
 
-bool parse_tokens(const char* tokens[], size_t token_count) {
-    return parse_command(ROOT, tokens, token_count);
+void parse(const char* tokens[], size_t token_count) {
+    parse_command(ROOT, tokens, token_count);
 }
