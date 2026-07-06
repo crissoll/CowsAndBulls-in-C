@@ -13,8 +13,12 @@ void reset_attempts() {
 }
 
 bool print_attempts(void) {
+    if (attempt_number == 0) {
+        output("no attempts yet!\n");
+        return true;
+    }
     print_attempt_array(attempts, attempt_number);
-    return (attempt_number > 0);
+    return true;
 }
 
 bool is_word_already_attempted(Word word) {
