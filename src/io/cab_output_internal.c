@@ -22,13 +22,14 @@ void free_output_buffer() {
 
 void print_to_buffer(const char* text) {
     const size_t text_len = strlen(text);
-    const size_t initial_output_buffer_allocated_size =
+    const size_t prev_output_buffer_allocated_size =
         output_buffer_allocated_size;
+
     while (output_buffer_size + text_len >= output_buffer_allocated_size - 1) {
         output_buffer_allocated_size *= 2;
     }
 
-    if (initial_output_buffer_allocated_size < output_buffer_allocated_size) {
+    if (prev_output_buffer_allocated_size < output_buffer_allocated_size) {
         output_buffer =
             realloc(output_buffer,
                     sizeof(output_buffer[0]) * output_buffer_allocated_size);
