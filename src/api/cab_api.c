@@ -32,12 +32,13 @@ bool prompt_to_load_game() {
     char buffer[100];
     char** input_tokens = NULL;
 
-    size_t output_size =
+    size_t input_size =
         get_tokens_from_input(buffer, sizeof(buffer), &input_tokens);
 
     free(input_tokens);
 
-    if (output_size == 0 || (buffer[0] != 'y' && buffer[0] != 'n')) {
+    if (input_size == 0 ||
+        (strcmp(buffer, "y") != 0 && strcmp(buffer, "n") != 0)) {
         output("input must be y or n\n");
         return false;
     }
