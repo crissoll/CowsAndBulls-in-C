@@ -10,9 +10,6 @@
 #include "cmd_spec.h"
 #include "cmd_try_word.h"
 
-#include "cmd_tree.h"
-
-
 const CommandSpec command_specs[] = {
     {
         .name = "disable",
