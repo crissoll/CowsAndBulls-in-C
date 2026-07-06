@@ -5,39 +5,9 @@
 
 
 #include "cab_output.h"
+#include "cab_output_internal.h"
 
 static OutputMode output_mode = PRINT;
-
-/* Get pointers from api/cab_io_api to access shared output buffer */
-extern char** cab_io__get_output_buffer_ptr(void);
-extern size_t* cab_io__get_output_buffer_size_ptr(void);
-extern size_t* cab_io__get_output_buffer_allocated_size_ptr(void);
-
-static void print_to_buffer(const char* text) {
-    char** output_buffer = cab_io__get_output_buffer_ptr();
-    size_t* output_buffer_size = cab_io__get_output_buffer_size_ptr();
-    size_t* output_buffer_allocated_size =
-        cab_io__get_output_buffer_allocated_size_ptr();
-
-    const size_t text_len = strlen(text);
-    const size_t initial_output_buffer_allocated_size =
-        *output_buffer_allocated_size;
-    while (*output_buffer_size + text_len >=
-           *output_buffer_allocated_size - 1) {
-        *output_buffer_allocated_size *= 2;
-    }
-
-    if (initial_output_buffer_allocated_size < *output_buffer_allocated_size) {
-        *output_buffer =
-            realloc(*output_buffer,
-                    sizeof(**output_buffer) * *output_buffer_allocated_size);
-    }
-
-    for (size_t i = 0; text[i] != '\0'; i++) {
-        (*output_buffer)[(*output_buffer_size)++] = text[i];
-    }
-    (*output_buffer)[*output_buffer_size] = '\0';
-}
 
 void io__set_output_mode(OutputMode new_mode) {
     output_mode = new_mode;
@@ -62,7 +32,7 @@ void output(const char* format_string, ...) {
             }
 
             char* tmp;
-            const size_t tmp_size = sizeof(*tmp) * ((size_t)n + 1);
+            const size_t tmp_size = sizeof(tmp[0]) * ((size_t)n + 1);
 
             tmp = malloc(tmp_size);
             if (tmp == NULL) {
