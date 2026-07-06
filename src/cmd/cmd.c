@@ -14,8 +14,8 @@
 #include "cmd_try_word.h"
 
 
-typedef bool (*CommandHandler)(size_t token_count, const char* tokens[]);
-typedef bool (*ZeroArgsCommandHandler)(void);
+typedef void (*CommandHandler)(size_t token_count, const char* tokens[]);
+typedef void (*ZeroArgsCommandHandler)(void);
 
 typedef struct CommandSpec {
     const char* name;
@@ -29,22 +29,20 @@ typedef struct CommandSpec {
 #define END_SPEC {.name = NULL}
 
 
-bool print_whole_help_text();
+void print_whole_help_text();
 
 
-bool alert_too_many_arguments() {
+void alert_too_many_arguments() {
     output("too many arguments\n");
-    return false;
 }
 
-bool alert_too_few_arguments() {
+void alert_too_few_arguments() {
     output("too few arguments\n");
-    return false;
 }
 
-bool print_help_text_from_args(size_t token_count, const char* tokens[]);
+void print_help_text_from_args(size_t token_count, const char* tokens[]);
 
-bool disable_command(size_t token_count, const char* tokens[]);
+void disable_command(size_t token_count, const char* tokens[]);
 
 const CommandSpec command_specs[] = {
     {
@@ -117,9 +115,10 @@ const CommandSpec* ROOT =
                    .default_handler = cmd__try_word_from_args,
                    .args = command_specs};
 
-bool print_help_text_from_args(size_t token_count, const char* tokens[]) {
+void print_help_text_from_args(size_t token_count, const char* tokens[]) {
     if (token_count > 1) {
-        return alert_too_many_arguments();
+        alert_too_many_arguments();
+        return;
     }
     const CommandSpec* candidate_spec = command_specs;
     while (candidate_spec->name != NULL) {
@@ -129,41 +128,42 @@ bool print_help_text_from_args(size_t token_count, const char* tokens[]) {
         }
         if (strcmp(candidate_spec->name, tokens[0]) == 0) {
             output(candidate_spec->help_text);
-            return true;
+            return;
         }
         candidate_spec++;
     }
     output("command not found!\n");
-    return false;
+    return;
 }
 
-bool _disable_command(size_t token_count, const char* tokens[],
+void _disable_command(size_t token_count, const char* tokens[],
                       const CommandSpec* base_spec) {
     const CommandSpec* candidate_spec = base_spec->args;
     while (candidate_spec->name != NULL) {
         if (strcmp(candidate_spec->name, tokens[0]) == 0) {
             if (token_count == 1) {
                 *candidate_spec->allowed = false;
-                return true;
+                return;
             }
             output("%s\n", candidate_spec->name);
             if (candidate_spec->args == NULL) {
-                return alert_too_many_arguments();
+                alert_too_many_arguments();
+                return;
             }
-            return _disable_command(token_count - 1, tokens + 1,
-                                    candidate_spec);
+            _disable_command(token_count - 1, tokens + 1, candidate_spec);
+            return;
         }
         candidate_spec++;
     }
     output("command not found!\n");
-    return false;
+    return;
 }
 
-bool disable_command(size_t token_count, const char* tokens[]) {
-    return _disable_command(token_count, tokens, ROOT);
+void disable_command(size_t token_count, const char* tokens[]) {
+    _disable_command(token_count, tokens, ROOT);
 }
 
-bool print_whole_help_text() {
+void print_whole_help_text() {
     const CommandSpec* candidate_spec = command_specs;
     while (candidate_spec->name != NULL) {
         if (!(*candidate_spec->allowed)) {
@@ -172,7 +172,7 @@ bool print_whole_help_text() {
         output(candidate_spec->help_text);
         candidate_spec++;
     }
-    return true;
+    return;
 }
 
 void parse_command(const CommandSpec* specifier, const char* tokens[],

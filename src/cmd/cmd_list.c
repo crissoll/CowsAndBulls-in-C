@@ -51,33 +51,33 @@ static void cmd_list__set_pattern(const char pattern[LETTERS_IN_WORD + 1]) {
     filter__apply_pattern(help_filter, pattern, INTERSECT);
 }
 
-bool load_filter_from_history(size_t token_count, const char* tokens[]) {
+void load_filter_from_history(size_t token_count, const char* tokens[]) {
     if (token_count != 1) {
         output("expected one index argument\n");
-        return false;
+        return;
     }
 
     int index;
 
     if (sscanf(tokens[0], "%d", &index) != 1) {
         output("index must be a number\n");
-        return false;
+        return;
     }
     if (index < 0) {
         index = ((int)get_filter_history_size()) + index;
         if (index <= 0) {
             output("relative index too low\n");
-            return false;
+            return;
         }
     }
     index--;
     if (index < 0) {
         output("index must be > 0\n");
-        return false;
+        return;
     }
     if ((size_t)index >= get_filter_history_size()) {
         output("index too high!\n");
-        return false;
+        return;
     }
 
     revert_filter_to_history_step(index);
@@ -87,7 +87,6 @@ bool load_filter_from_history(size_t token_count, const char* tokens[]) {
     add_current_filter_to_history();
     const size_t word_count = get_current_help_filter_word_count();
     output("[%zu words]\n", word_count);
-    return true;
 }
 
 bool cmd__list_parse_all_patterns(size_t patterns_count, const char* patterns[],
@@ -104,25 +103,23 @@ bool cmd__list_parse_all_patterns(size_t patterns_count, const char* patterns[],
     return true;
 }
 
-bool cmd__list_remove_letters(size_t token_count, const char* tokens[]) {
+void cmd__list_remove_letters(size_t token_count, const char* tokens[]) {
     cmd__list_parse_all_patterns(token_count, tokens, REMOVE);
 
     add_current_filter_to_history();
     const size_t word_count = get_current_help_filter_word_count();
     output("[%zu words]\n", word_count);
-    return true;
 }
 
-bool cmd__list_intersect_letters(size_t token_count, const char* tokens[]) {
+void cmd__list_intersect_letters(size_t token_count, const char* tokens[]) {
     cmd__list_parse_all_patterns(token_count, tokens, INTERSECT);
 
     add_current_filter_to_history();
     const size_t word_count = get_current_help_filter_word_count();
     output("[%zu words]\n", word_count);
-    return true;
 }
 
-bool setup_list_from_pattern(size_t token_count, const char* tokens[]) {
+void setup_list_from_pattern(size_t token_count, const char* tokens[]) {
     if (token_count > 1) {
         output("list can only be initialized with a single pattern\n");
     }
@@ -130,7 +127,7 @@ bool setup_list_from_pattern(size_t token_count, const char* tokens[]) {
 
     if (!check_pattern(tokens[0])) {
         output("invalid pattern!\n");
-        return false;
+        return;
     }
 
     if (is_undefined_pattern(tokens[0])) {
@@ -142,5 +139,4 @@ bool setup_list_from_pattern(size_t token_count, const char* tokens[]) {
     add_current_filter_to_history();
     const size_t word_count = get_current_help_filter_word_count();
     output("[%zu words]\n", word_count);
-    return true;
 }

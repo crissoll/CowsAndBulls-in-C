@@ -65,15 +65,14 @@ void setup_help() {
     word_set__init_from_vocabolary(&help_word_set, &voc);
 }
 
-bool print_current_filter() {
+void print_current_filter() {
     WordSetFilter* help_filter = get_current_help_filter();
     const size_t word_count = get_current_help_filter_word_count();
     output("--- [%zu words] ---\n", word_count);
     filter__print(help_filter);
-    return true;
 }
 
-bool print_filter_history() {
+void print_filter_history() {
     const size_t history_count = get_filter_history_size();
 
     output("List history (%zu entries):\n", history_count);
@@ -87,14 +86,12 @@ bool print_filter_history() {
     if (history_count == 0) {
         output("(no history yet)\n");
     }
-    return true;
 }
 
-bool print_filtered_word_list() {
+void print_filtered_word_list() {
     IndexArray filtered = filter__get_words_from_word_set(
         &help_word_set, get_current_help_filter());
     const Vocabolary voc = get_used_vocabolary();
     index_array__print(filtered, &voc);
     index_array__free_content(&filtered);
-    return true;
 }

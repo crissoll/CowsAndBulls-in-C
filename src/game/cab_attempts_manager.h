@@ -11,7 +11,7 @@ void reset_attempts();
 
 bool is_word_already_attempted(Word word);
 
-bool print_attempts(void);
+void print_attempts(void);
 
 void add_attempt(Word word, GuessResult result);
 

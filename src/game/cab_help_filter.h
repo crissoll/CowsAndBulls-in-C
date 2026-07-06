@@ -15,10 +15,10 @@ void setup_help();
 
 void revert_filter_to_history_step(size_t index);
 
-bool print_current_filter();
+void print_current_filter();
 
-bool print_filter_history();
+void print_filter_history();
 
-bool print_filtered_word_list();
+void print_filtered_word_list();
 
 #endif
