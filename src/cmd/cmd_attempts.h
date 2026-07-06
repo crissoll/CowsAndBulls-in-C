@@ -4,6 +4,6 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-void compare_attempts_to_first_arg(size_t token_count, const char *tokens[]);
+void compare_attempts_to_first_token(size_t token_count, const char *tokens[]);
 
 #endif

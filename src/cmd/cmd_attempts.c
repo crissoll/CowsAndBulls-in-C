@@ -8,7 +8,7 @@
 #include "word.h"
 
 
-bool compare_attempts_to_first_arg(size_t token_count, const char* tokens[]) {
+bool compare_attempts_to_first_token(size_t token_count, const char* tokens[]) {
     if (token_count > 1) {
         output("too many arguments, only first will be used\n");
     }

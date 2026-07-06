@@ -32,7 +32,7 @@ const CommandSpec command_specs[] = {
         .help_text = HELP_CMD_ATTEMPTS,
         .allowed = &(bool){true},
         .case_no_args = print_attempts,
-        .default_handler = compare_attempts_to_first_arg,
+        .default_handler = compare_attempts_to_first_token,
         .args = NULL,
     },
     {

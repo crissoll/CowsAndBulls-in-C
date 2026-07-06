@@ -33,7 +33,7 @@ bool prompt_to_load_game() {
     char** input_tokens = NULL;
 
     size_t output_size =
-        get_args_from_input(buffer, sizeof(buffer), &input_tokens);
+        get_tokens_from_input(buffer, sizeof(buffer), &input_tokens);
 
     free(input_tokens);
 
@@ -72,8 +72,8 @@ static void process_turn() {
 
     char input_buffer[1024];
     char** input_tokens = NULL;
-    const size_t token_count =
-        get_args_from_input(input_buffer, sizeof(input_buffer), &input_tokens);
+    const size_t token_count = get_tokens_from_input(
+        input_buffer, sizeof(input_buffer), &input_tokens);
 
     if (token_count == 0) {
         free(input_tokens);
