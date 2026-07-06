@@ -1,7 +1,6 @@
 #ifndef CAB_HELP
 #define CAB_HELP
 
-#include "word_set.h"
 #include "word_set_filter.h"
 
 WordSetFilter *get_current_help_filter(void);

@@ -3,15 +3,13 @@
 #include <sys/stat.h>
 #include <time.h>
 
-#include "attempts.h"
-#include "cab_attempts_manager.h"
+
 #include "cab_load_store.h"
-#include "cab_output.h"
 #include "cab_paths.h"
-#include "cab_used_vocabolary.h"
 #include "guess.h"
 #include "vocabolary.h"
 
+#include "cab_used_vocabolary.h"
 
 Word secret_word;
 

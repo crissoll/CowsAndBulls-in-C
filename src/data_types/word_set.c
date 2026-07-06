@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "cab_output.h" /* for output() */
 
 
 #include "index_array.h"

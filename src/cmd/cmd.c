@@ -13,10 +13,6 @@
 #include "cmd_list.h"
 #include "cmd_try_word.h"
 
-bool alert_too_few_arguments() {
-    output("too few arguments\n");
-    return false;
-}
 
 typedef bool (*CommandHandler)(size_t token_count, const char* tokens[]);
 typedef bool (*ZeroArgsCommandHandler)(void);
@@ -32,12 +28,19 @@ typedef struct CommandSpec {
 
 #define END_SPEC {.name = NULL}
 
+
+bool print_whole_help_text();
+
+
 bool alert_too_many_arguments() {
     output("too many arguments\n");
     return false;
 }
 
-bool print_whole_help_text();
+bool alert_too_few_arguments() {
+    output("too few arguments\n");
+    return false;
+}
 
 bool print_help_text_from_args(size_t token_count, const char* tokens[]);
 

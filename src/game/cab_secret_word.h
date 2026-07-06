@@ -2,7 +2,7 @@
 #define cab_secret_word
 
 #include "guess.h"
-#include "vocabolary.h"
+
 
 void generate_secret_word();
 
