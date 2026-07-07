@@ -67,7 +67,7 @@ void setup_help() {
 }
 
 void print_current_filter() {
-    start_message(OT_HISTORY);
+    start_message(OT_FILTER);
     WordSetFilter* help_filter = get_current_help_filter();
     const size_t word_count = get_current_help_filter_word_count();
     output("--- [%zu words] ---\n", word_count);
@@ -78,10 +78,10 @@ void print_current_filter() {
 void print_filter_history() {
     const size_t history_count = get_filter_history_size();
     if (history_count == 0) {
-        message(OT_HISTORY, "(no history yet)\n");
+        message(OT_FILTER, "(no history yet)\n");
         return;
     }
-    start_message(OT_HISTORY);
+    start_message(OT_FILTER);
     output("List history (%zu entries):\n", history_count);
     for (size_t hist_idx = 0; hist_idx < history_count; hist_idx++) {
         const ListHistoryEntry entry = help_filter_history[hist_idx];

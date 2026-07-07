@@ -1,11 +1,10 @@
 #ifndef CAB_IO_TAG_NAMES
 #define CAB_IO_TAG_NAMES
 
-
 const char* OUTPUT_TAGS_NAMES[] = {
     "NONE",
     "USER",
-    "WORD",
+    "GUESS_RESULT",
     "ALERT",
     "WARNING",
     "INPUT_ERROR",
@@ -13,8 +12,6 @@ const char* OUTPUT_TAGS_NAMES[] = {
     "LIST",
     "HISTORY",
     "HELP",
-    "GUESS_RESULT",
 };
-
 
 #endif

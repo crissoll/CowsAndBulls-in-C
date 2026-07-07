@@ -70,7 +70,7 @@ void _disable_command(size_t token_count, const char* tokens[],
         if (strcmp(candidate_spec->name, tokens[0]) == 0) {
             if (token_count == 1) {
                 *candidate_spec->allowed = false;
-                message(OT_ALERT, "%s has been disabled\n",
+                message(OT_USER, "%s has been disabled\n",
                         candidate_spec->name);
                 return;
             }
