@@ -38,7 +38,9 @@ static void va_output(const char* format_string, va_list args) {
 void output(const char* format_string, ...) {
     if (!is_message_started()) {
         printf("tried using output without first starting message\n");
+        exit(EXIT_FAILURE);
     }
+
     va_list args;
     va_start(args, format_string);
     va_output(format_string, args);
