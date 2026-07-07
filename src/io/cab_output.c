@@ -38,8 +38,21 @@ static void va_output(const char* format_string, va_list args) {
 
 
 void output(const char* format_string, ...) {
+    if (!is_message_started()) {
+        printf("tried using output without first starting message\n");
+    }
     va_list args;
     va_start(args, format_string);
     va_output(format_string, args);
     va_end(args);
+}
+
+
+void message(OutputTags tags, const char* format_string, ...) {
+    start_message(tags);
+    va_list args;
+    va_start(args, format_string);
+    va_output(format_string, args);
+    va_end(args);
+    end_message();
 }
