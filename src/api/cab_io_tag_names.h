@@ -12,6 +12,7 @@ const char* OUTPUT_TAGS_NAMES[] = {
     "LIST",
     "HISTORY",
     "HELP",
+    "WORD_COUNT",
 };
 
 #endif
