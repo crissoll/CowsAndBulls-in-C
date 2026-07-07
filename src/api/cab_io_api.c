@@ -14,9 +14,13 @@ static char input_buffer[MAX_INPUT_BUFFER_SIZE];
 static size_t input_buffer_size = 0;
 
 bool input(char* input_string) {
+    if (input_string == NULL) {
+        message(OT_WARNING, "NULL input_string\n");
+        return false;
+    }
     input_buffer_size = 0;
     const size_t len = strlen(input_string);
-    if (len > MAX_INPUT_BUFFER_SIZE) {
+    if (len >= MAX_INPUT_BUFFER_SIZE) {
         message(OT_INPUT_ERROR, "Input String Too Long!\n");
         return false;
     }
