@@ -1,19 +1,25 @@
 
 #include <string.h>
 
-#include "cab_api.h"
+
 #include "cab_attempts_manager.h"
 #include "cab_core.h"
 #include "cab_help_filter.h"
-#include "cab_input.h"
-#include "cab_io_api.h"
-#include "cab_io_consts.h"
-#include "cab_load_store.h"
-#include "cab_output.h"
-#include "cab_paths.h"
 #include "cab_secret_word.h"
 #include "cab_used_vocabolary.h"
+
+#include "cab_input.h"
+#include "cab_output.h"
+
+#include "cab_load_store.h"
+#include "cab_paths.h"
+
 #include "cmd.h"
+
+#include "cab_api.h"
+#include "cab_io_api.h"
+#include "cab_io_consts.h"
+
 
 static bool saves_handled = false;
 
