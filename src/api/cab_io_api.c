@@ -89,8 +89,10 @@ char** get_messages_with_tag(OutputTags tag, size_t* message_count) {
         }
         const size_t msg_len =
             msg_tags.messages[i + 1] - msg_tags.messages[i] + 1;
+
         result[j] = malloc(sizeof(result[0]) * msg_len);
-        memcpy(result[j], &cur_txt[msg_tags.messages[j]],
+
+        memcpy(result[j], &cur_txt[msg_tags.messages[i]],
                msg_len * sizeof(char));
         j++;
     }
