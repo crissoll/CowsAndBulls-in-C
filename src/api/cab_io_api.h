@@ -3,13 +3,12 @@
 
 #include <stdbool.h>
 
-/* API layer: input(), io__setup(), io__shutdown(), get_output() */
 
 bool input(char *input_string);
 char *get_output(void);
 
-void io__setup(void);
-void io__shutdown(void);
+void io__setup(void); // must be called before using io functions
+void io__shutdown(void); // must be called at the end of the execution
 
 
 #endif

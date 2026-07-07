@@ -39,6 +39,7 @@ void free_output_buffer(OutputBuffer* buffer) {
     buffer->current_size = 0;
 }
 
+
 void print_to_buffer(OutputBuffer* buffer, const char* text) {
     if (buffer == NULL || buffer->buffer == NULL) {
         perror("tried printing to empty buffer\n");
