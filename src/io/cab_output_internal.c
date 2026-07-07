@@ -88,9 +88,9 @@ void output__setup() {
     init_output_buffer(&default_buffer);
     tagged_output = (Messages){
         .messages = malloc(MAX_TEXTS_PER_SINGLE_OUTPUT *
-                           sizeof(*tagged_output.messages)),
+                           sizeof(tagged_output.messages[0])),
         .tags =
-            malloc(MAX_TEXTS_PER_SINGLE_OUTPUT * sizeof(*tagged_output.tags)),
+            malloc(MAX_TEXTS_PER_SINGLE_OUTPUT * sizeof(tagged_output.tags[0])),
         .size = 0,
     };
 }
@@ -103,10 +103,17 @@ void output__shutdown() {
 
 
 Messages get_messages_tags() {
-    Messages result = tagged_output;
+    Messages result = (Messages){
+        .messages = malloc(sizeof(result.messages[0]) * tagged_output.size),
+        .tags = malloc(sizeof(result.tags[0]) * tagged_output.size),
+        .size = tagged_output.size,
+    };
+    memcpy(result.messages, tagged_output.messages, sizeof(result.messages[0]));
+    memcpy(result.tags, tagged_output.tags, sizeof(result.tags[0]));
     tagged_output.size = 0;
     return result;
 }
+
 
 void start_message(OutputTags tag) {
 
