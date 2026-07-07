@@ -1,6 +1,5 @@
 #include <stdbool.h>
 
-#include "cab_output.h"
 #include "cab_paths.h"
 #include "vocabolary.h"
 

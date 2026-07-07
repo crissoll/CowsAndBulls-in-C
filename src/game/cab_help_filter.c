@@ -2,7 +2,6 @@
 #include "cab_io_consts.h"
 #include "cab_output.h"
 #include "cab_used_vocabolary.h"
-#include "cmd_spec.h"
 
 
 WordSet help_word_set;
