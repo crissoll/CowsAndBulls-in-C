@@ -108,8 +108,13 @@ Messages get_messages_tags() {
         .tags = malloc(sizeof(result.tags[0]) * tagged_output.size),
         .size = tagged_output.size,
     };
-    memcpy(result.messages, tagged_output.messages, sizeof(result.messages[0]));
-    memcpy(result.tags, tagged_output.tags, sizeof(result.tags[0]));
+
+
+    memcpy(result.messages, tagged_output.messages,
+           tagged_output.size * sizeof(result.messages[0]));
+
+    memcpy(result.tags, tagged_output.tags,
+           tagged_output.size * sizeof(result.tags[0]));
     tagged_output.size = 0;
     return result;
 }
