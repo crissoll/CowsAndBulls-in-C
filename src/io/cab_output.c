@@ -27,11 +27,13 @@ static void va_output(const char* format_string, va_list args) {
 
     formatted_text = malloc(formatted_text_len + 1);
 
-    if (formatted_text != NULL) {
-        vsnprintf(formatted_text, formatted_text_len + 1, format_string, args);
-        print_to_default_buffer(formatted_text);
-        free(formatted_text);
+    if (formatted_text == NULL) {
+        perror("malloc failed");
+        exit(EXIT_FAILURE);
     }
+    vsnprintf(formatted_text, formatted_text_len + 1, format_string, args);
+    print_to_default_buffer(formatted_text);
+    free(formatted_text);
 }
 
 
