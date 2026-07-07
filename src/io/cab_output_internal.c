@@ -103,6 +103,12 @@ void output__shutdown() {
 
 
 Messages get_messages_tags() {
+
+    // ensures a trailing empty message for easier message traversal
+    if (tagged_output.tags[tagged_output.size - 1] != OT_NONE) {
+        end_message();
+    }
+
     Messages result = (Messages){
         .messages = malloc(sizeof(result.messages[0]) * tagged_output.size),
         .tags = malloc(sizeof(result.tags[0]) * tagged_output.size),
