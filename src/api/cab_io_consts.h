@@ -15,6 +15,7 @@ typedef enum{
     OT_LIST = 64, // filtered word list
     OT_FILTER = 128, // word filters
     OT_HELP = 256, // commands documentation
+    OT_WORD_COUNT = 512, // filtered word count 
     
 
     OT_END, // upper bound, use for cycling through tags

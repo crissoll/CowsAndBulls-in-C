@@ -83,13 +83,11 @@ void load_filter_from_history(size_t token_count, const char* tokens[]) {
 
     revert_filter_to_history_step(index);
 
-    start_message(OT_USER);
-    output("correctly reverted to step number %d\n", index + 1);
+    message(OT_USER, "correctly reverted to step number %d\n", index + 1);
 
     add_current_filter_to_history();
     const size_t word_count = get_current_help_filter_word_count();
-    output("[%zu words]\n", word_count);
-    end_message();
+    message(OT_WORD_COUNT, "[%zu words]\n", word_count);
 }
 
 bool cmd__list_parse_all_patterns(size_t patterns_count, const char* patterns[],
@@ -111,7 +109,7 @@ void cmd__list_remove_letters(size_t token_count, const char* tokens[]) {
 
     add_current_filter_to_history();
     const size_t word_count = get_current_help_filter_word_count();
-    message(OT_USER, "[%zu words]\n", word_count);
+    message(OT_WORD_COUNT, "[%zu words]\n", word_count);
 }
 
 void cmd__list_intersect_letters(size_t token_count, const char* tokens[]) {
@@ -119,7 +117,7 @@ void cmd__list_intersect_letters(size_t token_count, const char* tokens[]) {
 
     add_current_filter_to_history();
     const size_t word_count = get_current_help_filter_word_count();
-    message(OT_USER, "[%zu words]\n", word_count);
+    message(OT_WORD_COUNT, "[%zu words]\n", word_count);
 }
 
 void setup_list_from_pattern(size_t token_count, const char* tokens[]) {
@@ -142,5 +140,5 @@ void setup_list_from_pattern(size_t token_count, const char* tokens[]) {
 
     add_current_filter_to_history();
     const size_t word_count = get_current_help_filter_word_count();
-    message(OT_USER, "[%zu words]\n", word_count);
+    message(OT_WORD_COUNT, "[%zu words]\n", word_count);
 }
