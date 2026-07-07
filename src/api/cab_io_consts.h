@@ -17,10 +17,5 @@ typedef enum{
     OT_GUESS_RESULT = 512,
 } OutputTags;
 
-typedef struct{
-    size_t* messages;
-    OutputTags* tags;
-    size_t size;
-} Messages;
 
 #endif

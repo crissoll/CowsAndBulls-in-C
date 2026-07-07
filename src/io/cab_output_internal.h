@@ -6,6 +6,12 @@
 
 #include "cab_io_consts.h"
 
+typedef struct{
+    size_t* messages;
+    OutputTags* tags;
+    size_t size;
+} Messages;
+
 void print_to_default_buffer(const char* text);
 
 char* get_output();

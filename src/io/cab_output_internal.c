@@ -8,6 +8,7 @@
 
 #include <stdbool.h>
 #include "cab_io_consts.h"
+#include "cab_output_internal.h"
 
 
 typedef struct {
