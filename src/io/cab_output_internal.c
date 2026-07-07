@@ -6,6 +6,9 @@
 
 #define INITIAL_OUTPUT_BUFFER_ALLOCATED_SIZE 128
 
+#include <stdbool.h>
+#include "cab_io_consts.h"
+
 
 typedef struct {
     char* buffer;
@@ -15,6 +18,8 @@ typedef struct {
 
 
 OutputBuffer default_buffer;
+
+Messages tagged_output;
 
 void reset_output_buffer(OutputBuffer* buffer) {
     buffer->buffer =
@@ -77,11 +82,58 @@ char* get_output() {
     return result;
 }
 
-
+#define MAX_TEXTS_PER_SINGLE_OUTPUT 256
 void output__setup() {
     init_output_buffer(&default_buffer);
+    tagged_output = (Messages){
+        .messages = malloc(MAX_TEXTS_PER_SINGLE_OUTPUT *
+                           sizeof(*tagged_output.messages)),
+        .tags =
+            malloc(MAX_TEXTS_PER_SINGLE_OUTPUT * sizeof(*tagged_output.tags)),
+        .size = 0,
+    };
 }
 
 void output__shutdown() {
     free_output_buffer(&default_buffer);
+    free(tagged_output.messages);
+    free(tagged_output.tags);
+}
+
+
+Messages get_messages_tags() {
+    Messages result = tagged_output;
+    tagged_output.size = 0;
+    return result;
+}
+
+void start_message(OutputTags tag) {
+
+    if (tagged_output.size > 0) {
+
+        const size_t last_msg = tagged_output.messages[tagged_output.size - 1];
+        const OutputTags last_tag = tagged_output.tags[tagged_output.size - 1];
+
+        if (last_tag == OT_NONE) {
+            tagged_output.size--;
+
+        } else if (last_msg == default_buffer.current_size) {
+            // stops multiple tagging of same message
+            perror("tried tagging message twice");
+            return;
+        }
+    }
+
+    tagged_output.messages[tagged_output.size] = default_buffer.current_size;
+    tagged_output.tags[tagged_output.size] = tag;
+    tagged_output.size++;
+}
+
+void end_message() {
+    start_message(OT_NONE);
+}
+
+bool is_message_started() {
+    return (tagged_output.size > 0 &&
+            tagged_output.tags[tagged_output.size - 1] != OT_NONE);
 }
