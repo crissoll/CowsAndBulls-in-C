@@ -108,6 +108,14 @@ char* play_turn(char* input_string) {
     return get_output();
 }
 
+void play_turn_and_update_output_messages(char* input_string) {
+    if (!input(input_string)) {
+        update_output_messages();
+    }
+    process_turn();
+    update_output_messages();
+}
+
 void setup_game() {
     init_file_paths();
     load_vocabolary();

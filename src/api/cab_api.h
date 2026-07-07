@@ -24,6 +24,8 @@ void start_new_game();
 
 char *play_turn(char *input_string);
 
+void play_turn_and_update_output_messages(char* input_string);
+
 bool is_game_ended();
 
 void shutdown_game();
