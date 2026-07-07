@@ -7,12 +7,6 @@
 #include "cab_output.h"
 #include "cab_output_internal.h"
 
-static OutputMode output_mode = PRINT;
-
-void io__set_output_mode(OutputMode new_mode) {
-    output_mode = new_mode;
-}
-
 
 int get_formatted_text_len(const char* format_string, va_list args) {
     va_list copy;

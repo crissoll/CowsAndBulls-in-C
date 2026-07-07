@@ -3,9 +3,6 @@
 
 #include <stdbool.h>
 
-/* Enums shared across IO modules */
-typedef enum { PRINT, API_OUT } OutputMode;
-
 typedef enum { CONSOLE, API_IN } InputMode;
 
 /* API layer: input(), io__setup(), io__shutdown(), get_output() */
@@ -17,6 +14,5 @@ void io__setup(void);
 void io__shutdown(void);
 
 void io__set_input_mode(InputMode new_mode);
-void io__set_output_mode(OutputMode new_mode);
 
 #endif

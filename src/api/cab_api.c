@@ -107,7 +107,6 @@ void setup_game() {
     saves_handled = false;
     io__setup();
     io__set_input_mode(API_IN);
-    io__set_output_mode(API_OUT);
     reset_game_vars();
     setup_help();
 }
