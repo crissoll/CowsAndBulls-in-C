@@ -11,3 +11,4 @@ attempts
 help
 help attempts
 help list
+list -p

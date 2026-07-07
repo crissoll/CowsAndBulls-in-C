@@ -9,6 +9,12 @@
 #include "cab_io_consts.h"
 #include "cab_io_tag_names.h"
 
+#include "utils/truncated_print.h"
+
+
+#define MAX_DISPLAYER_MSG_LEN 128
+
+
 static bool read_line(char* buffer, size_t buffer_size) {
     if (buffer_size == 0) {
         return false;
@@ -29,23 +35,37 @@ static bool read_line(char* buffer, size_t buffer_size) {
     return true;
 }
 
+void turn_with_tags(const char* input_buffer) {
+    play_turn_and_update_output_messages((char*)input_buffer);
+
+    size_t message_count;
+
+    size_t j = 1;
+    for (OutputTags t = 1; t < OT_END; t *= 2) {
+        char** strings = get_messages_with_tag(t, &message_count);
+        if (message_count > 0) {
+            printf("%s:\n", OUTPUT_TAGS_NAMES[j]);
+        }
+        j++;
+
+        if (message_count == 1) {
+            print_truncated_string(strings[0], MAX_DISPLAYER_MSG_LEN);
+            continue;
+        }
+
+        for (size_t i = 0; i < message_count; i++) {
+            printf("[%zu]\n", i);
+            print_truncated_string(strings[i], MAX_DISPLAYER_MSG_LEN);
+
+            free(strings[i]);
+        }
+    }
+}
+
+
 int main() {
     setup_game();
-    if (are_there_previous_saves()) {
-        while (!is_save_load_choice_complete()) {
-            char buffer[100];
-            printf("load previous game? (y/n)\n");
-            if (!read_line(buffer, sizeof(buffer))) {
-                break;
-            }
-
-            char* output_string = handle_saves_load_choice(buffer);
-            printf("%s", output_string);
-            free(output_string);
-        }
-    } else {
-        start_new_game();
-    }
+    start_new_game();
 
     while (!is_game_ended()) {
         char buffer[100];
@@ -53,23 +73,8 @@ int main() {
         if (!read_line(buffer, sizeof(buffer))) {
             break;
         }
-        play_turn_and_update_output_messages(buffer);
 
-        size_t message_count;
-
-        size_t j = 1;
-        for (OutputTags t = 1; t < OT_END; t *= 2) {
-            printf("%s:\n", OUTPUT_TAGS_NAMES[j]);
-            char** strings = get_messages_with_tag(t, &message_count);
-            if (message_count == 0) {
-                printf("no message\n");
-            }
-            for (size_t i = 0; i < message_count; i++) {
-                printf("[%zu]%s", i, strings[i]);
-                free(strings[i]);
-            }
-            j++;
-        }
+        turn_with_tags(buffer);
     }
     if (is_game_ended()) {
         printf("Congratulations! You won in %zu attempts!",
