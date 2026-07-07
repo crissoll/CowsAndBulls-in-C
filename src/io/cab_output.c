@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <vadefs.h>
 
 
 #include "cab_output.h"
@@ -16,14 +17,11 @@ int get_formatted_text_len(const char* format_string, va_list args) {
     return formatted_text_len;
 }
 
-void output(const char* format_string, ...) {
-    va_list args;
-    va_start(args, format_string);
 
+static void va_output(const char* format_string, va_list args) {
     int formatted_text_len = get_formatted_text_len(format_string, args);
 
     if (formatted_text_len <= 0) {
-        va_end(args);
         return;
     }
 
@@ -36,5 +34,12 @@ void output(const char* format_string, ...) {
         print_to_default_buffer(formatted_text);
         free(formatted_text);
     }
+}
+
+
+void output(const char* format_string, ...) {
+    va_list args;
+    va_start(args, format_string);
+    va_output(format_string, args);
     va_end(args);
 }
