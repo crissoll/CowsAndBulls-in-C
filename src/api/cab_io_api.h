@@ -2,13 +2,18 @@
 #define CAB_IO_CORE
 
 #include <stdbool.h>
+#include <stddef.h>
+
+#include "cab_io_consts.h"
 
 
 bool input(char *input_string);
 char *get_output(void);
 
 void io__setup(void); // must be called before using io functions
-void io__shutdown(void); // must be called at the end of the execution
+void io__shutdown(void); // must be called at the end of execution
 
+char** get_messages_with_tag(OutputTags tag, size_t* message_count);
+void update_output_messages();
 
 #endif
