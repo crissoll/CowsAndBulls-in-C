@@ -6,8 +6,6 @@
 
 #include "cab_input.h"
 
-static InputMode input_mode = CONSOLE;
-
 /* Access API input buffer */
 extern const char* cab_io__get_input_buffer(void);
 extern size_t cab_io__get_input_buffer_size(void);
@@ -82,53 +80,28 @@ static bool get_input(char* buffer, size_t buffer_size) {
         return false;
     }
 
-    switch (input_mode) {
-        case CONSOLE: {
-            do {
-                if (fgets(buffer, buffer_size, stdin) == NULL) {
-                    return false;
-                }
-            } while (buffer[0] == '\n');
+    const char* input_buffer = cab_io__get_input_buffer();
+    size_t input_buffer_size = cab_io__get_input_buffer_size();
 
-            const size_t len = strlen(buffer);
-            if (len > 0 && buffer[len - 1] == '\n') {
-                buffer[len - 1] = '\0';
-            } else {
-                int c;
-                while ((c = getchar()) != '\n' && c != EOF) {}
-            }
-            return true;
-        }
-        case API_IN: {
-            const char* api_input_buffer = cab_io__get_input_buffer();
-            size_t api_input_size = cab_io__get_input_buffer_size();
-
-            if (api_input_size == 0) {
-                return false;
-            }
-            size_t copy_size = api_input_size;
-            if (copy_size > buffer_size - 1) {
-                copy_size = buffer_size - 1;
-            }
-
-            for (size_t i = 0; i < copy_size; i++) {
-                buffer[i] = api_input_buffer[i];
-            }
-            buffer[copy_size] = '\0';
-
-            if (copy_size > 0 && buffer[copy_size - 1] == '\n') {
-                buffer[copy_size - 1] = '\0';
-            }
-            return true;
-        }
-        default:
-            return false;
+    if (input_buffer_size == 0) {
+        return false;
     }
+    size_t copy_size = input_buffer_size;
+    if (copy_size > buffer_size - 1) {
+        copy_size = buffer_size - 1;
+    }
+
+    for (size_t i = 0; i < copy_size; i++) {
+        buffer[i] = input_buffer[i];
+    }
+    buffer[copy_size] = '\0';
+
+    if (copy_size > 0 && buffer[copy_size - 1] == '\n') {
+        buffer[copy_size - 1] = '\0';
+    }
+    return true;
 }
 
-void io__set_input_mode(InputMode new_mode) {
-    input_mode = new_mode;
-}
 
 size_t get_tokens_from_input(char buffer[], size_t buffer_size,
                              char*** arguments) {
