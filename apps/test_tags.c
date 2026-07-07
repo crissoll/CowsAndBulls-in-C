@@ -1,4 +1,5 @@
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -6,6 +7,7 @@
 #include "cab_api.h"
 #include "cab_io_api.h"
 #include "cab_io_consts.h"
+#include "cab_io_tag_names.h"
 
 static bool read_line(char* buffer, size_t buffer_size) {
     if (buffer_size == 0) {
@@ -54,10 +56,19 @@ int main() {
         play_turn_and_update_output_messages(buffer);
 
         size_t message_count;
-        char** strings = get_messages_with_tag(OT_HISTORY, &message_count);
-        for (size_t i = 0; i < message_count; i++) {
-            printf("%s", strings[i]);
-            free(strings[i]);
+
+        size_t j = 1;
+        for (OutputTags t = 1; t < OT_END; t *= 2) {
+            printf("%s:\n", OUTPUT_TAGS_NAMES[j]);
+            char** strings = get_messages_with_tag(t, &message_count);
+            if (message_count == 0) {
+                printf("no message\n");
+            }
+            for (size_t i = 0; i < message_count; i++) {
+                printf("[%zu]%s", i, strings[i]);
+                free(strings[i]);
+            }
+            j++;
         }
     }
     if (is_game_ended()) {
