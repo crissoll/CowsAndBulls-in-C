@@ -29,6 +29,10 @@ void reset_output_buffer(OutputBuffer* buffer) {
     buffer->buffer =
         realloc(buffer->buffer, sizeof(buffer->buffer[0]) *
                                     INITIAL_OUTPUT_BUFFER_ALLOCATED_SIZE);
+    if (buffer->buffer == NULL) {
+        perror("realloc failed\n");
+        exit(EXIT_FAILURE);
+    }
     buffer->allocated_size = INITIAL_OUTPUT_BUFFER_ALLOCATED_SIZE;
     buffer->current_size = 0;
     buffer->buffer[0] = '\0';
@@ -64,6 +68,10 @@ void print_to_buffer(OutputBuffer* buffer, const char* text) {
     if (prev_allocated_size < buffer->allocated_size) {
         buffer->buffer = realloc(
             buffer->buffer, sizeof(buffer->buffer[0]) * buffer->allocated_size);
+        if (buffer->buffer == NULL) {
+            perror("realloc failed\n");
+            exit(EXIT_FAILURE);
+        }
     }
 
     for (size_t i = 0; text[i] != '\0'; i++) {
