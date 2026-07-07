@@ -13,37 +13,34 @@ void io__set_output_mode(OutputMode new_mode) {
     output_mode = new_mode;
 }
 
+
+int get_formatted_text_len(const char* format_string, va_list args) {
+    va_list copy;
+    va_copy(copy, args);
+    const int formatted_text_len = vsnprintf(NULL, 0, format_string, copy);
+    va_end(copy);
+    return formatted_text_len;
+}
+
 void output(const char* format_string, ...) {
     va_list args;
     va_start(args, format_string);
 
-    switch (output_mode) {
-        case PRINT:
-            vprintf(format_string, args);
-            break;
-        case API_OUT: {
-            va_list copy;
-            va_copy(copy, args);
-            const int n = vsnprintf(NULL, 0, format_string, copy);
-            va_end(copy);
+    int formatted_text_len = get_formatted_text_len(format_string, args);
 
-            if (n < 0) {
-                break;
-            }
+    if (formatted_text_len <= 0) {
+        va_end(args);
+        return;
+    }
 
-            char* tmp;
-            const size_t tmp_size = sizeof(tmp[0]) * ((size_t)n + 1);
+    char* formatted_text;
 
-            tmp = malloc(tmp_size);
-            if (tmp == NULL) {
-                break;
-            }
-            vsnprintf(tmp, tmp_size, format_string, args);
+    formatted_text = malloc(formatted_text_len + 1);
 
-            print_to_default_buffer(tmp);
-            free(tmp);
-            break;
-        }
+    if (formatted_text != NULL) {
+        vsnprintf(formatted_text, formatted_text_len + 1, format_string, args);
+        print_to_default_buffer(formatted_text);
+        free(formatted_text);
     }
     va_end(args);
 }
