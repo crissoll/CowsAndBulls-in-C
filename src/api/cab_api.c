@@ -1,7 +1,6 @@
 
 #include <string.h>
 
-
 #include "cab_attempts_manager.h"
 #include "cab_core.h"
 #include "cab_help_filter.h"
@@ -19,7 +18,6 @@
 #include "cab_api.h"
 #include "cab_io_api.h"
 #include "cab_io_consts.h"
-
 
 static bool saves_handled = false;
 
