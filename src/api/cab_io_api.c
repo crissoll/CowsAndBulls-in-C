@@ -62,6 +62,14 @@ void update_output_messages() {
 }
 
 char** get_messages_with_tag(OutputTags tag, size_t* message_count) {
+    if (message_count == NULL) {
+        perror("passed null message_count pointer\n");
+        return NULL;
+    }
+    if (msg_tags.size == 0) {
+        return NULL;
+    }
+
     *message_count = 0;
     for (size_t i = 0; i < msg_tags.size - 1; i++) {
         if (msg_tags.tags[i] & tag) {
