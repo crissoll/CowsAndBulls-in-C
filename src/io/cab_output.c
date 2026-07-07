@@ -1,9 +1,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <vadefs.h>
-
 
 #include "cab_output.h"
 #include "cab_output_internal.h"
