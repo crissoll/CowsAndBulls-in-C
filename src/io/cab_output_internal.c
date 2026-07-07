@@ -6,6 +6,9 @@
 
 #define INITIAL_OUTPUT_BUFFER_ALLOCATED_SIZE 128
 
+#define MAX_TEXTS_PER_SINGLE_OUTPUT \
+    256  // extremely high, so its never checked. PLEASE don't go anywhere near it
+
 #include <stdbool.h>
 #include "cab_io_consts.h"
 #include "cab_output_internal.h"
@@ -83,7 +86,6 @@ char* get_output() {
     return result;
 }
 
-#define MAX_TEXTS_PER_SINGLE_OUTPUT 256
 void output__setup() {
     init_output_buffer(&default_buffer);
     tagged_output = (Messages){
@@ -105,7 +107,8 @@ void output__shutdown() {
 Messages get_messages_tags() {
 
     // ensures a trailing empty message for easier message traversal
-    if (tagged_output.tags[tagged_output.size - 1] != OT_NONE) {
+    if (tagged_output.size == 0 ||
+        tagged_output.tags[tagged_output.size - 1] != OT_NONE) {
         end_message();
     }
 
