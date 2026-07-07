@@ -1,15 +1,16 @@
 #include <string.h>
 
+#include "cab_io_consts.h"
 #include "cab_output.h"
 #include "cmd_spec.h"
 
 
 void alert_too_many_arguments() {
-    output("too many arguments\n");
+    message(OT_INPUT_ERROR, "too many arguments\n");
 }
 
 void alert_too_few_arguments() {
-    output("too few arguments\n");
+    message(OT_INPUT_ERROR, "too few arguments\n");
 }
 
 void parse_command(const CommandSpec* specifier, const char* tokens[],
@@ -25,7 +26,7 @@ bool parse_args(const CommandSpec* specifier, const char* tokens[],
     while (candidate_arg->name != NULL) {
         if (!(*candidate_arg->allowed)) {
             candidate_arg++;
-            output("command is not allowed\n");
+            message(OT_ALERT, "command is not allowed\n");
             return true;
         }
         if (strcmp(tokens[0], candidate_arg->name) == 0) {
@@ -69,7 +70,8 @@ void _disable_command(size_t token_count, const char* tokens[],
         if (strcmp(candidate_spec->name, tokens[0]) == 0) {
             if (token_count == 1) {
                 *candidate_spec->allowed = false;
-                output("%s has been disabled\n", candidate_spec->name);
+                message(OT_USER, "%s has been disabled\n",
+                        candidate_spec->name);
                 return;
             }
 
@@ -82,6 +84,6 @@ void _disable_command(size_t token_count, const char* tokens[],
         }
         candidate_spec++;
     }
-    output("command not found!\n");
+    message(OT_ALERT, "command not found!\n");
     return;
 }

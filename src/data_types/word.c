@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "cab_io_consts.h"
 #include "cab_output.h"
 #include "word.h"
 
@@ -21,17 +22,17 @@ bool can_string_be_word(const char* string) {
 
     for (size_t i = 0; i < len; i++) {
         if (string[i] < 'a' || string[i] > 'z') {
-            output("word contains invalid characters\n");
+            message(OT_INPUT_ERROR, "word contains invalid characters\n");
             return false;
         }
     }
 
     if (len > LETTERS_IN_WORD) {
-        output("word too long\n");
+        message(OT_INPUT_ERROR, "word too long\n");
         return false;
     }
     if (len < LETTERS_IN_WORD) {
-        output("word too short\n");
+        message(OT_INPUT_ERROR, "word too short\n");
         return false;
     }
     return true;
