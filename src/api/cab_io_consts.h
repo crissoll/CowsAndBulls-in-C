@@ -15,6 +15,7 @@ typedef enum{
     OT_HISTORY = 128,
     OT_HELP = 256,
     OT_GUESS_RESULT = 512,
+    OT_END, // upper bound, use for cycling through tags
 } OutputTags;
 
 
