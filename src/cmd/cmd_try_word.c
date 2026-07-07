@@ -1,6 +1,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 
+#include "cab_io_consts.h"
 #include "word.h"
 
 #include "cab_core.h"
@@ -8,7 +9,7 @@
 
 void cmd__try_word_from_tokens(size_t token_count, const char* tokens[]) {
     if (token_count > 1) {
-        output("too many arguments!\n");
+        message(OT_INPUT_ERROR, "too many arguments!\n");
         return;
     }
     Word word;

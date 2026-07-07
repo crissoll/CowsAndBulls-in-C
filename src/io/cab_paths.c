@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/stat.h>
+#include "cab_io_consts.h"
 
 
 #ifdef _WIN32
@@ -78,13 +79,13 @@ char* get_attempts_file_path() {
 
 bool set_path_string(char** path, const char* value) {
     if (value == NULL || value[0] == '\0') {
-        output("tried assigning empty value to path\n");
+        message(OT_WARNING, "tried assigning empty value to path\n");
         return false;
     }
 
     char* new_path = malloc(strlen(value) + 1);
     if (new_path == NULL) {
-        output("cannot allocate memory for path\n");
+        message(OT_WARNING, "cannot allocate memory for path\n");
         return false;
     }
 
@@ -152,7 +153,8 @@ bool is_valid_saves_folder_path(const char* path) {
 
     char* normalized_path = malloc(trimmed_len + 1);
     if (normalized_path == NULL) {
-        output("cannot allocate memory for save path validation\n");
+        message(OT_WARNING,
+                "cannot allocate memory for save path validation\n");
         exit(EXIT_FAILURE);
     }
 
@@ -172,14 +174,14 @@ void init_save_file_paths() {
         }
     }
     if (!is_valid_saves_folder_path(saves_folder_path)) {
-        output("invalid saves folder path\n");
+        message(OT_WARNING, "invalid saves folder path\n");
         if (secret_file_path == NULL || attempts_file_path == NULL) {
-            output(
-                "no valid paths could be provided for saves, game setup "
-                "impossible\n");
+            message(OT_WARNING,
+                    "no valid paths could be provided for saves, game setup "
+                    "impossible\n");
             exit(EXIT_FAILURE);
         }
-        output("saves folder won't change\n");
+        message(OT_WARNING, "saves folder won't change\n");
         return;
     }
 
@@ -197,7 +199,7 @@ void init_save_file_paths() {
         malloc(base_path_len + 1 + strlen(ATTEMPTS_FILE_NAME) + 1);
 
     if (secret_file_path == NULL || attempts_file_path == NULL) {
-        output("cannot allocate memory for save file paths\n");
+        message(OT_WARNING, "cannot allocate memory for save file paths\n");
         exit(EXIT_FAILURE);
     }
 
@@ -215,7 +217,8 @@ void init_save_file_paths() {
 void init_vocabolary_file_path() {
     if (vocabolary_file_path == NULL) {
         if (!set_path_string(&vocabolary_file_path, DEFAULT_VOCAB_PATH)) {
-            output("couldn't load default vocabolary. game can't start\n");
+            message(OT_WARNING,
+                    "couldn't load default vocabolary. game can't start\n");
             exit(EXIT_FAILURE);
         }
     }
@@ -226,7 +229,8 @@ void init_vocabolary_file_path() {
         return;
     }
 
-    output(
+    message(
+        OT_WARNING,
         "couldn't load vocabolary from defined file path. now trying default "
         "path...\n");
     if (!set_path_string(&vocabolary_file_path, DEFAULT_VOCAB_PATH)) {
@@ -235,7 +239,8 @@ void init_vocabolary_file_path() {
 
     vocab_file = open_file_safe(vocabolary_file_path, "r");
     if (vocab_file == NULL) {
-        output("couldn't load default vocabolary. game can't start\n");
+        message(OT_WARNING,
+                "couldn't load default vocabolary. game can't start\n");
         exit(EXIT_FAILURE);
     }
     fclose(vocab_file);
@@ -247,12 +252,13 @@ void set_file_paths_editing(bool value) {
 
 bool set_saves_folder_path(const char* path) {
     if (file_paths_editing_enabled == false) {
-        output("cannot change file paths after the game is started\n");
+        message(OT_WARNING,
+                "cannot change file paths after the game is started\n");
         return false;
     }
 
     if (!is_valid_saves_folder_path(path)) {
-        output("invalid saves folder path\n");
+        message(OT_WARNING, "invalid saves folder path\n");
         return false;
     }
 
@@ -266,7 +272,8 @@ bool set_saves_folder_path(const char* path) {
 
 bool set_vocabolary_file_path(const char* path) {
     if (file_paths_editing_enabled == false) {
-        output("cannot change file paths after the game is started\n");
+        message(OT_WARNING,
+                "cannot change file paths after the game is started\n");
         return false;
     }
 

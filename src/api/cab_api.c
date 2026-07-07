@@ -7,6 +7,7 @@
 #include "cab_help_filter.h"
 #include "cab_input.h"
 #include "cab_io_api.h"
+#include "cab_io_consts.h"
 #include "cab_load_store.h"
 #include "cab_output.h"
 #include "cab_paths.h"
@@ -39,7 +40,7 @@ bool prompt_to_load_game() {
 
     if (input_size == 0 ||
         (strcmp(buffer, "y") != 0 && strcmp(buffer, "n") != 0)) {
-        output("input must be y or n\n");
+        message(OT_INPUT_ERROR, "input must be y or n\n");
         return false;
     }
 
@@ -63,7 +64,8 @@ static void handle_first_turn() {
         load_secret_word();
         load_attempts();
     } else {
-        output("no valid game saves found. generated new saves instead\n");
+        message(OT_WARNING,
+                "no valid game saves found. generated new saves instead\n");
         generate_secret_word();
     }
 }

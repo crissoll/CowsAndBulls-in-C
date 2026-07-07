@@ -13,6 +13,8 @@ typedef enum{
     OT_ATTEMPTS = 32,
     OT_LIST = 64,
     OT_HISTORY = 128,
+    OT_HELP = 256,
+    OT_GUESS_RESULT = 512,
 } OutputTags;
 
 typedef struct{

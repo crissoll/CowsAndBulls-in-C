@@ -2,6 +2,7 @@
 #include <string.h>
 
 #include "cab_io_api.h"
+#include "cab_io_consts.h"
 #include "cab_output.h"
 #include "cab_output_internal.h"
 
@@ -13,7 +14,7 @@ bool input(char* input_string) {
     input_buffer_size = 0;
     const size_t len = strlen(input_string);
     if (len > MAX_INPUT_BUFFER_SIZE) {
-        output("Input String Too Long!\n");
+        message(OT_INPUT_ERROR, "Input String Too Long!\n");
         return false;
     }
 

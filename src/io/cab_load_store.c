@@ -51,7 +51,8 @@ void store_secret_word(void) {
     FILE* file = open_file_safe(get_secret_file_path(), "w");
 
     if (file == NULL) {
-        output("secret word couldn't be stored. save files will be corrupted");
+        message(OT_WARNING,
+                "secret word couldn't be stored. save files will be corrupted");
         return;
     }
 
