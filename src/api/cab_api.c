@@ -99,7 +99,7 @@ static void process_turn() {
 }
 
 char* play_turn(char* input_string) {
-    if (!input(input_string)) {
+    if (input(input_string) != INPUT_SUCCESS) {
         return get_output();
     }
     process_turn();
@@ -107,7 +107,7 @@ char* play_turn(char* input_string) {
 }
 
 void play_turn_and_update_output_messages(char* input_string) {
-    if (!input(input_string)) {
+    if (input(input_string) != INPUT_SUCCESS) {
         update_output_messages();
     }
     process_turn();

@@ -12,16 +12,16 @@
 static char input_buffer[MAX_INPUT_BUFFER_SIZE];
 static size_t input_buffer_size = 0;
 
-InputSuccess input(char* input_string) {
+InputStatus input(char* input_string) {
     if (input_string == NULL) {
         message(OT_WARNING, "NULL input_string\n");
-        return INPUT_EMPTY;
+        return INPUT_EMPTY_BUFFER;
     }
     input_buffer_size = 0;
     const size_t len = strlen(input_string);
     if (len >= MAX_INPUT_BUFFER_SIZE) {
         message(OT_INPUT_ERROR, "Input String Too Long!\n");
-        return INPUT_EMPTY;
+        return INPUT_STRING_TOO_LONG;
     }
 
     strcpy(input_buffer, input_string);

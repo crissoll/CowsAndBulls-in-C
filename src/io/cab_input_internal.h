@@ -8,10 +8,10 @@
 typedef enum {
     GET_INPUT_EMPTY,
     GET_INPUT_SUCCESS,
-} GetInputSuccess;
+} GetInputStatus;
 
 
-InputSuccess input(char* input_string);
+InputStatus input(char* input_string);
 
 GetInputSuccess get_input(char* buffer, size_t buffer_size);
 

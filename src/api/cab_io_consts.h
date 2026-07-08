@@ -22,9 +22,10 @@ typedef enum{
 } OutputTags;
 
 typedef enum {
-    INPUT_EMPTY,
     INPUT_SUCCESS,
-} InputSuccess;
+    INPUT_EMPTY_BUFFER,
+    INPUT_STRING_TOO_LONG,
+} InputStatus;
 
 
 #endif
