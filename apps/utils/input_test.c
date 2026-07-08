@@ -54,11 +54,11 @@ InputTestSet load_test_set_from_file(const char* file_name) {
         return test_set;
     }
 
-    char buffer[100];
+    char buffer[1200];
 
     InputTest cur_test = get_empty_test();
 
-    while (fgets(buffer, 100, fp) != NULL) {
+    while (fgets(buffer, 1200, fp) != NULL) {
         buffer[strcspn(buffer, "\r\n")] = 0;
 
         if (strcmp(buffer, "") == 0) {
