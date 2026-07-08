@@ -7,7 +7,7 @@
 #include "cab_io_consts.h"
 
 
-bool input(char *input_string);
+InputSuccess input(char *input_string);
 char *get_output(void);
 
 void io__setup(void); // must be called before using io functions

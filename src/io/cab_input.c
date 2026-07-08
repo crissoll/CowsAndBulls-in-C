@@ -5,10 +5,7 @@
 
 
 #include "cab_input.h"
-
-/* Access API input buffer */
-extern const char* cab_io__get_input_buffer(void);
-extern size_t cab_io__get_input_buffer_size(void);
+#include "cab_input_internal.h"
 
 static void to_lower(char* string, size_t max_length) {
     for (size_t k = 0; k < max_length && string[k] != '\0'; k++) {
@@ -74,34 +71,6 @@ static void split_tokens(char* buffer, char** arguments) {
         }
     }
 }
-
-static bool get_input(char* buffer, size_t buffer_size) {
-    if (buffer_size == 0) {
-        return false;
-    }
-
-    const char* input_buffer = cab_io__get_input_buffer();
-    size_t input_buffer_size = cab_io__get_input_buffer_size();
-
-    if (input_buffer_size == 0) {
-        return false;
-    }
-    size_t copy_size = input_buffer_size;
-    if (copy_size > buffer_size - 1) {
-        copy_size = buffer_size - 1;
-    }
-
-    for (size_t i = 0; i < copy_size; i++) {
-        buffer[i] = input_buffer[i];
-    }
-    buffer[copy_size] = '\0';
-
-    if (copy_size > 0 && buffer[copy_size - 1] == '\n') {
-        buffer[copy_size - 1] = '\0';
-    }
-    return true;
-}
-
 
 size_t get_tokens_from_input(char buffer[], size_t buffer_size,
                              char*** arguments) {
