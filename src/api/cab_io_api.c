@@ -37,7 +37,7 @@ void update_output_messages() {
 
 char** get_messages_with_tag(OutputTags tag, size_t* message_count) {
     if (message_count == NULL) {
-        perror("passed null message_count pointer\n");
+        message(OT_WARNING, "passed null message_count pointer\n");
         return NULL;
     }
     if (msg_tags.size == 0) {
