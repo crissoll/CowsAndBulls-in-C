@@ -27,25 +27,19 @@ static bool read_line(char* buffer, size_t buffer_size) {
 
 int main() {
     setup_game();
-    if (are_there_previous_saves()) {
-        while (!is_save_load_choice_complete()) {
-            char buffer[100];
-            printf("load previous game? (y/n)\n");
-            if (!read_line(buffer, sizeof(buffer))) {
-                break;
-            }
-
-            char* output_string = handle_saves_load_choice(buffer);
-            printf("%s", output_string);
-            free(output_string);
-        }
-    } else {
-        start_new_game();
-    }
-
     while (!is_game_ended()) {
         char buffer[100];
-        printf("Enter guess or command: ");
+
+        switch (get_game_state()) {
+            case GS_NOT_STARTED:
+            case GS_HANDLING_SAVES:
+                printf("load previous game? (y/n)\n");
+                break;
+            case GS_PLAYING:
+                printf("Enter guess or command: ");
+                break;
+        }
+
         if (!read_line(buffer, sizeof(buffer))) {
             break;
         }

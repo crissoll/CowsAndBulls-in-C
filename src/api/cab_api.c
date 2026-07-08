@@ -15,7 +15,17 @@ GameState get_game_state() {
 
 char* play_turn(char* input_string) {
     if (input(input_string) == INPUT_SUCCESS) {
-        process_turn();
+        if (saves_handled) {
+            process_turn();
+            return get_output();
+        }
+
+        game_state = GS_HANDLING_SAVES;
+        saves_handled = prompt_to_load_game();
+
+        if (saves_handled) {
+            game_state = GS_PLAYING;
+        }
     }
     return get_output();
 }
