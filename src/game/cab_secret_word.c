@@ -1,17 +1,17 @@
-#include "cab_load_store.h"
-#include "cab_paths.h"
+#include "cab_secret_word.h"
 #include "guess.h"
-
-#include "cab_used_vocabolary.h"
 
 Word secret_word;
 
-void generate_secret_word(void) {
-    secret_word = get_random_word();
-    generate_session_id();
-    set_file_paths_editing(false);
+
+void set_secret_word(Word new_secret_word) {
+    secret_word = new_secret_word;
 }
 
 GuessResult compare_with_secret_word(Word attempt) {
     return compare_words(attempt, secret_word);
+}
+
+Word get_secret_word() {
+    return secret_word;
 }

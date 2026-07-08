@@ -7,6 +7,10 @@
 #include "cab_attempts_manager.h"
 #include "cab_output.h"
 #include "cab_paths.h"
+#include "cab_used_vocabolary.h"
+
+#include "cab_secret_word.h"
+
 
 typedef unsigned long SessionId;
 
@@ -143,4 +147,9 @@ void delete_save_files(void) {
     if (remove(get_attempts_file_path()) != 0) {
         perror("error while removing attempts.txt");
     }
+}
+void generate_secret_word() {
+    set_secret_word(get_random_word());
+    generate_session_id();
+    set_file_paths_editing(false);
 }

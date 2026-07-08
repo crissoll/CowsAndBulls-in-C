@@ -18,4 +18,7 @@ void store_attempts(void);
 void delete_save_files(void);
 
 void store_data();
+
+void generate_secret_word();
+
 #endif
