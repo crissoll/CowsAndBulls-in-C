@@ -4,6 +4,6 @@
 #include <stddef.h>
 
 size_t get_tokens_from_input(char input_buffer[], size_t input_buffer_size,
-                           char ***arguments);
+                           char ***tokens);
 
 #endif
