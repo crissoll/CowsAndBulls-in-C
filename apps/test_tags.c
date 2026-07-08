@@ -9,6 +9,7 @@
 #include "cab_io_consts.h"
 #include "cab_io_tag_names.h"
 
+#include "cab_session_api.h"
 #include "utils/input_test.h"
 #include "utils/truncated_print.h"
 
@@ -17,7 +18,10 @@
 
 
 void turn_function(const char* input_buffer) {
-    play_turn_and_update_output_messages((char*)input_buffer);
+
+    input(input_buffer);
+    process_turn();
+    update_output_messages();
 
     size_t message_count;
 

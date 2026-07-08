@@ -13,7 +13,7 @@
 static char input_buffer[MAX_INPUT_BUFFER_SIZE];
 static size_t input_buffer_size = 0;
 
-InputStatus write_to_input_buffer(char* input_string) {
+InputStatus write_to_input_buffer(const char* input_string) {
     if (input_string == NULL) {
         message(OT_WARNING, "NULL input_string\n");
         exit(EXIT_FAILURE);

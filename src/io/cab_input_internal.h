@@ -5,7 +5,7 @@
 
 #include "cab_io_consts.h"
 
-InputStatus write_to_input_buffer(char* input_string);
+InputStatus write_to_input_buffer(const char* input_string);
 
 GetInputStatus get_input(char* buffer, size_t buffer_size);
 

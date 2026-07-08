@@ -11,7 +11,7 @@ void io__setup(void); // must be called before using io functions
 void io__shutdown(void); // must be called at the end of execution
 
 
-InputStatus input(char *input_string);
+InputStatus input(const char *input_string);
 
 char *get_output(void);
 

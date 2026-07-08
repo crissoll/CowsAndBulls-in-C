@@ -173,6 +173,7 @@ void init_save_file_paths() {
             exit(EXIT_FAILURE);
         }
     }
+
     if (!is_valid_saves_folder_path(saves_folder_path)) {
         message(OT_WARNING, "invalid saves folder path\n");
         if (secret_file_path == NULL || attempts_file_path == NULL) {
