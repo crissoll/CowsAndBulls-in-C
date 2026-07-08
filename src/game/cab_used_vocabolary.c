@@ -16,7 +16,7 @@ void load_vocabolary(void) {
     vocabolary__init_from_file(&vocab_storage, get_vocabolary_file_path());
 }
 
-Word get_word_from_used_vocabolary(size_t index) {
+Word get_word(size_t index) {
     if (index >= vocab_storage.size) {
         perror("index out of bounds");
         exit(EXIT_FAILURE);
