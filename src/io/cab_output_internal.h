@@ -14,7 +14,7 @@ typedef struct{
 
 void print_to_default_buffer(const char* text);
 
-char* get_output();
+char* flush_output_buffer();
 
 void output__setup();
 

@@ -1,4 +1,5 @@
 #include <malloc.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -6,11 +7,13 @@
 #include "cab_io_api.h"
 #include "cab_io_consts.h"
 
+#include "cab_input_internal.h"
 #include "cab_output.h"
 #include "cab_output_internal.h"
 
-
+static bool output_refreshed = false;
 void io__setup() {
+    output_refreshed = false;
     output__setup();
 }
 
@@ -24,14 +27,35 @@ Messages msg_tags = (Messages){
     .messages = NULL,
     .tags = NULL,
 };
+
 char* cur_txt = NULL;
 
+
+InputStatus input(char* input_string) {
+    write_to_input_buffer(input_string);
+    output_refreshed = true;
+}
+
+char* get_output() {
+    output_refreshed = false;
+    return flush_output_buffer();
+}
+
+
 void update_output_messages() {
+    if (output_refreshed) {
+        message(
+            OT_WARNING,
+            "update_output_messages: output hasn't been refreshed, messages "
+            "can't be updated\n");
+        return;
+    }
     free(msg_tags.messages);
     free(msg_tags.tags);
     free(cur_txt);
     msg_tags = get_messages_tags();
-    cur_txt = get_output();
+    cur_txt = flush_output_buffer();
+    output_refreshed = false;
 }
 
 char** get_messages_with_tag(OutputTags tag, size_t* message_count) {

@@ -7,7 +7,8 @@
 #define INITIAL_OUTPUT_BUFFER_ALLOCATED_SIZE 128
 
 #define MAX_TEXTS_PER_SINGLE_OUTPUT \
-    256  // extremely high, so its never checked. PLEASE don't go anywhere near it
+    256  // extremely high, so its never checked. PLEASE don't go anywhere near
+         // it
 
 #include <stdbool.h>
 #include "cab_io_consts.h"
@@ -84,13 +85,12 @@ void print_to_default_buffer(const char* text) {
     print_to_buffer(&default_buffer, text);
 }
 
-char* get_output() {
+char* flush_output_buffer() {
     char* result =
         malloc(sizeof(result[0]) * (default_buffer.current_size + 1));
 
     strcpy(result, default_buffer.buffer);
     reset_output_buffer(&default_buffer);
-
     return result;
 }
 
