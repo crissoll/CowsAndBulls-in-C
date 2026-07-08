@@ -15,16 +15,6 @@ char* play_turn(char* input_string) {
     return get_output();
 }
 
-
-void play_turn_and_update_output_messages(char* input_string) {
-    InputStatus is = input(input_string);
-    if (is == INPUT_SUCCESS) {
-        process_turn();
-    }
-    update_output_messages();
-}
-
-
 bool are_there_previous_saves() {
     return are_save_files_valid();
 }
