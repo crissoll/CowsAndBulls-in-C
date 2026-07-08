@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "cab_files.h"
 #include "vocabolary.h"
 
 static int qsort_word_cmp(const void* a, const void* b) {
