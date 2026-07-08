@@ -1,7 +1,7 @@
 #ifndef CAB_IO_TAG_NAMES
 #define CAB_IO_TAG_NAMES
 
-const char* OUTPUT_TAGS_NAMES[] = {
+const char* OUTPUT_TAG_NAMES[] = {
     "NONE",
     "USER",
     "GUESS_RESULT",

@@ -44,7 +44,7 @@ void turn_with_tags(const char* input_buffer) {
     for (OutputTags t = 1; t < OT_END; t *= 2) {
         char** strings = get_messages_with_tag(t, &message_count);
         if (message_count > 0) {
-            printf("%s:\n", OUTPUT_TAGS_NAMES[j]);
+            printf("%s:\n", OUTPUT_TAG_NAMES[j]);
         }
         j++;
 
