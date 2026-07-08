@@ -1,4 +1,5 @@
 
+#include <stdlib.h>
 #include <string.h>
 
 #include "cab_attempts_manager.h"
@@ -107,10 +108,18 @@ char* play_turn(char* input_string) {
 }
 
 void play_turn_and_update_output_messages(char* input_string) {
-    if (input(input_string) != INPUT_SUCCESS) {
-        update_output_messages();
+    InputStatus is = input(input_string);
+    switch (is) {
+        case INPUT_SUCCESS:
+            process_turn();
+            break;
+        case INPUT_STRING_TOO_LONG:
+            break;
+        case INPUT_EMPTY_BUFFER:
+            perror("input_string is NULL!\n");
+            exit(EXIT_FAILURE);
     }
-    process_turn();
+
     update_output_messages();
 }
 
