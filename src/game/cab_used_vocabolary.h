@@ -17,6 +17,6 @@ Word get_word(size_t index);
 
 Word get_random_word();
 
-void load_vocabolary();
+void init_used_vocabolary(Word* words, size_t word_count);
 
 #endif

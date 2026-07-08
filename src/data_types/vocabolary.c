@@ -1,6 +1,8 @@
 
+#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "cab_files.h"
 #include "vocabolary.h"
@@ -9,27 +11,20 @@ static int qsort_word_cmp(const void* a, const void* b) {
     return word__sort_cmp(*(const Word*)a, *(const Word*)b);
 }
 
-void vocabolary__init_from_file(Vocabolary* vocabolary, const char* file_name) {
-    vocabolary->size = get_line_count(file_name);
-    Word* words = malloc(sizeof(words[0]) * vocabolary->size);
-    FILE* file = open_file_safe(file_name, "r");
-    char buffer[100];
-    size_t i = 0;
-    while (fscanf(file, "%99s", buffer) == 1) {
-        Word temp_word;
-        for (size_t j = 0; j < LETTERS_IN_WORD; j++) {
-            temp_word.letters[j] = buffer[j];
-        }
-        temp_word.letters[LETTERS_IN_WORD] = '\0';
-        words[i] = temp_word;
-        i++;
+void vocabolary__init(Vocabolary* vocabolary, const Word* words,
+                      size_t word_count) {
+    if (words == NULL) {
+        *vocabolary = (Vocabolary){
+            .words = NULL,
+            .size = 0,
+        };
     }
-
-    vocabolary->size = i;
-    qsort(words, vocabolary->size, sizeof(Word), qsort_word_cmp);
-    vocabolary->words = words;
-    fclose(file);
+    vocabolary->words = malloc(word_count * sizeof(Word));
+    memcpy(vocabolary->words, words, word_count * sizeof(Word));
+    vocabolary->size = word_count;
+    qsort(vocabolary->words, vocabolary->size, sizeof(Word), qsort_word_cmp);
 }
+
 
 void vocabolary__get_words_frequencies(
     const Vocabolary* vocabolary,

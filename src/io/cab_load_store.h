@@ -3,6 +3,9 @@
 
 #include <stdbool.h>
 
+
+void load_vocabolary();
+
 void generate_session_id();
 
 bool are_save_files_valid(void);

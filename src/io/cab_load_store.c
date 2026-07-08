@@ -16,6 +16,7 @@ typedef unsigned long SessionId;
 
 static SessionId session_id;
 
+
 extern Attempt attempts[];
 extern size_t attempt_number;
 
@@ -148,8 +149,30 @@ void delete_save_files(void) {
         perror("error while removing attempts.txt");
     }
 }
+
 void generate_secret_word() {
     set_secret_word(get_random_word());
     generate_session_id();
     set_file_paths_editing(false);
+}
+
+
+void load_vocabolary() {
+    size_t word_count = get_line_count(get_vocabolary_file_path());
+
+    Word* words = malloc(sizeof(words[0]) * word_count);
+    FILE* file = open_file_safe(get_vocabolary_file_path(), "r");
+    char buffer[100];
+    size_t i = 0;
+    while (fscanf(file, "%99s", buffer) == 1) {
+        Word temp_word;
+        for (size_t j = 0; j < LETTERS_IN_WORD; j++) {
+            temp_word.letters[j] = buffer[j];
+        }
+        temp_word.letters[LETTERS_IN_WORD] = '\0';
+        words[i] = temp_word;
+        i++;
+    }
+
+    init_used_vocabolary(words, word_count);
 }

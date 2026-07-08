@@ -4,7 +4,6 @@
 
 #include "cab_attempts_manager.h"
 #include "cab_help_filter.h"
-#include "cab_used_vocabolary.h"
 
 #include "cab_input.h"
 #include "cab_output.h"

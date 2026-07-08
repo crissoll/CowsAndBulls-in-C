@@ -1,8 +1,8 @@
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdlib.h>
 #include <time.h>
 
-#include "cab_paths.h"
 #include "vocabolary.h"
 
 
@@ -20,9 +20,10 @@ bool word_is_in_used_vocabolary(Word word) {
     return vocabolary__contains_word(&vocab_storage, word);
 }
 
-void load_vocabolary(void) {
-    vocabolary__init_from_file(&vocab_storage, get_vocabolary_file_path());
+void init_used_vocabolary(Word* words, size_t word_count) {
+    vocabolary__init(&vocab_storage, words, word_count);
 }
+
 
 Word get_word(size_t index) {
     if (index >= vocab_storage.size) {

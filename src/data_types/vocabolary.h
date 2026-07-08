@@ -10,8 +10,10 @@ typedef struct {
   size_t size;
 } Vocabolary;
 
-void vocabolary__init_from_file(Vocabolary *vocabolary, const char *file_name);
+void vocabolary__init(Vocabolary* vocabolary, const Word* words,
+                     size_t word_count);
 
+                     
 void vocabolary__get_words_frequencies(
     const Vocabolary *vocabolary,
     size_t matrix[ALPHABET_SIZE][LETTERS_IN_WORD]);
