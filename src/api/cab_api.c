@@ -7,6 +7,11 @@
 
 static bool saves_handled = false;
 
+GameState game_state = GS_NOT_STARTED;
+
+GameState get_game_state() {
+    return game_state;
+}
 
 char* play_turn(char* input_string) {
     if (input(input_string) == INPUT_SUCCESS) {

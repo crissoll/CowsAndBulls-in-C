@@ -30,4 +30,12 @@ void shutdown_game();
 
 size_t get_attempt_number();
 
+typedef enum{
+    GS_NOT_STARTED,
+    GS_HANDLING_SAVES,
+    GS_PLAYING,
+} GameState;
+
+GameState get_game_state();
+
 #endif
