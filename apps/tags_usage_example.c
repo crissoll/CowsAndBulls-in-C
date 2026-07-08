@@ -4,8 +4,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+
 #include "cab_api.h"
 #include "cab_io_api.h"
+#include "cab_session_api.h"
+
+
 #include "cab_io_consts.h"
 #include "cab_io_tag_names.h"
 
@@ -34,9 +38,11 @@ static bool read_line(char* buffer, size_t buffer_size) {
 
     return true;
 }
+void turn_function(const char* input_buffer) {
 
-void turn_with_tags(const char* input_buffer) {
-    play_turn_and_update_output_messages((char*)input_buffer);
+    input(input_buffer);
+    process_turn();
+    update_output_messages();
 
     size_t message_count;
 
@@ -74,7 +80,7 @@ int main() {
             break;
         }
 
-        turn_with_tags(buffer);
+        turn_function(buffer);
     }
     if (is_game_ended()) {
         printf("Congratulations! You won in %zu attempts!",
