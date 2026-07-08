@@ -1,4 +1,6 @@
 #include <stdbool.h>
+#include <stdlib.h>
+#include <time.h>
 
 #include "cab_paths.h"
 #include "vocabolary.h"
@@ -28,4 +30,7 @@ size_t get_used_vocabolary_size() {
 
 Vocabolary get_used_vocabolary() {
     return vocab_storage;
+Word get_random_word() {
+    srand((unsigned int)time(NULL));
+    return vocab_storage.words[rand() % vocab_storage.size];
 }

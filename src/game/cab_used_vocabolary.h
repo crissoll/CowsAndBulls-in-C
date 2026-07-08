@@ -13,7 +13,7 @@ bool word_is_in_used_vocabolary(Word word);
 
 Word get_word_from_used_vocabolary(size_t index);
 
-size_t get_used_vocabolary_size();
+Word get_random_word();
 
 void load_vocabolary();
 #endif
