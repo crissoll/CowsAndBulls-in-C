@@ -13,7 +13,7 @@
 #include "utils/truncated_print.h"
 
 
-#define MAX_DISPLAYER_MSG_LEN 128
+#define MAX_DISPLAYED_MSG_LEN 128
 
 
 void turn_function(const char* input_buffer) {
@@ -30,13 +30,13 @@ void turn_function(const char* input_buffer) {
         j++;
 
         if (message_count == 1) {
-            print_truncated_string(strings[0], MAX_DISPLAYER_MSG_LEN);
+            print_truncated_string(strings[0], MAX_DISPLAYED_MSG_LEN);
             continue;
         }
 
         for (size_t i = 0; i < message_count; i++) {
             printf("[%zu]\n", i);
-            print_truncated_string(strings[i], MAX_DISPLAYER_MSG_LEN);
+            print_truncated_string(strings[i], MAX_DISPLAYED_MSG_LEN);
 
             free(strings[i]);
         }
