@@ -8,6 +8,14 @@
 
 static Vocabolary vocab_storage;
 
+size_t get_used_vocabolary_size() {
+    return vocab_storage.size;
+}
+
+Vocabolary get_used_vocabolary() {
+    return vocab_storage;
+}
+
 bool word_is_in_used_vocabolary(Word word) {
     return vocabolary__contains_word(&vocab_storage, word);
 }
@@ -24,12 +32,6 @@ Word get_word(size_t index) {
     return vocab_storage.words[index];
 }
 
-size_t get_used_vocabolary_size() {
-    return vocab_storage.size;
-}
-
-Vocabolary get_used_vocabolary() {
-    return vocab_storage;
 Word get_random_word() {
     srand((unsigned int)time(NULL));
     return vocab_storage.words[rand() % vocab_storage.size];
