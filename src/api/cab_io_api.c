@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "cab_api.h"
+
 #include "cab_io_api.h"
 #include "cab_io_consts.h"
 
@@ -36,10 +36,10 @@ Messages msg_tags = (Messages){
 char* cur_txt = NULL;
 
 
-InputStatus input(char* input_string) {
-    write_to_input_buffer(input_string);
+InputStatus input(const char* input_string) {
     output_refreshed = true;
     messages_up_to_date = false;
+    return write_to_input_buffer(input_string);
 }
 
 char* get_output() {
@@ -49,7 +49,7 @@ char* get_output() {
 
 
 void update_output_messages() {
-    if (output_refreshed) {
+    if (!output_refreshed) {
         message(
             OT_WARNING,
             "update_output_messages: output hasn't been refreshed, messages "
@@ -66,6 +66,8 @@ void update_output_messages() {
 }
 
 char** get_messages_with_tag(OutputTags tag, size_t* message_count) {
+    *message_count = 0;
+
     if (message_count == NULL) {
         perror("passed null message_count pointer\n");
         return NULL;
@@ -79,7 +81,7 @@ char** get_messages_with_tag(OutputTags tag, size_t* message_count) {
         return NULL;
     }
 
-    *message_count = 0;
+
     for (size_t i = 0; i < msg_tags.size - 1; i++) {
         if (msg_tags.tags[i] & tag) {
             (*message_count)++;
