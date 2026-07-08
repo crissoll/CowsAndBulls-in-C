@@ -129,7 +129,7 @@ bool are_there_previous_saves() {
 }
 
 char* handle_saves_load_choice(char* input_string) {
-    if (input(input_string)) {
+    if (input(input_string) == INPUT_SUCCESS) {
         saves_handled = prompt_to_load_game();
     }
     return get_output();
