@@ -40,10 +40,9 @@ void print_whole_help_text() {
     const CommandSpec* cur_spec = get_cmd_tree_root()->args;
     start_message(OT_HELP);
     while (cur_spec->name != NULL) {
-        if (!(*cur_spec->allowed) || cur_spec->help_text == NULL) {
-            continue;
+        if ((*cur_spec->allowed) || cur_spec->help_text != NULL) {
+            output("%s", cur_spec->help_text);
         }
-        output("%s", cur_spec->help_text);
         cur_spec++;
     }
     end_message();
