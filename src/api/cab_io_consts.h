@@ -26,5 +26,9 @@ typedef enum {
     INPUT_STRING_TOO_LONG,
 } InputStatus;
 
+typedef enum {
+    GET_INPUT_SUCCESS,
+    GET_INPUT_EMPTY,
+} GetInputStatus;
 
 #endif
