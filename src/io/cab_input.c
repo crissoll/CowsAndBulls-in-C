@@ -5,12 +5,7 @@
 
 
 #include "cab_input.h"
-
-static InputMode input_mode = CONSOLE;
-
-/* Access API input buffer */
-extern const char* cab_io__get_input_buffer(void);
-extern size_t cab_io__get_input_buffer_size(void);
+#include "cab_input_internal.h"
 
 static void to_lower(char* string, size_t max_length) {
     for (size_t k = 0; k < max_length && string[k] != '\0'; k++) {
@@ -77,63 +72,10 @@ static void split_tokens(char* buffer, char** arguments) {
     }
 }
 
-static bool get_input(char* buffer, size_t buffer_size) {
-    if (buffer_size == 0) {
-        return false;
-    }
-
-    switch (input_mode) {
-        case CONSOLE: {
-            do {
-                if (fgets(buffer, buffer_size, stdin) == NULL) {
-                    return false;
-                }
-            } while (buffer[0] == '\n');
-
-            const size_t len = strlen(buffer);
-            if (len > 0 && buffer[len - 1] == '\n') {
-                buffer[len - 1] = '\0';
-            } else {
-                int c;
-                while ((c = getchar()) != '\n' && c != EOF) {}
-            }
-            return true;
-        }
-        case API_IN: {
-            const char* api_input_buffer = cab_io__get_input_buffer();
-            size_t api_input_size = cab_io__get_input_buffer_size();
-
-            if (api_input_size == 0) {
-                return false;
-            }
-            size_t copy_size = api_input_size;
-            if (copy_size > buffer_size - 1) {
-                copy_size = buffer_size - 1;
-            }
-
-            for (size_t i = 0; i < copy_size; i++) {
-                buffer[i] = api_input_buffer[i];
-            }
-            buffer[copy_size] = '\0';
-
-            if (copy_size > 0 && buffer[copy_size - 1] == '\n') {
-                buffer[copy_size - 1] = '\0';
-            }
-            return true;
-        }
-        default:
-            return false;
-    }
-}
-
-void io__set_input_mode(InputMode new_mode) {
-    input_mode = new_mode;
-}
-
 size_t get_tokens_from_input(char buffer[], size_t buffer_size,
                              char*** arguments) {
     *arguments = NULL;
-    if (!get_input(buffer, buffer_size)) {
+    if (get_input(buffer, buffer_size) != GET_INPUT_SUCCESS) {
         return 0;
     }
 

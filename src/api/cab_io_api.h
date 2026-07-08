@@ -2,21 +2,22 @@
 #define CAB_IO_CORE
 
 #include <stdbool.h>
+#include <stddef.h>
 
-/* Enums shared across IO modules */
-typedef enum { PRINT, API_OUT } OutputMode;
+#include "cab_io_consts.h"
 
-typedef enum { CONSOLE, API_IN } InputMode;
 
-/* API layer: input(), io__setup(), io__shutdown(), get_output() */
+void io__setup(void); // must be called before using io functions
+void io__shutdown(void); // must be called at the end of execution
 
-bool input(char *input_string);
+
+InputStatus input(char *input_string);
+
 char *get_output(void);
 
-void io__setup(void);
-void io__shutdown(void);
+void update_output_messages();
 
-void io__set_input_mode(InputMode new_mode);
-void io__set_output_mode(OutputMode new_mode);
+char** get_messages_with_tag(OutputTags tag, size_t* message_count);
+
 
 #endif

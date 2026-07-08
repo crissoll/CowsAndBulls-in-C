@@ -6,6 +6,13 @@
 
 #define INITIAL_OUTPUT_BUFFER_ALLOCATED_SIZE 128
 
+#define MAX_TEXTS_PER_SINGLE_OUTPUT \
+    256  // extremely high, so its never checked. PLEASE don't go anywhere near it
+
+#include <stdbool.h>
+#include "cab_io_consts.h"
+#include "cab_output_internal.h"
+
 
 typedef struct {
     char* buffer;
@@ -16,10 +23,16 @@ typedef struct {
 
 OutputBuffer default_buffer;
 
+Messages tagged_output;
+
 void reset_output_buffer(OutputBuffer* buffer) {
     buffer->buffer =
         realloc(buffer->buffer, sizeof(buffer->buffer[0]) *
                                     INITIAL_OUTPUT_BUFFER_ALLOCATED_SIZE);
+    if (buffer->buffer == NULL) {
+        perror("realloc failed\n");
+        exit(EXIT_FAILURE);
+    }
     buffer->allocated_size = INITIAL_OUTPUT_BUFFER_ALLOCATED_SIZE;
     buffer->current_size = 0;
     buffer->buffer[0] = '\0';
@@ -39,6 +52,7 @@ void free_output_buffer(OutputBuffer* buffer) {
     buffer->current_size = 0;
 }
 
+
 void print_to_buffer(OutputBuffer* buffer, const char* text) {
     if (buffer == NULL || buffer->buffer == NULL) {
         perror("tried printing to empty buffer\n");
@@ -54,6 +68,10 @@ void print_to_buffer(OutputBuffer* buffer, const char* text) {
     if (prev_allocated_size < buffer->allocated_size) {
         buffer->buffer = realloc(
             buffer->buffer, sizeof(buffer->buffer[0]) * buffer->allocated_size);
+        if (buffer->buffer == NULL) {
+            perror("realloc failed\n");
+            exit(EXIT_FAILURE);
+        }
     }
 
     for (size_t i = 0; text[i] != '\0'; i++) {
@@ -76,11 +94,76 @@ char* get_output() {
     return result;
 }
 
-
 void output__setup() {
     init_output_buffer(&default_buffer);
+    tagged_output = (Messages){
+        .messages = malloc(MAX_TEXTS_PER_SINGLE_OUTPUT *
+                           sizeof(tagged_output.messages[0])),
+        .tags =
+            malloc(MAX_TEXTS_PER_SINGLE_OUTPUT * sizeof(tagged_output.tags[0])),
+        .size = 0,
+    };
 }
 
 void output__shutdown() {
     free_output_buffer(&default_buffer);
+    free(tagged_output.messages);
+    free(tagged_output.tags);
+}
+
+
+Messages get_messages_tags() {
+
+    // ensures a trailing empty message for easier message traversal
+    if (tagged_output.size == 0 ||
+        tagged_output.tags[tagged_output.size - 1] != OT_NONE) {
+        end_message();
+    }
+
+    Messages result = (Messages){
+        .messages = malloc(sizeof(result.messages[0]) * tagged_output.size),
+        .tags = malloc(sizeof(result.tags[0]) * tagged_output.size),
+        .size = tagged_output.size,
+    };
+
+
+    memcpy(result.messages, tagged_output.messages,
+           tagged_output.size * sizeof(result.messages[0]));
+
+    memcpy(result.tags, tagged_output.tags,
+           tagged_output.size * sizeof(result.tags[0]));
+    tagged_output.size = 0;
+    return result;
+}
+
+
+void start_message(OutputTags tag) {
+
+    if (tagged_output.size > 0) {
+
+        const size_t last_msg = tagged_output.messages[tagged_output.size - 1];
+        const OutputTags last_tag = tagged_output.tags[tagged_output.size - 1];
+
+        if (last_tag == OT_NONE) {
+            tagged_output.size--;
+
+        } else if (last_msg == default_buffer.current_size) {
+            // stops multiple tagging of same message
+            perror("tried tagging message twice");
+            return;
+        }
+    }
+
+    tagged_output.messages[tagged_output.size] = default_buffer.current_size;
+    tagged_output.tags[tagged_output.size] = tag;
+    tagged_output.size++;
+}
+
+void end_message() {
+    start_message(OT_NONE);
+}
+
+bool is_message_started() {
+    return (tagged_output.size > 0 &&
+            tagged_output.tags[tagged_output.size - 1] != OT_NONE);
 }

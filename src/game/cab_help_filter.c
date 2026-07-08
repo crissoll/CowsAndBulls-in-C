@@ -1,4 +1,5 @@
 #include "cab_help_filter.h"
+#include "cab_io_consts.h"
 #include "cab_output.h"
 #include "cab_used_vocabolary.h"
 
@@ -27,7 +28,7 @@ size_t get_current_help_filter_word_count() {
 void add_current_filter_to_history() {
     const size_t word_count = get_current_help_filter_word_count();
     if (help_filter_history_size > HELP_FILTER_HISTORY_MAX) {
-        output("help_filter_history overflowed");
+        perror("help_filter_history overflowed");
         exit(EXIT_FAILURE);
     }
 
@@ -66,18 +67,21 @@ void setup_help() {
 }
 
 void print_current_filter() {
+    start_message(OT_FILTER);
     WordSetFilter* help_filter = get_current_help_filter();
     const size_t word_count = get_current_help_filter_word_count();
     output("--- [%zu words] ---\n", word_count);
     filter__print(help_filter);
+    end_message();
 }
 
 void print_filter_history() {
     const size_t history_count = get_filter_history_size();
     if (history_count == 0) {
-        output("(no history yet)\n");
+        message(OT_FILTER, "(no history yet)\n");
         return;
     }
+    start_message(OT_FILTER);
     output("List history (%zu entries):\n", history_count);
     for (size_t hist_idx = 0; hist_idx < history_count; hist_idx++) {
         const ListHistoryEntry entry = help_filter_history[hist_idx];
@@ -86,12 +90,15 @@ void print_filter_history() {
                entry.word_count);
         filter__print(&entry.filter);
     }
+    end_message();
 }
 
 void print_filtered_word_list() {
+    start_message(OT_LIST);
     IndexArray filtered = filter__get_words_from_word_set(
         &help_word_set, get_current_help_filter());
     const Vocabolary voc = get_used_vocabolary();
     index_array__print(filtered, &voc);
     index_array__free_content(&filtered);
+    end_message();
 }

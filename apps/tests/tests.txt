@@ -1,0 +1,14 @@
+
+w
+aaaaaaaaad
+qwert
+guess
+attempts
+list -i a
+
+
+attempts
+help
+help attempts
+help list
+list -p

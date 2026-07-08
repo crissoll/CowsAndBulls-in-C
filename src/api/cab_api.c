@@ -1,18 +1,24 @@
 
+#include <stdlib.h>
 #include <string.h>
 
-#include "cab_api.h"
 #include "cab_attempts_manager.h"
 #include "cab_core.h"
 #include "cab_help_filter.h"
-#include "cab_input.h"
-#include "cab_io_api.h"
-#include "cab_load_store.h"
-#include "cab_output.h"
-#include "cab_paths.h"
 #include "cab_secret_word.h"
 #include "cab_used_vocabolary.h"
+
+#include "cab_input.h"
+#include "cab_output.h"
+
+#include "cab_load_store.h"
+#include "cab_paths.h"
+
 #include "cmd.h"
+
+#include "cab_api.h"
+#include "cab_io_api.h"
+#include "cab_io_consts.h"
 
 static bool saves_handled = false;
 
@@ -39,7 +45,7 @@ bool prompt_to_load_game() {
 
     if (input_size == 0 ||
         (strcmp(buffer, "y") != 0 && strcmp(buffer, "n") != 0)) {
-        output("input must be y or n\n");
+        message(OT_INPUT_ERROR, "input must be y or n\n");
         return false;
     }
 
@@ -63,7 +69,8 @@ static void handle_first_turn() {
         load_secret_word();
         load_attempts();
     } else {
-        output("no valid game saves found. generated new saves instead\n");
+        message(OT_WARNING,
+                "no valid game saves found. generated new saves instead\n");
         generate_secret_word();
     }
 }
@@ -93,11 +100,24 @@ static void process_turn() {
 }
 
 char* play_turn(char* input_string) {
-    if (!input(input_string)) {
+    if (input(input_string) != INPUT_SUCCESS) {
         return get_output();
     }
     process_turn();
     return get_output();
+}
+
+void play_turn_and_update_output_messages(char* input_string) {
+    InputStatus is = input(input_string);
+    switch (is) {
+        case INPUT_SUCCESS:
+            process_turn();
+            break;
+        case INPUT_STRING_TOO_LONG:
+            break;
+    }
+
+    update_output_messages();
 }
 
 void setup_game() {
@@ -106,8 +126,6 @@ void setup_game() {
 
     saves_handled = false;
     io__setup();
-    io__set_input_mode(API_IN);
-    io__set_output_mode(API_OUT);
     reset_game_vars();
     setup_help();
 }
@@ -117,7 +135,7 @@ bool are_there_previous_saves() {
 }
 
 char* handle_saves_load_choice(char* input_string) {
-    if (input(input_string)) {
+    if (input(input_string) == INPUT_SUCCESS) {
         saves_handled = prompt_to_load_game();
     }
     return get_output();

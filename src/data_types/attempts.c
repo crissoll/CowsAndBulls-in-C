@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include "cab_io_consts.h"
 #include "cab_output.h"
 
 
@@ -14,10 +15,18 @@ Attempt attempt__new(Word word, GuessResult result) {
     return attempt;
 }
 
-void attempt__print(Attempt attempt) {
+void _attempt__print(Attempt attempt) {
+
     word__print(attempt.word);
     output("\t");
     guess_result__print(attempt.result);
+}
+
+
+void attempt__print(Attempt attempt) {
+    start_message(OT_ATTEMPTS);
+    _attempt__print(attempt);
+    end_message();
 }
 
 IndexArray get_possible_words_from_attempt(Attempt attempt,
@@ -41,10 +50,12 @@ IndexArray get_possible_words_from_attempt(Attempt attempt,
 }
 
 void print_attempt_array(const Attempt* attempts, size_t attempt_number) {
+    start_message(OT_ATTEMPTS);
     for (size_t i = 0; i < attempt_number; i++) {
-        attempt__print(attempts[i]);
+        _attempt__print(attempts[i]);
         output("\n");
     }
+    end_message();
 }
 
 bool is_word_in_attempt_array(Word word, const Attempt* attempts,

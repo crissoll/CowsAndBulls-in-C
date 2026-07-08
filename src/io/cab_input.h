@@ -1,10 +1,7 @@
 #ifndef CAB_INPUT
 #define CAB_INPUT
 
-#include "cab_io_api.h"
 #include <stddef.h>
-
-void io__set_input_mode(InputMode new_mode);
 
 size_t get_tokens_from_input(char input_buffer[], size_t input_buffer_size,
                            char ***arguments);

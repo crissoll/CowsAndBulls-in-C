@@ -33,6 +33,7 @@ rwildcard = $(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2)$(filter $(subst
 # 3. SOURCE & OBJECT FILES
 # =============================================================================
 APP_SRCS    := apps/api_usage_example.c
+APP_UTIL_SRCS := $(call rwildcard,apps/utils/,*.c)
 SHARED_SRCS := $(call rwildcard,src/,*.c)
 ALL_SRCS    := $(APP_SRCS) $(SHARED_SRCS)
 
@@ -94,7 +95,7 @@ debug: cab_game$(EXE)
 app: CFLAGS += -O0
 app: | $(COMPILE_COMMANDS)
 	$(if $(f),,$(error "Error: Please specify the app file using f=<filename> (e.g., make app f=my_test)"))
-	$(CC) $(CFLAGS) -o apps/$(f)$(EXE) apps/$(f).c $(SHARED_SRCS)
+	$(CC) $(CFLAGS) -o apps/$(f)$(EXE) apps/$(f).c $(APP_UTIL_SRCS) $(SHARED_SRCS)
 	$(call RUN_CMD,apps/$(f)$(EXE))
 
 # Hardcoded testing target for apps/test.c

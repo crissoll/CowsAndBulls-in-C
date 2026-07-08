@@ -1,6 +1,5 @@
 #include <stdbool.h>
 
-#include "cab_output.h"
 #include "cab_paths.h"
 #include "vocabolary.h"
 
@@ -17,7 +16,7 @@ void load_vocabolary(void) {
 
 Word get_word_from_used_vocabolary(size_t index) {
     if (index >= vocab_storage.size) {
-        output("index out of bounds");
+        perror("index out of bounds");
         exit(EXIT_FAILURE);
     }
     return vocab_storage.words[index];
