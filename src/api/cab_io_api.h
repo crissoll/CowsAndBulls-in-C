@@ -19,5 +19,4 @@ void update_output_messages();
 
 char** get_messages_with_tag(OutputTags tag, size_t* message_count);
 
-
 #endif
