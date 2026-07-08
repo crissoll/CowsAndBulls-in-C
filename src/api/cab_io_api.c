@@ -1,5 +1,6 @@
 #include <malloc.h>
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -12,8 +13,12 @@
 #include "cab_output_internal.h"
 
 static bool output_refreshed = false;
+static bool messages_up_to_date = false;
+
+
 void io__setup() {
     output_refreshed = false;
+    messages_up_to_date = false;
     output__setup();
 }
 
@@ -34,6 +39,7 @@ char* cur_txt = NULL;
 InputStatus input(char* input_string) {
     write_to_input_buffer(input_string);
     output_refreshed = true;
+    messages_up_to_date = false;
 }
 
 char* get_output() {
@@ -56,13 +62,19 @@ void update_output_messages() {
     msg_tags = get_messages_tags();
     cur_txt = flush_output_buffer();
     output_refreshed = false;
+    messages_up_to_date = true;
 }
 
 char** get_messages_with_tag(OutputTags tag, size_t* message_count) {
     if (message_count == NULL) {
-        message(OT_WARNING, "passed null message_count pointer\n");
+        perror("passed null message_count pointer\n");
         return NULL;
     }
+    if (!messages_up_to_date) {
+        perror("tried obtaining messages without updating output first");
+        return NULL;
+    }
+
     if (msg_tags.size == 0) {
         return NULL;
     }
