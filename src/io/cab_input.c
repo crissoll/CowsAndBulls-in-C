@@ -75,7 +75,7 @@ static void split_tokens(char* buffer, char** arguments) {
 size_t get_tokens_from_input(char buffer[], size_t buffer_size,
                              char*** arguments) {
     *arguments = NULL;
-    if (!get_input(buffer, buffer_size)) {
+    if (get_input(buffer, buffer_size) != GET_INPUT_SUCCESS) {
         return 0;
     }
 

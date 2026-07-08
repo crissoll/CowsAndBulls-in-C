@@ -1,5 +1,6 @@
 
 #include <stddef.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "cab_input_internal.h"
@@ -15,7 +16,7 @@ static size_t input_buffer_size = 0;
 InputStatus input(char* input_string) {
     if (input_string == NULL) {
         message(OT_WARNING, "NULL input_string\n");
-        return INPUT_EMPTY_BUFFER;
+        exit(EXIT_FAILURE);
     }
     input_buffer_size = 0;
     const size_t len = strlen(input_string);
@@ -30,10 +31,10 @@ InputStatus input(char* input_string) {
     return INPUT_SUCCESS;
 }
 
-GetInputSuccess get_input(char* buffer, size_t buffer_size) {
+GetInputStatus get_input(char* buffer, size_t buffer_size) {
     if (buffer_size == 0 || buffer == NULL) {
         message(OT_WARNING, "received empty buffer in get_input()!\n");
-        return GET_INPUT_EMPTY;
+        exit(EXIT_FAILURE);
     }
 
     if (input_buffer_size == 0) {

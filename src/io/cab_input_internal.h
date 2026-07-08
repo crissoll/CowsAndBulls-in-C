@@ -6,13 +6,13 @@
 #include "cab_io_consts.h"
 
 typedef enum {
-    GET_INPUT_EMPTY,
     GET_INPUT_SUCCESS,
+    GET_INPUT_EMPTY,
 } GetInputStatus;
 
 
 InputStatus input(char* input_string);
 
-GetInputSuccess get_input(char* buffer, size_t buffer_size);
+GetInputStatus get_input(char* buffer, size_t buffer_size);
 
 #endif
