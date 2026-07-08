@@ -3,17 +3,19 @@
 
 #include "cab_io_consts.h"
 
-void output(const char *format_string, ...);
-
-void start_message(OutputTags tags);
-void end_message();
 
 void message(OutputTags tags, const char*format_string,...);
 
+void start_message(OutputTags tags);
+
+void output(const char *format_string, ...);
+
+void end_message();
+
+
 #endif
 
-// use message to send a single text; if you want to send more complex texts, you can use start_message
-// and use multiple output calls, and then an end_message
+// use message to send a single text; if you want to send more complex texts, you can use start_message and use multiple output() calls, and then an end_message
 // 
 // example:
 // 
