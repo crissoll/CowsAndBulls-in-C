@@ -115,9 +115,6 @@ void play_turn_and_update_output_messages(char* input_string) {
             break;
         case INPUT_STRING_TOO_LONG:
             break;
-        case INPUT_EMPTY_BUFFER:
-            perror("input_string is NULL!\n");
-            exit(EXIT_FAILURE);
     }
 
     update_output_messages();

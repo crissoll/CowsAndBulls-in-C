@@ -23,7 +23,6 @@ typedef enum{
 
 typedef enum {
     INPUT_SUCCESS,
-    INPUT_EMPTY_BUFFER,
     INPUT_STRING_TOO_LONG,
 } InputStatus;
 
