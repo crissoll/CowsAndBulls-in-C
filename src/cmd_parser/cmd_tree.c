@@ -13,7 +13,7 @@
 const CommandSpec command_specs[] = {
     {
         .name = "disable",
-        .help_text = "disable_TMP\n",
+        .help_text = NULL,
         .case_no_args = alert_too_few_arguments,
         .allowed = &(bool){true},
         .default_handler = disable_command,
