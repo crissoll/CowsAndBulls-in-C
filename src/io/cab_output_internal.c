@@ -34,7 +34,13 @@ Messages tagged_output = (Messages){
 };
 
 
+static bool buffer_initialized = false;
+static bool messages_initialized = false;
+
 void reset_output_buffer(OutputBuffer* buffer) {
+    if (!buffer_initialized) {
+        return;
+    }
     buffer->buffer =
         realloc(buffer->buffer, sizeof(buffer->buffer[0]) *
                                     INITIAL_OUTPUT_BUFFER_ALLOCATED_SIZE);
@@ -46,9 +52,6 @@ void reset_output_buffer(OutputBuffer* buffer) {
     buffer->current_size = 0;
     buffer->buffer[0] = '\0';
 }
-
-static bool buffer_initialized = false;
-static bool messages_initialized = false;
 
 void init_output_buffer(OutputBuffer* buffer) {
     if (buffer_initialized) {
@@ -131,15 +134,12 @@ char* flush_output_buffer() {
     return result;
 }
 
-void output__setup() {
-    init_output_buffer(&default_buffer);
-    init_messages(&tagged_output);
-}
-
 void output__shutdown() {
     free_output_buffer(&default_buffer);
     free(tagged_output.messages);
     free(tagged_output.tags);
+    buffer_initialized = false;
+    messages_initialized = false;
 }
 
 

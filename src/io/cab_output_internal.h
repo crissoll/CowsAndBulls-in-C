@@ -16,10 +16,6 @@ void print_to_default_buffer(const char* text);
 
 char* flush_output_buffer();
 
-void output__setup();
-
-void output__shutdown();
-
 void start_message(OutputTags tags);
 
 void end_message();
@@ -27,5 +23,7 @@ void end_message();
 bool is_message_started();
 
 Messages get_messages_tags();
+
+void output__shutdown();
 
 #endif
