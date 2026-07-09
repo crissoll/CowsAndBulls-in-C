@@ -11,7 +11,7 @@ size_t get_filter_history_size();
 
 void add_current_filter_to_history();
 
-void setup_help();
+void reset_list_history();
 
 void revert_filter_to_history_step(size_t index);
 

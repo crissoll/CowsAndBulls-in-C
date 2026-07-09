@@ -20,6 +20,7 @@ static bool loading_saves = false;
 void reset_game_vars() {
     loading_saves = false;
     reset_attempts();
+    reset_list_history();
 }
 
 static bool session_setup = false;
@@ -29,7 +30,7 @@ void setup_session() {
     load_vocabolary();
 
     reset_game_vars();
-    setup_help();
+    reset_list_history();
     session_setup = true;
 }
 

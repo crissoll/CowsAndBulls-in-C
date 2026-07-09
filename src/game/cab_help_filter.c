@@ -49,17 +49,8 @@ void revert_filter_to_history_step(size_t index) {
     help_filter = help_filter_history[index].filter;
 }
 
-static void help_list_history_clear() {
+void reset_list_history() {
     help_filter_history_size = 0;
-    /* reset history count and help filter/state (avoid recursion) */
-    filter__init(&help_filter);
-
-    const Vocabolary voc = get_used_vocabolary();
-    word_set__init_from_vocabolary(&help_word_set, &voc);
-}
-
-void setup_help() {
-    help_list_history_clear();
     filter__init(&help_filter);
 
     const Vocabolary voc = get_used_vocabolary();
