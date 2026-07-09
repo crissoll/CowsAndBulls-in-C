@@ -53,7 +53,6 @@ void start_new_game() {
 
 void setup_game() {
     saves_handled = false;
-    setup_session();
 }
 
 void shutdown_game() {

@@ -1,4 +1,5 @@
 
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -21,7 +22,22 @@ void reset_game_vars() {
     reset_attempts();
 }
 
+static bool session_setup = false;
+
+void setup_session() {
+    init_file_paths();
+    load_vocabolary();
+
+    reset_game_vars();
+    setup_help();
+    session_setup = true;
+}
+
+
 bool prompt_to_load_game() {
+    if (!session_setup) {
+        setup_session();
+    }
     if (!are_save_files_valid()) {
         loading_saves = false;
         return true;
@@ -69,6 +85,9 @@ static void handle_first_turn() {
 }
 
 void process_turn() {
+    if (!session_setup) {
+        setup_session();
+    }
     handle_first_turn();
 
     char input_buffer[1024];
@@ -90,13 +109,4 @@ void process_turn() {
     if (is_game_ended()) {
         delete_save_files();
     }
-}
-
-
-void setup_session() {
-    init_file_paths();
-    load_vocabolary();
-
-    reset_game_vars();
-    setup_help();
 }
