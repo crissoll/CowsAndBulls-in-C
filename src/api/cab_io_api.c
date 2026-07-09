@@ -105,6 +105,7 @@ char** get_messages_with_tag(OutputTags tag, size_t* message_count) {
 
         memcpy(result[j], &cur_txt[msg_tags.messages[i]],
                msg_len * sizeof(char));
+        result[j][msg_len - 1] = '\0';
         j++;
     }
 
