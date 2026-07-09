@@ -16,10 +16,9 @@ static bool output_refreshed = false;
 static bool messages_up_to_date = false;
 
 
-void io__setup() {
+void io__reset() {
     output_refreshed = false;
     messages_up_to_date = false;
-    output__setup();
 }
 
 
