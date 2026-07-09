@@ -54,7 +54,6 @@ void start_new_game() {
 void setup_game() {
     saves_handled = false;
     setup_session();
-    io__setup();
 }
 
 void shutdown_game() {

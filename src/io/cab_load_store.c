@@ -22,7 +22,7 @@ extern size_t attempt_number;
 
 extern Word secret_word;
 
-bool load_attempts(void) {
+bool load_attempts() {
     const char* path = get_attempts_file_path();
     if (path == NULL) {
         return false;
@@ -30,7 +30,7 @@ bool load_attempts(void) {
     return load_attempt_array(attempts, &attempt_number, path, &session_id);
 }
 
-void store_attempts(void) {
+void store_attempts() {
     const char* path = get_attempts_file_path();
     if (path == NULL) {
         /* cannot store without a valid path */
@@ -49,7 +49,7 @@ void generate_session_id() {
         ((SessionId)rand() << 16) ^ (SessionId)rand() ^ (SessionId)time(NULL);
 }
 
-void store_secret_word(void) {
+void store_secret_word() {
     if (get_attempt_number() != 1) {
         return;
     }
@@ -108,12 +108,12 @@ bool load_secret_word() {
     return loaded;
 }
 
-bool are_there_previous_save_files(void) {
+bool are_there_previous_save_files() {
     return (check_file_exists(get_attempts_file_path()) &&
             check_file_exists(get_secret_file_path()));
 }
 
-bool are_save_files_valid(void) {
+bool are_save_files_valid() {
     Attempt dummy_attempts[MAX_ATTEMPTS];
     size_t dummy_attempt_number = 0;
     SessionId loaded_session_id;
@@ -140,7 +140,7 @@ bool are_save_files_valid(void) {
     return true;
 }
 
-void delete_save_files(void) {
+void delete_save_files() {
     if (remove(get_secret_file_path()) != 0) {
         perror("error while removing secret_word.txt");
     }

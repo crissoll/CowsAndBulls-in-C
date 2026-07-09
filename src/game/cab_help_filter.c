@@ -37,11 +37,11 @@ void add_current_filter_to_history() {
     help_filter_history_size++;
 }
 
-WordSetFilter* get_current_help_filter(void) {
+WordSetFilter* get_current_help_filter() {
     return &help_filter;
 }
 
-size_t get_filter_history_size(void) {
+size_t get_filter_history_size() {
     return help_filter_history_size;
 }
 
@@ -49,7 +49,7 @@ void revert_filter_to_history_step(size_t index) {
     help_filter = help_filter_history[index].filter;
 }
 
-static void help_list_history_clear(void) {
+static void help_list_history_clear() {
     help_filter_history_size = 0;
     /* reset history count and help filter/state (avoid recursion) */
     filter__init(&help_filter);

@@ -13,7 +13,7 @@ void reset_attempts() {
     attempt_number = 0;
 }
 
-void print_attempts(void) {
+void print_attempts() {
     if (attempt_number == 0) {
         message(OT_ATTEMPTS, "no attempts yet!\n");
         return;

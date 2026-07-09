@@ -46,7 +46,7 @@ static bool file_paths_editing_enabled = true;
 
 static bool file_paths_initialized = false;
 
-bool are_file_paths_initialized(void) {
+bool are_file_paths_initialized() {
     return file_paths_initialized;
 }
 
