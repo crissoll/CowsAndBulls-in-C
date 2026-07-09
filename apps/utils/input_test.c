@@ -96,7 +96,6 @@ void play_test_set(const char* file_name, TurnFunction turn_func) {
 
 
 void play_game_test(InputTest test, TurnFunction turn_function) {
-    setup_game();
     start_new_game();
 
     for (size_t i = 0; i < test.count && !is_game_ended(); i++) {
