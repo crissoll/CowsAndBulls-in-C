@@ -42,7 +42,6 @@ void turn_function(const char* input_buffer) {
 
     input(input_buffer);
     process_turn();
-    update_output_messages();
 
     size_t message_count;
 

@@ -1,6 +1,7 @@
 #include <malloc.h>
 #include <stdbool.h>
 #include <stddef.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -42,16 +43,9 @@ InputStatus input(const char* input_string) {
     return write_to_input_buffer(input_string);
 }
 
-char* get_output() {
-    output_refreshed = false;
-    return flush_output_buffer();
-}
-
-
 void update_output_messages() {
-    if (!output_refreshed) {
-        message(
-            OT_WARNING,
+    if (!output_refreshed) {  // this should be impossible to reach
+        printf(
             "update_output_messages: output hasn't been refreshed, messages "
             "can't be updated\n");
         return;
@@ -65,17 +59,24 @@ void update_output_messages() {
     messages_up_to_date = true;
 }
 
-char** get_messages_with_tag(OutputTags tag, size_t* message_count) {
-    *message_count = 0;
+char* get_output() {
+    if (!messages_up_to_date) {
+        update_output_messages();
+    }
+    return strdup(cur_txt);
+}
 
+
+char** get_messages_with_tag(OutputTags tag, size_t* message_count) {
     if (message_count == NULL) {
-        perror("passed null message_count pointer\n");
+        printf("passed null message_count pointer\n");
         return NULL;
     }
 
+    *message_count = 0;
+
     if (!messages_up_to_date) {
-        perror("tried obtaining messages without updating output first");
-        return NULL;
+        update_output_messages();
     }
 
     if (msg_tags.size == 0) {

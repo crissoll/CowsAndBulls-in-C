@@ -86,10 +86,7 @@ void print_to_default_buffer(const char* text) {
 }
 
 char* flush_output_buffer() {
-    char* result =
-        malloc(sizeof(result[0]) * (default_buffer.current_size + 1));
-
-    strcpy(result, default_buffer.buffer);
+    char* result = strdup(default_buffer.buffer);
     reset_output_buffer(&default_buffer);
     return result;
 }
