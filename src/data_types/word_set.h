@@ -11,4 +11,7 @@ typedef struct {
 void word_set__init_from_vocabolary(WordSet *word_set,
                                     const Vocabolary *vocabolary);
 
+                                    
+IndexArray word_set__get_words_containing_letter(const WordSet* word_set,
+                                                     size_t letter_idx);
 #endif

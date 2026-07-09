@@ -45,3 +45,27 @@ void word_set__init_from_vocabolary(WordSet* word_set,
         }
     }
 }
+
+IndexArray word_set__get_words_containing_letter(const WordSet* word_set,
+                                                 size_t letter_idx) {
+    IndexArray result;
+    index_array__init(&result, 0);
+
+    bool have_result = false;
+    for (size_t pos = 0; pos < LETTERS_IN_WORD; pos++) {
+        IndexArray source = word_set->words[pos][letter_idx];
+        IndexArray source_copy = index_array__copy(&source);
+
+        if (!have_result) {
+            result = source_copy;
+            have_result = true;
+        } else {
+            IndexArray joined = join(result, source_copy);
+            index_array__free_content(&result);
+            index_array__free_content(&source_copy);
+            result = joined;
+        }
+    }
+
+    return result;
+}
