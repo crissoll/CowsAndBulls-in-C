@@ -7,8 +7,7 @@
 #define INITIAL_OUTPUT_BUFFER_ALLOCATED_SIZE 128
 
 #define MAX_TEXTS_PER_SINGLE_OUTPUT \
-    256  // extremely high, so its never checked. PLEASE don't go anywhere near
-         // it
+    256  // extremely high, so its never checked. PLS don't go anywhere near it
 
 #include <stdbool.h>
 #include "cab_io_consts.h"
@@ -22,9 +21,18 @@ typedef struct {
 } OutputBuffer;
 
 
-OutputBuffer default_buffer;
+OutputBuffer default_buffer = (OutputBuffer){
+    .buffer = NULL,
+    .allocated_size = 0,
+    .current_size = 0,
+};
 
-Messages tagged_output;
+Messages tagged_output = (Messages){
+    .messages = NULL,
+    .size = 0,
+    .tags = NULL,
+};
+
 
 void reset_output_buffer(OutputBuffer* buffer) {
     buffer->buffer =
@@ -39,12 +47,33 @@ void reset_output_buffer(OutputBuffer* buffer) {
     buffer->buffer[0] = '\0';
 }
 
+static bool buffer_initialized = false;
+static bool messages_initialized = false;
 
 void init_output_buffer(OutputBuffer* buffer) {
+    if (buffer_initialized) {
+        return;
+    }
     buffer->buffer = NULL;
     reset_output_buffer(buffer);
+    buffer_initialized = true;
 }
 
+
+void init_messages(Messages* messages) {
+    if (messages_initialized) {
+        return;
+    }
+    *messages = (Messages){
+        .messages = malloc(MAX_TEXTS_PER_SINGLE_OUTPUT *
+                           sizeof(tagged_output.messages[0])),
+        .tags =
+            malloc(MAX_TEXTS_PER_SINGLE_OUTPUT * sizeof(tagged_output.tags[0])),
+        .size = 0,
+    };
+
+    messages_initialized = true;
+}
 
 void free_output_buffer(OutputBuffer* buffer) {
     free(buffer->buffer);
@@ -55,10 +84,15 @@ void free_output_buffer(OutputBuffer* buffer) {
 
 
 void print_to_buffer(OutputBuffer* buffer, const char* text) {
-    if (buffer == NULL || buffer->buffer == NULL) {
+    if (buffer == NULL) {
         perror("tried printing to empty buffer\n");
         exit(EXIT_FAILURE);
     }
+
+    if (buffer->buffer == NULL) {
+        reset_output_buffer(buffer);
+    }
+
     const size_t text_len = strlen(text);
     const size_t prev_allocated_size = buffer->allocated_size;
 
@@ -82,10 +116,16 @@ void print_to_buffer(OutputBuffer* buffer, const char* text) {
 }
 
 void print_to_default_buffer(const char* text) {
+    if (!buffer_initialized) {
+        init_output_buffer(&default_buffer);
+    }
     print_to_buffer(&default_buffer, text);
 }
 
 char* flush_output_buffer() {
+    if (!buffer_initialized) {
+        return strdup("");
+    }
     char* result = strdup(default_buffer.buffer);
     reset_output_buffer(&default_buffer);
     return result;
@@ -93,13 +133,7 @@ char* flush_output_buffer() {
 
 void output__setup() {
     init_output_buffer(&default_buffer);
-    tagged_output = (Messages){
-        .messages = malloc(MAX_TEXTS_PER_SINGLE_OUTPUT *
-                           sizeof(tagged_output.messages[0])),
-        .tags =
-            malloc(MAX_TEXTS_PER_SINGLE_OUTPUT * sizeof(tagged_output.tags[0])),
-        .size = 0,
-    };
+    init_messages(&tagged_output);
 }
 
 void output__shutdown() {
@@ -110,7 +144,9 @@ void output__shutdown() {
 
 
 Messages get_messages_tags() {
-
+    if (!messages_initialized) {
+        init_messages(&tagged_output);
+    }
     // ensures a trailing empty message for easier message traversal
     if (tagged_output.size == 0 ||
         tagged_output.tags[tagged_output.size - 1] != OT_NONE) {
@@ -135,6 +171,9 @@ Messages get_messages_tags() {
 
 
 void start_message(OutputTags tag) {
+    if (!messages_initialized) {
+        init_messages(&tagged_output);
+    }
 
     if (tagged_output.size > 0) {
 

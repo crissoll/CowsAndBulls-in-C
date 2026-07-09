@@ -8,7 +8,7 @@
 
 
 void io__setup(void); // must be called before using io functions
-void io__shutdown(void); // must be called at the end of execution
+void io__shutdown(); // must be called at the end of execution to avoid memory leaks
 
 
 InputStatus input(const char *input_string);
