@@ -22,7 +22,7 @@ static bool loading_saves = false;
 static bool session_setup = false;
 
 
-static GameState game_state;
+static GameState game_state = GS_NOT_STARTED;
 
 GameState get_game_state() {
     if (!are_save_files_valid()) {
@@ -112,7 +112,7 @@ void parse_input() {
 
 void update_saves() {
     if (is_game_ended()) {
-        game_state = GS_ENDED;
+        game_state = GS_NOT_STARTED;
         delete_save_files();
         return;
     }
@@ -142,8 +142,6 @@ void process_turn() {
         case GS_PLAYING:
             parse_input();
             update_saves();
-            return;
-        case GS_ENDED:
             return;
     }
 }
