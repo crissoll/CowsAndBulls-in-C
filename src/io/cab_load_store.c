@@ -1,3 +1,4 @@
+#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
@@ -15,19 +16,42 @@
 typedef unsigned long SessionId;
 
 static SessionId session_id;
-
+static bool session_id_generated = false;
 
 extern Attempt attempts[];
 extern size_t attempt_number;
 
 extern Word secret_word;
 
+
+static void generate_session_id() {
+    if (session_id_generated) {
+        return;
+    }
+    srand((unsigned int)time(NULL));
+    session_id =
+        ((SessionId)rand() << 16) ^ (SessionId)rand() ^ (SessionId)time(NULL);
+    session_id_generated = true;
+}
+
+
+static SessionId* get_session_id_ptr() {
+    if (!session_id_generated) {
+        generate_session_id();
+    }
+    return &session_id;
+}
+
 bool load_attempts() {
     const char* path = get_attempts_file_path();
     if (path == NULL) {
         return false;
     }
-    return load_attempt_array(attempts, &attempt_number, path, &session_id);
+    if (!session_id_generated) {
+        generate_session_id();
+    }
+    return load_attempt_array(attempts, &attempt_number, path,
+                              get_session_id_ptr());
 }
 
 void store_attempts() {
@@ -40,14 +64,9 @@ void store_attempts() {
     if (attempt_number == 0) {
         return;
     }
-    store_attempt_array(attempts, attempt_number, path, session_id);
+    store_attempt_array(attempts, attempt_number, path, *get_session_id_ptr());
 }
 
-void generate_session_id() {
-    srand((unsigned int)time(NULL));
-    session_id =
-        ((SessionId)rand() << 16) ^ (SessionId)rand() ^ (SessionId)time(NULL);
-}
 
 void store_secret_word() {
     if (get_attempt_number() != 1) {
@@ -61,14 +80,14 @@ void store_secret_word() {
         return;
     }
 
-    fprintf(file, "session_id %lu\n", session_id);
+    fprintf(file, "session_id %lu\n", *get_session_id_ptr());
     for (size_t j = 0; j < LETTERS_IN_WORD; j++) {
         fprintf(file, "%c", secret_word.letters[j]);
     }
     fclose(file);
 }
 
-void store_data() {
+void store_saves() {
     store_secret_word();
     store_attempts();
 }
@@ -101,7 +120,7 @@ bool load_test_secret_word(Word* test_secret_word, SessionId* session_id_ptr) {
 }
 
 bool load_secret_word() {
-    bool loaded = load_test_secret_word(&secret_word, &session_id);
+    bool loaded = load_test_secret_word(&secret_word, get_session_id_ptr());
     if (loaded) {
         set_file_paths_editing(false);
     }
@@ -152,7 +171,7 @@ void delete_save_files() {
 
 void generate_secret_word() {
     set_secret_word(get_random_word());
-    generate_session_id();
+    session_id_generated = false;
     set_file_paths_editing(false);
 }
 
@@ -175,4 +194,12 @@ void load_vocabolary() {
     }
 
     init_used_vocabolary(words, word_count);
+}
+
+
+bool load_saves() {
+    if (are_save_files_valid()) {
+        return load_secret_word() && load_attempts();
+    }
+    return false;
 }
