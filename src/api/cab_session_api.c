@@ -11,25 +11,29 @@
 #include "cab_core.h"
 #include "cab_help_filter.h"
 #include "cab_load_store.h"
-#include "cab_paths.h"
 #include "cmd.h"
 
 
 static bool loading_saves = false;
 
+static bool session_setup = false;
+
+void start_new_session();
+
+void setup_session() {
+    load_vocabolary();
+    session_setup = true;
+    start_new_session();
+}
+
 void start_new_session() {
+    if (!session_setup) {
+        setup_session();
+    }
     loading_saves = false;
     reset_attempts();
     reset_list_history();
     generate_secret_word();
-}
-
-static bool session_setup = false;
-
-void setup_session() {
-    load_vocabolary();
-    start_new_session();
-    session_setup = true;
 }
 
 
