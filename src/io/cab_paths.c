@@ -47,13 +47,6 @@ static bool file_paths_editing_enabled = true;
 
 static bool file_paths_initialized = false;
 
-const char* get_vocabolary_file_path() {
-    if (!file_paths_initialized) {
-        perror("file paths not initialized");
-    }
-    return vocabolary_file_path;
-}
-
 
 bool set_path_string(char** path, const char* value) {
     if (value == NULL || value[0] == '\0') {
@@ -285,4 +278,11 @@ const char* get_attempts_file_path() {
         init_file_paths();
     }
     return attempts_file_path;
+}
+
+const char* get_vocabolary_file_path() {
+    if (!file_paths_initialized) {
+        init_file_paths();
+    }
+    return vocabolary_file_path;
 }
