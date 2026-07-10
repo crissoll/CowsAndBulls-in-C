@@ -102,8 +102,5 @@ void play_game_test(InputTest test, TurnFunction turn_function) {
         printf("\n====[INPUT %zu] \"%s\" ====\n", i, test.inputs[i]);
         turn_function(test.inputs[i]);
     }
-    if (is_game_ended()) {
-        printf("Won in %zu attempts", get_attempt_number());
-    }
     shutdown_game();
 }
