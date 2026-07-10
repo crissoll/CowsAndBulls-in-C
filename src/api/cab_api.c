@@ -58,3 +58,14 @@ void setup_game() {
 void shutdown_game() {
     io__shutdown();
 }
+
+
+char* get_input_prompt() {
+    switch (game_state) {
+        case GS_NOT_STARTED:
+        case GS_HANDLING_SAVES:
+            return strdup("load previous game? (y/n)\n> ");
+        case GS_PLAYING:
+            return strdup("Enter guess or command: ");
+    }
+}

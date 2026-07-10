@@ -10,7 +10,7 @@ bool set_saves_folder_path(const char *path);
 // can't be used while the game is running
 bool set_vocabolary_file_path(const char *path);
 
-//
+// starts a new game bypassing the initial prompt
 void start_new_game();
 
 char *play_turn(char *input_string);
@@ -28,5 +28,7 @@ typedef enum{
 } GameState;
 
 GameState get_game_state();
+
+char* get_input_prompt();
 
 #endif

@@ -69,12 +69,9 @@ void turn_function(const char* input_buffer) {
 
 
 int main() {
-    setup_game();
-    start_new_game();
-
     while (!is_game_ended()) {
         char buffer[100];
-        printf("Enter guess or command: ");
+        printf("%s", get_input_prompt());
         if (!read_line(buffer, sizeof(buffer))) {
             break;
         }

@@ -30,15 +30,7 @@ int main() {
     while (!is_game_ended()) {
         char buffer[100];
 
-        switch (get_game_state()) {
-            case GS_NOT_STARTED:
-            case GS_HANDLING_SAVES:
-                printf("load previous game? (y/n)\n");
-                break;
-            case GS_PLAYING:
-                printf("Enter guess or command: ");
-                break;
-        }
+        printf("%s", get_input_prompt());
 
         if (!read_line(buffer, sizeof(buffer))) {
             break;
