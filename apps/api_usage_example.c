@@ -26,7 +26,6 @@ static bool read_line(char* buffer, size_t buffer_size) {
 }
 
 int main() {
-    setup_game();
     while (!is_game_ended()) {
         char buffer[100];
 
