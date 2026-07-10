@@ -102,7 +102,7 @@ void process_turn() {
 
     free(input_tokens);
 
-    store_data();
+    store_saves();
 
     if (is_game_ended()) {
         delete_save_files();

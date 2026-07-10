@@ -3,24 +3,17 @@
 
 #include <stdbool.h>
 
-
 void load_vocabolary();
-
-void generate_session_id();
 
 bool are_save_files_valid();
 
-bool load_secret_word();
+// tries loading save data; if it doesn't find them, it returns false
+bool load_saves();
 
-void store_secret_word();
-
-bool load_attempts();
-
-void store_attempts();
+void store_saves();
 
 void delete_save_files();
 
-void store_data();
 
 void generate_secret_word();
 
