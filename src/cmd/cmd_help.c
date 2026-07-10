@@ -9,9 +9,9 @@
 void print_help_text(const char* command_name) {
     const CommandSpec* candidate_spec = get_cmd_tree_root()->args;
     while (candidate_spec->name != NULL) {
-        const bool found = strcmp(candidate_spec->name, command_name) != 0;
+        const bool found = strcmp(candidate_spec->name, command_name) == 0;
 
-        if (!(*candidate_spec->allowed) && !found) {
+        if (!(*candidate_spec->allowed) || !found) {
             candidate_spec++;
             continue;
         }
