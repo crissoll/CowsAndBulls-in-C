@@ -34,36 +34,15 @@ char* play_turn(char* input_string) {
     return get_output();
 }
 
-bool are_there_previous_saves() {
-    return are_save_files_valid();
-}
-
-char* handle_saves_load_choice(char* input_string) {
-    if (input(input_string) == INPUT_SUCCESS) {
-        saves_handled = prompt_to_load_game();
-    }
-    return get_output();
-}
-
-bool is_save_load_choice_complete() {
-    return saves_handled;
-}
-
 void start_new_game() {
     start_new_session();
     saves_handled = true;
     game_state = GS_PLAYING;
 }
 
-
-void setup_game() {
-    saves_handled = false;
-}
-
 void shutdown_game() {
     io__shutdown();
 }
-
 
 char* get_input_prompt() {
     switch (get_game_state()) {
