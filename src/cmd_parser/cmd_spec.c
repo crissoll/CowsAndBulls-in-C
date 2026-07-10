@@ -63,8 +63,8 @@ void parse_command(const CommandSpec* specifier, const char* tokens[],
 }
 
 
-void _disable_command(size_t token_count, const char* tokens[],
-                      const CommandSpec* base_spec) {
+void disable_command(size_t token_count, const char* tokens[],
+                     const CommandSpec* base_spec) {
     const CommandSpec* candidate_spec = base_spec->args;
     while (candidate_spec->name != NULL) {
         if (strcmp(candidate_spec->name, tokens[0]) == 0) {
@@ -79,7 +79,7 @@ void _disable_command(size_t token_count, const char* tokens[],
                 alert_too_many_arguments();
                 return;
             }
-            _disable_command(token_count - 1, tokens + 1, candidate_spec);
+            disable_command(token_count - 1, tokens + 1, candidate_spec);
             return;
         }
         candidate_spec++;

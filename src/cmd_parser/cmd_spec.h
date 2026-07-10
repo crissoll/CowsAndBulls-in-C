@@ -29,6 +29,6 @@ void parse_command(const CommandSpec* specifier, const char* tokens[],
                    size_t token_count);
 
                    
-void _disable_command(size_t token_count, const char* tokens[],
+void disable_command(size_t token_count, const char* tokens[],
                       const CommandSpec* base_spec);
 #endif

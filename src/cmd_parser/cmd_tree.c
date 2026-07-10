@@ -16,7 +16,7 @@ const CommandSpec command_specs[] = {
         .help_text = NULL,
         .case_no_args = alert_too_few_arguments,
         .allowed = &(bool){true},
-        .default_handler = disable_command,
+        .default_handler = disable_command_from_tree,
         .args = NULL,
     },
     {
