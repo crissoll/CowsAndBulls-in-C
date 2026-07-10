@@ -11,6 +11,9 @@ static bool saves_handled = false;
 GameState game_state = GS_NOT_STARTED;
 
 GameState get_game_state() {
+    if (!are_save_files_valid()) {
+        game_state = GS_PLAYING;
+    }
     return game_state;
 }
 
@@ -63,7 +66,7 @@ void shutdown_game() {
 
 
 char* get_input_prompt() {
-    switch (game_state) {
+    switch (get_game_state()) {
         case GS_NOT_STARTED:
         case GS_HANDLING_SAVES:
             return strdup("load previous game? (y/n)\n> ");
