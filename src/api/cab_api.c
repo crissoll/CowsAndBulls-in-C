@@ -24,8 +24,8 @@ void shutdown_game() {
 char* get_input_prompt() {
     switch (get_game_state()) {
         case GS_NOT_STARTED:
-        case GS_FIRST_TURN:
             return strdup("load previous game? (y/n)\n> ");
+        case GS_FIRST_TURN:
         case GS_PLAYING:
             return strdup("Enter guess or command: ");
         case GS_ENDED:

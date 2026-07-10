@@ -201,6 +201,7 @@ void load_saves() {
     if (are_save_files_valid()) {
         load_secret_word();
         load_attempts();
+        return;
     }
     message(OT_WARNING,
             "no valid game saves found. generated new saves instead\n");
