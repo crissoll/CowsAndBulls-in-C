@@ -8,8 +8,6 @@ const char *get_secret_file_path();
 
 const char *get_attempts_file_path();
 
-void init_file_paths();
-
 bool set_saves_folder_path(const char *path);
 
 bool set_vocabolary_file_path(const char *path);

@@ -27,9 +27,7 @@ void start_new_session() {
 static bool session_setup = false;
 
 void setup_session() {
-    init_file_paths();
     load_vocabolary();
-
     start_new_session();
     session_setup = true;
 }

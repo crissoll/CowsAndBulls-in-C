@@ -1,4 +1,5 @@
 #include <errno.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
 #include <sys/stat.h>
@@ -53,19 +54,6 @@ const char* get_vocabolary_file_path() {
     return vocabolary_file_path;
 }
 
-const char* get_secret_file_path() {
-    if (!file_paths_initialized) {
-        perror("file paths not initialized");
-    }
-    return secret_file_path;
-}
-
-const char* get_attempts_file_path() {
-    if (!file_paths_initialized) {
-        perror("file paths not initialized");
-    }
-    return attempts_file_path;
-}
 
 bool set_path_string(char** path, const char* value) {
     if (value == NULL || value[0] == '\0') {
@@ -237,6 +225,14 @@ void init_vocabolary_file_path() {
     fclose(vocab_file);
 }
 
+void init_file_paths() {
+    init_save_file_paths();
+    init_vocabolary_file_path();
+    file_paths_initialized = true;
+    set_file_paths_editing(false);
+}
+
+
 void set_file_paths_editing(bool value) {
     file_paths_editing_enabled = value;
 }
@@ -276,8 +272,17 @@ bool set_vocabolary_file_path(const char* path) {
     return true;
 }
 
-void init_file_paths() {
-    init_save_file_paths();
-    init_vocabolary_file_path();
-    file_paths_initialized = true;
+
+const char* get_secret_file_path() {
+    if (!file_paths_initialized) {
+        init_file_paths();
+    }
+    return secret_file_path;
+}
+
+const char* get_attempts_file_path() {
+    if (!file_paths_initialized) {
+        init_file_paths();
+    }
+    return attempts_file_path;
 }
