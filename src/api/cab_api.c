@@ -1,3 +1,4 @@
+#include <string.h>
 
 #include "cab_load_store.h"
 
@@ -46,8 +47,9 @@ bool is_save_load_choice_complete() {
 }
 
 void start_new_game() {
-    reset_game_vars();
+    start_new_session();
     saves_handled = true;
+    game_state = GS_PLAYING;
 }
 
 

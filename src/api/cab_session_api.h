@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-void reset_game_vars();
+void start_new_session();
 
 bool prompt_to_load_game();
 
