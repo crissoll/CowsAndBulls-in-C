@@ -2,11 +2,11 @@
 #define CAB_PATHS
 #include <stdbool.h>
 
-char *get_vocabolary_file_path();
+const char *get_vocabolary_file_path();
 
-char *get_secret_file_path();
+const char *get_secret_file_path();
 
-char *get_attempts_file_path();
+const char *get_attempts_file_path();
 
 void init_file_paths();
 

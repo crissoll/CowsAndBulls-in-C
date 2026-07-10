@@ -46,21 +46,21 @@ static bool file_paths_editing_enabled = true;
 
 static bool file_paths_initialized = false;
 
-char* get_vocabolary_file_path() {
+const char* get_vocabolary_file_path() {
     if (!file_paths_initialized) {
         perror("file paths not initialized");
     }
     return vocabolary_file_path;
 }
 
-char* get_secret_file_path() {
+const char* get_secret_file_path() {
     if (!file_paths_initialized) {
         perror("file paths not initialized");
     }
     return secret_file_path;
 }
 
-char* get_attempts_file_path() {
+const char* get_attempts_file_path() {
     if (!file_paths_initialized) {
         perror("file paths not initialized");
     }
