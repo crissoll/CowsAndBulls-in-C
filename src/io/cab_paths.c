@@ -46,16 +46,6 @@ static bool file_paths_editing_enabled = true;
 
 static bool file_paths_initialized = false;
 
-bool are_file_paths_initialized() {
-    return file_paths_initialized;
-}
-
-char* get_saves_folder_path() {
-    if (!file_paths_initialized) {
-        perror("file paths not initialized");
-    }
-    return saves_folder_path;
-}
 char* get_vocabolary_file_path() {
     if (!file_paths_initialized) {
         perror("file paths not initialized");

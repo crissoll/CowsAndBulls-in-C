@@ -17,10 +17,11 @@
 
 static bool loading_saves = false;
 
-void reset_game_vars() {
+void start_new_session() {
     loading_saves = false;
     reset_attempts();
     reset_list_history();
+    generate_secret_word();
 }
 
 static bool session_setup = false;
@@ -29,8 +30,7 @@ void setup_session() {
     init_file_paths();
     load_vocabolary();
 
-    reset_game_vars();
-    reset_list_history();
+    start_new_session();
     session_setup = true;
 }
 
@@ -68,21 +68,18 @@ bool prompt_to_load_game() {
 
 
 static void handle_first_turn() {
-    if (get_attempt_number() > 0) {
+    if (!loading_saves || get_attempt_number() > 0) {
         return;
     }
-    if (!loading_saves) {
-        generate_secret_word();
-        return;
-    }
+
     if (are_save_files_valid()) {
-        load_secret_word();
-        load_attempts();
-    } else {
-        message(OT_WARNING,
-                "no valid game saves found. generated new saves instead\n");
-        generate_secret_word();
+        load_saves();
+        loading_saves = false;
+        return;
     }
+
+    message(OT_WARNING,
+            "no valid game saves found. generated new saves instead\n");
 }
 
 void process_turn() {
