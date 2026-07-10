@@ -13,6 +13,7 @@ bool set_vocabolary_file_path(const char *path);
 // starts a new game bypassing the initial prompt
 void start_new_game();
 
+void load_game();
 char *play_turn(char *input_string);
 
 bool is_game_ended();
