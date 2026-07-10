@@ -25,7 +25,5 @@ char* get_input_prompt() {
         case GS_FIRST_TURN:
         case GS_PLAYING:
             return strdup("Enter guess or command: ");
-        case GS_ENDED:
-            return strdup("");
     }
 }
