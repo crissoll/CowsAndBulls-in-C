@@ -7,8 +7,6 @@
 #include "cab_io_consts.h"
 
 
-void io__reset();
-
 // must be called at the end of execution to avoid memory leaks
 void io__shutdown(); 
 

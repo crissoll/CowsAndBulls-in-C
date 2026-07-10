@@ -12,14 +12,14 @@
 #include "cab_input_internal.h"
 #include "cab_output_internal.h"
 
-static bool output_refreshed = false;
-static bool messages_up_to_date = false;
 
+typedef enum {
+    OS_OutputStale,
+    OS_OutputRefreshed,
+    OS_MessagesUpToDate,
+} OutputState;
 
-void io__reset() {
-    output_refreshed = false;
-    messages_up_to_date = false;
-}
+OutputState output_state = OS_OutputStale;
 
 
 void io__shutdown() {
@@ -36,29 +36,33 @@ char* cur_txt = NULL;
 
 
 InputStatus input(const char* input_string) {
-    output_refreshed = true;
-    messages_up_to_date = false;
+    output_state = OS_OutputRefreshed;
     return write_to_input_buffer(input_string);
 }
 
 void update_output_messages() {
-    if (!output_refreshed) {  // this should be impossible to reach
+    if (output_state == OS_OutputStale) {  // this should be impossible to reach
         printf(
-            "update_output_messages: output hasn't been refreshed, messages "
+            "update_output_messages: no input was received, messages "
             "can't be updated\n");
         return;
     }
+
+    if (output_state == OS_MessagesUpToDate) {
+        printf("messages already up to date\n");
+        return;
+    }
+
     free(msg_tags.messages);
     free(msg_tags.tags);
     free(cur_txt);
     msg_tags = get_messages_tags();
     cur_txt = flush_output_buffer();
-    output_refreshed = false;
-    messages_up_to_date = true;
+    output_state = OS_MessagesUpToDate;
 }
 
 char* get_output() {
-    if (!messages_up_to_date) {
+    if (output_state != OS_MessagesUpToDate) {
         update_output_messages();
     }
     return strdup(cur_txt);
@@ -73,7 +77,7 @@ char** get_messages_with_tag(OutputTags tag, size_t* message_count) {
 
     *message_count = 0;
 
-    if (!messages_up_to_date) {
+    if (output_state != OS_MessagesUpToDate) {
         update_output_messages();
     }
 
