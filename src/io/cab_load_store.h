@@ -8,7 +8,7 @@ void load_vocabolary();
 bool are_save_files_valid();
 
 // tries loading save data; if it doesn't find them, it returns false
-bool load_saves();
+void load_saves();
 
 void store_saves();
 

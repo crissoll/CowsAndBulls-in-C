@@ -21,6 +21,7 @@ typedef enum{
     OT_END, // upper bound, use for cycling through tags
 } OutputTags;
 
+
 typedef enum {
     INPUT_SUCCESS,
     INPUT_STRING_TOO_LONG,

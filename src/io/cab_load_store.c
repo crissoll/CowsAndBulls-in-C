@@ -197,9 +197,12 @@ void load_vocabolary() {
 }
 
 
-bool load_saves() {
+void load_saves() {
     if (are_save_files_valid()) {
-        return load_secret_word() && load_attempts();
+        load_secret_word();
+        load_attempts();
     }
-    return false;
+    message(OT_WARNING,
+            "no valid game saves found. generated new saves instead\n");
+    return;
 }
