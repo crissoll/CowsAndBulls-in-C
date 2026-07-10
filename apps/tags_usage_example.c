@@ -4,16 +4,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-
 #include "cab_api.h"
 #include "cab_io_api.h"
 #include "cab_session_api.h"
 
-
 #include "cab_io_consts.h"
 #include "cab_io_tag_names.h"
-
-#include "utils/truncated_print.h"
 
 
 #define MAX_DISPLAYED_MSG_LEN 128
