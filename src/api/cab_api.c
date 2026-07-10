@@ -13,9 +13,6 @@ char* play_turn(char* input_string) {
     return get_output();
 }
 
-void start_new_game() {
-    start_new_session();
-}
 
 void shutdown_game() {
     io__shutdown();

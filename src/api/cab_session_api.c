@@ -52,12 +52,12 @@ void setup_vars() {
     generate_secret_word();
 }
 
-void start_new_session() {
+void start_new_game() {
     setup_vars();
     game_state = GS_FIRST_TURN;
 }
 
-void load_session() {
+void load_game() {
     setup_vars();
     load_saves();
     game_state = GS_FIRST_TURN;
@@ -144,8 +144,6 @@ void process_turn() {
             update_saves();
             return;
         case GS_ENDED:
-            message(OT_USER, "Congratulations, you won in %zu attempts!\n",
-                    get_attempt_number());
             return;
     }
 }

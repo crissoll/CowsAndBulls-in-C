@@ -14,9 +14,9 @@ typedef enum {
 GameState get_game_state();
 
 
-void start_new_session();
+void start_game();
 
-void load_session();
+void load_game();
 
 
 void process_turn();
