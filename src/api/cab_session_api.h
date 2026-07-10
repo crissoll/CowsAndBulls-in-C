@@ -8,13 +8,12 @@ typedef enum {
     GS_NOT_STARTED,
     GS_FIRST_TURN,
     GS_PLAYING,
-    GS_ENDED,
 } GameState;
 
 GameState get_game_state();
 
 
-void start_game();
+void start_new_game();
 
 void load_game();
 
