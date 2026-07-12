@@ -1,13 +1,15 @@
 #include <stdlib.h>
 
+#include "cab_malloc.h"
 #include "cab_output.h"
 #include "index_array.h"
 #include "word.h"
 
+
 void index_array__init(IndexArray* array, size_t size) {
     array->size = size;
     if (size > 0) {
-        array->indexes = malloc(size * sizeof(array->indexes[0]));
+        array->indexes = malloc_safe(size * sizeof(array->indexes[0]));
     } else {
         array->indexes = NULL;
     }

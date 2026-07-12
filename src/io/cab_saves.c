@@ -4,6 +4,7 @@
 #include <time.h>
 
 #include "cab_files.h"
+#include "cab_malloc.h"
 
 #include "cab_attempts_manager.h"
 #include "cab_output.h"
@@ -179,7 +180,7 @@ void generate_secret_word() {
 void load_vocabulary() {
     size_t word_count = get_line_count(get_vocabulary_file_path());
 
-    Word* words = malloc(sizeof(words[0]) * word_count);
+    Word* words = malloc_safe(sizeof(words[0]) * word_count);
     FILE* file = open_file_safe(get_vocabulary_file_path(), "r");
     char buffer[100];
     size_t i = 0;

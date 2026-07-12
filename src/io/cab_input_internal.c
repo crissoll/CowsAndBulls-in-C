@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "cab_errors.h"
 #include "cab_input_internal.h"
 #include "cab_io_consts.h"
 #include "cab_output.h"
@@ -15,8 +16,7 @@ static size_t input_buffer_size = 0;
 
 InputStatus write_to_input_buffer(const char* input_string) {
     if (input_string == NULL) {
-        message(OT_WARNING, "NULL input_string\n");
-        exit(EXIT_FAILURE);
+        exit_with_error_message("NULL input_string\n");
     }
     input_buffer_size = 0;
     const size_t len = strlen(input_string);
@@ -33,8 +33,7 @@ InputStatus write_to_input_buffer(const char* input_string) {
 
 GetInputStatus get_input(char* buffer, size_t buffer_size) {
     if (buffer_size == 0 || buffer == NULL) {
-        message(OT_WARNING, "received empty buffer in get_input()!\n");
-        exit(EXIT_FAILURE);
+        exit_with_error_message("received empty buffer in get_input()!\n");
     }
 
     if (input_buffer_size == 0) {

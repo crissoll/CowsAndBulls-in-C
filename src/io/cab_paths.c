@@ -3,17 +3,18 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/stat.h>
-#include "cab_io_consts.h"
-
-
 #ifdef _WIN32
     #include <direct.h>
 #endif
 
-
+#include "cab_errors.h"
 #include "cab_files.h"
+#include "cab_malloc.h"
 
+
+#include "cab_io_consts.h"
 #include "cab_output.h"
+
 #include "cab_paths.h"
 
 #ifndef S_ISDIR
@@ -54,7 +55,7 @@ bool set_path_string(char** path, const char* value) {
         return false;
     }
 
-    char* new_path = malloc(strlen(value) + 1);
+    char* new_path = malloc_safe(strlen(value) + 1);
     if (new_path == NULL) {
         message(OT_WARNING, "cannot allocate memory for path\n");
         return false;
@@ -122,12 +123,8 @@ bool is_valid_saves_folder_path(const char* path) {
         return false;
     }
 
-    char* normalized_path = malloc(trimmed_len + 1);
-    if (normalized_path == NULL) {
-        message(OT_WARNING,
-                "cannot allocate memory for save path validation\n");
-        exit(EXIT_FAILURE);
-    }
+    char* normalized_path = malloc_safe(trimmed_len + 1);
+
 
     memcpy(normalized_path, path, trimmed_len);
     normalized_path[trimmed_len] = '\0';
@@ -141,17 +138,17 @@ void init_save_file_paths() {
 
     if (saves_folder_path == NULL) {
         if (!set_path_string(&saves_folder_path, DEFAULT_SAVES_FOLDER_PATH)) {
-            exit(EXIT_FAILURE);
+            exit_with_error_message(
+                "init_save_file_paths: cannot set path string");
         }
     }
 
     if (!is_valid_saves_folder_path(saves_folder_path)) {
         message(OT_WARNING, "invalid saves folder path\n");
         if (secret_file_path == NULL || attempts_file_path == NULL) {
-            message(OT_WARNING,
-                    "no valid paths could be provided for saves, game setup "
-                    "impossible\n");
-            exit(EXIT_FAILURE);
+            exit_with_error_message(
+                "no valid paths could be provided for saves, game setup "
+                "impossible\n");
         }
         message(OT_WARNING, "saves folder won't change\n");
         return;
@@ -166,13 +163,13 @@ void init_save_file_paths() {
 
     const size_t base_path_len = get_normalized_path_len(saves_folder_path);
 
-    secret_file_path = malloc(base_path_len + 1 + strlen(SECRET_FILE_NAME) + 1);
+    secret_file_path =
+        malloc_safe(base_path_len + 1 + strlen(SECRET_FILE_NAME) + 1);
     attempts_file_path =
-        malloc(base_path_len + 1 + strlen(ATTEMPTS_FILE_NAME) + 1);
+        malloc_safe(base_path_len + 1 + strlen(ATTEMPTS_FILE_NAME) + 1);
 
     if (secret_file_path == NULL || attempts_file_path == NULL) {
-        message(OT_WARNING, "cannot allocate memory for save file paths\n");
-        exit(EXIT_FAILURE);
+        exit_with_error_message("cannot allocate memory for save file paths\n");
     }
 
     memcpy(secret_file_path, saves_folder_path, base_path_len);
@@ -189,9 +186,8 @@ void init_save_file_paths() {
 void init_vocabulary_file_path() {
     if (vocabulary_file_path == NULL) {
         if (!set_path_string(&vocabulary_file_path, DEFAULT_VOCAB_PATH)) {
-            message(OT_WARNING,
-                    "couldn't load default vocabulary. game can't start\n");
-            exit(EXIT_FAILURE);
+            exit_with_error_message(
+                "couldn't load default vocabulary. game can't start\n");
         }
     }
 
@@ -206,14 +202,14 @@ void init_vocabulary_file_path() {
         "couldn't load vocabulary from defined file path. now trying default "
         "path...\n");
     if (!set_path_string(&vocabulary_file_path, DEFAULT_VOCAB_PATH)) {
-        exit(EXIT_FAILURE);
+        exit_with_error_message(
+            "init_vocabulary_file_path: couldn't set vocabulary path\n");
     }
 
     vocab_file = open_file_safe(vocabulary_file_path, "r");
     if (vocab_file == NULL) {
-        message(OT_WARNING,
-                "couldn't load default vocabulary. game can't start\n");
-        exit(EXIT_FAILURE);
+        exit_with_error_message(
+            "couldn't load default vocabulary. game can't start\n");
     }
     fclose(vocab_file);
 }

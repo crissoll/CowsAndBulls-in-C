@@ -7,6 +7,7 @@
 
 #include "cab_io_api.h"
 #include "cab_io_consts.h"
+#include "cab_malloc.h"
 
 #include "cab_errors.h"
 
@@ -97,7 +98,7 @@ char** cab_get_messages_with_tag(OutputTags tag, size_t* message_count) {
         return NULL;
     }
 
-    char** result = malloc(sizeof(char*) * (*message_count));
+    char** result = malloc_safe(sizeof(char*) * (*message_count));
     size_t j = 0;
     for (size_t i = 0; i < msg_tags.size - 1; i++) {
         if (!(msg_tags.tags[i] & tag)) {
@@ -106,7 +107,7 @@ char** cab_get_messages_with_tag(OutputTags tag, size_t* message_count) {
         const size_t msg_len =
             msg_tags.messages[i + 1] - msg_tags.messages[i] + 1;
 
-        result[j] = malloc(sizeof(result[0]) * msg_len);
+        result[j] = malloc_safe(sizeof(result[0]) * msg_len);
 
         memcpy(result[j], &cur_txt[msg_tags.messages[i]],
                msg_len * sizeof(char));

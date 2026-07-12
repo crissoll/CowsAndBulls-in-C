@@ -3,11 +3,11 @@
 #include <stdlib.h>
 #include <vadefs.h>
 
-#include "cab_errors.h"
+
 #include "cab_io_consts.h"
+#include "cab_malloc.h"
 #include "cab_output.h"
 #include "cab_output_internal.h"
-
 
 
 int get_formatted_text_len(const char* format_string, va_list args) {
@@ -28,11 +28,8 @@ static void va_output(const char* format_string, va_list args) {
 
     char* formatted_text;
 
-    formatted_text = malloc(formatted_text_len + 1);
+    formatted_text = malloc_safe(formatted_text_len + 1);
 
-    if (formatted_text == NULL) {
-        exit_with_error_message("malloc failed");
-    }
     vsnprintf(formatted_text, formatted_text_len + 1, format_string, args);
     print_to_default_buffer(formatted_text);
     free(formatted_text);

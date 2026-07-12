@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "cab_malloc.h"
 
 #include "cab_input.h"
 #include "cab_input_internal.h"
@@ -94,11 +95,7 @@ size_t get_tokens_from_input(char buffer[], size_t buffer_size,
         return token_count;
     }
 
-    *tokens = malloc(token_count * sizeof **tokens);
-
-    if (*tokens == NULL) {
-        exit(EXIT_FAILURE);
-    }
+    *tokens = malloc_safe(token_count * sizeof **tokens);
 
     split_tokens(buffer, *tokens);
 

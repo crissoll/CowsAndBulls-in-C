@@ -4,7 +4,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "cab_malloc.h"
 #include "vocabulary.h"
+
 
 static int qsort_word_cmp(const void* a, const void* b) {
     return word__sort_cmp(*(const Word*)a, *(const Word*)b);
@@ -18,7 +20,7 @@ void vocabulary__init(Vocabulary* vocabulary, const Word* words,
             .size = 0,
         };
     }
-    vocabulary->words = malloc(word_count * sizeof(Word));
+    vocabulary->words = malloc_safe(word_count * sizeof(Word));
     memcpy(vocabulary->words, words, word_count * sizeof(Word));
     vocabulary->size = word_count;
     qsort(vocabulary->words, vocabulary->size, sizeof(Word), qsort_word_cmp);

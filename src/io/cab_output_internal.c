@@ -1,4 +1,3 @@
-#include <malloc.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdio.h>
@@ -7,9 +6,12 @@
 
 #include "cab_errors.h"
 #include "cab_io_consts.h"
+#include "cab_malloc.h"
 #include "cab_output_internal.h"
 
+
 #include "cab_output.h"
+
 
 #define INITIAL_OUTPUT_BUFFER_ALLOCATED_SIZE 128
 
@@ -45,11 +47,9 @@ void reset_output_buffer(OutputBuffer* buffer) {
         return;
     }
     buffer->buffer =
-        realloc(buffer->buffer, sizeof(buffer->buffer[0]) *
-                                    INITIAL_OUTPUT_BUFFER_ALLOCATED_SIZE);
-    if (buffer->buffer == NULL) {
-        exit_with_error_message("realloc failed\n");
-    }
+        realloc_safe(buffer->buffer, sizeof(buffer->buffer[0]) *
+                                         INITIAL_OUTPUT_BUFFER_ALLOCATED_SIZE);
+
     buffer->allocated_size = INITIAL_OUTPUT_BUFFER_ALLOCATED_SIZE;
     buffer->current_size = 0;
     buffer->buffer[0] = '\0';
@@ -70,10 +70,10 @@ void init_messages(Messages* messages) {
         return;
     }
     *messages = (Messages){
-        .messages = malloc(MAX_TEXTS_PER_SINGLE_OUTPUT *
-                           sizeof(tagged_output.messages[0])),
-        .tags =
-            malloc(MAX_TEXTS_PER_SINGLE_OUTPUT * sizeof(tagged_output.tags[0])),
+        .messages = malloc_safe(MAX_TEXTS_PER_SINGLE_OUTPUT *
+                                sizeof(tagged_output.messages[0])),
+        .tags = malloc_safe(MAX_TEXTS_PER_SINGLE_OUTPUT *
+                            sizeof(tagged_output.tags[0])),
         .size = 0,
     };
 
@@ -105,11 +105,8 @@ void print_to_buffer(OutputBuffer* buffer, const char* text) {
     }
 
     if (prev_allocated_size < buffer->allocated_size) {
-        buffer->buffer = realloc(
+        buffer->buffer = realloc_safe(
             buffer->buffer, sizeof(buffer->buffer[0]) * buffer->allocated_size);
-        if (buffer->buffer == NULL) {
-            exit_with_error_message("realloc failed\n");
-        }
     }
 
     for (size_t i = 0; text[i] != '\0'; i++) {
@@ -154,8 +151,9 @@ Messages get_messages_tags() {
     }
 
     Messages result = (Messages){
-        .messages = malloc(sizeof(result.messages[0]) * tagged_output.size),
-        .tags = malloc(sizeof(result.tags[0]) * tagged_output.size),
+        .messages =
+            malloc_safe(sizeof(result.messages[0]) * tagged_output.size),
+        .tags = malloc_safe(sizeof(result.tags[0]) * tagged_output.size),
         .size = tagged_output.size,
     };
 
