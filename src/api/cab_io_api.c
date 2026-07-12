@@ -1,7 +1,6 @@
 #include <malloc.h>
 #include <stdbool.h>
 #include <stddef.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -44,14 +43,14 @@ InputStatus cab_input(const char* input_string) {
 
 void update_output_messages() {
     if (output_state == OS_OutputStale) {  // this should be impossible to reach
-        printf(
+        extra_io_warning(
             "update_output_messages: no input was received, messages "
             "can't be updated\n");
         return;
     }
 
     if (output_state == OS_MessagesUpToDate) {
-        printf("messages already up to date\n");
+        extra_io_warning("messages already up to date\n");
         return;
     }
 
@@ -73,7 +72,7 @@ char* cab_get_output() {
 
 char** cab_get_messages_with_tag(OutputTags tag, size_t* message_count) {
     if (message_count == NULL) {
-        printf("passed null message_count pointer\n");
+        extra_io_warning("passed null message_count pointer\n");
         return NULL;
     }
 

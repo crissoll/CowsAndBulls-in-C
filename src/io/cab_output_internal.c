@@ -9,6 +9,7 @@
 #include "cab_io_consts.h"
 #include "cab_output_internal.h"
 
+#include "cab_output.h"
 
 #define INITIAL_OUTPUT_BUFFER_ALLOCATED_SIZE 128
 
@@ -184,8 +185,8 @@ void start_message(OutputTags tag) {
 
         } else if (last_msg == default_buffer.current_size) {
             // stops multiple tagging of same message
-            extra_io_warning("tried tagging message twice");
-            return;
+            tagged_output.size--;
+            message(OT_WARNING, "last message was empty; it will be deleted\n");
         }
     }
 
