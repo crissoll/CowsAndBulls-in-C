@@ -26,38 +26,19 @@ static bool read_line(char* buffer, size_t buffer_size) {
 }
 
 int main() {
-    setup_game();
-    if (are_there_previous_saves()) {
-        while (!is_save_load_choice_complete()) {
-            char buffer[100];
-            printf("load previous game? (y/n)\n");
-            if (!read_line(buffer, sizeof(buffer))) {
-                break;
-            }
-
-            char* output_string = handle_saves_load_choice(buffer);
-            printf("%s", output_string);
-            free(output_string);
-        }
-    } else {
-        start_new_game();
-    }
-
-    while (!is_game_ended()) {
+    while (!cab_is_game_ended()) {
         char buffer[100];
-        printf("Enter guess or command: ");
+
+        printf("%s", cab_get_input_prompt());
+
         if (!read_line(buffer, sizeof(buffer))) {
             break;
         }
 
-        char* output_string = play_turn(buffer);
+        char* output_string = cab_play_turn(buffer);
         printf("%s", output_string);
         free(output_string);
     }
-    if (is_game_ended()) {
-        printf("Congratulations! You won in %zu attempts!",
-               get_attempt_number());
-    }
-    shutdown_game();
+    cab_shutdown_game();
     return 0;
 }

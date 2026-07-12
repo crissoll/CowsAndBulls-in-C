@@ -89,14 +89,18 @@ size_t get_tokens_from_input(char buffer[], size_t buffer_size,
     to_lower(buffer, len);
 
     const size_t token_count = count_tokens(buffer);
-    if (tokens != NULL) {
-        *tokens = malloc(token_count * sizeof **tokens);
-        if (*tokens == NULL) {
-            exit(EXIT_FAILURE);
-        }
-        split_tokens(buffer, *tokens);
+
+    if (tokens == NULL) {
+        return token_count;
     }
 
+    *tokens = malloc(token_count * sizeof **tokens);
+
+    if (*tokens == NULL) {
+        exit(EXIT_FAILURE);
+    }
+
+    split_tokens(buffer, *tokens);
 
     return token_count;
 }
