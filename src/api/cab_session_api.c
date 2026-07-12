@@ -11,9 +11,11 @@
 
 #include "cab_attempts_manager.h"
 #include "cab_core.h"
+#include "cab_errors.h"
 #include "cab_help_filter.h"
 #include "cab_saves.h"
 #include "cmd.h"
+
 
 #include "cmd_surrender.h"
 
@@ -60,6 +62,7 @@ void setup_vars() {
     reset_attempts();
 
     reset_surrender_state();
+    reset_error_state();
 }
 
 void cab_start_new_game() {
@@ -157,7 +160,7 @@ void cab_process_turn() {
 }
 
 bool cab_is_game_ended() {
-    return is_secret_word_found() || has_surrendered();
+    return is_secret_word_found() || has_surrendered() || fatal_error_met();
 }
 
 size_t cab_get_attempt_number() {
