@@ -1,3 +1,5 @@
+#include <stdlib.h>
+
 #include "cab_help_filter.h"
 #include "cab_io_consts.h"
 #include "cab_output.h"

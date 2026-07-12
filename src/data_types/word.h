@@ -2,8 +2,6 @@
 #define WORD_H
 
 #include <stdbool.h>
-#include <stdlib.h>
-
 
 #define ALPHABET_SIZE 26
 #define LETTERS_IN_WORD 5
