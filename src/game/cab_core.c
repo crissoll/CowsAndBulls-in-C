@@ -7,14 +7,14 @@
 
 #include "cab_attempts_manager.h"
 #include "cab_secret_word.h"
-#include "cab_used_vocabulary.h"
+#include "cab_used_vocabolary.h"
 
 
-static bool secret_word_found = false;
+static bool game_ended = false;
 
 void play_word(Word word) {
-    if (!word_is_in_used_vocabulary(word)) {
-        message(OT_ALERT, "word not contained in vocabulary\n");
+    if (!word_is_in_used_vocabolary(word)) {
+        message(OT_ALERT, "word not contained in vocabolary\n");
         return;
     }
     if (is_word_already_attempted(word)) {
@@ -25,20 +25,19 @@ void play_word(Word word) {
 
     add_attempt(word, result);
 
+    start_message(OT_GUESS_RESULT);
+    guess_result__print(result);
+    output("\n");
+    end_message();
+
     if (result.bulls >= LETTERS_IN_WORD) {
         message(OT_USER,
                 "Congratulations, you found the word in %zu attempts!\n",
                 get_attempt_number());
-        secret_word_found = true;
-        return;
+        game_ended = true;
     }
-
-    start_message(OT_GUESS_RESULT);
-    guess_result__output(result);
-    output("\n");
-    end_message();
 }
 
-bool is_secret_word_found() {
-    return secret_word_found;
+bool is_game_ended() {
+    return game_ended;
 }

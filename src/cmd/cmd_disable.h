@@ -3,6 +3,6 @@
 
 #include <stddef.h>
 
-void disable_command_from_tree(size_t token_count, const char* tokens[]);
+void disable_command(size_t token_count, const char* tokens[]);
 
 #endif

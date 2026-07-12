@@ -4,34 +4,33 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-// can't be used while the game is running
-bool cab_set_saves_folder_path(const char *path);
+// can't be used while the game is running; must be called before setup_game
+bool set_saves_folder_path(const char *path);
 
+// can't be used while the game is running; must be called before setup_game
+bool set_vocabolary_file_path(const char *path);
 
-// can't be used while the game is running
-bool cab_set_vocabulary_file_path(const char *path);
+void setup_game();
 
+void reset_game_vars();
 
-// starts a new game ignoring existing saves
-void cab_start_new_game();
+bool are_there_previous_saves();
 
-// starts a new game and tries to load saves
-void cab_load_game();
+char *handle_saves_load_choice(char *input_string);
 
+bool is_save_load_choice_complete();
 
-// returns an appropriate prompt to print before asking for player input
-char* cab_get_input_prompt();
+void start_new_game();
 
-// the core function of the game.
-// if you call this without using load_game or start_new_game,
-// if there are saves the user will be asked if they want to load them
-char *cab_play_turn(char *input_string);
+char *play_turn(char *input_string);
 
-// returns true if you find the secret word
-bool cab_is_game_ended();
+// temp solution for testing, don't use
+void play_turn_and_update_output_messages(char* input_string);
 
+bool is_game_ended();
 
-// must be called to avoid memory leaks when closing the game
-void cab_shutdown_game();
+void shutdown_game();
+
+size_t get_attempt_number();
 
 #endif

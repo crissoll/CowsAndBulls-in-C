@@ -1,10 +1,7 @@
-#include <stdlib.h>
-
-#include "cab_errors.h"
 #include "cab_help_filter.h"
 #include "cab_io_consts.h"
 #include "cab_output.h"
-#include "cab_used_vocabulary.h"
+#include "cab_used_vocabolary.h"
 
 
 WordSet help_word_set;
@@ -31,7 +28,8 @@ size_t get_current_help_filter_word_count() {
 void add_current_filter_to_history() {
     const size_t word_count = get_current_help_filter_word_count();
     if (help_filter_history_size > HELP_FILTER_HISTORY_MAX) {
-        exit_with_error_message("help_filter_history overflowed");
+        perror("help_filter_history overflowed");
+        exit(EXIT_FAILURE);
     }
 
     help_filter_history[help_filter_history_size].filter = help_filter;
@@ -39,11 +37,11 @@ void add_current_filter_to_history() {
     help_filter_history_size++;
 }
 
-WordSetFilter* get_current_help_filter() {
+WordSetFilter* get_current_help_filter(void) {
     return &help_filter;
 }
 
-size_t get_filter_history_size() {
+size_t get_filter_history_size(void) {
     return help_filter_history_size;
 }
 
@@ -51,12 +49,21 @@ void revert_filter_to_history_step(size_t index) {
     help_filter = help_filter_history[index].filter;
 }
 
-void reset_list_history() {
+static void help_list_history_clear(void) {
     help_filter_history_size = 0;
+    /* reset history count and help filter/state (avoid recursion) */
     filter__init(&help_filter);
 
-    const Vocabulary voc = get_used_vocabulary();
-    word_set__init_from_vocabulary(&help_word_set, &voc);
+    const Vocabolary voc = get_used_vocabolary();
+    word_set__init_from_vocabolary(&help_word_set, &voc);
+}
+
+void setup_help() {
+    help_list_history_clear();
+    filter__init(&help_filter);
+
+    const Vocabolary voc = get_used_vocabolary();
+    word_set__init_from_vocabolary(&help_word_set, &voc);
 }
 
 void print_current_filter() {
@@ -64,7 +71,7 @@ void print_current_filter() {
     WordSetFilter* help_filter = get_current_help_filter();
     const size_t word_count = get_current_help_filter_word_count();
     output("--- [%zu words] ---\n", word_count);
-    filter__output(help_filter);
+    filter__print(help_filter);
     end_message();
 }
 
@@ -81,7 +88,7 @@ void print_filter_history() {
 
         output("\n--- Step %zu: [%zu words] ---\n", hist_idx + 1,
                entry.word_count);
-        filter__output(&entry.filter);
+        filter__print(&entry.filter);
     }
     end_message();
 }
@@ -90,8 +97,8 @@ void print_filtered_word_list() {
     start_message(OT_LIST);
     IndexArray filtered = filter__get_words_from_word_set(
         &help_word_set, get_current_help_filter());
-    const Vocabulary voc = get_used_vocabulary();
-    index_array__output(filtered, &voc);
+    const Vocabolary voc = get_used_vocabolary();
+    index_array__print(filtered, &voc);
     index_array__free_content(&filtered);
     end_message();
 }

@@ -6,10 +6,10 @@
 
 #include "cab_api.h"
 #include "cab_io_api.h"
-#include "cab_session_api.h"
-
 #include "cab_io_consts.h"
 #include "cab_io_tag_names.h"
+
+#include "utils/truncated_print.h"
 
 
 #define MAX_DISPLAYED_MSG_LEN 128
@@ -34,29 +34,28 @@ static bool read_line(char* buffer, size_t buffer_size) {
 
     return true;
 }
-void turn_function(const char* input_buffer) {
 
-    cab_input(input_buffer);
-    cab_process_turn();
+void turn_with_tags(const char* input_buffer) {
+    play_turn_and_update_output_messages((char*)input_buffer);
 
     size_t message_count;
 
     size_t j = 1;
     for (OutputTags t = 1; t < OT_END; t *= 2) {
-        char** strings = cab_get_messages_with_tag(t, &message_count);
+        char** strings = get_messages_with_tag(t, &message_count);
         if (message_count > 0) {
-            printf("%s:\n", OUTPUT_TAG_NAMES[j]);
+            printf("%s:\n", OUTPUT_TAGS_NAMES[j]);
         }
         j++;
 
         if (message_count == 1) {
-            printf(strings[0], MAX_DISPLAYED_MSG_LEN);
+            print_truncated_string(strings[0], MAX_DISPLAYED_MSG_LEN);
             continue;
         }
 
         for (size_t i = 0; i < message_count; i++) {
             printf("[%zu]\n", i);
-            printf(strings[i], MAX_DISPLAYED_MSG_LEN);
+            print_truncated_string(strings[i], MAX_DISPLAYED_MSG_LEN);
 
             free(strings[i]);
         }
@@ -65,15 +64,22 @@ void turn_function(const char* input_buffer) {
 
 
 int main() {
-    while (!cab_is_game_ended()) {
+    setup_game();
+    start_new_game();
+
+    while (!is_game_ended()) {
         char buffer[100];
-        printf("%s", cab_get_input_prompt());
+        printf("Enter guess or command: ");
         if (!read_line(buffer, sizeof(buffer))) {
             break;
         }
 
-        turn_function(buffer);
+        turn_with_tags(buffer);
     }
-    cab_shutdown_game();
+    if (is_game_ended()) {
+        printf("Congratulations! You won in %zu attempts!",
+               get_attempt_number());
+    }
+    shutdown_game();
     return 0;
 }

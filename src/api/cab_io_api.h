@@ -7,17 +7,17 @@
 #include "cab_io_consts.h"
 
 
-// must be called at the end of execution to avoid memory leaks
-void cab_io_shutdown(); 
+void io__setup(void); // must be called before using io functions
+void io__shutdown(void); // must be called at the end of execution
 
-// clear the inner buffer and insert input_string into it.
-// if it's called twice without processing it (with session functions) the first input will be discarded
-InputStatus cab_input(const char *input_string);
 
-// returns a simple stream of all messages
-char *cab_get_output();
+InputStatus input(char *input_string);
 
-// returns all the messages with the specified tag
-char** cab_get_messages_with_tag(OutputTags tag, size_t* message_count);
+char *get_output(void);
+
+void update_output_messages();
+
+char** get_messages_with_tag(OutputTags tag, size_t* message_count);
+
 
 #endif

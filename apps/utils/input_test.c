@@ -96,11 +96,15 @@ void play_test_set(const char* file_name, TurnFunction turn_func) {
 
 
 void play_game_test(InputTest test, TurnFunction turn_function) {
-    cab_start_new_game();
+    setup_game();
+    start_new_game();
 
-    for (size_t i = 0; i < test.count && !cab_is_game_ended(); i++) {
+    for (size_t i = 0; i < test.count && !is_game_ended(); i++) {
         printf("\n====[INPUT %zu] \"%s\" ====\n", i, test.inputs[i]);
         turn_function(test.inputs[i]);
     }
-    cab_shutdown_game();
+    if (is_game_ended()) {
+        printf("Won in %zu attempts", get_attempt_number());
+    }
+    shutdown_game();
 }

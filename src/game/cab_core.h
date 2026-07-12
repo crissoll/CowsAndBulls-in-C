@@ -8,5 +8,5 @@
 
 void play_word(Word attempt);
 
-bool is_secret_word_found();
+bool is_game_ended();
 #endif

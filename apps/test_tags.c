@@ -4,11 +4,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "cab_api.h"
 #include "cab_io_api.h"
 #include "cab_io_consts.h"
 #include "cab_io_tag_names.h"
 
-#include "cab_session_api.h"
 #include "utils/input_test.h"
 #include "utils/truncated_print.h"
 
@@ -17,9 +17,7 @@
 
 
 void turn_function(const char* input_buffer) {
-
-    input(input_buffer);
-    process_turn();
+    play_turn_and_update_output_messages((char*)input_buffer);
 
     size_t message_count;
 
@@ -27,7 +25,7 @@ void turn_function(const char* input_buffer) {
     for (OutputTags t = 1; t < OT_END; t *= 2) {
         char** strings = get_messages_with_tag(t, &message_count);
         if (message_count > 0) {
-            printf("%s:\n", OUTPUT_TAG_NAMES[j]);
+            printf("%s:\n", OUTPUT_TAGS_NAMES[j]);
         }
         j++;
 

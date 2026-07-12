@@ -1,16 +1,16 @@
 #include <stdbool.h>
 #include <stddef.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 #include "cab_api.h"
 
 #include "utils/input_test.h"
-#include "utils/truncated_print.h"
 
 
 void turn_function(const char* input_string) {
-    char* output_string = cab_play_turn((char*)input_string);
-    print_truncated_string(output_string, 50);
+    char* output_string = play_turn((char*)input_string);
+    printf("%s", output_string);
     free(output_string);
 }
 

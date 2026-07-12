@@ -1,42 +1,155 @@
+
+#include <stdlib.h>
 #include <string.h>
+
+#include "cab_attempts_manager.h"
+#include "cab_core.h"
+#include "cab_help_filter.h"
+#include "cab_secret_word.h"
+#include "cab_used_vocabolary.h"
+
+#include "cab_input.h"
+#include "cab_output.h"
+
+#include "cab_load_store.h"
+#include "cab_paths.h"
+
+#include "cmd.h"
 
 #include "cab_api.h"
 #include "cab_io_api.h"
-#include "cab_paths.h"
-#include "cab_session_api.h"
+#include "cab_io_consts.h"
 
+static bool saves_handled = false;
 
-char* cab_play_turn(char* input_string) {
-    if (cab_input(input_string) != INPUT_SUCCESS) {
-        return cab_get_output();
+static bool loading_saves = false;
+
+void reset_game_vars() {
+    loading_saves = false;
+    reset_attempts();
+}
+
+bool prompt_to_load_game() {
+    if (!are_save_files_valid()) {
+        loading_saves = false;
+        return true;
     }
-    cab_process_turn();
 
-    return cab_get_output();
+    char buffer[100];
+    char** input_tokens = NULL;
+
+    size_t input_size =
+        get_tokens_from_input(buffer, sizeof(buffer), &input_tokens);
+
+    free(input_tokens);
+
+    if (input_size == 0 ||
+        (strcmp(buffer, "y") != 0 && strcmp(buffer, "n") != 0)) {
+        message(OT_INPUT_ERROR, "input must be y or n\n");
+        return false;
+    }
+
+    if (buffer[0] == 'y') {
+        loading_saves = true;
+    } else {
+        loading_saves = false;
+    }
+    return true;
 }
 
-
-void cab_shutdown_game() {
-    cab_io_shutdown();
-}
-
-
-char* cab_get_input_prompt() {
-    switch (cab_get_game_state()) {
-        case GS_NOT_STARTED:
-            return strdup("load previous game? (y/n)\n> ");
-        case GS_FIRST_TURN:
-        case GS_PLAYING:
-            return strdup("Enter guess or command: ");
+static void handle_first_turn() {
+    if (get_attempt_number() > 0) {
+        return;
+    }
+    if (!loading_saves) {
+        generate_secret_word();
+        return;
+    }
+    if (are_save_files_valid()) {
+        load_secret_word();
+        load_attempts();
+    } else {
+        message(OT_WARNING,
+                "no valid game saves found. generated new saves instead\n");
+        generate_secret_word();
     }
 }
 
+static void process_turn() {
+    handle_first_turn();
 
-bool cab_set_saves_folder_path(const char* path) {
-    return set_saves_folder_path(path);
+    char input_buffer[1024];
+    char** input_tokens = NULL;
+    const size_t token_count = get_tokens_from_input(
+        input_buffer, sizeof(input_buffer), &input_tokens);
+
+    if (token_count == 0) {
+        free(input_tokens);
+        return;
+    }
+
+    parse((const char**)input_tokens, token_count);
+
+    free(input_tokens);
+
+    store_data();
+
+    if (is_game_ended()) {
+        delete_save_files();
+    }
 }
 
+char* play_turn(char* input_string) {
+    if (input(input_string) != INPUT_SUCCESS) {
+        return get_output();
+    }
+    process_turn();
+    return get_output();
+}
 
-bool cab_set_vocabulary_file_path(const char* path) {
-    return set_vocabulary_file_path(path);
+void play_turn_and_update_output_messages(char* input_string) {
+    InputStatus is = input(input_string);
+    switch (is) {
+        case INPUT_SUCCESS:
+            process_turn();
+            break;
+        case INPUT_STRING_TOO_LONG:
+            break;
+    }
+
+    update_output_messages();
+}
+
+void setup_game() {
+    init_file_paths();
+    load_vocabolary();
+
+    saves_handled = false;
+    io__setup();
+    reset_game_vars();
+    setup_help();
+}
+
+bool are_there_previous_saves() {
+    return are_save_files_valid();
+}
+
+char* handle_saves_load_choice(char* input_string) {
+    if (input(input_string) == INPUT_SUCCESS) {
+        saves_handled = prompt_to_load_game();
+    }
+    return get_output();
+}
+
+bool is_save_load_choice_complete() {
+    return saves_handled;
+}
+
+void start_new_game() {
+    reset_game_vars();
+    saves_handled = true;
+}
+
+void shutdown_game() {
+    io__shutdown();
 }

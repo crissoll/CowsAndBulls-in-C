@@ -1,9 +1,6 @@
 #include "cab_attempts_manager.h"
-#include "cab_errors.h"
 #include "cab_io_consts.h"
 #include "cab_output.h"
-
-
 
 Attempt attempts[MAX_ATTEMPTS];
 size_t attempt_number = 0;
@@ -16,7 +13,7 @@ void reset_attempts() {
     attempt_number = 0;
 }
 
-void print_attempts() {
+void print_attempts(void) {
     if (attempt_number == 0) {
         message(OT_ATTEMPTS, "no attempts yet!\n");
         return;
@@ -34,14 +31,14 @@ void compare_attempts_to_word(Word word) {
     for (i = 0; i < attempt_number; i++) {
         GuessResult expected = compare_words(attempts[i].word, word);
 
-        attempt__output(attempts[i]);
+        attempt__print(attempts[i]);
         if (attempts[i].result.cows == expected.cows &&
             attempts[i].result.bulls == expected.bulls) {
             output("\tV\n");
         } else {
             output("\tX\t");
             output("expected: ");
-            guess_result__output(expected);
+            guess_result__print(expected);
             output("\n");
         }
     }
@@ -50,8 +47,8 @@ void compare_attempts_to_word(Word word) {
 
 void add_attempt(Word word, GuessResult result) {
     if (attempt_number >= MAX_ATTEMPTS) {
-        exit_with_error_message(
-            "add_attempts: reached maximum amount of attempts!");
+        perror("add_attempts: reached maximum amount of attempts!");
+        exit(EXIT_FAILURE);
     }
 
     attempts[attempt_number] = attempt__new(word, result);

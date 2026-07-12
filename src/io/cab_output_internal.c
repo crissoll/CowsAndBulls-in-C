@@ -1,20 +1,17 @@
 #include <malloc.h>
-#include <stdbool.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "cab_errors.h"
-#include "cab_io_consts.h"
-#include "cab_output_internal.h"
-
-#include "cab_output.h"
-
 #define INITIAL_OUTPUT_BUFFER_ALLOCATED_SIZE 128
 
-// extremely high, so its never checked. PLS don't go anywhere near it
-#define MAX_TEXTS_PER_SINGLE_OUTPUT 256
+#define MAX_TEXTS_PER_SINGLE_OUTPUT \
+    256  // extremely high, so its never checked. PLEASE don't go anywhere near it
+
+#include <stdbool.h>
+#include "cab_io_consts.h"
+#include "cab_output_internal.h"
 
 
 typedef struct {
@@ -24,61 +21,29 @@ typedef struct {
 } OutputBuffer;
 
 
-OutputBuffer default_buffer = (OutputBuffer){
-    .buffer = NULL,
-    .allocated_size = 0,
-    .current_size = 0,
-};
+OutputBuffer default_buffer;
 
-Messages tagged_output = (Messages){
-    .messages = NULL,
-    .size = 0,
-    .tags = NULL,
-};
-
-
-static bool buffer_initialized = false;
-static bool messages_initialized = false;
+Messages tagged_output;
 
 void reset_output_buffer(OutputBuffer* buffer) {
-    if (!buffer_initialized) {
-        return;
-    }
     buffer->buffer =
         realloc(buffer->buffer, sizeof(buffer->buffer[0]) *
                                     INITIAL_OUTPUT_BUFFER_ALLOCATED_SIZE);
     if (buffer->buffer == NULL) {
-        exit_with_error_message("realloc failed\n");
+        perror("realloc failed\n");
+        exit(EXIT_FAILURE);
     }
     buffer->allocated_size = INITIAL_OUTPUT_BUFFER_ALLOCATED_SIZE;
     buffer->current_size = 0;
     buffer->buffer[0] = '\0';
 }
 
+
 void init_output_buffer(OutputBuffer* buffer) {
-    if (buffer_initialized) {
-        return;
-    }
     buffer->buffer = NULL;
     reset_output_buffer(buffer);
-    buffer_initialized = true;
 }
 
-
-void init_messages(Messages* messages) {
-    if (messages_initialized) {
-        return;
-    }
-    *messages = (Messages){
-        .messages = malloc(MAX_TEXTS_PER_SINGLE_OUTPUT *
-                           sizeof(tagged_output.messages[0])),
-        .tags =
-            malloc(MAX_TEXTS_PER_SINGLE_OUTPUT * sizeof(tagged_output.tags[0])),
-        .size = 0,
-    };
-
-    messages_initialized = true;
-}
 
 void free_output_buffer(OutputBuffer* buffer) {
     free(buffer->buffer);
@@ -89,14 +54,10 @@ void free_output_buffer(OutputBuffer* buffer) {
 
 
 void print_to_buffer(OutputBuffer* buffer, const char* text) {
-    if (buffer == NULL) {
-        exit_with_error_message("tried printing to empty buffer\n");
+    if (buffer == NULL || buffer->buffer == NULL) {
+        perror("tried printing to empty buffer\n");
+        exit(EXIT_FAILURE);
     }
-
-    if (buffer->buffer == NULL) {
-        reset_output_buffer(buffer);
-    }
-
     const size_t text_len = strlen(text);
     const size_t prev_allocated_size = buffer->allocated_size;
 
@@ -108,7 +69,8 @@ void print_to_buffer(OutputBuffer* buffer, const char* text) {
         buffer->buffer = realloc(
             buffer->buffer, sizeof(buffer->buffer[0]) * buffer->allocated_size);
         if (buffer->buffer == NULL) {
-            exit_with_error_message("realloc failed\n");
+            perror("realloc failed\n");
+            exit(EXIT_FAILURE);
         }
     }
 
@@ -119,34 +81,39 @@ void print_to_buffer(OutputBuffer* buffer, const char* text) {
 }
 
 void print_to_default_buffer(const char* text) {
-    if (!buffer_initialized) {
-        init_output_buffer(&default_buffer);
-    }
     print_to_buffer(&default_buffer, text);
 }
 
-char* flush_output_buffer() {
-    if (!buffer_initialized) {
-        return strdup("");
-    }
-    char* result = strdup(default_buffer.buffer);
+char* get_output() {
+    char* result =
+        malloc(sizeof(result[0]) * (default_buffer.current_size + 1));
+
+    strcpy(result, default_buffer.buffer);
     reset_output_buffer(&default_buffer);
+
     return result;
+}
+
+void output__setup() {
+    init_output_buffer(&default_buffer);
+    tagged_output = (Messages){
+        .messages = malloc(MAX_TEXTS_PER_SINGLE_OUTPUT *
+                           sizeof(tagged_output.messages[0])),
+        .tags =
+            malloc(MAX_TEXTS_PER_SINGLE_OUTPUT * sizeof(tagged_output.tags[0])),
+        .size = 0,
+    };
 }
 
 void output__shutdown() {
     free_output_buffer(&default_buffer);
     free(tagged_output.messages);
     free(tagged_output.tags);
-    buffer_initialized = false;
-    messages_initialized = false;
 }
 
 
 Messages get_messages_tags() {
-    if (!messages_initialized) {
-        init_messages(&tagged_output);
-    }
+
     // ensures a trailing empty message for easier message traversal
     if (tagged_output.size == 0 ||
         tagged_output.tags[tagged_output.size - 1] != OT_NONE) {
@@ -171,9 +138,6 @@ Messages get_messages_tags() {
 
 
 void start_message(OutputTags tag) {
-    if (!messages_initialized) {
-        init_messages(&tagged_output);
-    }
 
     if (tagged_output.size > 0) {
 
@@ -185,8 +149,8 @@ void start_message(OutputTags tag) {
 
         } else if (last_msg == default_buffer.current_size) {
             // stops multiple tagging of same message
-            tagged_output.size--;
-            message(OT_WARNING, "last message was empty; it will be deleted\n");
+            perror("tried tagging message twice");
+            return;
         }
     }
 

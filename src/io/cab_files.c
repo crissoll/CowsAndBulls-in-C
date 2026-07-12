@@ -1,14 +1,15 @@
 
 #include "cab_files.h"
-#include "cab_errors.h"
 
 FILE* open_file_safe(const char* file_name, const char* mode) {
     if (file_name == NULL || mode == NULL) {
-        exit_with_error_message("Invalid file name or mode");
+        perror("Invalid file name or mode");
+        exit(EXIT_FAILURE);
     }
     FILE* f = fopen(file_name, mode);
     if (f == NULL) {
-        exit_with_error_message("Error while opening the file");
+        perror("Error while opening the file");
+        exit(EXIT_FAILURE);
     }
     return f;
 }

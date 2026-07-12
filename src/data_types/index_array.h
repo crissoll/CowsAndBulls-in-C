@@ -2,7 +2,7 @@
 
 #define INDEX_ARRAY
 
-#include "vocabulary.h"
+#include "vocabolary.h"
 
 typedef struct {
   size_t size;
@@ -19,7 +19,7 @@ void index_array__free_content(IndexArray *array);
 IndexArray index_array__copy(const IndexArray *src);
 
 // Display
-void index_array__output(IndexArray index_array, const Vocabulary *vocabulary);
+void index_array__print(IndexArray index_array, const Vocabolary *vocabolary);
 
 // Operators
 

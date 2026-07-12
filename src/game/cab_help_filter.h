@@ -3,15 +3,15 @@
 
 #include "word_set_filter.h"
 
-WordSetFilter *get_current_help_filter();
+WordSetFilter *get_current_help_filter(void);
 
 size_t get_current_help_filter_word_count();
 
-size_t get_filter_history_size();
+size_t get_filter_history_size(void);
 
 void add_current_filter_to_history();
 
-void reset_list_history();
+void setup_help();
 
 void revert_filter_to_history_step(size_t index);
 

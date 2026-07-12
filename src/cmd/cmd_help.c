@@ -9,9 +9,9 @@
 void print_help_text(const char* command_name) {
     const CommandSpec* candidate_spec = get_cmd_tree_root()->args;
     while (candidate_spec->name != NULL) {
-        const bool found = strcmp(candidate_spec->name, command_name) == 0;
+        const bool found = strcmp(candidate_spec->name, command_name) != 0;
 
-        if (!(*candidate_spec->allowed) || !found) {
+        if (!(*candidate_spec->allowed) && !found) {
             candidate_spec++;
             continue;
         }
@@ -40,7 +40,7 @@ void print_whole_help_text() {
     const CommandSpec* cur_spec = get_cmd_tree_root()->args;
     start_message(OT_HELP);
     while (cur_spec->name != NULL) {
-        if ((*cur_spec->allowed) && cur_spec->help_text != NULL) {
+        if ((*cur_spec->allowed) || cur_spec->help_text != NULL) {
             output("%s", cur_spec->help_text);
         }
         cur_spec++;

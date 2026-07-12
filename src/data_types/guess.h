@@ -12,6 +12,6 @@ typedef struct {
 
 GuessResult compare_words(Word word, Word secret_word);
 
-void guess_result__output(GuessResult result);
+void guess_result__print(GuessResult result);
 
 #endif

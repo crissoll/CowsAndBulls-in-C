@@ -3,11 +3,8 @@
 #include <stdlib.h>
 #include <vadefs.h>
 
-#include "cab_errors.h"
-#include "cab_io_consts.h"
 #include "cab_output.h"
 #include "cab_output_internal.h"
-
 
 
 int get_formatted_text_len(const char* format_string, va_list args) {
@@ -31,41 +28,33 @@ static void va_output(const char* format_string, va_list args) {
     formatted_text = malloc(formatted_text_len + 1);
 
     if (formatted_text == NULL) {
-        exit_with_error_message("malloc failed");
+        perror("malloc failed");
+        exit(EXIT_FAILURE);
     }
     vsnprintf(formatted_text, formatted_text_len + 1, format_string, args);
     print_to_default_buffer(formatted_text);
     free(formatted_text);
 }
 
-static void va_message(OutputTags tags, const char* format_string,
-                       va_list args) {
-    start_message(tags);
-    va_output(format_string, args);
-    end_message();
-}
-
 
 void output(const char* format_string, ...) {
-    va_list args;
-    va_start(args, format_string);
-
     if (!is_message_started()) {
-        message(OT_WARNING,
-                "output() called without starting a message; it will be "
-                "printed as a OT_NONE message\n");
-        va_message(OT_NONE, format_string, args);
+        printf("tried using output without first starting message\n");
+        exit(EXIT_FAILURE);
     }
 
+    va_list args;
+    va_start(args, format_string);
     va_output(format_string, args);
     va_end(args);
 }
 
 
 void message(OutputTags tags, const char* format_string, ...) {
+    start_message(tags);
     va_list args;
     va_start(args, format_string);
-
-    va_message(tags, format_string, args);
+    va_output(format_string, args);
     va_end(args);
+    end_message();
 }

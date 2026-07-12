@@ -50,7 +50,3 @@
   "  The word must contain valid letters, exist in vocabulary,\n"              \
   "  and must not have been attempted already.\n"                              \
   "  Usage: crane\n"
-
-#define HELP_CMD_SURRENDER \
-  "surrender\n"\
-  "  Ends the game and outputs the secret word\n"
