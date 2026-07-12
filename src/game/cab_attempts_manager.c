@@ -31,14 +31,14 @@ void compare_attempts_to_word(Word word) {
     for (i = 0; i < attempt_number; i++) {
         GuessResult expected = compare_words(attempts[i].word, word);
 
-        attempt__print(attempts[i]);
+        attempt__output(attempts[i]);
         if (attempts[i].result.cows == expected.cows &&
             attempts[i].result.bulls == expected.bulls) {
             output("\tV\n");
         } else {
             output("\tX\t");
             output("expected: ");
-            guess_result__print(expected);
+            guess_result__output(expected);
             output("\n");
         }
     }

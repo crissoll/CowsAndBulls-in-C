@@ -38,7 +38,7 @@ bool can_string_be_word(const char* string) {
     return true;
 }
 
-void word__print(Word word) {
+void word__output(Word word) {
     output("%s", word.letters);
 }
 

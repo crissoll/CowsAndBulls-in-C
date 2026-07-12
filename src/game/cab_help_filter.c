@@ -62,7 +62,7 @@ void print_current_filter() {
     WordSetFilter* help_filter = get_current_help_filter();
     const size_t word_count = get_current_help_filter_word_count();
     output("--- [%zu words] ---\n", word_count);
-    filter__print(help_filter);
+    filter__output(help_filter);
     end_message();
 }
 
@@ -79,7 +79,7 @@ void print_filter_history() {
 
         output("\n--- Step %zu: [%zu words] ---\n", hist_idx + 1,
                entry.word_count);
-        filter__print(&entry.filter);
+        filter__output(&entry.filter);
     }
     end_message();
 }
@@ -89,7 +89,7 @@ void print_filtered_word_list() {
     IndexArray filtered = filter__get_words_from_word_set(
         &help_word_set, get_current_help_filter());
     const Vocabulary voc = get_used_vocabulary();
-    index_array__print(filtered, &voc);
+    index_array__output(filtered, &voc);
     index_array__free_content(&filtered);
     end_message();
 }

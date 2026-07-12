@@ -132,7 +132,7 @@ IndexArray filter__get_words_from_word_set(const WordSet* word_set,
     return result;
 }
 
-void filter__print(const WordSetFilter* filter) {
+void filter__output(const WordSetFilter* filter) {
     bool fixed_letters[LETTERS_IN_WORD];
     size_t fixed_letter_index[LETTERS_IN_WORD];
     for (size_t i = 0; i < LETTERS_IN_WORD; i++) {

@@ -15,19 +15,13 @@ Attempt attempt__new(Word word, GuessResult result) {
     return attempt;
 }
 
-void _attempt__print(Attempt attempt) {
+void attempt__output(Attempt attempt) {
 
-    word__print(attempt.word);
+    word__output(attempt.word);
     output("\t");
-    guess_result__print(attempt.result);
+    guess_result__output(attempt.result);
 }
 
-
-void attempt__print(Attempt attempt) {
-    start_message(OT_ATTEMPTS);
-    _attempt__print(attempt);
-    end_message();
-}
 
 IndexArray get_possible_words_from_attempt(Attempt attempt,
                                            const Vocabulary* vocabulary) {
@@ -52,7 +46,7 @@ IndexArray get_possible_words_from_attempt(Attempt attempt,
 void print_attempt_array(const Attempt* attempts, size_t attempt_number) {
     start_message(OT_ATTEMPTS);
     for (size_t i = 0; i < attempt_number; i++) {
-        _attempt__print(attempts[i]);
+        attempt__output(attempts[i]);
         output("\n");
     }
     end_message();

@@ -17,7 +17,7 @@ Word word__new(const char letters[LETTERS_IN_WORD + 1]);
 
 bool can_string_be_word(const char *string);
 
-void word__print(Word word);
+void word__output(Word word);
 
 int word__sort_cmp(Word a, Word b);
 
