@@ -9,6 +9,8 @@
 #include "cab_io_api.h"
 #include "cab_io_consts.h"
 
+#include "cab_errors.h"
+
 #include "cab_input_internal.h"
 #include "cab_output_internal.h"
 

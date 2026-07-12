@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <time.h>
 
+#include "cab_errors.h"
 #include "vocabulary.h"
 
 
@@ -27,8 +28,8 @@ void init_used_vocabulary(Word* words, size_t word_count) {
 
 Word get_word(size_t index) {
     if (index >= vocab_storage.size) {
-        perror("index out of bounds");
-        exit(EXIT_FAILURE);
+        exit_with_error_message(
+            "get_word: tried getting word with index out of bounds");
     }
     return vocab_storage.words[index];
 }

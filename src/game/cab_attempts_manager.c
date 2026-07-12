@@ -1,6 +1,9 @@
 #include "cab_attempts_manager.h"
+#include "cab_errors.h"
 #include "cab_io_consts.h"
 #include "cab_output.h"
+
+
 
 Attempt attempts[MAX_ATTEMPTS];
 size_t attempt_number = 0;
@@ -47,8 +50,8 @@ void compare_attempts_to_word(Word word) {
 
 void add_attempt(Word word, GuessResult result) {
     if (attempt_number >= MAX_ATTEMPTS) {
-        perror("add_attempts: reached maximum amount of attempts!");
-        exit(EXIT_FAILURE);
+        exit_with_error_message(
+            "add_attempts: reached maximum amount of attempts!");
     }
 
     attempts[attempt_number] = attempt__new(word, result);

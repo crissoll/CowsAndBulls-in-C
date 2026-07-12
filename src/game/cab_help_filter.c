@@ -1,5 +1,6 @@
 #include <stdlib.h>
 
+#include "cab_errors.h"
 #include "cab_help_filter.h"
 #include "cab_io_consts.h"
 #include "cab_output.h"
@@ -30,8 +31,7 @@ size_t get_current_help_filter_word_count() {
 void add_current_filter_to_history() {
     const size_t word_count = get_current_help_filter_word_count();
     if (help_filter_history_size > HELP_FILTER_HISTORY_MAX) {
-        perror("help_filter_history overflowed");
-        exit(EXIT_FAILURE);
+        exit_with_error_message("help_filter_history overflowed");
     }
 
     help_filter_history[help_filter_history_size].filter = help_filter;

@@ -1,17 +1,19 @@
 #include <malloc.h>
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#define INITIAL_OUTPUT_BUFFER_ALLOCATED_SIZE 128
-
-#define MAX_TEXTS_PER_SINGLE_OUTPUT \
-    256  // extremely high, so its never checked. PLS don't go anywhere near it
-
-#include <stdbool.h>
+#include "cab_errors.h"
 #include "cab_io_consts.h"
 #include "cab_output_internal.h"
+
+
+#define INITIAL_OUTPUT_BUFFER_ALLOCATED_SIZE 128
+
+// extremely high, so its never checked. PLS don't go anywhere near it
+#define MAX_TEXTS_PER_SINGLE_OUTPUT 256
 
 
 typedef struct {
@@ -45,8 +47,7 @@ void reset_output_buffer(OutputBuffer* buffer) {
         realloc(buffer->buffer, sizeof(buffer->buffer[0]) *
                                     INITIAL_OUTPUT_BUFFER_ALLOCATED_SIZE);
     if (buffer->buffer == NULL) {
-        perror("realloc failed\n");
-        exit(EXIT_FAILURE);
+        exit_with_error_message("realloc failed\n");
     }
     buffer->allocated_size = INITIAL_OUTPUT_BUFFER_ALLOCATED_SIZE;
     buffer->current_size = 0;
@@ -88,8 +89,7 @@ void free_output_buffer(OutputBuffer* buffer) {
 
 void print_to_buffer(OutputBuffer* buffer, const char* text) {
     if (buffer == NULL) {
-        perror("tried printing to empty buffer\n");
-        exit(EXIT_FAILURE);
+        exit_with_error_message("tried printing to empty buffer\n");
     }
 
     if (buffer->buffer == NULL) {
@@ -107,8 +107,7 @@ void print_to_buffer(OutputBuffer* buffer, const char* text) {
         buffer->buffer = realloc(
             buffer->buffer, sizeof(buffer->buffer[0]) * buffer->allocated_size);
         if (buffer->buffer == NULL) {
-            perror("realloc failed\n");
-            exit(EXIT_FAILURE);
+            exit_with_error_message("realloc failed\n");
         }
     }
 
@@ -185,7 +184,7 @@ void start_message(OutputTags tag) {
 
         } else if (last_msg == default_buffer.current_size) {
             // stops multiple tagging of same message
-            perror("tried tagging message twice");
+            extra_io_warning("tried tagging message twice");
             return;
         }
     }

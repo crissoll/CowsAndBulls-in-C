@@ -6,6 +6,8 @@
 #include "vocabulary.h"
 #include "word.h"
 
+#include "cab_errors.h"
+
 typedef struct {
     IndexArray words[LETTERS_IN_WORD][ALPHABET_SIZE];
 } WordSet;
@@ -35,8 +37,7 @@ void word_set__init_from_vocabulary(WordSet* word_set,
         for (size_t p = 0; p < LETTERS_IN_WORD; p++) {
             size_t letter_idx = (size_t)((unsigned char)word.letters[p] - 'a');
             if (matrix[letter_idx][p] == 0) {
-                perror("index array too short");
-                exit(EXIT_FAILURE);
+                exit_with_error_message("index array too short");
             }
             IndexArray* arr = &word_set->words[p][letter_idx];
             size_t index = (arr->size - matrix[letter_idx][p]);
