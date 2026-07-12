@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 
-void load_vocabolary();
+void load_vocabulary();
 
 bool are_save_files_valid();
 

@@ -176,11 +176,11 @@ void generate_secret_word() {
 }
 
 
-void load_vocabolary() {
-    size_t word_count = get_line_count(get_vocabolary_file_path());
+void load_vocabulary() {
+    size_t word_count = get_line_count(get_vocabulary_file_path());
 
     Word* words = malloc(sizeof(words[0]) * word_count);
-    FILE* file = open_file_safe(get_vocabolary_file_path(), "r");
+    FILE* file = open_file_safe(get_vocabulary_file_path(), "r");
     char buffer[100];
     size_t i = 0;
     while (fscanf(file, "%99s", buffer) == 1) {
@@ -193,7 +193,7 @@ void load_vocabolary() {
         i++;
     }
 
-    init_used_vocabolary(words, word_count);
+    init_used_vocabulary(words, word_count);
 }
 
 
