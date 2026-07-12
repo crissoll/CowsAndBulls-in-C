@@ -24,12 +24,6 @@ static bool session_setup = false;
 
 static GameState game_state = GS_NOT_STARTED;
 
-GameState cab_get_game_state() {
-    if (!are_save_files_valid()) {
-        game_state = GS_PLAYING;
-    }
-    return game_state;
-}
 
 void setup_vars();
 
@@ -37,9 +31,19 @@ void setup_session() {
     if (session_setup) {
         return;
     }
-    load_vocabolary();
+    load_vocabulary();
     session_setup = true;
     setup_vars();
+}
+
+GameState cab_get_game_state() {
+    if (!are_save_files_valid()) {
+        if (!session_setup) {
+            setup_session();
+        }
+        game_state = GS_FIRST_TURN;
+    }
+    return game_state;
 }
 
 void setup_vars() {
