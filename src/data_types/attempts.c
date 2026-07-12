@@ -66,7 +66,7 @@ bool is_word_in_attempt_array(Word word, const Attempt* attempts,
 void store_attempt_array(const Attempt* attempts, size_t attempt_number,
                          const char* file_name, unsigned long session_id) {
     if (file_name == NULL) {
-        perror("store_attempt_array: file_name is NULL");
+        message(OT_WARNING, "store_attempt_array: file_name is NULL");
         return;
     }
 
@@ -87,7 +87,7 @@ void store_attempt_array(const Attempt* attempts, size_t attempt_number,
 bool load_attempt_array(Attempt* attempts, size_t* attempt_number,
                         const char* file_name, unsigned long* session_id) {
     if (file_name == NULL || attempt_number == NULL || session_id == NULL) {
-        perror("load_attempt_array: invalid arguments");
+        message(OT_WARNING, "load_attempt_array: invalid arguments");
     }
 
     *attempt_number = 0;

@@ -161,11 +161,11 @@ bool are_save_files_valid() {
 
 void delete_save_files() {
     if (remove(get_secret_file_path()) != 0) {
-        perror("error while removing secret_word.txt");
+        message(OT_WARNING, "error while removing secret_word.txt");
     }
 
     if (remove(get_attempts_file_path()) != 0) {
-        perror("error while removing attempts.txt");
+        message(OT_WARNING, "error while removing attempts.txt");
     }
 }
 
