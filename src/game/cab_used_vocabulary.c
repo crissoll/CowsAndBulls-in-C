@@ -3,16 +3,16 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include "vocabolary.h"
+#include "vocabulary.h"
 
 
-static Vocabolary vocab_storage;
+static Vocabulary vocab_storage;
 
 size_t get_used_vocabolary_size() {
     return vocab_storage.size;
 }
 
-Vocabolary get_used_vocabolary() {
+Vocabulary get_used_vocabolary() {
     return vocab_storage;
 }
 

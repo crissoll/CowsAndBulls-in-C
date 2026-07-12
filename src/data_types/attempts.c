@@ -8,7 +8,7 @@
 #include "cab_files.h"
 #include "guess.h"
 #include "index_array.h"
-#include "vocabolary.h"
+#include "vocabulary.h"
 
 Attempt attempt__new(Word word, GuessResult result) {
     Attempt attempt = {.word = word, .result = result};
@@ -30,15 +30,15 @@ void attempt__print(Attempt attempt) {
 }
 
 IndexArray get_possible_words_from_attempt(Attempt attempt,
-                                           const Vocabolary* vocabolary) {
+                                           const Vocabulary* vocabulary) {
     IndexArray result;
 
     /* allocate the maximum possible size; we'll trim by updating result.size */
-    index_array__init(&result, vocabolary->size);
+    index_array__init(&result, vocabulary->size);
 
     size_t count = 0;
-    for (size_t i = 0; i < vocabolary->size; i++) {
-        Word candidate = vocabolary->words[i];
+    for (size_t i = 0; i < vocabulary->size; i++) {
+        Word candidate = vocabulary->words[i];
         GuessResult r = compare_words(attempt.word, candidate);
         if (r.bulls == attempt.result.bulls && r.cows == attempt.result.cows) {
             result.indexes[count++] = i;

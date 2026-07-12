@@ -3,11 +3,11 @@
 
 #include <stdbool.h>
 
-#include "vocabolary.h"
+#include "vocabulary.h"
 #include "word.h"
 
 
-Vocabolary get_used_vocabolary();
+Vocabulary get_used_vocabolary();
 
 size_t get_used_vocabolary_size();
 

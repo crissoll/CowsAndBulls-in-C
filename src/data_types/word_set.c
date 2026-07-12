@@ -3,7 +3,7 @@
 
 
 #include "index_array.h"
-#include "vocabolary.h"
+#include "vocabulary.h"
 #include "word.h"
 
 typedef struct {
@@ -17,10 +17,10 @@ IndexArray word_set__get_words_with_letter_at_pos(char letter,
 }
 
 void word_set__init_from_vocabolary(WordSet* word_set,
-                                    const Vocabolary* vocabolary) {
+                                    const Vocabulary* vocabulary) {
     size_t matrix[ALPHABET_SIZE][LETTERS_IN_WORD];
 
-    vocabolary__get_words_frequencies(vocabolary, matrix);
+    vocabolary__get_words_frequencies(vocabulary, matrix);
 
     for (size_t i = 0; i < LETTERS_IN_WORD; i++) {
         for (size_t j = 0; j < ALPHABET_SIZE; j++) {
@@ -30,8 +30,8 @@ void word_set__init_from_vocabolary(WordSet* word_set,
         }
     }
 
-    for (size_t i = 0; i < vocabolary->size; i++) {
-        Word word = vocabolary->words[i];
+    for (size_t i = 0; i < vocabulary->size; i++) {
+        Word word = vocabulary->words[i];
         for (size_t p = 0; p < LETTERS_IN_WORD; p++) {
             size_t letter_idx = (size_t)((unsigned char)word.letters[p] - 'a');
             if (matrix[letter_idx][p] == 0) {

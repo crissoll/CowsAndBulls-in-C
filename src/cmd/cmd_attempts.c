@@ -21,7 +21,7 @@ bool compare_attempts_to_first_token(size_t token_count, const char* tokens[]) {
 
     Word candidate_word = word__new(tokens[0]);
     if (!word_is_in_used_vocabolary(candidate_word)) {
-        message(OT_ALERT, "word not contained in vocabolary\n");
+        message(OT_ALERT, "word not contained in vocabulary\n");
         return false;
     }
     compare_attempts_to_word(candidate_word);

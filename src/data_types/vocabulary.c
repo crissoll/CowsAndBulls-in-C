@@ -4,29 +4,29 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "vocabolary.h"
+#include "vocabulary.h"
 
 static int qsort_word_cmp(const void* a, const void* b) {
     return word__sort_cmp(*(const Word*)a, *(const Word*)b);
 }
 
-void vocabolary__init(Vocabolary* vocabolary, const Word* words,
+void vocabolary__init(Vocabulary* vocabulary, const Word* words,
                       size_t word_count) {
     if (words == NULL) {
-        *vocabolary = (Vocabolary){
+        *vocabulary = (Vocabulary){
             .words = NULL,
             .size = 0,
         };
     }
-    vocabolary->words = malloc(word_count * sizeof(Word));
-    memcpy(vocabolary->words, words, word_count * sizeof(Word));
-    vocabolary->size = word_count;
-    qsort(vocabolary->words, vocabolary->size, sizeof(Word), qsort_word_cmp);
+    vocabulary->words = malloc(word_count * sizeof(Word));
+    memcpy(vocabulary->words, words, word_count * sizeof(Word));
+    vocabulary->size = word_count;
+    qsort(vocabulary->words, vocabulary->size, sizeof(Word), qsort_word_cmp);
 }
 
 
 void vocabolary__get_words_frequencies(
-    const Vocabolary* vocabolary,
+    const Vocabulary* vocabulary,
     size_t matrix[ALPHABET_SIZE][LETTERS_IN_WORD]) {
     for (size_t letter_idx = 0; letter_idx < ALPHABET_SIZE; letter_idx++) {
         for (size_t pos = 0; pos < LETTERS_IN_WORD; pos++) {
@@ -34,8 +34,8 @@ void vocabolary__get_words_frequencies(
         }
     }
 
-    for (size_t word_idx = 0; word_idx < vocabolary->size; word_idx++) {
-        const Word word = vocabolary->words[word_idx];
+    for (size_t word_idx = 0; word_idx < vocabulary->size; word_idx++) {
+        const Word word = vocabulary->words[word_idx];
         for (size_t pos = 0; pos < LETTERS_IN_WORD; pos++) {
             const unsigned char c = (unsigned char)word.letters[pos];
             if (c >= 'a' && c <= 'z') {
@@ -45,15 +45,15 @@ void vocabolary__get_words_frequencies(
     }
 }
 
-bool vocabolary__contains_word(const Vocabolary* vocabolary, Word word) {
-    if (vocabolary->size == 0) {
+bool vocabolary__contains_word(const Vocabulary* vocabulary, Word word) {
+    if (vocabulary->size == 0) {
         return false;
     }
 
-    size_t l = 0, r = vocabolary->size - 1;
+    size_t l = 0, r = vocabulary->size - 1;
     while (l <= r) {
         size_t m = l + (r - l) / 2;
-        int cmp = word__sort_cmp(vocabolary->words[m], word);
+        int cmp = word__sort_cmp(vocabulary->words[m], word);
         if (cmp == 0) {
             return true;
         }

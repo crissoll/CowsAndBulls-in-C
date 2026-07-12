@@ -190,7 +190,7 @@ void init_vocabolary_file_path() {
     if (vocabolary_file_path == NULL) {
         if (!set_path_string(&vocabolary_file_path, DEFAULT_VOCAB_PATH)) {
             message(OT_WARNING,
-                    "couldn't load default vocabolary. game can't start\n");
+                    "couldn't load default vocabulary. game can't start\n");
             exit(EXIT_FAILURE);
         }
     }
@@ -203,7 +203,7 @@ void init_vocabolary_file_path() {
 
     message(
         OT_WARNING,
-        "couldn't load vocabolary from defined file path. now trying default "
+        "couldn't load vocabulary from defined file path. now trying default "
         "path...\n");
     if (!set_path_string(&vocabolary_file_path, DEFAULT_VOCAB_PATH)) {
         exit(EXIT_FAILURE);
@@ -212,7 +212,7 @@ void init_vocabolary_file_path() {
     vocab_file = open_file_safe(vocabolary_file_path, "r");
     if (vocab_file == NULL) {
         message(OT_WARNING,
-                "couldn't load default vocabolary. game can't start\n");
+                "couldn't load default vocabulary. game can't start\n");
         exit(EXIT_FAILURE);
     }
     fclose(vocab_file);
