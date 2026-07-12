@@ -37,6 +37,6 @@ bool cab_set_saves_folder_path(const char* path) {
 }
 
 
-bool cab_set_vocabolary_file_path(const char* path) {
-    return set_vocabolary_file_path(path);
+bool cab_set_vocabulary_file_path(const char* path) {
+    return set_vocabulary_file_path(path);
 }

@@ -8,7 +8,7 @@ typedef struct {
   IndexArray words[LETTERS_IN_WORD][ALPHABET_SIZE];
 } WordSet;
 
-void word_set__init_from_vocabolary(WordSet *word_set,
+void word_set__init_from_vocabulary(WordSet *word_set,
                                     const Vocabulary *vocabulary);
 
                                     

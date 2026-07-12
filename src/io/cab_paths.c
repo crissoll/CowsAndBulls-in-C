@@ -41,7 +41,7 @@
 char* saves_folder_path = NULL;
 char* secret_file_path = NULL;
 char* attempts_file_path = NULL;
-char* vocabolary_file_path = NULL;
+char* vocabulary_file_path = NULL;
 
 static bool file_paths_editing_enabled = true;
 
@@ -186,16 +186,16 @@ void init_save_file_paths() {
     strcat(attempts_file_path, ATTEMPTS_FILE_NAME);
 }
 
-void init_vocabolary_file_path() {
-    if (vocabolary_file_path == NULL) {
-        if (!set_path_string(&vocabolary_file_path, DEFAULT_VOCAB_PATH)) {
+void init_vocabulary_file_path() {
+    if (vocabulary_file_path == NULL) {
+        if (!set_path_string(&vocabulary_file_path, DEFAULT_VOCAB_PATH)) {
             message(OT_WARNING,
                     "couldn't load default vocabulary. game can't start\n");
             exit(EXIT_FAILURE);
         }
     }
 
-    FILE* vocab_file = open_file_safe(vocabolary_file_path, "r");
+    FILE* vocab_file = open_file_safe(vocabulary_file_path, "r");
     if (vocab_file != NULL) {
         fclose(vocab_file);
         return;
@@ -205,11 +205,11 @@ void init_vocabolary_file_path() {
         OT_WARNING,
         "couldn't load vocabulary from defined file path. now trying default "
         "path...\n");
-    if (!set_path_string(&vocabolary_file_path, DEFAULT_VOCAB_PATH)) {
+    if (!set_path_string(&vocabulary_file_path, DEFAULT_VOCAB_PATH)) {
         exit(EXIT_FAILURE);
     }
 
-    vocab_file = open_file_safe(vocabolary_file_path, "r");
+    vocab_file = open_file_safe(vocabulary_file_path, "r");
     if (vocab_file == NULL) {
         message(OT_WARNING,
                 "couldn't load default vocabulary. game can't start\n");
@@ -220,7 +220,7 @@ void init_vocabolary_file_path() {
 
 void init_file_paths() {
     init_save_file_paths();
-    init_vocabolary_file_path();
+    init_vocabulary_file_path();
     file_paths_initialized = true;
     set_file_paths_editing(false);
 }
@@ -250,18 +250,18 @@ bool set_saves_folder_path(const char* path) {
     return true;
 }
 
-bool set_vocabolary_file_path(const char* path) {
+bool set_vocabulary_file_path(const char* path) {
     if (file_paths_editing_enabled == false) {
         message(OT_WARNING,
                 "cannot change file paths after the game is started\n");
         return false;
     }
 
-    if (!set_path_string(&vocabolary_file_path, path)) {
+    if (!set_path_string(&vocabulary_file_path, path)) {
         return false;
     }
 
-    init_vocabolary_file_path();
+    init_vocabulary_file_path();
     return true;
 }
 
@@ -280,9 +280,9 @@ const char* get_attempts_file_path() {
     return attempts_file_path;
 }
 
-const char* get_vocabolary_file_path() {
+const char* get_vocabulary_file_path() {
     if (!file_paths_initialized) {
         init_file_paths();
     }
-    return vocabolary_file_path;
+    return vocabulary_file_path;
 }

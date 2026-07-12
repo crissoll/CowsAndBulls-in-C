@@ -53,8 +53,8 @@ void reset_list_history() {
     help_filter_history_size = 0;
     filter__init(&help_filter);
 
-    const Vocabulary voc = get_used_vocabolary();
-    word_set__init_from_vocabolary(&help_word_set, &voc);
+    const Vocabulary voc = get_used_vocabulary();
+    word_set__init_from_vocabulary(&help_word_set, &voc);
 }
 
 void print_current_filter() {
@@ -88,7 +88,7 @@ void print_filtered_word_list() {
     start_message(OT_LIST);
     IndexArray filtered = filter__get_words_from_word_set(
         &help_word_set, get_current_help_filter());
-    const Vocabulary voc = get_used_vocabolary();
+    const Vocabulary voc = get_used_vocabulary();
     index_array__print(filtered, &voc);
     index_array__free_content(&filtered);
     end_message();

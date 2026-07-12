@@ -8,20 +8,20 @@
 
 static Vocabulary vocab_storage;
 
-size_t get_used_vocabolary_size() {
+size_t get_used_vocabulary_size() {
     return vocab_storage.size;
 }
 
-Vocabulary get_used_vocabolary() {
+Vocabulary get_used_vocabulary() {
     return vocab_storage;
 }
 
-bool word_is_in_used_vocabolary(Word word) {
-    return vocabolary__contains_word(&vocab_storage, word);
+bool word_is_in_used_vocabulary(Word word) {
+    return vocabulary__contains_word(&vocab_storage, word);
 }
 
-void init_used_vocabolary(Word* words, size_t word_count) {
-    vocabolary__init(&vocab_storage, words, word_count);
+void init_used_vocabulary(Word* words, size_t word_count) {
+    vocabulary__init(&vocab_storage, words, word_count);
 }
 
 

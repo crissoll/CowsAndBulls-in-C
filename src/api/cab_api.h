@@ -9,7 +9,7 @@ bool cab_set_saves_folder_path(const char *path);
 
 
 // can't be used while the game is running
-bool cab_set_vocabolary_file_path(const char *path);
+bool cab_set_vocabulary_file_path(const char *path);
 
 
 // starts a new game ignoring existing saves

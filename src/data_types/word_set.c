@@ -16,11 +16,11 @@ IndexArray word_set__get_words_with_letter_at_pos(char letter,
     return words.words[position_in_word][(size_t)(letter - 'a')];
 }
 
-void word_set__init_from_vocabolary(WordSet* word_set,
+void word_set__init_from_vocabulary(WordSet* word_set,
                                     const Vocabulary* vocabulary) {
     size_t matrix[ALPHABET_SIZE][LETTERS_IN_WORD];
 
-    vocabolary__get_words_frequencies(vocabulary, matrix);
+    vocabulary__get_words_frequencies(vocabulary, matrix);
 
     for (size_t i = 0; i < LETTERS_IN_WORD; i++) {
         for (size_t j = 0; j < ALPHABET_SIZE; j++) {

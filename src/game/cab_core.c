@@ -13,7 +13,7 @@
 static bool game_ended = false;
 
 void play_word(Word word) {
-    if (!word_is_in_used_vocabolary(word)) {
+    if (!word_is_in_used_vocabulary(word)) {
         message(OT_ALERT, "word not contained in vocabulary\n");
         return;
     }

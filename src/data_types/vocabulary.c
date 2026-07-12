@@ -10,7 +10,7 @@ static int qsort_word_cmp(const void* a, const void* b) {
     return word__sort_cmp(*(const Word*)a, *(const Word*)b);
 }
 
-void vocabolary__init(Vocabulary* vocabulary, const Word* words,
+void vocabulary__init(Vocabulary* vocabulary, const Word* words,
                       size_t word_count) {
     if (words == NULL) {
         *vocabulary = (Vocabulary){
@@ -25,7 +25,7 @@ void vocabolary__init(Vocabulary* vocabulary, const Word* words,
 }
 
 
-void vocabolary__get_words_frequencies(
+void vocabulary__get_words_frequencies(
     const Vocabulary* vocabulary,
     size_t matrix[ALPHABET_SIZE][LETTERS_IN_WORD]) {
     for (size_t letter_idx = 0; letter_idx < ALPHABET_SIZE; letter_idx++) {
@@ -45,7 +45,7 @@ void vocabolary__get_words_frequencies(
     }
 }
 
-bool vocabolary__contains_word(const Vocabulary* vocabulary, Word word) {
+bool vocabulary__contains_word(const Vocabulary* vocabulary, Word word) {
     if (vocabulary->size == 0) {
         return false;
     }
