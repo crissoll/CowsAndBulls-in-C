@@ -10,19 +10,19 @@ typedef enum {
     GS_PLAYING,
 } GameState;
 
-GameState get_game_state();
+GameState cab_get_game_state();
 
 
-void start_new_game();
+void cab_start_new_game();
 
-void load_game();
-
-
-void process_turn();
-
-bool is_game_ended();
+void cab_load_game();
 
 
-size_t get_attempt_number();
+void cab_process_turn();
+
+bool cab_is_game_ended();
+
+
+size_t cab_get_attempt_number();
 
 #endif

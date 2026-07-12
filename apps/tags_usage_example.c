@@ -36,14 +36,14 @@ static bool read_line(char* buffer, size_t buffer_size) {
 }
 void turn_function(const char* input_buffer) {
 
-    input(input_buffer);
-    process_turn();
+    cab_input(input_buffer);
+    cab_process_turn();
 
     size_t message_count;
 
     size_t j = 1;
     for (OutputTags t = 1; t < OT_END; t *= 2) {
-        char** strings = get_messages_with_tag(t, &message_count);
+        char** strings = cab_get_messages_with_tag(t, &message_count);
         if (message_count > 0) {
             printf("%s:\n", OUTPUT_TAG_NAMES[j]);
         }
@@ -65,19 +65,19 @@ void turn_function(const char* input_buffer) {
 
 
 int main() {
-    while (!is_game_ended()) {
+    while (!cab_is_game_ended()) {
         char buffer[100];
-        printf("%s", get_input_prompt());
+        printf("%s", cab_get_input_prompt());
         if (!read_line(buffer, sizeof(buffer))) {
             break;
         }
 
         turn_function(buffer);
     }
-    if (is_game_ended()) {
+    if (cab_is_game_ended()) {
         printf("Congratulations! You won in %zu attempts!",
-               get_attempt_number());
+               cab_get_attempt_number());
     }
-    shutdown_game();
+    cab_shutdown_game();
     return 0;
 }

@@ -45,9 +45,7 @@ GetInputStatus get_input(char* buffer, size_t buffer_size) {
         copy_size = buffer_size - 1;
     }
 
-    for (size_t i = 0; i < copy_size; i++) {
-        buffer[i] = input_buffer[i];
-    }
+    strncpy(buffer, input_buffer, copy_size);
     buffer[copy_size] = '\0';
 
     if (copy_size > 0 && buffer[copy_size - 1] == '\n') {

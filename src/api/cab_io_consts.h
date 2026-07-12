@@ -25,7 +25,7 @@ typedef enum{
 typedef enum {
     INPUT_SUCCESS,
     INPUT_STRING_TOO_LONG,
-} InputStatus;
+} InputStatus; 
 
 typedef enum {
     GET_INPUT_SUCCESS,

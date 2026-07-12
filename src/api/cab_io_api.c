@@ -22,7 +22,7 @@ typedef enum {
 OutputState output_state = OS_OutputStale;
 
 
-void io__shutdown() {
+void cab_io_shutdown() {
     output__shutdown();
 }
 
@@ -35,7 +35,7 @@ Messages msg_tags = (Messages){
 char* cur_txt = NULL;
 
 
-InputStatus input(const char* input_string) {
+InputStatus cab_input(const char* input_string) {
     output_state = OS_OutputRefreshed;
     return write_to_input_buffer(input_string);
 }
@@ -61,7 +61,7 @@ void update_output_messages() {
     output_state = OS_MessagesUpToDate;
 }
 
-char* get_output() {
+char* cab_get_output() {
     if (output_state != OS_MessagesUpToDate) {
         update_output_messages();
     }
@@ -69,7 +69,7 @@ char* get_output() {
 }
 
 
-char** get_messages_with_tag(OutputTags tag, size_t* message_count) {
+char** cab_get_messages_with_tag(OutputTags tag, size_t* message_count) {
     if (message_count == NULL) {
         printf("passed null message_count pointer\n");
         return NULL;

@@ -24,7 +24,7 @@ static bool session_setup = false;
 
 static GameState game_state = GS_NOT_STARTED;
 
-GameState get_game_state() {
+GameState cab_get_game_state() {
     if (!are_save_files_valid()) {
         game_state = GS_PLAYING;
     }
@@ -52,12 +52,12 @@ void setup_vars() {
     generate_secret_word();
 }
 
-void start_new_game() {
+void cab_start_new_game() {
     setup_vars();
     game_state = GS_FIRST_TURN;
 }
 
-void load_game() {
+void cab_load_game() {
     setup_vars();
     load_saves();
     game_state = GS_FIRST_TURN;
@@ -119,7 +119,7 @@ void update_saves() {
     store_saves();
 }
 
-void process_turn() {
+void cab_process_turn() {
     switch (game_state) {
         case GS_NOT_STARTED:
             if (prompt_to_load_game()) {
@@ -144,4 +144,12 @@ void process_turn() {
             update_saves();
             return;
     }
+}
+
+bool cab_is_game_ended() {
+    return is_game_ended();
+}
+
+size_t cab_get_attempt_number() {
+    return get_attempt_number();
 }

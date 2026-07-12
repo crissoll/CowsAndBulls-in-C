@@ -8,7 +8,7 @@
 #include "cab_attempts_manager.h"
 #include "cab_output.h"
 #include "cab_paths.h"
-#include "cab_used_vocabolary.h"
+#include "cab_used_vocabulary.h"
 
 #include "cab_secret_word.h"
 

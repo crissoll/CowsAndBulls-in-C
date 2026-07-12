@@ -4,12 +4,12 @@
 
 int main() {
     char string[1000];
-    while (!is_game_ended()) {
-        printf("%s", get_input_prompt());
+    while (!cab_is_game_ended()) {
+        printf("%s", cab_get_input_prompt());
 
         fgets(string, 1000, stdin);
         string[999] = '\0';
 
-        printf("%s", play_turn(string));
+        printf("%s", cab_play_turn(string));
     }
 }

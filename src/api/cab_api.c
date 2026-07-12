@@ -2,28 +2,41 @@
 
 #include "cab_api.h"
 #include "cab_io_api.h"
+#include "cab_paths.h"
 #include "cab_session_api.h"
 
-char* play_turn(char* input_string) {
-    if (input(input_string) != INPUT_SUCCESS) {
-        return get_output();
+
+char* cab_play_turn(char* input_string) {
+    if (cab_input(input_string) != INPUT_SUCCESS) {
+        return cab_get_output();
     }
-    process_turn();
+    cab_process_turn();
 
-    return get_output();
+    return cab_get_output();
 }
 
 
-void shutdown_game() {
-    io__shutdown();
+void cab_shutdown_game() {
+    cab_io_shutdown();
 }
 
-char* get_input_prompt() {
-    switch (get_game_state()) {
+
+char* cab_get_input_prompt() {
+    switch (cab_get_game_state()) {
         case GS_NOT_STARTED:
             return strdup("load previous game? (y/n)\n> ");
         case GS_FIRST_TURN:
         case GS_PLAYING:
             return strdup("Enter guess or command: ");
     }
+}
+
+
+bool cab_set_saves_folder_path(const char* path) {
+    return set_saves_folder_path(path);
+}
+
+
+bool cab_set_vocabolary_file_path(const char* path) {
+    return set_vocabolary_file_path(path);
 }
