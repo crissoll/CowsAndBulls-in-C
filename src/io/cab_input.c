@@ -60,21 +60,23 @@ static size_t count_tokens(const char* string) {
     return tokens;
 }
 
-static void split_tokens(char* buffer, char** arguments) {
+static void split_tokens(char* buffer, char** tokens) {
     size_t arg_index = 0;
-    arguments[arg_index++] = buffer;
+    tokens[arg_index++] = buffer;
 
     for (size_t i = 0; buffer[i] != '\0'; i++) {
         if (buffer[i] == ' ') {
             buffer[i] = '\0';
-            arguments[arg_index++] = &buffer[i + 1];
+            tokens[arg_index++] = &buffer[i + 1];
         }
     }
 }
 
 size_t get_tokens_from_input(char buffer[], size_t buffer_size,
-                             char*** arguments) {
-    *arguments = NULL;
+                             char*** tokens) {
+    if (tokens != NULL) {
+        *tokens = NULL;
+    }
     if (get_input(buffer, buffer_size) != GET_INPUT_SUCCESS) {
         return 0;
     }
@@ -87,11 +89,18 @@ size_t get_tokens_from_input(char buffer[], size_t buffer_size,
     to_lower(buffer, len);
 
     const size_t token_count = count_tokens(buffer);
-    *arguments = malloc(token_count * sizeof **arguments);
-    if (*arguments == NULL) {
+
+    if (tokens == NULL) {
+        return token_count;
+    }
+
+    *tokens = malloc(token_count * sizeof **tokens);
+
+    if (*tokens == NULL) {
         exit(EXIT_FAILURE);
     }
 
-    split_tokens(buffer, *arguments);
+    split_tokens(buffer, *tokens);
+
     return token_count;
 }

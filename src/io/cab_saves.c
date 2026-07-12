@@ -1,3 +1,4 @@
+#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
@@ -7,25 +8,53 @@
 #include "cab_attempts_manager.h"
 #include "cab_output.h"
 #include "cab_paths.h"
+#include "cab_used_vocabulary.h"
+
+#include "cab_secret_word.h"
+
 
 typedef unsigned long SessionId;
 
 static SessionId session_id;
+static bool session_id_generated = false;
 
 extern Attempt attempts[];
 extern size_t attempt_number;
 
 extern Word secret_word;
 
-bool load_attempts(void) {
+
+static void generate_session_id() {
+    if (session_id_generated) {
+        return;
+    }
+    srand((unsigned int)time(NULL));
+    session_id =
+        ((SessionId)rand() << 16) ^ (SessionId)rand() ^ (SessionId)time(NULL);
+    session_id_generated = true;
+}
+
+
+static SessionId* get_session_id_ptr() {
+    if (!session_id_generated) {
+        generate_session_id();
+    }
+    return &session_id;
+}
+
+bool load_attempts() {
     const char* path = get_attempts_file_path();
     if (path == NULL) {
         return false;
     }
-    return load_attempt_array(attempts, &attempt_number, path, &session_id);
+    if (!session_id_generated) {
+        generate_session_id();
+    }
+    return load_attempt_array(attempts, &attempt_number, path,
+                              get_session_id_ptr());
 }
 
-void store_attempts(void) {
+void store_attempts() {
     const char* path = get_attempts_file_path();
     if (path == NULL) {
         /* cannot store without a valid path */
@@ -35,16 +64,11 @@ void store_attempts(void) {
     if (attempt_number == 0) {
         return;
     }
-    store_attempt_array(attempts, attempt_number, path, session_id);
+    store_attempt_array(attempts, attempt_number, path, *get_session_id_ptr());
 }
 
-void generate_session_id() {
-    srand((unsigned int)time(NULL));
-    session_id =
-        ((SessionId)rand() << 16) ^ (SessionId)rand() ^ (SessionId)time(NULL);
-}
 
-void store_secret_word(void) {
+void store_secret_word() {
     if (get_attempt_number() != 1) {
         return;
     }
@@ -56,14 +80,14 @@ void store_secret_word(void) {
         return;
     }
 
-    fprintf(file, "session_id %lu\n", session_id);
+    fprintf(file, "session_id %lu\n", *get_session_id_ptr());
     for (size_t j = 0; j < LETTERS_IN_WORD; j++) {
         fprintf(file, "%c", secret_word.letters[j]);
     }
     fclose(file);
 }
 
-void store_data() {
+void store_saves() {
     store_secret_word();
     store_attempts();
 }
@@ -96,19 +120,19 @@ bool load_test_secret_word(Word* test_secret_word, SessionId* session_id_ptr) {
 }
 
 bool load_secret_word() {
-    bool loaded = load_test_secret_word(&secret_word, &session_id);
+    bool loaded = load_test_secret_word(&secret_word, get_session_id_ptr());
     if (loaded) {
         set_file_paths_editing(false);
     }
     return loaded;
 }
 
-bool are_there_previous_save_files(void) {
+bool are_there_previous_save_files() {
     return (check_file_exists(get_attempts_file_path()) &&
             check_file_exists(get_secret_file_path()));
 }
 
-bool are_save_files_valid(void) {
+bool are_save_files_valid() {
     Attempt dummy_attempts[MAX_ATTEMPTS];
     size_t dummy_attempt_number = 0;
     SessionId loaded_session_id;
@@ -135,12 +159,51 @@ bool are_save_files_valid(void) {
     return true;
 }
 
-void delete_save_files(void) {
+void delete_save_files() {
     if (remove(get_secret_file_path()) != 0) {
-        perror("error while removing secret_word.txt");
+        message(OT_WARNING, "error while removing secret_word.txt");
     }
 
     if (remove(get_attempts_file_path()) != 0) {
-        perror("error while removing attempts.txt");
+        message(OT_WARNING, "error while removing attempts.txt");
     }
+}
+
+void generate_secret_word() {
+    set_secret_word(get_random_word());
+    session_id_generated = false;
+    set_file_paths_editing(false);
+}
+
+
+void load_vocabulary() {
+    size_t word_count = get_line_count(get_vocabulary_file_path());
+
+    Word* words = malloc(sizeof(words[0]) * word_count);
+    FILE* file = open_file_safe(get_vocabulary_file_path(), "r");
+    char buffer[100];
+    size_t i = 0;
+    while (fscanf(file, "%99s", buffer) == 1) {
+        Word temp_word;
+        for (size_t j = 0; j < LETTERS_IN_WORD; j++) {
+            temp_word.letters[j] = buffer[j];
+        }
+        temp_word.letters[LETTERS_IN_WORD] = '\0';
+        words[i] = temp_word;
+        i++;
+    }
+
+    init_used_vocabulary(words, word_count);
+}
+
+
+void load_saves() {
+    if (are_save_files_valid()) {
+        load_secret_word();
+        load_attempts();
+        return;
+    }
+    message(OT_WARNING,
+            "no valid game saves found. generated new saves instead\n");
+    return;
 }

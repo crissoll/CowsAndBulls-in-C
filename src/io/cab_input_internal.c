@@ -13,7 +13,7 @@
 static char input_buffer[MAX_INPUT_BUFFER_SIZE];
 static size_t input_buffer_size = 0;
 
-InputStatus input(char* input_string) {
+InputStatus write_to_input_buffer(const char* input_string) {
     if (input_string == NULL) {
         message(OT_WARNING, "NULL input_string\n");
         exit(EXIT_FAILURE);
@@ -45,9 +45,7 @@ GetInputStatus get_input(char* buffer, size_t buffer_size) {
         copy_size = buffer_size - 1;
     }
 
-    for (size_t i = 0; i < copy_size; i++) {
-        buffer[i] = input_buffer[i];
-    }
+    strncpy(buffer, input_buffer, copy_size);
     buffer[copy_size] = '\0';
 
     if (copy_size > 0 && buffer[copy_size - 1] == '\n') {

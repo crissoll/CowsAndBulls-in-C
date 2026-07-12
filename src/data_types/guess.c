@@ -49,6 +49,6 @@ GuessResult compare_words(Word word, Word secret_word) {
     return result;
 }
 
-void guess_result__print(GuessResult result) {
+void guess_result__output(GuessResult result) {
     output("cows: %zu, bulls: %zu", result.cows, result.bulls);
 }

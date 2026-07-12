@@ -19,16 +19,15 @@ typedef struct CommandSpec {
 } CommandSpec;
 
 
-
-
 void alert_too_many_arguments();
 
 void alert_too_few_arguments();
+
 
 void parse_command(const CommandSpec* specifier, const char* tokens[],
                    size_t token_count);
 
                    
-void _disable_command(size_t token_count, const char* tokens[],
+void disable_command(size_t token_count, const char* tokens[],
                       const CommandSpec* base_spec);
 #endif
