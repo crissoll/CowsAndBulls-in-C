@@ -74,10 +74,6 @@ int main() {
 
         turn_function(buffer);
     }
-    if (cab_is_game_ended()) {
-        printf("Congratulations! You won in %zu attempts!",
-               cab_get_attempt_number());
-    }
     cab_shutdown_game();
     return 0;
 }

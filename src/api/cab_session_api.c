@@ -15,6 +15,8 @@
 #include "cab_saves.h"
 #include "cmd.h"
 
+#include "cmd_surrender.h"
+
 #include "cab_session_api.h"
 
 static bool loading_saves = false;
@@ -51,9 +53,13 @@ void setup_vars() {
         setup_session();
     }
     loading_saves = false;
-    reset_attempts();
+
     reset_list_history();
+
     generate_secret_word();
+    reset_attempts();
+
+    reset_surrender_state();
 }
 
 void cab_start_new_game() {
@@ -115,7 +121,7 @@ void parse_input() {
 }
 
 void update_saves() {
-    if (is_game_ended()) {
+    if (cab_is_game_ended()) {
         game_state = GS_NOT_STARTED;
         delete_save_files();
         return;
@@ -151,7 +157,7 @@ void cab_process_turn() {
 }
 
 bool cab_is_game_ended() {
-    return is_game_ended();
+    return is_secret_word_found() || has_surrendered();
 }
 
 size_t cab_get_attempt_number() {

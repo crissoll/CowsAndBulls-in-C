@@ -10,7 +10,7 @@
 #include "cab_used_vocabulary.h"
 
 
-static bool game_ended = false;
+static bool secret_word_found = false;
 
 void play_word(Word word) {
     if (!word_is_in_used_vocabulary(word)) {
@@ -34,10 +34,10 @@ void play_word(Word word) {
         message(OT_USER,
                 "Congratulations, you found the word in %zu attempts!\n",
                 get_attempt_number());
-        game_ended = true;
+        secret_word_found = true;
     }
 }
 
-bool is_game_ended() {
-    return game_ended;
+bool is_secret_word_found() {
+    return secret_word_found;
 }

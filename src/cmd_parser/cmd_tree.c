@@ -8,7 +8,9 @@
 #include "cmd_help.h"
 #include "cmd_list.h"
 #include "cmd_spec.h"
+#include "cmd_surrender.h"
 #include "cmd_try_word.h"
+
 
 const CommandSpec command_specs[] = {
     {
@@ -26,6 +28,15 @@ const CommandSpec command_specs[] = {
         .case_no_args = print_whole_help_text,
         .default_handler = print_help_text_from_tokens,
         .args = NULL,
+    },
+    {
+        .name = "surrender",
+        .help_text = HELP_CMD_SURRENDER,
+        .allowed = &(bool){true},
+        .case_no_args = cmd__surrender,
+        .default_handler = alert_too_many_arguments,
+        .args = NULL,
+
     },
     {
         .name = "attempts",
