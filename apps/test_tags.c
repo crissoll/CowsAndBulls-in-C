@@ -18,14 +18,14 @@
 
 void turn_function(const char* input_buffer) {
 
-    input(input_buffer);
-    process_turn();
+    cab_input(input_buffer);
+    cab_process_turn();
 
     size_t message_count;
 
     size_t j = 1;
     for (OutputTags t = 1; t < OT_END; t *= 2) {
-        char** strings = get_messages_with_tag(t, &message_count);
+        char** strings = cab_get_messages_with_tag(t, &message_count);
         if (message_count > 0) {
             printf("%s:\n", OUTPUT_TAG_NAMES[j]);
         }
