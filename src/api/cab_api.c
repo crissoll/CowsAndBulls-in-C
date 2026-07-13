@@ -17,6 +17,7 @@ char* cab_play_turn(char* input_string) {
 
 
 void cab_shutdown_game() {
+    cab_session_shutdown();
     cab_io_shutdown();
 }
 
