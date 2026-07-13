@@ -1,6 +1,5 @@
 #include "cab_attempts_manager.h"
 #include "attempts.h"
-#include "cab_errors.h"
 #include "cab_io_consts.h"
 #include "cab_output.h"
 

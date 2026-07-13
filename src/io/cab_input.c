@@ -3,10 +3,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "cab_malloc.h"
+#include "cab_io_consts.h"
 
 #include "cab_input.h"
 #include "cab_input_internal.h"
+#include "cab_output.h"
 
 static void to_lower(char* string, size_t max_length) {
     for (size_t k = 0; k < max_length && string[k] != '\0'; k++) {
@@ -95,7 +96,12 @@ size_t get_tokens_from_input(char buffer[], size_t buffer_size,
         return token_count;
     }
 
-    *tokens = malloc_safe(token_count * sizeof **tokens);
+    *tokens = malloc(token_count * sizeof **tokens);
+
+    if (*tokens == NULL) {
+        message(OT_WARNING, "get_tokens_from_input: malloc failure\n");
+        return token_count;
+    }
 
     split_tokens(buffer, *tokens);
 

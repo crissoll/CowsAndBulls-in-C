@@ -7,7 +7,6 @@
 
 #include "cab_io_api.h"
 #include "cab_io_consts.h"
-#include "cab_malloc.h"
 
 #include "cab_errors.h"
 

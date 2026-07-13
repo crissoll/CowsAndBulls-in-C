@@ -1,6 +1,5 @@
 #include <stdlib.h>
 
-#include "cab_malloc.h"
 #include "cab_output.h"
 #include "index_array.h"
 #include "word.h"

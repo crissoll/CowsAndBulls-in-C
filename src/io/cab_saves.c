@@ -4,7 +4,7 @@
 #include <time.h>
 
 #include "cab_files.h"
-#include "cab_malloc.h"
+#include "cab_io_consts.h"
 
 #include "cab_attempts_manager.h"
 #include "cab_output.h"
@@ -59,7 +59,7 @@ void store_attempts() {
     const char* path = get_attempts_file_path();
     if (path == NULL) {
         message(OT_WARNING,
-                "store_attempts: attempts_file_path couldn't be loaded. "
+                "store_attempts: attempts_file_path wasn't found. "
                 "attempts won't be stored\n");
         return;
     }
@@ -109,6 +109,9 @@ bool load_test_secret_word(Word* test_secret_word, SessionId* session_id_ptr) {
     FILE* file = open_file_safe(get_secret_file_path(), "r");
 
     if (file == NULL) {
+        message(OT_WARNING,
+                "load_test_secret_word: open_file_safe didn't find the "
+                "secret_file_path");
         return false;
     }
 
@@ -191,7 +194,12 @@ void generate_secret_word() {
 void load_vocabulary() {
     size_t word_count = get_line_count(get_vocabulary_file_path());
 
-    Word* words = malloc_safe(sizeof(words[0]) * word_count);
+    Word* words = malloc(sizeof(words[0]) * word_count);
+    if (words == NULL) {
+        message(OT_WARNING, "load_vocabulary: malloc failure \n");
+        init_used_vocabulary(NULL, 0);
+        return;
+    }
     FILE* file = open_file_safe(get_vocabulary_file_path(), "r");
     char buffer[100];
     size_t i = 0;

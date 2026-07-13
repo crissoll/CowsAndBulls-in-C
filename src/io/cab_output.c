@@ -5,7 +5,6 @@
 
 
 #include "cab_io_consts.h"
-#include "cab_malloc.h"
 #include "cab_output.h"
 #include "cab_output_internal.h"
 
@@ -28,7 +27,12 @@ static void va_output(const char* format_string, va_list args) {
 
     char* formatted_text;
 
-    formatted_text = malloc_safe(formatted_text_len + 1);
+    formatted_text = malloc(formatted_text_len + 1);
+
+    if (formatted_text == NULL) {
+        message(OT_WARNING, "va_output: malloc failure\n");
+        return;
+    }
 
     vsnprintf(formatted_text, formatted_text_len + 1, format_string, args);
     print_to_default_buffer(formatted_text);

@@ -4,7 +4,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "cab_malloc.h"
+#include "cab_io_consts.h"
+
+#include "cab_output.h"
 #include "vocabulary.h"
 
 
@@ -20,7 +22,15 @@ void vocabulary__init(Vocabulary* vocabulary, const Word* words,
             .size = 0,
         };
     }
-    vocabulary->words = malloc_safe(word_count * sizeof(Word));
+    vocabulary->words = malloc(word_count * sizeof(Word));
+    if (vocabulary->words == NULL) {
+        *vocabulary = (Vocabulary){
+            .words = NULL,
+            .size = 0,
+        };
+        message(OT_WARNING, "vocabulary__init: malloc failure\n");
+        return;
+    }
     memcpy(vocabulary->words, words, word_count * sizeof(Word));
     vocabulary->size = word_count;
     qsort(vocabulary->words, vocabulary->size, sizeof(Word), qsort_word_cmp);

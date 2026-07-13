@@ -7,9 +7,7 @@
     #include <direct.h>
 #endif
 
-#include "cab_errors.h"
 #include "cab_files.h"
-#include "cab_malloc.h"
 
 
 #include "cab_io_consts.h"
@@ -60,7 +58,7 @@ SetPathStringStatus set_path_string(char** path, const char* value) {
         return SPS_EmptyArgument;
     }
 
-    char* new_path = malloc_safe(strlen(value) + 1);
+    char* new_path = malloc(strlen(value) + 1);
     if (new_path == NULL) {
         return SPS_MallocFailure;
     }
