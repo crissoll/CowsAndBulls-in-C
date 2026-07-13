@@ -73,7 +73,7 @@ $(COMPILE_COMMANDS): $(ALL_SRCS)
 # =============================================================================
 # 6. BUILD TARGETS
 # =============================================================================
-.PHONY: all clean distclean help game game-lib debug api_example_lib rebuild clean-objs app test
+.PHONY: all clean distclean help game game-lib debug api_example_lib rebuild clean-objs app
 
 # Tells Make to treat these object files as temporary. 
 # They will be automatically deleted when the build finishes.
@@ -98,11 +98,6 @@ app: | $(COMPILE_COMMANDS)
 	$(CC) $(CFLAGS) -o apps/$(f)$(EXE) apps/$(f).c $(APP_UTIL_SRCS) $(SHARED_SRCS)
 	$(call RUN_CMD,apps/$(f)$(EXE))
 
-# Hardcoded testing target for apps/test.c
-test: CFLAGS += -O0
-test: | $(COMPILE_COMMANDS)
-	$(CC) $(CFLAGS) -o apps/test$(EXE) apps/test.c $(SHARED_SRCS)
-	$(call RUN_CMD,apps/test$(EXE))
 
 
 cab_game$(EXE): $(ALL_SRCS) | $(COMPILE_COMMANDS)
