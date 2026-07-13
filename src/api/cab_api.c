@@ -21,13 +21,13 @@ void cab_shutdown_game() {
 }
 
 
-char* cab_get_input_prompt() {
+const char* cab_get_input_prompt() {
     switch (cab_get_game_state()) {
         case GS_NOT_STARTED:
-            return strdup("load previous game? (y/n)\n> ");
+            return "load previous game? (y/n)\n> ";
         case GS_FIRST_TURN:
         case GS_PLAYING:
-            return strdup("Enter guess or command: ");
+            return "Enter guess or command: ";
     }
 }
 
