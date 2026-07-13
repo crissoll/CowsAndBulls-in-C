@@ -123,8 +123,12 @@ void parse_input() {
     free(input_tokens);
 }
 
+static bool cab_secret_word_revealed() {
+    return is_secret_word_found() || has_surrendered();
+}
+
 void update_saves() {
-    if (cab_is_game_ended()) {
+    if (cab_secret_word_revealed()) {
         game_state = GS_NOT_STARTED;
         delete_save_files();
         return;
@@ -159,8 +163,9 @@ void cab_process_turn() {
     }
 }
 
+
 bool cab_is_game_ended() {
-    return is_secret_word_found() || has_surrendered() || fatal_error_met();
+    return cab_secret_word_revealed() || fatal_error_met();
 }
 
 size_t cab_get_attempt_number() {
