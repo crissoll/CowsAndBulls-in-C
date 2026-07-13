@@ -71,6 +71,10 @@ void store_attempt_array(const Attempt* attempts, size_t attempt_number,
     }
 
     FILE* attempts_file = open_file_safe(file_name, "w");
+
+    if (attempts_file == NULL) {
+        message(OT_WARNING, "store_attempt_array: attempts_file not found\n");
+    }
     fprintf(attempts_file, "session_id %lu\n", session_id);
 
     for (size_t i = 0; i < attempt_number; i++) {
@@ -94,7 +98,7 @@ bool load_attempt_array(Attempt* attempts, size_t* attempt_number,
 
     FILE* attempts_file = open_file_safe(file_name, "r");
     if (attempts_file == NULL) {
-        /* nothing to load or cannot open - treat as no data */
+        message(OT_WARNING, "load_attempt_array: failed to load attempts_file");
         return false;
     }
 
