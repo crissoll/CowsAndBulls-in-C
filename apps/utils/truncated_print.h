@@ -6,14 +6,13 @@
 #include <stdbool.h>
 #include <string.h>
 
-void print_truncated_string(char* string,size_t len) {
+void print_truncated_string(char* string, size_t len) {
     const bool msg_too_long = strlen(string) > len;
     if (msg_too_long) {
-        string[len] = '\0';
-    }
-    printf("%s", string);
-    if (msg_too_long) {
+        printf("%.*s", (int)len, string);
         printf("[...]\n");
+    } else {
+        printf("%s", string);
     }
 }
 
