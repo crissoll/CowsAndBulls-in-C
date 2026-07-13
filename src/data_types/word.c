@@ -11,9 +11,8 @@
 
 Word word__new(const char letters[LETTERS_IN_WORD + 1]) {
     if (!can_string_be_word(letters)) {
-        exit_with_error_message(
-            "tried creating word with invalid characters in it");
-    }
+        push_fatal_error("tried creating word with invalid characters in it");
+    }  // hard to handle
     Word word;
     strcpy(word.letters, letters);
     return word;

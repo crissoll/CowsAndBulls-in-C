@@ -28,8 +28,9 @@ void init_used_vocabulary(Word* words, size_t word_count) {
 
 Word get_word(size_t index) {
     if (index >= vocab_storage.size) {
-        exit_with_error_message(
-            "get_word: tried getting word with index out of bounds");
+        push_fatal_error(
+            "get_word: tried getting word with index out of bounds");  // hard
+                                                                       // to fix
     }
     return vocab_storage.words[index];
 }

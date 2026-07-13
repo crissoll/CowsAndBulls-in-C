@@ -37,7 +37,8 @@ void word_set__init_from_vocabulary(WordSet* word_set,
         for (size_t p = 0; p < LETTERS_IN_WORD; p++) {
             size_t letter_idx = (size_t)((unsigned char)word.letters[p] - 'a');
             if (matrix[letter_idx][p] == 0) {
-                exit_with_error_message("index array too short");
+                push_fatal_error("index array too short");
+                return;
             }
             IndexArray* arr = &word_set->words[p][letter_idx];
             size_t index = (arr->size - matrix[letter_idx][p]);

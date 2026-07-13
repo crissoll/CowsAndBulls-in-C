@@ -5,7 +5,7 @@
 void* malloc_safe(size_t size) {
     void* result = malloc(size);
     if (result == NULL) {
-        exit_with_error_message("malloc failed!\n");
+        push_fatal_error("malloc failed!\n");
     }
     return result;
 }
@@ -13,7 +13,7 @@ void* malloc_safe(size_t size) {
 void* realloc_safe(void* src, size_t size) {
     void* result = realloc(src, size);
     if (result == NULL) {
-        exit_with_error_message("realloc failed!\n");
+        push_fatal_error("realloc failed!\n");
     }
     return result;
 }

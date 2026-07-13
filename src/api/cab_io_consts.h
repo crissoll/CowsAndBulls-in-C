@@ -30,6 +30,7 @@ typedef enum {
 typedef enum {
     GET_INPUT_SUCCESS,
     GET_INPUT_EMPTY,
+    GET_INPUT_FAILURE,
 } GetInputStatus;
 
 #endif

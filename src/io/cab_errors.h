@@ -5,7 +5,7 @@
 
 void extra_io_warning(const char* warning_message);
 
-void exit_with_error_message(const char* error_message);
+void push_fatal_error(const char* error_message);
 
 void reset_error_state();
 

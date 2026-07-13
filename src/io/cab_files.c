@@ -4,11 +4,11 @@
 
 FILE* open_file_safe(const char* file_name, const char* mode) {
     if (file_name == NULL || mode == NULL) {
-        exit_with_error_message("Invalid file name or mode");
+        push_fatal_error("Invalid file name or mode");
     }
     FILE* f = fopen(file_name, mode);
     if (f == NULL) {
-        exit_with_error_message("Error while opening the file");
+        push_fatal_error("Error while opening the file");
     }
     return f;
 }

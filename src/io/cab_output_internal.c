@@ -90,7 +90,8 @@ void free_output_buffer(OutputBuffer* buffer) {
 
 void print_to_buffer(OutputBuffer* buffer, const char* text) {
     if (buffer == NULL) {
-        exit_with_error_message("tried printing to empty buffer\n");
+        push_fatal_error("tried printing to empty buffer\n");
+        return;
     }
 
     if (buffer->buffer == NULL) {
