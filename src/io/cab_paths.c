@@ -118,10 +118,10 @@ typedef enum {
     CSFP_NullOrEmptyArgument,
     CSFP_MallocFailure,
     CSFP_DirCreationFailure,
-} CheckSavesFolderPaths;
+} CheckSavesFolderPathsStatus;
 
 
-CheckSavesFolderPaths check_saves_folder_path(const char* path) {
+CheckSavesFolderPathsStatus check_saves_folder_path(const char* path) {
     if (path == NULL) {
         return CSFP_NullOrEmptyArgument;
     }
@@ -283,9 +283,9 @@ typedef enum {
     IFP_Success,
     IFP_NoSaves,
     IFP_Failure,
-} InitFilePathsSuccess;
+} InitFilePathsStatus;
 
-InitFilePathsSuccess init_file_paths() {
+InitFilePathsStatus init_file_paths() {
     switch (init_vocabulary_file_path()) {
         case IVFPS_Success:
             break;
