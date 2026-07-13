@@ -39,3 +39,11 @@ Word get_random_word() {
     srand((unsigned int)time(NULL));
     return vocab_storage.words[rand() % vocab_storage.size];
 }
+
+void free_used_vocabulary() {
+    if (vocab_storage.words != NULL) {
+        free(vocab_storage.words);
+        vocab_storage.words = NULL;
+    }
+    vocab_storage.size = 0;
+}

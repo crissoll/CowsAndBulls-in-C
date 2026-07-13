@@ -172,3 +172,8 @@ bool cab_is_game_ended() {
 size_t cab_get_attempt_number() {
     return get_attempt_number();
 }
+
+void cab_session_shutdown() {
+    session_setup = false;
+    game_state = GS_NOT_STARTED;
+}

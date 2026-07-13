@@ -186,7 +186,6 @@ Messages get_messages_tags() {
         };
     }
 
-
     memcpy(result.messages, tagged_output.messages,
            tagged_output.size * sizeof(result.messages[0]));
 

@@ -422,3 +422,16 @@ const char* get_vocabulary_file_path() {
     }
     return vocabulary_file_path;
 }
+
+void free_file_paths() {
+    free(saves_folder_path);
+    saves_folder_path = NULL;
+    free(secret_file_path);
+    secret_file_path = NULL;
+    free(attempts_file_path);
+    attempts_file_path = NULL;
+    free(vocabulary_file_path);
+    vocabulary_file_path = NULL;
+    file_paths_initialized = false;
+    file_paths_editing_enabled = true;
+}

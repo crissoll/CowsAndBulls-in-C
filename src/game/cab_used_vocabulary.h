@@ -19,4 +19,6 @@ Word get_random_word();
 
 void init_used_vocabulary(Word* words, size_t word_count);
 
+void free_used_vocabulary();
+
 #endif

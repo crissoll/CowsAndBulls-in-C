@@ -18,4 +18,6 @@ bool set_vocabulary_file_path(const char *path);
 
 void set_file_paths_editing(bool value);
 
+void free_file_paths();
+
 #endif

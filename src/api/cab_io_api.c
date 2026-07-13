@@ -12,6 +12,8 @@
 
 #include "cab_input_internal.h"
 #include "cab_output_internal.h"
+#include "cab_paths.h"
+#include "cab_used_vocabulary.h"
 
 
 typedef enum {
@@ -23,10 +25,6 @@ typedef enum {
 OutputState output_state = OS_OutputStale;
 
 
-void cab_io_shutdown() {
-    output__shutdown();
-}
-
 Messages msg_tags = (Messages){
     .size = 0,
     .messages = NULL,
@@ -34,6 +32,20 @@ Messages msg_tags = (Messages){
 };
 
 char* cur_txt = NULL;
+
+
+void cab_io_shutdown() {
+    output__shutdown();
+    free(msg_tags.messages);
+    msg_tags.messages = NULL;
+    free(msg_tags.tags);
+    msg_tags.tags = NULL;
+    msg_tags.size = 0;
+    free(cur_txt);
+    cur_txt = NULL;
+    free_file_paths();
+    free_used_vocabulary();
+}
 
 
 InputStatus cab_input(const char* input_string) {

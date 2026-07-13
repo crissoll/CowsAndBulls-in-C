@@ -57,9 +57,19 @@ void revert_filter_to_history_step(size_t index) {
     help_filter = help_filter_history[index].filter;
 }
 
+static void free_word_set(WordSet* word_set) {
+    for (size_t i = 0; i < LETTERS_IN_WORD; i++) {
+        for (size_t j = 0; j < ALPHABET_SIZE; j++) {
+            index_array__free_content(&word_set->words[i][j]);
+        }
+    }
+}
+
 void reset_list_history() {
     help_filter_history_size = 0;
     filter__init(&help_filter);
+
+    free_word_set(&help_word_set);
 
     const Vocabulary voc = get_used_vocabulary();
     word_set__init_from_vocabulary(&help_word_set, &voc);

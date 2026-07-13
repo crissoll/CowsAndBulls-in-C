@@ -25,4 +25,6 @@ bool cab_is_game_ended();
 
 size_t cab_get_attempt_number();
 
+void cab_session_shutdown();
+
 #endif
