@@ -100,7 +100,7 @@ size_t get_tokens_from_input(char buffer[], size_t buffer_size,
 
     if (*tokens == NULL) {
         message(OT_WARNING, "get_tokens_from_input: malloc failure\n");
-        return token_count;
+        return 0;
     }
 
     split_tokens(buffer, *tokens);
