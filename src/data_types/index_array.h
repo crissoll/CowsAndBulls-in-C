@@ -23,10 +23,10 @@ void index_array__output(IndexArray index_array, const Vocabulary *vocabulary);
 
 // Operators
 
-IndexArray intersect(const IndexArray a, const IndexArray b);
+IndexArray intersect(IndexArray a, IndexArray b);
 
-IndexArray join(const IndexArray a, const IndexArray b);
+IndexArray join(IndexArray a, IndexArray b);
 
-IndexArray subtract(const IndexArray a, const IndexArray b);
+IndexArray subtract(IndexArray a, IndexArray b);
 
 #endif

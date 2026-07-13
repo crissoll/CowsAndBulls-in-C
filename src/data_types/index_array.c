@@ -8,8 +8,9 @@
 
 void index_array__init(IndexArray* array, size_t size) {
     array->size = size;
+
     if (size > 0) {
-        array->indexes = malloc_safe(size * sizeof(array->indexes[0]));
+        array->indexes = malloc(size * sizeof(array->indexes[0]));
     } else {
         array->indexes = NULL;
     }
@@ -31,7 +32,7 @@ IndexArray index_array__copy(const IndexArray* src) {
     return dest;
 }
 
-IndexArray intersect(const IndexArray a, const IndexArray b) {
+IndexArray intersect(IndexArray a, IndexArray b) {
     IndexArray result;
     index_array__init(&result, a.size < b.size ? a.size : b.size);
 
@@ -51,7 +52,7 @@ IndexArray intersect(const IndexArray a, const IndexArray b) {
     return result;
 }
 
-IndexArray subtract(const IndexArray a, const IndexArray b) {
+IndexArray subtract(IndexArray a, IndexArray b) {
     IndexArray result;
     index_array__init(&result, a.size);
 
@@ -79,7 +80,7 @@ IndexArray subtract(const IndexArray a, const IndexArray b) {
     return result;
 }
 
-IndexArray join(const IndexArray a, const IndexArray b) {
+IndexArray join(IndexArray a, IndexArray b) {
     IndexArray result;
     index_array__init(&result, a.size + b.size);
 
