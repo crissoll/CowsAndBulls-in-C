@@ -167,8 +167,9 @@ InitSavesFilePathStatus init_save_file_paths() {
                             "init_save_file_paths: cannot set path string\n");
                     return ISFP_NoInitPossible;
                 case SPS_Success:
-                    return ISFP_PreviousValuesWillBeKept;
+                    break;
             }
+            break;
         case CSFP_MallocFailure:
         case CSFP_DirCreationFailure:
             start_message(OT_WARNING);
