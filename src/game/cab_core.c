@@ -42,3 +42,8 @@ void play_word(Word word) {
 bool is_secret_word_found() {
     return secret_word_found;
 }
+
+
+void reset_victory() {
+    secret_word_found = false;
+}

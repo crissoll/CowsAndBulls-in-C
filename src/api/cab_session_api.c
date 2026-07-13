@@ -58,6 +58,7 @@ void setup_vars() {
 
     reset_list_history();
 
+    reset_victory();
     generate_secret_word();
     reset_attempts();
 
