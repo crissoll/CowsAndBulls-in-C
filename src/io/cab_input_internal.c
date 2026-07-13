@@ -16,7 +16,9 @@ static size_t input_buffer_size = 0;
 
 InputStatus write_to_input_buffer(const char* input_string) {
     if (input_string == NULL) {
-        exit_with_error_message("NULL input_string\n");
+        message(OT_WARNING,
+                "tried adding NULL string to input_buffer; no input will be "
+                "added\n");
     }
     input_buffer_size = 0;
     const size_t len = strlen(input_string);
@@ -32,8 +34,17 @@ InputStatus write_to_input_buffer(const char* input_string) {
 }
 
 GetInputStatus get_input(char* buffer, size_t buffer_size) {
-    if (buffer_size == 0 || buffer == NULL) {
-        exit_with_error_message("received empty buffer in get_input()!\n");
+    if (buffer_size == 0) {
+        message(OT_WARNING,
+                "get_input: buffer_size argument is zero, no input will be "
+                "received\n");
+        return GET_INPUT_FAILURE;
+    }
+    if (buffer == NULL) {
+        message(
+            OT_WARNING,
+            "get_input: buffer argument is NULL, no input will be received\n");
+        return GET_INPUT_FAILURE;
     }
 
     if (input_buffer_size == 0) {
