@@ -214,6 +214,7 @@ void load_vocabulary() {
     }
 
     init_used_vocabulary(words, word_count);
+    fclose(file);
     free(words);
 }
 
