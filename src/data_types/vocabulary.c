@@ -16,12 +16,16 @@ static int qsort_word_cmp(const void* a, const void* b) {
 
 void vocabulary__init(Vocabulary* vocabulary, const Word* words,
                       size_t word_count) {
-    if (words == NULL) {
-        *vocabulary = (Vocabulary){
-            .words = NULL,
-            .size = 0,
-        };
+    if (vocabulary->words != NULL) {
+        free(vocabulary->words);
+        vocabulary->words = NULL;
     }
+
+    if (words == NULL || word_count == 0) {
+        vocabulary->size = 0;
+        return;
+    }
+
     vocabulary->words = malloc(word_count * sizeof(Word));
     if (vocabulary->words == NULL) {
         *vocabulary = (Vocabulary){
