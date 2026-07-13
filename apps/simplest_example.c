@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "cab_api.h"
 
@@ -10,6 +11,10 @@ int main() {
         fgets(string, 1000, stdin);
         string[999] = '\0';
 
-        printf("%s", cab_play_turn(string));
+        char* output = cab_play_turn(string);
+        printf("%s", output);
+        free(output);
     }
+    cab_shutdown_game();
+    return 0;
 }

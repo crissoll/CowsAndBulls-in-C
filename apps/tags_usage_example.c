@@ -44,22 +44,22 @@ void turn_function(const char* input_buffer) {
     size_t j = 1;
     for (OutputTags t = 1; t < OT_END; t *= 2) {
         char** strings = cab_get_messages_with_tag(t, &message_count);
-        if (message_count > 0) {
+        if (strings != NULL && message_count > 0) {
             printf("%s:\n", OUTPUT_TAG_NAMES[j]);
+            if (message_count == 1) {
+                printf("%s", strings[0]);
+            } else {
+                for (size_t i = 0; i < message_count; i++) {
+                    printf("[%zu]\n", i);
+                    printf("%s", strings[i]);
+                }
+            }
+            for (size_t i = 0; i < message_count; i++) {
+                free(strings[i]);
+            }
+            free(strings);
         }
         j++;
-
-        if (message_count == 1) {
-            printf(strings[0], MAX_DISPLAYED_MSG_LEN);
-            continue;
-        }
-
-        for (size_t i = 0; i < message_count; i++) {
-            printf("[%zu]\n", i);
-            printf(strings[i], MAX_DISPLAYED_MSG_LEN);
-
-            free(strings[i]);
-        }
     }
 }
 
