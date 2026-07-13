@@ -14,11 +14,7 @@ typedef struct{
 
 void print_to_default_buffer(const char* text);
 
-char* get_output();
-
-void output__setup();
-
-void output__shutdown();
+char* flush_output_buffer();
 
 void start_message(OutputTags tags);
 
@@ -27,5 +23,7 @@ void end_message();
 bool is_message_started();
 
 Messages get_messages_tags();
+
+void output__shutdown();
 
 #endif

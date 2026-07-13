@@ -3,15 +3,16 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "cab_errors.h"
 #include "cab_io_consts.h"
 #include "cab_output.h"
 #include "word.h"
 
+
 Word word__new(const char letters[LETTERS_IN_WORD + 1]) {
     if (!can_string_be_word(letters)) {
-        perror("tried creating word with invalid characters in it");
-        exit(EXIT_FAILURE);
-    }
+        push_fatal_error("tried creating word with invalid characters in it");
+    }  // hard to handle
     Word word;
     strcpy(word.letters, letters);
     return word;
@@ -38,7 +39,7 @@ bool can_string_be_word(const char* string) {
     return true;
 }
 
-void word__print(Word word) {
+void word__output(Word word) {
     output("%s", word.letters);
 }
 

@@ -6,10 +6,10 @@
 
 #include "cab_api.h"
 #include "cab_io_api.h"
+#include "cab_session_api.h"
+
 #include "cab_io_consts.h"
 #include "cab_io_tag_names.h"
-
-#include "utils/truncated_print.h"
 
 
 #define MAX_DISPLAYED_MSG_LEN 128
@@ -34,52 +34,46 @@ static bool read_line(char* buffer, size_t buffer_size) {
 
     return true;
 }
+void turn_function(const char* input_buffer) {
 
-void turn_with_tags(const char* input_buffer) {
-    play_turn_and_update_output_messages((char*)input_buffer);
+    cab_input(input_buffer);
+    cab_process_turn();
 
     size_t message_count;
 
     size_t j = 1;
     for (OutputTags t = 1; t < OT_END; t *= 2) {
-        char** strings = get_messages_with_tag(t, &message_count);
-        if (message_count > 0) {
-            printf("%s:\n", OUTPUT_TAGS_NAMES[j]);
+        char** strings = cab_get_messages_with_tag(t, &message_count);
+        if (strings != NULL && message_count > 0) {
+            printf("%s:\n", OUTPUT_TAG_NAMES[j]);
+            if (message_count == 1) {
+                printf("%s", strings[0]);
+            } else {
+                for (size_t i = 0; i < message_count; i++) {
+                    printf("[%zu]\n", i);
+                    printf("%s", strings[i]);
+                }
+            }
+            for (size_t i = 0; i < message_count; i++) {
+                free(strings[i]);
+            }
+            free(strings);
         }
         j++;
-
-        if (message_count == 1) {
-            print_truncated_string(strings[0], MAX_DISPLAYED_MSG_LEN);
-            continue;
-        }
-
-        for (size_t i = 0; i < message_count; i++) {
-            printf("[%zu]\n", i);
-            print_truncated_string(strings[i], MAX_DISPLAYED_MSG_LEN);
-
-            free(strings[i]);
-        }
     }
 }
 
 
 int main() {
-    setup_game();
-    start_new_game();
-
-    while (!is_game_ended()) {
+    while (!cab_is_game_ended()) {
         char buffer[100];
-        printf("Enter guess or command: ");
+        printf("%s", cab_get_input_prompt());
         if (!read_line(buffer, sizeof(buffer))) {
             break;
         }
 
-        turn_with_tags(buffer);
+        turn_function(buffer);
     }
-    if (is_game_ended()) {
-        printf("Congratulations! You won in %zu attempts!",
-               get_attempt_number());
-    }
-    shutdown_game();
+    cab_shutdown_game();
     return 0;
 }

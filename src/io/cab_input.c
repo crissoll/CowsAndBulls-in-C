@@ -3,9 +3,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "cab_io_consts.h"
 
 #include "cab_input.h"
 #include "cab_input_internal.h"
+#include "cab_output.h"
 
 static void to_lower(char* string, size_t max_length) {
     for (size_t k = 0; k < max_length && string[k] != '\0'; k++) {
@@ -60,21 +62,23 @@ static size_t count_tokens(const char* string) {
     return tokens;
 }
 
-static void split_tokens(char* buffer, char** arguments) {
+static void split_tokens(char* buffer, char** tokens) {
     size_t arg_index = 0;
-    arguments[arg_index++] = buffer;
+    tokens[arg_index++] = buffer;
 
     for (size_t i = 0; buffer[i] != '\0'; i++) {
         if (buffer[i] == ' ') {
             buffer[i] = '\0';
-            arguments[arg_index++] = &buffer[i + 1];
+            tokens[arg_index++] = &buffer[i + 1];
         }
     }
 }
 
 size_t get_tokens_from_input(char buffer[], size_t buffer_size,
-                             char*** arguments) {
-    *arguments = NULL;
+                             char*** tokens) {
+    if (tokens != NULL) {
+        *tokens = NULL;
+    }
     if (get_input(buffer, buffer_size) != GET_INPUT_SUCCESS) {
         return 0;
     }
@@ -87,11 +91,19 @@ size_t get_tokens_from_input(char buffer[], size_t buffer_size,
     to_lower(buffer, len);
 
     const size_t token_count = count_tokens(buffer);
-    *arguments = malloc(token_count * sizeof **arguments);
-    if (*arguments == NULL) {
-        exit(EXIT_FAILURE);
+
+    if (tokens == NULL) {
+        return token_count;
     }
 
-    split_tokens(buffer, *arguments);
+    *tokens = malloc(token_count * sizeof **tokens);
+
+    if (*tokens == NULL) {
+        message(OT_WARNING, "get_tokens_from_input: malloc failure\n");
+        return 0;
+    }
+
+    split_tokens(buffer, *tokens);
+
     return token_count;
 }

@@ -4,8 +4,10 @@
 #include "index_array.h"
 #include "word.h"
 
+
 void index_array__init(IndexArray* array, size_t size) {
     array->size = size;
+
     if (size > 0) {
         array->indexes = malloc(size * sizeof(array->indexes[0]));
     } else {
@@ -29,7 +31,7 @@ IndexArray index_array__copy(const IndexArray* src) {
     return dest;
 }
 
-IndexArray intersect(const IndexArray a, const IndexArray b) {
+IndexArray intersect(IndexArray a, IndexArray b) {
     IndexArray result;
     index_array__init(&result, a.size < b.size ? a.size : b.size);
 
@@ -49,7 +51,7 @@ IndexArray intersect(const IndexArray a, const IndexArray b) {
     return result;
 }
 
-IndexArray subtract(const IndexArray a, const IndexArray b) {
+IndexArray subtract(IndexArray a, IndexArray b) {
     IndexArray result;
     index_array__init(&result, a.size);
 
@@ -77,7 +79,7 @@ IndexArray subtract(const IndexArray a, const IndexArray b) {
     return result;
 }
 
-IndexArray join(const IndexArray a, const IndexArray b) {
+IndexArray join(IndexArray a, IndexArray b) {
     IndexArray result;
     index_array__init(&result, a.size + b.size);
 
@@ -109,10 +111,10 @@ IndexArray join(const IndexArray a, const IndexArray b) {
     return result;
 }
 
-void index_array__print(IndexArray index_array, const Vocabolary* vocabolary) {
+void index_array__output(IndexArray index_array, const Vocabulary* vocabulary) {
     size_t j = 0;
     for (size_t i = 0; i < index_array.size; i++) {
-        word__print(vocabolary->words[index_array.indexes[i]]);
+        word__output(vocabulary->words[index_array.indexes[i]]);
         output(" ");
         if (++j > 10) {
             output("\n");

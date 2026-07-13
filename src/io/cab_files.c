@@ -1,15 +1,17 @@
 
 #include "cab_files.h"
+#include "cab_errors.h"
+#include "cab_io_consts.h"
+#include "cab_output.h"
 
 FILE* open_file_safe(const char* file_name, const char* mode) {
     if (file_name == NULL || mode == NULL) {
-        perror("Invalid file name or mode");
-        exit(EXIT_FAILURE);
+        push_fatal_error("open_file_safe: Invalid file name or mode");
+        return NULL;
     }
     FILE* f = fopen(file_name, mode);
     if (f == NULL) {
-        perror("Error while opening the file");
-        exit(EXIT_FAILURE);
+        push_fatal_error("open_file_safe: Error while opening the file");
     }
     return f;
 }
@@ -25,6 +27,10 @@ bool check_file_exists(const char* file_name) {
 
 size_t get_line_count(const char* file_name) {
     FILE* f = open_file_safe(file_name, "r");
+    if (f == NULL) {
+        message(OT_WARNING, "get_line_count: failed to open file_name");
+        return 0;
+    }
     size_t count = 0;
     char buffer[100];
     while (fscanf(f, "%99s", buffer) == 1) {

@@ -30,4 +30,6 @@ void play_test_set(const char* file_name, TurnFunction turn_func);
 
 void play_game_test(InputTest test, TurnFunction turn_function);
 
+void free_test_set(InputTestSet* test_set);
+
 #endif

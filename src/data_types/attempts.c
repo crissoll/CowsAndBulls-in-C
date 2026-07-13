@@ -8,37 +8,31 @@
 #include "cab_files.h"
 #include "guess.h"
 #include "index_array.h"
-#include "vocabolary.h"
+#include "vocabulary.h"
 
 Attempt attempt__new(Word word, GuessResult result) {
     Attempt attempt = {.word = word, .result = result};
     return attempt;
 }
 
-void _attempt__print(Attempt attempt) {
+void attempt__output(Attempt attempt) {
 
-    word__print(attempt.word);
+    word__output(attempt.word);
     output("\t");
-    guess_result__print(attempt.result);
+    guess_result__output(attempt.result);
 }
 
-
-void attempt__print(Attempt attempt) {
-    start_message(OT_ATTEMPTS);
-    _attempt__print(attempt);
-    end_message();
-}
 
 IndexArray get_possible_words_from_attempt(Attempt attempt,
-                                           const Vocabolary* vocabolary) {
+                                           const Vocabulary* vocabulary) {
     IndexArray result;
 
     /* allocate the maximum possible size; we'll trim by updating result.size */
-    index_array__init(&result, vocabolary->size);
+    index_array__init(&result, vocabulary->size);
 
     size_t count = 0;
-    for (size_t i = 0; i < vocabolary->size; i++) {
-        Word candidate = vocabolary->words[i];
+    for (size_t i = 0; i < vocabulary->size; i++) {
+        Word candidate = vocabulary->words[i];
         GuessResult r = compare_words(attempt.word, candidate);
         if (r.bulls == attempt.result.bulls && r.cows == attempt.result.cows) {
             result.indexes[count++] = i;
@@ -52,7 +46,7 @@ IndexArray get_possible_words_from_attempt(Attempt attempt,
 void print_attempt_array(const Attempt* attempts, size_t attempt_number) {
     start_message(OT_ATTEMPTS);
     for (size_t i = 0; i < attempt_number; i++) {
-        _attempt__print(attempts[i]);
+        attempt__output(attempts[i]);
         output("\n");
     }
     end_message();
@@ -72,11 +66,15 @@ bool is_word_in_attempt_array(Word word, const Attempt* attempts,
 void store_attempt_array(const Attempt* attempts, size_t attempt_number,
                          const char* file_name, unsigned long session_id) {
     if (file_name == NULL) {
-        perror("store_attempt_array: file_name is NULL");
+        message(OT_WARNING, "store_attempt_array: file_name is NULL");
         return;
     }
 
     FILE* attempts_file = open_file_safe(file_name, "w");
+
+    if (attempts_file == NULL) {
+        message(OT_WARNING, "store_attempt_array: attempts_file not found\n");
+    }
     fprintf(attempts_file, "session_id %lu\n", session_id);
 
     for (size_t i = 0; i < attempt_number; i++) {
@@ -93,14 +91,14 @@ void store_attempt_array(const Attempt* attempts, size_t attempt_number,
 bool load_attempt_array(Attempt* attempts, size_t* attempt_number,
                         const char* file_name, unsigned long* session_id) {
     if (file_name == NULL || attempt_number == NULL || session_id == NULL) {
-        perror("load_attempt_array: invalid arguments");
+        message(OT_WARNING, "load_attempt_array: invalid arguments");
     }
 
     *attempt_number = 0;
 
     FILE* attempts_file = open_file_safe(file_name, "r");
     if (attempts_file == NULL) {
-        /* nothing to load or cannot open - treat as no data */
+        message(OT_WARNING, "load_attempt_array: failed to load attempts_file");
         return false;
     }
 

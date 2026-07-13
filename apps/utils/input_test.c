@@ -2,6 +2,7 @@
 
 #include <malloc.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "cab_api.h"
@@ -92,19 +93,33 @@ void play_test_set(const char* file_name, TurnFunction turn_func) {
         printf("\n\n============== test %zu: ==============\n", i);
         play_game_test(test_set.tests[i], turn_func);
     }
+    free_test_set(&test_set);
 }
 
 
 void play_game_test(InputTest test, TurnFunction turn_function) {
-    setup_game();
-    start_new_game();
+    cab_start_new_game();
 
-    for (size_t i = 0; i < test.count && !is_game_ended(); i++) {
+    for (size_t i = 0; i < test.count && !cab_is_game_ended(); i++) {
         printf("\n====[INPUT %zu] \"%s\" ====\n", i, test.inputs[i]);
         turn_function(test.inputs[i]);
     }
-    if (is_game_ended()) {
-        printf("Won in %zu attempts", get_attempt_number());
+    cab_shutdown_game();
+}
+
+void free_test_set(InputTestSet* test_set) {
+    if (test_set->tests != NULL) {
+        for (size_t i = 0; i < test_set->count; i++) {
+            if (test_set->tests[i].inputs != NULL) {
+                for (size_t j = 0; j < test_set->tests[i].count; j++) {
+                    free((void*)test_set->tests[i].inputs[j]);
+                }
+                free(test_set->tests[i].inputs);
+                test_set->tests[i].inputs = NULL;
+            }
+        }
+        free(test_set->tests);
+        test_set->tests = NULL;
     }
-    shutdown_game();
+    test_set->count = 0;
 }

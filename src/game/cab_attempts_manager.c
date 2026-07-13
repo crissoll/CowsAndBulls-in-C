@@ -1,6 +1,8 @@
 #include "cab_attempts_manager.h"
+#include "attempts.h"
 #include "cab_io_consts.h"
 #include "cab_output.h"
+
 
 Attempt attempts[MAX_ATTEMPTS];
 size_t attempt_number = 0;
@@ -13,7 +15,7 @@ void reset_attempts() {
     attempt_number = 0;
 }
 
-void print_attempts(void) {
+void print_attempts() {
     if (attempt_number == 0) {
         message(OT_ATTEMPTS, "no attempts yet!\n");
         return;
@@ -31,14 +33,14 @@ void compare_attempts_to_word(Word word) {
     for (i = 0; i < attempt_number; i++) {
         GuessResult expected = compare_words(attempts[i].word, word);
 
-        attempt__print(attempts[i]);
+        attempt__output(attempts[i]);
         if (attempts[i].result.cows == expected.cows &&
             attempts[i].result.bulls == expected.bulls) {
             output("\tV\n");
         } else {
             output("\tX\t");
             output("expected: ");
-            guess_result__print(expected);
+            guess_result__output(expected);
             output("\n");
         }
     }
@@ -47,8 +49,14 @@ void compare_attempts_to_word(Word word) {
 
 void add_attempt(Word word, GuessResult result) {
     if (attempt_number >= MAX_ATTEMPTS) {
-        perror("add_attempts: reached maximum amount of attempts!");
-        exit(EXIT_FAILURE);
+        message(
+            OT_USER,
+            "reached maximum amount of attempts! oldest one will be deleted\n");
+
+        for (size_t i = 0; i < MAX_ATTEMPTS - 1; i++) {
+            attempts[i] = attempts[i + 1];
+        }
+        attempt_number = MAX_ATTEMPTS - 1;
     }
 
     attempts[attempt_number] = attempt__new(word, result);
