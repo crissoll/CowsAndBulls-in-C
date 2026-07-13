@@ -58,7 +58,9 @@ bool load_attempts() {
 void store_attempts() {
     const char* path = get_attempts_file_path();
     if (path == NULL) {
-        /* cannot store without a valid path */
+        message(OT_WARNING,
+                "store_attempts: attempts_file_path couldn't be loaded. "
+                "attempts won't be stored\n");
         return;
     }
 
@@ -73,11 +75,20 @@ void store_secret_word() {
     if (get_attempt_number() != 1) {
         return;
     }
-    FILE* file = open_file_safe(get_secret_file_path(), "w");
+
+    const char* path = get_secret_file_path();
+
+    if (path == NULL) {
+        message(OT_WARNING,
+                "store_secret_word: secret_file_path couldn't be loaded. "
+                "secret word won't be stored\n");
+        return;
+    }
+    FILE* file = open_file_safe(path, "w");
 
     if (file == NULL) {
         message(OT_WARNING,
-                "secret word couldn't be stored. save files will be corrupted");
+                "secret word couldn't be stored. secret word won't be stored");
         return;
     }
 
