@@ -31,7 +31,7 @@ void add_current_filter_to_history() {
     const size_t word_count = get_current_help_filter_word_count();
     if (help_filter_history_size >= HELP_FILTER_HISTORY_MAX) {
         message(
-            OT_WARNING,
+            OT_USER,
             "reached filter history limit! oldest filter will be deleted\n");
 
         for (size_t i = 0; i < HELP_FILTER_HISTORY_MAX - 1; i++) {

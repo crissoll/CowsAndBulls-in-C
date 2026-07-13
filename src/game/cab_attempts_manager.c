@@ -50,7 +50,7 @@ void compare_attempts_to_word(Word word) {
 void add_attempt(Word word, GuessResult result) {
     if (attempt_number >= MAX_ATTEMPTS) {
         message(
-            OT_WARNING,
+            OT_USER,
             "reached maximum amount of attempts! oldest one will be deleted\n");
 
         for (size_t i = 0; i < MAX_ATTEMPTS - 1; i++) {
