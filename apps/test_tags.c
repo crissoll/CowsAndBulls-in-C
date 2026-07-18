@@ -48,6 +48,6 @@ void turn_function(const char* input_buffer) {
 
 
 int main() {
-    play_test_set("apps/tests/tests.txt", turn_function);
+    play_test_set("apps/tests/tests.txt", turn_function, NULL);
     return 0;
 }
