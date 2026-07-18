@@ -41,7 +41,9 @@ bool can_string_be_word(const char* string) {
         return false;
     }
     if (len < get_word_len()) {
+
         message(OT_INPUT_ERROR, "word too short\n");
+        message(OT_WARNING, "%s\n", string);
         return false;
     }
     return true;

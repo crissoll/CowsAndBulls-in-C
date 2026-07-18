@@ -121,7 +121,7 @@ bool load_test_secret_word(Word* test_secret_word, SessionId* session_id_ptr) {
     char letters[MAX_PRACTICAL_WORD_LEN + 1] = "";
 
     const int scan_success_count =
-        fscanf(file, "%15s %lu %5s", label, session_id_ptr, letters);
+        fscanf(file, "%15s %lu %10s", label, session_id_ptr, letters);
     fclose(file);
 
     if (scan_success_count < 3 ||

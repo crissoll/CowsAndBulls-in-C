@@ -117,7 +117,7 @@ bool load_attempt_array(Attempt* attempts, size_t* attempt_number,
 
         /* read a word plus cows and bulls; stop on EOF or malformed line */
         int scanned =
-            fscanf(attempts_file, "%5s %lu %lu", letters, &cows, &bulls);
+            fscanf(attempts_file, "%s %lu %lu", letters, &cows, &bulls);
         if (scanned != 3) {
             break;
         }
