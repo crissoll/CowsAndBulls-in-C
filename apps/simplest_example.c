@@ -4,8 +4,6 @@
 #include "cab_api.h"
 
 int main() {
-    cab_set_saves_folder_path("S:\\programmazione\\CowsAndBulls in C");
-
     char string[1000];
     while (!cab_is_game_ended()) {
         printf("%s", cab_get_input_prompt());
