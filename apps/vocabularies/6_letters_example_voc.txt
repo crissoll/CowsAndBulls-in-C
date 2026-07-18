@@ -24,3 +24,11 @@ genome
 gerome
 blamed
 queued
+kernel
+shower
+shrimp
+smarty
+plural
+lagoon
+dragon
+straps
