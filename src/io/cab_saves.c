@@ -3,6 +3,7 @@
 #include <string.h>
 #include <time.h>
 
+#include "attempts.h"
 #include "cab_files.h"
 #include "cab_io_consts.h"
 
@@ -12,6 +13,7 @@
 #include "cab_used_vocabulary.h"
 
 #include "cab_secret_word.h"
+#include "word.h"
 
 
 typedef unsigned long SessionId;
@@ -93,7 +95,7 @@ void store_secret_word() {
     }
 
     fprintf(file, "session_id %lu\n", *get_session_id_ptr());
-    for (size_t j = 0; j < LETTERS_IN_WORD; j++) {
+    for (size_t j = 0; j < get_word_len(); j++) {
         fprintf(file, "%c", secret_word.letters[j]);
     }
     fclose(file);
@@ -116,7 +118,7 @@ bool load_test_secret_word(Word* test_secret_word, SessionId* session_id_ptr) {
     }
 
     char label[16] = "";
-    char letters[LETTERS_IN_WORD + 1] = "";
+    char letters[MAX_PRACTICAL_WORD_LEN + 1] = "";
 
     const int scan_success_count =
         fscanf(file, "%15s %lu %5s", label, session_id_ptr, letters);
@@ -205,10 +207,10 @@ void load_vocabulary() {
     size_t i = 0;
     while (fscanf(file, "%99s", buffer) == 1) {
         Word temp_word;
-        for (size_t j = 0; j < LETTERS_IN_WORD; j++) {
+        for (size_t j = 0; j < get_word_len(); j++) {
             temp_word.letters[j] = buffer[j];
         }
-        temp_word.letters[LETTERS_IN_WORD] = '\0';
+        temp_word.letters[get_word_len()] = '\0';
         words[i] = temp_word;
         i++;
     }

@@ -9,6 +9,7 @@
 #include "guess.h"
 #include "index_array.h"
 #include "vocabulary.h"
+#include "word.h"
 
 Attempt attempt__new(Word word, GuessResult result) {
     Attempt attempt = {.word = word, .result = result};
@@ -78,7 +79,7 @@ void store_attempt_array(const Attempt* attempts, size_t attempt_number,
     fprintf(attempts_file, "session_id %lu\n", session_id);
 
     for (size_t i = 0; i < attempt_number; i++) {
-        for (size_t j = 0; j < LETTERS_IN_WORD; j++) {
+        for (size_t j = 0; j < get_word_len(); j++) {
             char chr = attempts[i].word.letters[j];
             fprintf(attempts_file, "%c", chr);
         }
@@ -110,7 +111,7 @@ bool load_attempt_array(Attempt* attempts, size_t* attempt_number,
         return false;
     }
     while (true) {
-        char letters[LETTERS_IN_WORD + 1] = {0};
+        char letters[MAX_PRACTICAL_WORD_LEN + 1] = {0};
         GuessResult result;
         unsigned long cows, bulls;
 

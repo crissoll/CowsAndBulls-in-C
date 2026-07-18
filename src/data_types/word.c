@@ -8,8 +8,16 @@
 #include "cab_output.h"
 #include "word.h"
 
+static size_t word_len = 5;
+void set_word_len(size_t new_len) {
+    word_len = new_len;
+}
 
-Word word__new(const char letters[LETTERS_IN_WORD + 1]) {
+size_t get_word_len() {
+    return word_len;
+}
+
+Word word__new(const char letters[MAX_PRACTICAL_WORD_LEN + 1]) {
     if (!can_string_be_word(letters)) {
         push_fatal_error("tried creating word with invalid characters in it");
     }  // hard to handle
@@ -28,11 +36,11 @@ bool can_string_be_word(const char* string) {
         }
     }
 
-    if (len > LETTERS_IN_WORD) {
+    if (len > get_word_len()) {
         message(OT_INPUT_ERROR, "word too long\n");
         return false;
     }
-    if (len < LETTERS_IN_WORD) {
+    if (len < get_word_len()) {
         message(OT_INPUT_ERROR, "word too short\n");
         return false;
     }
@@ -44,7 +52,7 @@ void word__output(Word word) {
 }
 
 int word__sort_cmp(Word a, Word b) {
-    for (size_t i = 0; i < LETTERS_IN_WORD; i++) {
+    for (size_t i = 0; i < get_word_len(); i++) {
         if (a.letters[i] > b.letters[i]) {
             return +1;
         }

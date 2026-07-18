@@ -12,7 +12,7 @@
 
 #include "cmd_list.h"
 
-static bool check_pattern(const char pattern[LETTERS_IN_WORD + 1]) {
+static bool check_pattern(const char pattern[get_word_len() + 1]) {
     const size_t pattern_len = strlen(pattern);
 
     if (pattern_len == 1) {
@@ -20,15 +20,15 @@ static bool check_pattern(const char pattern[LETTERS_IN_WORD + 1]) {
                pattern[0] == UNDEFINED_LETTER;
     }
 
-    if (pattern_len != LETTERS_IN_WORD) {
+    if (pattern_len != get_word_len()) {
         return false;
     }
 
-    if (pattern[LETTERS_IN_WORD] != '\0') {
+    if (pattern[get_word_len()] != '\0') {
         return false;
     }
 
-    for (size_t k = 0; k < LETTERS_IN_WORD; k++) {
+    for (size_t k = 0; k < get_word_len(); k++) {
         const char c = pattern[k];
         if (c == '\0' || ((c < 'a' || c > 'z') && c != UNDEFINED_LETTER)) {
             return false;
@@ -46,7 +46,7 @@ static bool is_undefined_pattern(const char* pattern) {
     return true;
 }
 
-static void cmd_list__set_pattern(const char pattern[LETTERS_IN_WORD + 1]) {
+static void cmd_list__set_pattern(const char pattern[get_word_len() + 1]) {
     WordSetFilter* help_filter = get_current_help_filter();
     filter__init(help_filter);
     filter__apply_pattern(help_filter, pattern, INTERSECT);

@@ -43,16 +43,16 @@ void vocabulary__init(Vocabulary* vocabulary, const Word* words,
 
 void vocabulary__get_words_frequencies(
     const Vocabulary* vocabulary,
-    size_t matrix[ALPHABET_SIZE][LETTERS_IN_WORD]) {
+    size_t matrix[ALPHABET_SIZE][get_word_len()]) {
     for (size_t letter_idx = 0; letter_idx < ALPHABET_SIZE; letter_idx++) {
-        for (size_t pos = 0; pos < LETTERS_IN_WORD; pos++) {
+        for (size_t pos = 0; pos < get_word_len(); pos++) {
             matrix[letter_idx][pos] = 0;
         }
     }
 
     for (size_t word_idx = 0; word_idx < vocabulary->size; word_idx++) {
         const Word word = vocabulary->words[word_idx];
-        for (size_t pos = 0; pos < LETTERS_IN_WORD; pos++) {
+        for (size_t pos = 0; pos < get_word_len(); pos++) {
             const unsigned char c = (unsigned char)word.letters[pos];
             if (c >= 'a' && c <= 'z') {
                 matrix[(size_t)(c - 'a')][pos]++;

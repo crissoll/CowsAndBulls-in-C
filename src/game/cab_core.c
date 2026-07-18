@@ -25,7 +25,7 @@ void play_word(Word word) {
 
     add_attempt(word, result);
 
-    if (result.bulls >= LETTERS_IN_WORD) {
+    if (result.bulls >= get_word_len()) {
         message(OT_USER,
                 "Congratulations, you found the word in %zu attempts!\n",
                 get_attempt_number());
