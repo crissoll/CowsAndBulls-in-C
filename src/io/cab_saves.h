@@ -17,4 +17,5 @@ void delete_save_files();
 
 void generate_secret_word();
 
+void set_detect_word_len_from_voc(bool value);
 #endif

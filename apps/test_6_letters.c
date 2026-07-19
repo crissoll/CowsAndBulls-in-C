@@ -16,7 +16,6 @@ void turn_function(const char* input_string) {
 }
 
 void prep_function() {
-    cab_set_setting(STG_Rule_LettersInWord, 6);
     cab_set_vocabulary_file_path(
         "./apps/vocabularies/6_letters_example_voc.txt");
 }
