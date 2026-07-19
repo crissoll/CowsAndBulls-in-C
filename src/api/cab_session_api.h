@@ -12,7 +12,6 @@ typedef enum {
 
 GameState cab_get_game_state();
 
-
 void cab_start_new_game();
 
 void cab_load_game();

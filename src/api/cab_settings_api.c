@@ -2,6 +2,7 @@
 
 #include "cab_settings_api.h"
 
+
 #include "attempts.h"
 #include "cab_attempts_manager.h"
 #include "cab_io_consts.h"
@@ -42,8 +43,8 @@ static SettingsSpec setting_specs[STG_LEN] = {
     [STG_Display_RevealSecretWordOnSurrender] = {surrender_show_secret_word, 0,
                                                  1, 1},
     [STG_Rule_LettersInWord] = {set_word_len, 1, MAX_PRACTICAL_WORD_LEN, 5},
-    [STG_Internal_DetectLettersInWordFromVoc] = {saves_autodetect_word_len, 0,
-                                                 1, 1},
+    [STG_Internal_GetWordLenFromVocabulary] = {saves_autodetect_word_len, 0, 1,
+                                               1},
     [STG_Rule_LoseOnMaxAttemptsReached] = {attempts_lose_on_limit_reached, 0, 1,
                                            0},
     [STG_Internal_MaxAttempts] = {set_max_attempts, 1, MAX_PRACTICAL_ATTEMPTS,

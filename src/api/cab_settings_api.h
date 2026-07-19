@@ -16,7 +16,7 @@ typedef enum {
     STG_Display_RevealSecretWordOnSurrender,
     STG_Display_RevealSecretWordOnAttemptsFinished,
 
-    STG_Internal_DetectLettersInWordFromVoc,  // sets word_len based on the first word of the voc. overrides STG_Rule_LettersInWord
+    STG_Internal_GetWordLenFromVocabulary,  // sets word_len based on the first word of the voc. overrides STG_Rule_LettersInWord
     STG_Internal_AllowDuplicateLetters,  // if false, all words with duplicate letters are removed from vocabulary // WIP
     STG_Internal_MaxAttempts,
     STG_Internal_MaxListHistory,  // WIP
