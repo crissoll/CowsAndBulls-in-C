@@ -1,4 +1,5 @@
 #include "cab_attempts_manager.h"
+#include <stdbool.h>
 #include "attempts.h"
 #include "cab_io_consts.h"
 #include "cab_output.h"
@@ -47,8 +48,22 @@ void compare_attempts_to_word(Word word) {
     end_message();
 }
 
+static bool lose_on_attempts_finished = false;
+
+void set_lose_on_attempts_finished(bool value) {
+    lose_on_attempts_finished = value;
+}
+
+bool attempts_run_out() {
+    return attempt_number >= MAX_ATTEMPTS;
+}
+
 void add_attempt(Word word, GuessResult result) {
     if (attempt_number >= MAX_ATTEMPTS) {
+        if (lose_on_attempts_finished) {
+            message(OT_USER, "reached maximum amount of attempts! you lose\n");
+            return;
+        }
         message(
             OT_USER,
             "reached maximum amount of attempts! oldest one will be deleted\n");

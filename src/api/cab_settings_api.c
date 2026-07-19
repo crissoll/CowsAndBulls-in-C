@@ -2,6 +2,7 @@
 
 #include "cab_settings_api.h"
 
+#include "cab_attempts_manager.h"
 #include "cab_io_consts.h"
 #include "cab_saves.h"
 #include "cmd_surrender.h"
@@ -29,6 +30,8 @@ DEFINE_BOOL_FUNC_WRAPPER(surrender_show_secret_word,
                          set_display_secret_word_on_surrender)
 DEFINE_BOOL_FUNC_WRAPPER(saves_autodetect_word_len,
                          set_detect_word_len_from_voc)
+DEFINE_BOOL_FUNC_WRAPPER(attempts_lose_on_limit_reached,
+                         set_lose_on_attempts_finished)
 
 static SettingsSpec setting_specs[STG_LEN] = {
     [STG_Display_IndexArray_WordsPerLine] =
@@ -38,7 +41,8 @@ static SettingsSpec setting_specs[STG_LEN] = {
     [STG_Rule_LettersInWord] = {set_word_len, 1, 10, 5},
     [STG_Internal_DetectLettersInWordFromVoc] = {saves_autodetect_word_len, 0,
                                                  1, 1},
-};
+    [STG_Rule_LoseOnMaxAttemptsReached] = {attempts_lose_on_limit_reached, 0, 1,
+                                           0}};
 
 
 void cab_set_setting(Settings setting, size_t value) {

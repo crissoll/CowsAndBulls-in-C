@@ -13,9 +13,14 @@ bool is_word_already_attempted(Word word);
 
 void print_attempts();
 
+
+void set_lose_on_attempts_finished(bool value);
+
+bool attempts_run_out();
+
 void add_attempt(Word word, GuessResult result);
 
 void compare_attempts_to_word(Word word);
 
-void init_attempts(Attempt *value, size_t _attempt_number);
+void init_attempts(Attempt* value, size_t _attempt_number);
 #endif

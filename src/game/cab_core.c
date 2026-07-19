@@ -25,6 +25,10 @@ void play_word(Word word) {
 
     add_attempt(word, result);
 
+    if (attempts_run_out()) {
+        return;
+    }
+
     if (result.bulls >= get_word_len()) {
         message(OT_USER,
                 "Congratulations, you found the word in %zu attempts!\n",

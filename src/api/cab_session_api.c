@@ -166,7 +166,8 @@ void cab_process_turn() {
 
 
 bool cab_is_game_ended() {
-    return cab_secret_word_revealed() || fatal_error_met();
+    return cab_secret_word_revealed() || fatal_error_met() ||
+           attempts_run_out();
 }
 
 size_t cab_get_attempt_number() {
