@@ -14,6 +14,30 @@ static int qsort_word_cmp(const void* a, const void* b) {
     return word__sort_cmp(*(const Word*)a, *(const Word*)b);
 }
 
+
+void vocabulary__sort(Vocabulary* vocabulary) {
+    qsort(vocabulary->words, vocabulary->size, sizeof(Word), qsort_word_cmp);
+    if (vocabulary->size > 1) {
+        size_t unique_count = 1;
+        for (size_t i = 1; i < vocabulary->size; i++) {
+            if (strcmp(vocabulary->words[i].letters,
+                       vocabulary->words[unique_count - 1].letters) != 0) {
+                vocabulary->words[unique_count] = vocabulary->words[i];
+                unique_count++;
+            } else {
+                message(
+                    OT_WARNING,
+                    "vocabulary__sort: found duplicate word \"%s\", only one "
+                    "copy will be kept\n",
+                    vocabulary->words[i].letters);
+            }
+        }
+        vocabulary->size = unique_count;
+    }
+
+    vocabulary->words =
+        realloc(vocabulary->words, sizeof(Word) * vocabulary->size);
+}
 void vocabulary__init(Vocabulary* vocabulary, const Word* words,
                       size_t word_count) {
     if (vocabulary->words != NULL) {
@@ -37,7 +61,8 @@ void vocabulary__init(Vocabulary* vocabulary, const Word* words,
     }
     memcpy(vocabulary->words, words, word_count * sizeof(Word));
     vocabulary->size = word_count;
-    qsort(vocabulary->words, vocabulary->size, sizeof(Word), qsort_word_cmp);
+
+    vocabulary__sort(vocabulary);
 }
 
 

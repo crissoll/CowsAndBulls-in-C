@@ -192,7 +192,8 @@ void generate_secret_word() {
     set_file_paths_editing(false);
 }
 
-bool detect_word_len_from_voc = true;
+static bool detect_word_len_from_voc = true;
+
 void set_detect_word_len_from_voc(bool value) {
     detect_word_len_from_voc = value;
 }
@@ -211,36 +212,37 @@ void load_vocabulary() {
         return;
     }
     FILE* file = open_file_safe(get_vocabulary_file_path(), "r");
+
     char buffer[100];
     size_t i = 0;
-
     if (detect_word_len_from_voc) {
         while (fscanf(file, "%99s", buffer) == 1) {
             if (strlen(buffer) > MAX_PRACTICAL_WORD_LEN) {
                 message(OT_WARNING,
-                        "load_vocabulary: word %s is too long for automatic "
-                        "len detection, it will be skipped\n",
+                        "load_vocabulary: word %s len is too high, it can't be "
+                        "used as word_len\n",
                         buffer);
                 continue;
             }
-            set_word_len(strlen(buffer));
-            message(OT_WARNING, "load_vocabulary: word len was set as %d\n",
-                    get_word_len());
-            strcpy(words[i].letters, buffer);
-            i++;
 
+            set_word_len(strlen(buffer));
+            message(OT_WARNING, "load_vocabulary: set word_len to %d\n",
+                    get_word_len());
             break;
         }
+        strcpy_s(words[0].letters, sizeof(words[0].letters), buffer);
+        i = 1;
     }
-    while (fscanf(file, "%99s", buffer) == 1) {
+
+    for (; (fscanf(file, "%99s", buffer) == 1);) {
         if (strlen(buffer) != get_word_len()) {
             message(OT_WARNING,
-                    "load_vocabulary: word %s has wrong length, it will be "
+                    "load_vocabulary: word %s has a wrong length. it will be "
                     "skipped\n",
                     buffer);
             continue;
         }
-        strcpy(words[i].letters, buffer);
+        strcpy_s(words[i].letters, sizeof(words[i].letters), buffer);
         i++;
     }
 
