@@ -199,7 +199,11 @@ void set_detect_word_len_from_voc(bool value) {
 
 void load_vocabulary() {
     size_t word_count = get_line_count(get_vocabulary_file_path());
-
+    if (word_count == 0) {
+        message(OT_WARNING, "load_vocabulary: vocabulary file is empty\n");
+        init_used_vocabulary(NULL, 0);
+        return;
+    }
     Word* words = malloc(sizeof(words[0]) * word_count);
     if (words == NULL) {
         message(OT_WARNING, "load_vocabulary: malloc failure \n");
@@ -209,17 +213,20 @@ void load_vocabulary() {
     FILE* file = open_file_safe(get_vocabulary_file_path(), "r");
     char buffer[100];
     size_t i = 0;
+
     while (fscanf(file, "%99s", buffer) == 1) {
-        Word temp_word;
-        for (size_t j = 0; j < get_word_len(); j++) {
-            temp_word.letters[j] = buffer[j];
+        if (strlen(buffer) != get_word_len()) {
+            message(OT_WARNING,
+                    "load_vocabulary: word %s has wrong length, it will be "
+                    "skipped\n",
+                    buffer);
+            continue;
         }
-        temp_word.letters[get_word_len()] = '\0';
-        words[i] = temp_word;
+        strcpy(words[i].letters, buffer);
         i++;
     }
 
-    init_used_vocabulary(words, word_count);
+    init_used_vocabulary(words, i);
     fclose(file);
     free(words);
 }
