@@ -1,0 +1,13 @@
+dog
+dogs
+cat
+cats
+duck
+ducks
+pony
+ponies
+horse
+horse
+elephant
+kitten
+kitten
