@@ -3,9 +3,11 @@
 #include "cab_settings_api.h"
 
 #include "cab_io_consts.h"
+#include "cab_saves.h"
 #include "cmd_surrender.h"
 #include "index_array.h"
 #include "word.h"
+
 
 #include "cab_output.h"
 
@@ -15,6 +17,7 @@
     }
 
 typedef void (*SettingsFunction)(size_t);
+
 typedef struct {
     SettingsFunction func;
     size_t min_value;
@@ -24,7 +27,8 @@ typedef struct {
 
 DEFINE_BOOL_FUNC_WRAPPER(surrender_show_secret_word,
                          set_display_secret_word_on_surrender)
-
+DEFINE_BOOL_FUNC_WRAPPER(saves_autodetect_word_len,
+                         set_detect_word_len_from_voc)
 
 static SettingsSpec setting_specs[STG_LEN] = {
     [STG_Display_IndexArray_WordsPerLine] =
@@ -32,6 +36,8 @@ static SettingsSpec setting_specs[STG_LEN] = {
     [STG_System_RevealSecretWordOnSurrender] = {surrender_show_secret_word, 0,
                                                 1, 1},
     [STG_Rule_LettersInWord] = {set_word_len, 1, 10, 5},
+    [STG_Internal_DetectLettersInWordFromVoc] = {saves_autodetect_word_len, 0,
+                                                 1, 1},
 };
 
 

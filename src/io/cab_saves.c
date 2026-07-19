@@ -192,6 +192,10 @@ void generate_secret_word() {
     set_file_paths_editing(false);
 }
 
+bool detect_word_len_from_voc = true;
+void set_detect_word_len_from_voc(bool value) {
+    detect_word_len_from_voc = value;
+}
 
 void load_vocabulary() {
     size_t word_count = get_line_count(get_vocabulary_file_path());
