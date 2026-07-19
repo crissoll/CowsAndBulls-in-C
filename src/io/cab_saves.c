@@ -214,6 +214,24 @@ void load_vocabulary() {
     char buffer[100];
     size_t i = 0;
 
+    if (detect_word_len_from_voc) {
+        while (fscanf(file, "%99s", buffer) == 1) {
+            if (strlen(buffer) > MAX_PRACTICAL_WORD_LEN) {
+                message(OT_WARNING,
+                        "load_vocabulary: word %s is too long for automatic "
+                        "len detection, it will be skipped\n",
+                        buffer);
+                continue;
+            }
+            set_word_len(strlen(buffer));
+            message(OT_WARNING, "load_vocabulary: word len was set as %d\n",
+                    get_word_len());
+            strcpy(words[i].letters, buffer);
+            i++;
+
+            break;
+        }
+    }
     while (fscanf(file, "%99s", buffer) == 1) {
         if (strlen(buffer) != get_word_len()) {
             message(OT_WARNING,
