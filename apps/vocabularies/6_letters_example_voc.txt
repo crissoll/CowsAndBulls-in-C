@@ -32,3 +32,15 @@ plural
 lagoon
 dragon
 straps
+walker
+talker
+rabbit
+jacket
+possum
+bigger
+sturdy
+sitcom
+intern
+extern
+guinea
+wasted
