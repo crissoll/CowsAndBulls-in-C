@@ -39,8 +39,8 @@ DEFINE_BOOL_FUNC_WRAPPER(reveal_secret_word_on_attempts_run_out,
 static SettingsSpec setting_specs[STG_LEN] = {
     [STG_Display_IndexArray_WordsPerLine] =
         {index_array__set_output_words_per_line, 0, 100, 10},
-    [STG_System_RevealSecretWordOnSurrender] = {surrender_show_secret_word, 0,
-                                                1, 1},
+    [STG_Display_RevealSecretWordOnSurrender] = {surrender_show_secret_word, 0,
+                                                 1, 1},
     [STG_Rule_LettersInWord] = {set_word_len, 1, MAX_PRACTICAL_WORD_LEN, 5},
     [STG_Internal_DetectLettersInWordFromVoc] = {saves_autodetect_word_len, 0,
                                                  1, 1},
@@ -48,7 +48,7 @@ static SettingsSpec setting_specs[STG_LEN] = {
                                            0},
     [STG_Internal_MaxAttempts] = {set_max_attempts, 1, MAX_PRACTICAL_ATTEMPTS,
                                   MAX_PRACTICAL_ATTEMPTS},
-    [STG_System_RevealSecretWordOnAttemptsFinished] =
+    [STG_Display_RevealSecretWordOnAttemptsFinished] =
         {reveal_secret_word_on_attempts_run_out, 0, 1, 1},
 };
 

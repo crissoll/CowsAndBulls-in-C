@@ -9,12 +9,12 @@ typedef enum {
     STG_Rule_PreviousAttemptsConstraintMode,  // 0 - No constraint; 1 - Constraint; 2 - Lose attempt; 3 - Lose; // WIP
     STG_Rule_LoseOnMaxAttemptsReached,  // 0 - Delete Oldest; 1 - Lose;
 
+
     STG_Display_IndexArray_WordsPerLine,
     //STG_Display_ColorsEnabled, //uses ANSI escape color coding // WIP
     //STG_Display_CaseFormat, // lowercase, UPPERCASE, Capitalized, Normal (capitalized only in the beginning of each sentence) // WIP
-
-    STG_System_RevealSecretWordOnSurrender,
-    STG_System_RevealSecretWordOnAttemptsFinished,
+    STG_Display_RevealSecretWordOnSurrender,
+    STG_Display_RevealSecretWordOnAttemptsFinished,
 
     STG_Internal_DetectLettersInWordFromVoc,  // sets word_len based on the first word of the voc. overrides STG_Rule_LettersInWord
     STG_Internal_AllowDuplicateLetters,  // if false, all words with duplicate letters are removed from vocabulary // WIP
