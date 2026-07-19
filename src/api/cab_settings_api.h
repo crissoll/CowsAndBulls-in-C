@@ -6,7 +6,8 @@
 typedef enum {
     STG_Rule_LettersInWord,  // if you change this you have to make sure your vocabulary matches
     STG_Rule_NonVocabularyGuessesConstraintMode,  // 0 - No constraint; 1 - Constraint; 2 - Lose attempt; 3 - Lose; // WIP
-    STG_Rule_PreviousAttemptsConstraintMode,  // 0 - No constraint; 1 - Constraint; 2 - Lose attempt; 3 - Lose; // WIP
+    STG_Rule_PreviousAttemptsCoherencyConstraintMode,  // 0 - No constraint; 1 - Constraint; 2 - Lose attempt; 3 - Lose; // WIP
+    STG_Rule_WordEqualToPrevAttemptConstraintMode,  // 0 - No constraint; 1 - Constraint; 2 - Lose attempt; 3 - Lose; // WIP
     STG_Rule_LoseOnMaxAttemptsReached,  // 0 - Delete Oldest; 1 - Lose;
 
 
