@@ -36,5 +36,8 @@ int main() {
     cab_set_setting(STG_Rule_LettersInWord, 6);
     play_test_set("apps/tests/animals_tests.txt", turn_function, prep_function);
 
+    printf("\n============ len = auto ============");
+    cab_set_setting(STG_Internal_GetWordLenFromVocabulary, 1);
+    play_test_set("apps/tests/animals_tests.txt", turn_function, prep_function);
     return 0;
 }
