@@ -14,10 +14,11 @@ typedef enum {
     //STG_Display_CaseFormat, // lowercase, UPPERCASE, Capitalized, Normal (capitalized only in the beginning of each sentence) // WIP
 
     STG_System_RevealSecretWordOnSurrender,
+    STG_System_RevealSecretWordOnAttemptsFinished,
 
     STG_Internal_DetectLettersInWordFromVoc,  // sets word_len based on the first word of the voc. overrides STG_Rule_LettersInWord
     STG_Internal_AllowDuplicateLetters,  // if false, all words with duplicate letters are removed from vocabulary // WIP
-    STG_Internal_MaxAttempts,     // WIP
+    STG_Internal_MaxAttempts,
     STG_Internal_MaxListHistory,  // WIP
 
     STG_LEN

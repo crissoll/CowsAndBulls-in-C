@@ -1,6 +1,7 @@
 #include <stdbool.h>
 
 
+#include "cab_io_consts.h"
 #include "cab_output.h"
 
 #include "cab_core.h"
@@ -11,6 +12,7 @@
 
 
 static bool secret_word_found = false;
+
 
 void play_word(Word word) {
     if (!word_is_in_used_vocabulary(word)) {
@@ -23,12 +25,6 @@ void play_word(Word word) {
     }
     GuessResult result = compare_with_secret_word(word);
 
-    add_attempt(word, result);
-
-    if (attempts_run_out()) {
-        return;
-    }
-
     if (result.bulls >= get_word_len()) {
         message(OT_USER,
                 "Congratulations, you found the word in %zu attempts!\n",
@@ -36,11 +32,12 @@ void play_word(Word word) {
         secret_word_found = true;
         return;
     }
-
     start_message(OT_GUESS_RESULT);
     guess_result__output(result);
     output("\n");
     end_message();
+
+    add_attempt(word, result);
 }
 
 bool is_secret_word_found() {

@@ -125,7 +125,7 @@ void parse_input() {
 }
 
 static bool cab_secret_word_revealed() {
-    return is_secret_word_found() || has_surrendered();
+    return is_secret_word_found() || has_surrendered() || attempts_run_out();
 }
 
 void update_saves() {
@@ -166,8 +166,7 @@ void cab_process_turn() {
 
 
 bool cab_is_game_ended() {
-    return cab_secret_word_revealed() || fatal_error_met() ||
-           attempts_run_out();
+    return cab_secret_word_revealed() || fatal_error_met();
 }
 
 size_t cab_get_attempt_number() {

@@ -5,6 +5,7 @@
 
 #include "attempts.h"
 
+Attempt* get_attempts();
 size_t get_attempt_number();
 
 void reset_attempts();
@@ -15,6 +16,8 @@ void print_attempts();
 
 
 void set_lose_on_attempts_finished(bool value);
+
+void set_reveal_word_on_attempts_run_out(bool value);
 
 bool attempts_run_out();
 

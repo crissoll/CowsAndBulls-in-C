@@ -2,6 +2,7 @@
 
 #include "cab_settings_api.h"
 
+#include "attempts.h"
 #include "cab_attempts_manager.h"
 #include "cab_io_consts.h"
 #include "cab_saves.h"
@@ -32,17 +33,24 @@ DEFINE_BOOL_FUNC_WRAPPER(saves_autodetect_word_len,
                          set_detect_word_len_from_voc)
 DEFINE_BOOL_FUNC_WRAPPER(attempts_lose_on_limit_reached,
                          set_lose_on_attempts_finished)
+DEFINE_BOOL_FUNC_WRAPPER(reveal_secret_word_on_attempts_run_out,
+                         set_reveal_word_on_attempts_run_out)
 
 static SettingsSpec setting_specs[STG_LEN] = {
     [STG_Display_IndexArray_WordsPerLine] =
         {index_array__set_output_words_per_line, 0, 100, 10},
     [STG_System_RevealSecretWordOnSurrender] = {surrender_show_secret_word, 0,
                                                 1, 1},
-    [STG_Rule_LettersInWord] = {set_word_len, 1, 10, 5},
+    [STG_Rule_LettersInWord] = {set_word_len, 1, MAX_PRACTICAL_WORD_LEN, 5},
     [STG_Internal_DetectLettersInWordFromVoc] = {saves_autodetect_word_len, 0,
                                                  1, 1},
     [STG_Rule_LoseOnMaxAttemptsReached] = {attempts_lose_on_limit_reached, 0, 1,
-                                           0}};
+                                           0},
+    [STG_Internal_MaxAttempts] = {set_max_attempts, 1, MAX_PRACTICAL_ATTEMPTS,
+                                  MAX_PRACTICAL_ATTEMPTS},
+    [STG_System_RevealSecretWordOnAttemptsFinished] =
+        {reveal_secret_word_on_attempts_run_out, 0, 1, 1},
+};
 
 
 void cab_set_setting(Settings setting, size_t value) {

@@ -11,6 +11,17 @@
 #include "vocabulary.h"
 #include "word.h"
 
+
+static size_t max_attempts = MAX_PRACTICAL_ATTEMPTS;
+size_t get_max_attempts() {
+    return max_attempts;
+}
+
+void set_max_attempts(size_t value) {
+    max_attempts = value;
+}
+
+
 Attempt attempt__new(Word word, GuessResult result) {
     Attempt attempt = {.word = word, .result = result};
     return attempt;
@@ -133,7 +144,7 @@ bool load_attempt_array(Attempt* attempts, size_t* attempt_number,
 
         Attempt attempt = attempt__new(word, result);
         attempts[(*attempt_number)++] = attempt;
-        if (*attempt_number >= MAX_ATTEMPTS) {
+        if (*attempt_number >= get_max_attempts()) {
             break; /* prevent overflow */
         }
     }

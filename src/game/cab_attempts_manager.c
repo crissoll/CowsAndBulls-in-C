@@ -1,18 +1,27 @@
 #include "cab_attempts_manager.h"
 #include <stdbool.h>
+#include <stdlib.h>
 #include "attempts.h"
 #include "cab_io_consts.h"
 #include "cab_output.h"
+#include "cab_secret_word.h"
 
 
-Attempt attempts[MAX_ATTEMPTS];
+static Attempt attempts[MAX_PRACTICAL_ATTEMPTS];
 size_t attempt_number = 0;
+
+
+Attempt* get_attempts() {
+
+    return attempts;
+}
 
 size_t get_attempt_number() {
     return attempt_number;
 }
 
 void reset_attempts() {
+
     attempt_number = 0;
 }
 
@@ -29,8 +38,12 @@ bool is_word_already_attempted(Word word) {
 }
 
 void compare_attempts_to_word(Word word) {
-    size_t i;
+    if (attempt_number == 0) {
+        message(OT_USER, "no attempts yet!\n");
+    }
+
     start_message(OT_USER);
+    size_t i;
     for (i = 0; i < attempt_number; i++) {
         GuessResult expected = compare_words(attempts[i].word, word);
 
@@ -54,28 +67,46 @@ void set_lose_on_attempts_finished(bool value) {
     lose_on_attempts_finished = value;
 }
 
+static bool reveal_word_on_attempts_run_out = true;
+
+void set_reveal_word_on_attempts_run_out(bool value) {
+    reveal_word_on_attempts_run_out = value;
+}
+
 bool attempts_run_out() {
-    return attempt_number >= MAX_ATTEMPTS;
+    return attempt_number >= get_max_attempts();
 }
 
 void add_attempt(Word word, GuessResult result) {
-    if (attempt_number >= MAX_ATTEMPTS) {
-        if (lose_on_attempts_finished) {
-            message(OT_USER, "reached maximum amount of attempts! you lose\n");
-            return;
-        }
+    if (attempt_number >= get_max_attempts()) {
         message(
             OT_USER,
             "reached maximum amount of attempts! oldest one will be deleted\n");
 
-        for (size_t i = 0; i < MAX_ATTEMPTS - 1; i++) {
+        for (size_t i = 0; i < get_max_attempts() - 1; i++) {
             attempts[i] = attempts[i + 1];
         }
-        attempt_number = MAX_ATTEMPTS - 1;
+        attempt_number = get_max_attempts() - 1;
     }
 
     attempts[attempt_number] = attempt__new(word, result);
     attempt_number++;
+
+    if (lose_on_attempts_finished == false) {
+        return;
+    }
+    if (attempts_run_out()) {
+        message(OT_USER, "reached maximum amount of attempts! you lose\n");
+        if (reveal_word_on_attempts_run_out) {
+            message(OT_USER, "the secret word was %s\n",
+                    get_secret_word().letters);
+        }
+        return;
+    }
+    if (lose_on_attempts_finished) {
+        message(OT_USER, "you still have %d attempts\n",
+                get_max_attempts() - get_attempt_number());
+    }
 }
 
 void init_attempts(Attempt* value, size_t _attempt_number) {
