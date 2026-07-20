@@ -15,6 +15,7 @@
 #include "cab_paths.h"
 #include "cab_used_vocabulary.h"
 
+#include "cab_saves.h"
 #include "cab_secret_word.h"
 #include "word.h"
 
@@ -195,11 +196,11 @@ void delete_save_files() {
 }
 
 void generate_secret_word() {
-    set_secret_word(get_random_word());
     session_id_generated = false;
     generate_session_id();
     set_secret_word(get_random_word());
     set_file_paths_editing(false);
+    load_vocabulary();
 }
 
 static bool detect_word_len_from_voc = true;
@@ -225,6 +226,17 @@ static bool has_duplicate_letters(const char* letters) {
     return false;
 }
 
+static size_t random_vocabulary_decimation_percentage = 99;
+
+static bool random_skip() {
+    if (random_vocabulary_decimation_percentage > 0) {
+        const size_t N = ((size_t)rand()) % 100;
+        return (N) < random_vocabulary_decimation_percentage;
+    }
+    return false;
+}
+
+
 void load_vocabulary() {
     size_t word_count = get_line_count(get_vocabulary_file_path());
     if (word_count == 0) {
@@ -238,6 +250,13 @@ void load_vocabulary() {
         init_used_vocabulary(NULL, 0);
         return;
     }
+
+    if (random_vocabulary_decimation_percentage > 0) {
+        // session id must be generated to make sure there are deterministic results
+        generate_session_id();
+        srand(session_id);
+    }
+
     FILE* file = open_file_safe(get_vocabulary_file_path(), "r");
 
     const char buffer_len = 99;
@@ -267,8 +286,10 @@ void load_vocabulary() {
                     get_word_len());
             break;
         }
-        strcpy_s(words[0].letters, sizeof(words[0].letters), buffer);
-        i = 1;
+        if (!random_skip()) {
+            strcpy_s(words[i].letters, sizeof(words[i].letters), buffer);
+            i++;
+        }
     }
 
     for (; (fscanf(file, "%99s", buffer) == 1);) {
@@ -287,8 +308,11 @@ void load_vocabulary() {
                     buffer);*/
             continue;
         }
-        strcpy_s(words[i].letters, sizeof(words[i].letters), buffer);
-        i++;
+
+        if (!random_skip()) {
+            strcpy_s(words[i].letters, sizeof(words[i].letters), buffer);
+            i++;
+        }
     }
 
     init_used_vocabulary(words, i);
@@ -301,6 +325,7 @@ void load_saves() {
     if (are_save_files_valid()) {
         load_secret_word();
         load_attempts();
+        load_vocabulary();
         return;
     }
     message(OT_WARNING,
