@@ -15,9 +15,11 @@
 #include "cab_paths.h"
 #include "cab_used_vocabulary.h"
 
+#include "cab_help_filter.h"
 #include "cab_saves.h"
 #include "cab_secret_word.h"
 #include "word.h"
+
 
 
 typedef unsigned long SessionId;
@@ -316,6 +318,7 @@ void load_vocabulary() {
     }
 
     init_used_vocabulary(words, i);
+    reset_list_history();
     fclose(file);
     free(words);
 }
