@@ -1,8 +1,11 @@
 #ifndef _INPUT_TEST
 #define _INPUT_TEST
 
+#include <stdbool.h>
 #include <stddef.h>
 
+
+static bool start_new_game = true;
 
 typedef struct {
     const char** inputs;

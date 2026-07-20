@@ -1,6 +1,7 @@
 
 
 #include <malloc.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -103,7 +104,9 @@ void play_game_test(InputTest test, TurnFunction turn_function,
     if (prep_func != NULL) {
         prep_func();
     }
-    cab_start_new_game();
+    if (start_new_game) {
+        cab_start_new_game();
+    }
 
     for (size_t i = 0; i < test.count && !cab_is_game_ended(); i++) {
         printf("\n====[INPUT %zu] \"%s\" ====\n", i, test.inputs[i]);
