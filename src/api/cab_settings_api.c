@@ -37,6 +37,8 @@ DEFINE_BOOL_FUNC_WRAPPER(attempts_lose_on_limit_reached,
                          set_lose_on_attempts_finished)
 DEFINE_BOOL_FUNC_WRAPPER(reveal_secret_word_on_attempts_run_out,
                          set_reveal_word_on_attempts_run_out)
+DEFINE_BOOL_FUNC_WRAPPER(vocab_allow_duplicate_letters,
+                         set_allow_duplicate_letters)
 
 static SettingsSpec setting_specs[STG_LEN] = {
     [STG_Display_IndexArray_WordsPerLine] =
@@ -63,6 +65,8 @@ static SettingsSpec setting_specs[STG_LEN] = {
     [STG_Rule_WordEqualToPrevAttemptConstraintMode] =
         {set_attempts_equality_constraint, CONSTR_None, CONSTR_LoseGame,
          CONSTR_SkipAttempt},
+    [STG_Internal_AllowDuplicateLetters] = {vocab_allow_duplicate_letters, 0, 1,
+                                            1},
 };
 
 
