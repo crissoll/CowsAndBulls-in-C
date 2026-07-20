@@ -13,7 +13,6 @@ void cmd__try_word_from_tokens(size_t token_count, const char* tokens[]) {
         return;
     }
     Word word;
-
     if (!can_string_be_word(tokens[0])) {
         return;
     }

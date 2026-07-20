@@ -58,7 +58,7 @@ void revert_filter_to_history_step(size_t index) {
 }
 
 static void free_word_set(WordSet* word_set) {
-    for (size_t i = 0; i < LETTERS_IN_WORD; i++) {
+    for (size_t i = 0; i < get_word_len(); i++) {
         for (size_t j = 0; j < ALPHABET_SIZE; j++) {
             index_array__free_content(&word_set->words[i][j]);
         }

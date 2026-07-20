@@ -125,7 +125,7 @@ void parse_input() {
 }
 
 static bool cab_secret_word_revealed() {
-    return is_secret_word_found() || has_surrendered();
+    return is_secret_word_found() || has_surrendered() || attempts_run_out();
 }
 
 void update_saves() {

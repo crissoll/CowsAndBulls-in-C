@@ -10,13 +10,3 @@ char* cab_play_turn(char* input_string) {
 
     return cab_get_output();
 }
-
-const char* cab_get_input_prompt() {
-    switch (cab_get_game_state()) {
-        case GS_NOT_STARTED:
-            return "load previous game? (y/n)\n> ";
-        case GS_FIRST_TURN:
-        case GS_PLAYING:
-            return "Enter guess or command: ";
-    }
-}

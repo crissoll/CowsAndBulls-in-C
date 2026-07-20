@@ -1,11 +1,13 @@
 
 
 #include <malloc.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "cab_api.h"
+#include "cab_session_api.h"
 
 #include "input_test.h"
 
@@ -83,7 +85,8 @@ InputTestSet load_test_set_from_file(const char* file_name) {
 }
 
 
-void play_test_set(const char* file_name, TurnFunction turn_func) {
+void play_test_set(const char* file_name, TurnFunction turn_func,
+                   PrepFunction prep_func) {
     InputTestSet test_set = load_test_set_from_file(file_name);
     if (test_set.count == 0) {
         printf("no tests found\n");
@@ -91,14 +94,22 @@ void play_test_set(const char* file_name, TurnFunction turn_func) {
     }
     for (size_t i = 0; test_set.tests[i].inputs != NULL; i++) {
         printf("\n\n============== test %zu: ==============\n", i);
-        play_game_test(test_set.tests[i], turn_func);
+        play_game_test(test_set.tests[i], turn_func, prep_func);
     }
     free_test_set(&test_set);
 }
 
 
-void play_game_test(InputTest test, TurnFunction turn_function) {
-    cab_start_new_game();
+void play_game_test(InputTest test, TurnFunction turn_function,
+                    PrepFunction prep_func) {
+    if (prep_func != NULL) {
+        prep_func();
+    }
+    if (start_new_game) {
+        cab_start_new_game();
+    } else {
+        cab_load_game();
+    }
 
     for (size_t i = 0; i < test.count && !cab_is_game_ended(); i++) {
         printf("\n====[INPUT %zu] \"%s\" ====\n", i, test.inputs[i]);

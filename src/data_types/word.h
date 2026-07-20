@@ -2,18 +2,25 @@
 #define WORD_H
 
 #include <stdbool.h>
+#include <stddef.h>
+
 
 #define ALPHABET_SIZE 26
-#define LETTERS_IN_WORD 5
+#define MAX_PRACTICAL_WORD_LEN 10
 #define UNDEFINED_LETTER '*'
 
 typedef struct {
-  char letters[LETTERS_IN_WORD + 1];
+    char letters[MAX_PRACTICAL_WORD_LEN + 1];  //
 } Word;
 
-Word word__new(const char letters[LETTERS_IN_WORD + 1]);
+size_t get_word_len();
+void set_word_len(size_t new_len);
 
-bool can_string_be_word(const char *string);
+Word word__new(const char letters[MAX_PRACTICAL_WORD_LEN + 1]);
+
+bool can_string_be_word(const char* string);
+
+bool silent_can_string_be_word(const char* string);
 
 void word__output(Word word);
 

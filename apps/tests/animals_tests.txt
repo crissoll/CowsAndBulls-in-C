@@ -1,0 +1,5 @@
+list -p
+cat
+dogs
+ducks
+horses
