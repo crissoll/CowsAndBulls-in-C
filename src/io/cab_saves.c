@@ -21,7 +21,6 @@
 #include "word.h"
 
 
-
 typedef unsigned long SessionId;
 
 static SessionId session_id;
@@ -228,7 +227,11 @@ static bool has_duplicate_letters(const char* letters) {
     return false;
 }
 
-static size_t random_vocabulary_decimation_percentage = 99;
+static size_t random_vocabulary_decimation_percentage = 20;
+
+void set_vocab_decimation_percentage(size_t value) {
+    random_vocabulary_decimation_percentage = value;
+}
 
 static bool random_skip() {
     if (random_vocabulary_decimation_percentage > 0) {

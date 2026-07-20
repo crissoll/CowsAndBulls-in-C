@@ -2,6 +2,7 @@
 #define CAB_L_S
 
 #include <stdbool.h>
+#include <stddef.h>
 
 void load_vocabulary();
 
@@ -19,4 +20,6 @@ void generate_secret_word();
 void set_detect_word_len_from_voc(bool value);
 
 void set_allow_duplicate_letters(bool value);
+
+void set_vocab_decimation_percentage(size_t value);
 #endif

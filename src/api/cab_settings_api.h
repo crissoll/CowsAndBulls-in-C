@@ -9,7 +9,7 @@ typedef enum {
     STG_Rule_PreviousAttemptsCoherencyConstraintMode,  // 0 - No constraint; 1 - Constraint; 2 - Lose attempt; 3 - Lose;
     STG_Rule_WordEqualToPrevAttemptConstraintMode,  // 0 - No constraint; 1 - Constraint; 2 - Lose attempt; 3 - Lose;
     STG_Rule_LoseOnMaxAttemptsReached,  // 0 - Delete Oldest; 1 - Lose;
-
+    //STG_Rule_RemoveUsedWordsAcrossGames, // additional setting for possible future "campaign" mode
 
     STG_Display_IndexArray_WordsPerLine,
     //STG_Display_ColorsEnabled, //uses ANSI escape color coding // WIP
@@ -19,8 +19,8 @@ typedef enum {
 
     STG_Internal_GetWordLenFromVocabulary,  // sets word_len based on the first word of the voc. overrides STG_Rule_LettersInWord
     STG_Internal_AllowDuplicateLetters,  // if false, all words with duplicate letters are removed from vocabulary
+    STG_Internal_EraseRandomWordsPercentage,  // remove some of the words to change the optimal words each time
     STG_Internal_MaxAttempts,
-    STG_Internal_MaxListHistory,  // WIP
 
     STG_LEN
 } Settings;
