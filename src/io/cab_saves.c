@@ -287,8 +287,8 @@ void load_vocabulary() {
             }
 
             set_word_len(strlen(buffer));
-            message(OT_WARNING, "load_vocabulary: set word_len to %d\n",
-                    get_word_len());
+            /*message(OT_WARNING, "load_vocabulary: set word_len to %d\n",
+                    get_word_len());*/
             break;
         }
         if (!random_skip()) {
