@@ -7,6 +7,7 @@
 #include <string.h>
 
 #include "cab_api.h"
+#include "cab_session_api.h"
 
 #include "input_test.h"
 
@@ -106,6 +107,8 @@ void play_game_test(InputTest test, TurnFunction turn_function,
     }
     if (start_new_game) {
         cab_start_new_game();
+    } else {
+        cab_load_game();
     }
 
     for (size_t i = 0; i < test.count && !cab_is_game_ended(); i++) {
