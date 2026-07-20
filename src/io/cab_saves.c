@@ -1,6 +1,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <time.h>
 
@@ -25,8 +26,6 @@ static bool session_id_generated = false;
 
 extern size_t attempt_number;
 extern size_t invalid_attempts_number;
-
-extern Word secret_word;
 
 
 static void generate_session_id() {
@@ -99,9 +98,8 @@ void store_secret_word() {
     }
 
     fprintf(file, "session_id %lu\n", *get_session_id_ptr());
-    for (size_t j = 0; j < get_word_len(); j++) {
-        fprintf(file, "%c", secret_word.letters[j]);
-    }
+    fprintf(file, "%s", get_secret_word().letters);
+
     fclose(file);
 }
 
@@ -141,7 +139,11 @@ bool load_test_secret_word(Word* test_secret_word, SessionId* session_id_ptr) {
 }
 
 bool load_secret_word() {
-    bool loaded = load_test_secret_word(&secret_word, get_session_id_ptr());
+    Word temp_secret_word = get_secret_word();
+    bool loaded =
+        load_test_secret_word(&temp_secret_word, get_session_id_ptr());
+    session_id_generated = true;
+    set_secret_word(temp_secret_word);
     if (loaded) {
         set_file_paths_editing(false);
     }
@@ -195,6 +197,8 @@ void delete_save_files() {
 void generate_secret_word() {
     set_secret_word(get_random_word());
     session_id_generated = false;
+    generate_session_id();
+    set_secret_word(get_random_word());
     set_file_paths_editing(false);
 }
 
