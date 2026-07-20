@@ -8,6 +8,7 @@
 #include "cab_constraints.h"
 #include "cab_io_consts.h"
 #include "cab_saves.h"
+#include "cmd.h"
 #include "cmd_surrender.h"
 #include "index_array.h"
 #include "word.h"
@@ -69,6 +70,8 @@ static SettingsSpec setting_specs[STG_LEN] = {
                                             1},
     [STG_Internal_EraseRandomWordsPercentage] =
         {set_vocab_decimation_percentage, 0, 100, 0},
+    [STG_Rule_SpecialCharForCommands] = {set_special_command_char_from_size_t,
+                                         0, 255, 0},
 };
 
 

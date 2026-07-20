@@ -4,12 +4,13 @@
 #include <stddef.h>
 
 typedef enum {
-    STG_Rule_LettersInWord,  // if you change this you have to make sure your vocabulary matches
+    STG_Rule_LettersInWord,  // if you change this you have to make sure your vocabulary matches; you should also set STG_Rule_SpecialCharForCommands
     STG_Rule_NonVocabularyGuessesConstraintMode,  // 0 - No constraint; 1 - Constraint; 2 - Lose attempt; 3 - Lose;
     STG_Rule_PreviousAttemptsCoherencyConstraintMode,  // 0 - No constraint; 1 - Constraint; 2 - Lose attempt; 3 - Lose;
     STG_Rule_WordEqualToPrevAttemptConstraintMode,  // 0 - No constraint; 1 - Constraint; 2 - Lose attempt; 3 - Lose;
     STG_Rule_LoseOnMaxAttemptsReached,  // 0 - Delete Oldest; 1 - Lose;
     //STG_Rule_RemoveUsedWordsAcrossGames, // additional setting for possible future "campaign" mode
+    STG_Rule_SpecialCharForCommands,  // any character, can't be a letter; if set to '\0', no special char will be needed
 
     STG_Display_IndexArray_WordsPerLine,
     //STG_Display_ColorsEnabled, //uses ANSI escape color coding // WIP

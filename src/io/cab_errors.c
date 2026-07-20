@@ -1,14 +1,22 @@
 #include <stdbool.h>
 #include <stdio.h>
+#include <string.h>
 
 static bool fatal_error = false;
 
 void extra_io_warning(const char* warning_message) {
+
     printf("%s", warning_message);
+    if (warning_message[strlen(warning_message) - 1] != '\n') {
+        printf("\n");
+    }
 }
 
 void push_fatal_error(const char* error_message) {
     printf("%s", error_message);
+    if (error_message[strlen(error_message) - 1] != '\n') {
+        printf("\n");
+    }
     fatal_error = true;
 }
 
