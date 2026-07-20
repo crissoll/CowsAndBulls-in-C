@@ -32,9 +32,11 @@ bool is_word_in_attempt_array(Word word, const Attempt* attempts,
                               size_t attempt_number);
 
 void store_attempt_array(const Attempt* attempts, size_t attempt_number,
-                         const char* file_path, unsigned long session_id);
+                         size_t invalid_attempts_number, const char* file_path,
+                         unsigned long session_id);
 
 bool load_attempt_array(Attempt* attempts, size_t* attempt_number,
-                        const char* file_path, unsigned long* session_id);
+                        size_t* invalid_attempts_number, const char* file_path,
+                        unsigned long* session_id);
 
 #endif

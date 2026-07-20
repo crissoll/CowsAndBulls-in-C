@@ -1,3 +1,4 @@
+#include <stddef.h>
 #include <stdio.h>
 #include <string.h>
 #include "cab_io_consts.h"
@@ -76,7 +77,8 @@ bool is_word_in_attempt_array(Word word, const Attempt* attempts,
 }
 
 void store_attempt_array(const Attempt* attempts, size_t attempt_number,
-                         const char* file_name, unsigned long session_id) {
+                         size_t invalid_attempts_number, const char* file_name,
+                         unsigned long session_id) {
     if (file_name == NULL) {
         message(OT_WARNING, "store_attempt_array: file_name is NULL");
         return;
@@ -88,6 +90,7 @@ void store_attempt_array(const Attempt* attempts, size_t attempt_number,
         message(OT_WARNING, "store_attempt_array: attempts_file not found\n");
     }
     fprintf(attempts_file, "session_id %lu\n", session_id);
+    fprintf(attempts_file, "invalid_attempts %zu\n", invalid_attempts_number);
 
     for (size_t i = 0; i < attempt_number; i++) {
         for (size_t j = 0; j < get_word_len(); j++) {
@@ -101,7 +104,8 @@ void store_attempt_array(const Attempt* attempts, size_t attempt_number,
 }
 
 bool load_attempt_array(Attempt* attempts, size_t* attempt_number,
-                        const char* file_name, unsigned long* session_id) {
+                        size_t* invalid_attempts_number, const char* file_name,
+                        unsigned long* session_id) {
     if (file_name == NULL || attempt_number == NULL || session_id == NULL) {
         message(OT_WARNING, "load_attempt_array: invalid arguments");
     }
@@ -114,13 +118,21 @@ bool load_attempt_array(Attempt* attempts, size_t* attempt_number,
         return false;
     }
 
-    char label[16] = {0};
+    char label[32] = {0};
 
     if (fscanf(attempts_file, "%15s %lu", label, session_id) != 2 ||
         strcmp(label, "session_id") != 0) {
         fclose(attempts_file);
         return false;
     }
+
+    if (fscanf(attempts_file, "%31s %zu", label, invalid_attempts_number) !=
+            2 ||
+        strcmp(label, "invalid_attempts") != 0) {
+        fclose(attempts_file);
+        return false;
+    }
+
     while (true) {
         char letters[MAX_PRACTICAL_WORD_LEN + 1] = {0};
         GuessResult result;

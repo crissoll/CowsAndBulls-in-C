@@ -23,6 +23,7 @@ static SessionId session_id;
 static bool session_id_generated = false;
 
 extern size_t attempt_number;
+extern size_t invalid_attempts_number;
 
 extern Word secret_word;
 
@@ -53,7 +54,8 @@ bool load_attempts() {
     if (!session_id_generated) {
         generate_session_id();
     }
-    return load_attempt_array(get_attempts(), &attempt_number, path,
+    return load_attempt_array(get_attempts(), &attempt_number,
+                              &invalid_attempts_number, path,
                               get_session_id_ptr());
 }
 
@@ -69,8 +71,8 @@ void store_attempts() {
     if (get_attempt_number() == 0) {
         return;
     }
-    store_attempt_array(get_attempts(), get_attempt_number(), path,
-                        *get_session_id_ptr());
+    store_attempt_array(get_attempts(), attempt_number, invalid_attempts_number,
+                        path, *get_session_id_ptr());
 }
 
 
@@ -153,6 +155,7 @@ bool are_there_previous_save_files() {
 bool are_save_files_valid() {
     Attempt dummy_attempts[get_max_attempts()];
     size_t dummy_attempt_number = 0;
+    size_t dummy_invalid_attempt_number = 0;
     SessionId loaded_session_id;
     SessionId dummy_session_id;
     Word dummy_secret_word;
@@ -162,6 +165,7 @@ bool are_save_files_valid() {
     }
 
     if (!load_attempt_array(dummy_attempts, &dummy_attempt_number,
+                            &dummy_invalid_attempt_number,
                             get_attempts_file_path(), &(loaded_session_id))) {
         return false;
     }
