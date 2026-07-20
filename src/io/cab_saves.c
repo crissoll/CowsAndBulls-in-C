@@ -204,6 +204,23 @@ void set_detect_word_len_from_voc(bool value) {
     detect_word_len_from_voc = value;
 }
 
+static bool allow_duplicate_letters = true;
+
+void set_allow_duplicate_letters(bool value) {
+    allow_duplicate_letters = value;
+}
+
+static bool has_duplicate_letters(const char* letters) {
+    bool alphabet[26] = {};
+    for (size_t i = 0; i < strlen(letters); i++) {
+        if (alphabet[letters[i] - 'a']) {
+            return true;
+        }
+        alphabet[letters[i] - 'a'] = true;
+    }
+    return false;
+}
+
 void load_vocabulary() {
     size_t word_count = get_line_count(get_vocabulary_file_path());
     if (word_count == 0) {
@@ -232,6 +249,14 @@ void load_vocabulary() {
                 continue;
             }
             to_lower(buffer, buffer_len);
+            if (!allow_duplicate_letters && has_duplicate_letters(buffer)) {
+                message(
+                    OT_WARNING,
+                    "load_vocabulary: word %s has duplicate letters, that are "
+                    "not allowed. it will be skipped\n",
+                    buffer);
+                continue;
+            }
 
             set_word_len(strlen(buffer));
             message(OT_WARNING, "load_vocabulary: set word_len to %d\n",
@@ -244,11 +269,18 @@ void load_vocabulary() {
 
     for (; (fscanf(file, "%99s", buffer) == 1);) {
         if (strlen(buffer) != get_word_len()) {
-            message(OT_WARNING,
+            /*message(OT_WARNING,
                     "load_vocabulary: word %s has a wrong length. it will be "
                     "skipped\n",
-                    buffer);
+                    buffer);*/
+            continue;
+        }
         to_lower(buffer, buffer_len);
+        if (!allow_duplicate_letters && has_duplicate_letters(buffer)) {
+            /* message(OT_WARNING,
+                    "load_vocabulary: word %s has duplicate letters, that are "
+                    "not allowed. it will be skipped\n",
+                    buffer);*/
             continue;
         }
         strcpy_s(words[i].letters, sizeof(words[i].letters), buffer);

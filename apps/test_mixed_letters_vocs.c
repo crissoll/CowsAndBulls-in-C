@@ -7,7 +7,6 @@
 #include "cab_settings_api.h"
 
 #include "utils/input_test.h"
-#include "utils/truncated_print.h"
 
 
 void turn_function(const char* input_string) {
