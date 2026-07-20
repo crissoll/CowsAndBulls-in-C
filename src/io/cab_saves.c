@@ -7,6 +7,7 @@
 #include "attempts.h"
 #include "cab_files.h"
 #include "cab_io_consts.h"
+#include "cab_io_utils.h"
 
 #include "cab_attempts_manager.h"
 #include "cab_output.h"
@@ -218,7 +219,8 @@ void load_vocabulary() {
     }
     FILE* file = open_file_safe(get_vocabulary_file_path(), "r");
 
-    char buffer[100];
+    const char buffer_len = 99;
+    char buffer[buffer_len + 1];
     size_t i = 0;
     if (detect_word_len_from_voc) {
         while (fscanf(file, "%99s", buffer) == 1) {
@@ -229,6 +231,7 @@ void load_vocabulary() {
                         buffer);
                 continue;
             }
+            to_lower(buffer, buffer_len);
 
             set_word_len(strlen(buffer));
             message(OT_WARNING, "load_vocabulary: set word_len to %d\n",
@@ -245,6 +248,7 @@ void load_vocabulary() {
                     "load_vocabulary: word %s has a wrong length. it will be "
                     "skipped\n",
                     buffer);
+        to_lower(buffer, buffer_len);
             continue;
         }
         strcpy_s(words[i].letters, sizeof(words[i].letters), buffer);
