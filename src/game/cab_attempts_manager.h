@@ -23,7 +23,11 @@ bool attempts_run_out();
 
 void add_attempt(Word word, GuessResult result);
 
+void add_invalid_attempt();
+
 void compare_attempts_to_word(Word word);
+
+bool word_is_compatible_with_attempts(Word word);
 
 void init_attempts(Attempt* value, size_t _attempt_number);
 #endif

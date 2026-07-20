@@ -9,7 +9,9 @@
 
 static Attempt attempts[MAX_PRACTICAL_ATTEMPTS];
 size_t attempt_number = 0;
+size_t invalid_attempts_number = 0;
 
+static bool lose_on_attempts_finished = false;
 
 Attempt* get_attempts() {
 
@@ -17,12 +19,12 @@ Attempt* get_attempts() {
 }
 
 size_t get_attempt_number() {
-    return attempt_number;
+    return attempt_number + invalid_attempts_number;
 }
 
 void reset_attempts() {
-
     attempt_number = 0;
+    invalid_attempts_number = 0;
 }
 
 void print_attempts() {
@@ -31,6 +33,16 @@ void print_attempts() {
         return;
     }
     print_attempt_array(attempts, attempt_number);
+    if (invalid_attempts_number == 1) {
+        message(OT_ATTEMPTS, "1 invalid attempt\n");
+    }
+    if (invalid_attempts_number > 1) {
+        message(OT_ATTEMPTS, "%d invalid attempts\n", invalid_attempts_number);
+    }
+    if (lose_on_attempts_finished) {
+        message(OT_USER, "you still have %d attempts\n",
+                get_max_attempts() - attempt_number - invalid_attempts_number);
+    }
 }
 
 bool is_word_already_attempted(Word word) {
@@ -43,8 +55,7 @@ void compare_attempts_to_word(Word word) {
     }
 
     start_message(OT_USER);
-    size_t i;
-    for (i = 0; i < attempt_number; i++) {
+    for (size_t i = 0; i < attempt_number; i++) {
         GuessResult expected = compare_words(attempts[i].word, word);
 
         attempt__output(attempts[i]);
@@ -61,7 +72,21 @@ void compare_attempts_to_word(Word word) {
     end_message();
 }
 
-static bool lose_on_attempts_finished = false;
+bool word_is_compatible_with_attempts(Word word) {
+    if (attempt_number == 0) {
+        return true;
+    }
+    for (size_t i = 0; i < attempt_number; i++) {
+        GuessResult expected = compare_words(attempts[i].word, word);
+
+        if (attempts[i].result.cows != expected.cows ||
+            attempts[i].result.bulls != expected.bulls) {
+            return false;
+        }
+    }
+    return true;
+}
+
 
 void set_lose_on_attempts_finished(bool value) {
     lose_on_attempts_finished = value;
@@ -74,7 +99,23 @@ void set_reveal_word_on_attempts_run_out(bool value) {
 }
 
 bool attempts_run_out() {
-    return attempt_number >= get_max_attempts();
+    return (attempt_number + invalid_attempts_number) >= get_max_attempts();
+}
+
+void handle_attempts_deplition() {
+    if (lose_on_attempts_finished == false) {
+        return;
+    }
+    if (attempts_run_out()) {
+        message(OT_USER, "reached maximum amount of attempts! you lose\n");
+        if (reveal_word_on_attempts_run_out) {
+            message(OT_USER, "the secret word was %s\n",
+                    get_secret_word().letters);
+        }
+        return;
+    }
+    message(OT_USER, "you still have %d attempts\n",
+            get_max_attempts() - get_attempt_number());
 }
 
 void add_attempt(Word word, GuessResult result) {
@@ -92,21 +133,12 @@ void add_attempt(Word word, GuessResult result) {
     attempts[attempt_number] = attempt__new(word, result);
     attempt_number++;
 
-    if (lose_on_attempts_finished == false) {
-        return;
-    }
-    if (attempts_run_out()) {
-        message(OT_USER, "reached maximum amount of attempts! you lose\n");
-        if (reveal_word_on_attempts_run_out) {
-            message(OT_USER, "the secret word was %s\n",
-                    get_secret_word().letters);
-        }
-        return;
-    }
-    if (lose_on_attempts_finished) {
-        message(OT_USER, "you still have %d attempts\n",
-                get_max_attempts() - get_attempt_number());
-    }
+    handle_attempts_deplition();
+}
+
+void add_invalid_attempt() {
+    invalid_attempts_number++;
+    handle_attempts_deplition();
 }
 
 void init_attempts(Attempt* value, size_t _attempt_number) {
