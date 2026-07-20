@@ -32,7 +32,6 @@ void play_word(Word word) {
     }
     start_message(OT_GUESS_RESULT);
     guess_result__output(result);
-    output("\n");
     end_message();
 
     add_attempt(word, result);

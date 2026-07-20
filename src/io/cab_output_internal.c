@@ -222,6 +222,10 @@ void start_message(OutputTags tag) {
 }
 
 void end_message() {
+    if (default_buffer.current_size > 0 &&
+        default_buffer.buffer[default_buffer.current_size - 1] != '\n') {
+        print_to_buffer(&default_buffer, "\n");
+    }
     start_message(OT_NONE);
 }
 
