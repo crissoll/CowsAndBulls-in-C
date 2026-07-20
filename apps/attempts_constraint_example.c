@@ -1,4 +1,3 @@
-#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -8,8 +7,8 @@
 
 
 int main() {
-    cab_set_setting(STG_Internal_MaxAttempts, 4);
-    cab_set_setting(STG_Rule_LoseOnMaxAttemptsReached, true);
+    cab_set_setting(STG_Rule_PreviousAttemptsCoherencyConstraintMode,
+                    CONSTR_SpendAttempt);
     char string[1000];
     while (!cab_is_game_ended()) {
         printf("%s", cab_get_input_prompt());
