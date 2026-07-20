@@ -1,5 +1,6 @@
 #include <stddef.h>
 
+#include "cab_session_api.h"
 #include "cab_settings_api.h"
 
 
@@ -76,6 +77,12 @@ static SettingsSpec setting_specs[STG_LEN] = {
 
 
 void cab_set_setting(Settings setting, size_t value) {
+    if (cab_get_game_state() != GS_NOT_STARTED) {
+        message(OT_WARNING,
+                "cab_set_setting: this function can only be used before game "
+                "starts");
+        return;
+    }
     if (setting >= STG_LEN) {
         message(OT_WARNING,
                 "cab_set_setting: tried assigning non existing setting with "
