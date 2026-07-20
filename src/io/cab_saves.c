@@ -227,7 +227,7 @@ static bool has_duplicate_letters(const char* letters) {
     return false;
 }
 
-static size_t random_vocabulary_decimation_percentage = 20;
+static size_t random_vocabulary_decimation_percentage = 0;
 
 void set_vocab_decimation_percentage(size_t value) {
     random_vocabulary_decimation_percentage = value;

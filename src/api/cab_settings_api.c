@@ -68,7 +68,7 @@ static SettingsSpec setting_specs[STG_LEN] = {
     [STG_Internal_AllowDuplicateLetters] = {vocab_allow_duplicate_letters, 0, 1,
                                             1},
     [STG_Internal_EraseRandomWordsPercentage] =
-        {set_vocab_decimation_percentage, 0, 100, 20},
+        {set_vocab_decimation_percentage, 0, 100, 0},
 };
 
 
