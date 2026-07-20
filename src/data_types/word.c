@@ -18,7 +18,7 @@ size_t get_word_len() {
 }
 
 Word word__new(const char letters[MAX_PRACTICAL_WORD_LEN + 1]) {
-    if (!can_string_be_word(letters)) {
+    if (!silent_can_string_be_word(letters)) {
         push_fatal_error("tried creating word with invalid characters in it");
     }  // hard to handle
     Word word;
@@ -44,6 +44,24 @@ bool can_string_be_word(const char* string) {
 
         message(OT_INPUT_ERROR, "word too short\n");
         message(OT_WARNING, "%s\n", string);
+        return false;
+    }
+    return true;
+}
+
+bool silent_can_string_be_word(const char* string) {
+    const size_t len = strlen(string);
+
+    for (size_t i = 0; i < len; i++) {
+        if (string[i] < 'a' || string[i] > 'z') {
+            return false;
+        }
+    }
+
+    if (len > get_word_len()) {
+        return false;
+    }
+    if (len < get_word_len()) {
         return false;
     }
     return true;

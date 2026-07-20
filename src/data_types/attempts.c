@@ -133,7 +133,7 @@ bool load_attempt_array(Attempt* attempts, size_t* attempt_number,
             break;
         }
 
-        if (!can_string_be_word(letters)) {
+        if (!silent_can_string_be_word(letters)) {
             break;
         }
 

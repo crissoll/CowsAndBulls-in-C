@@ -20,6 +20,8 @@ Word word__new(const char letters[MAX_PRACTICAL_WORD_LEN + 1]);
 
 bool can_string_be_word(const char* string);
 
+bool silent_can_string_be_word(const char* string);
+
 void word__output(Word word);
 
 int word__sort_cmp(Word a, Word b);

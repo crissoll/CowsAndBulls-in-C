@@ -130,7 +130,7 @@ bool load_test_secret_word(Word* test_secret_word, SessionId* session_id_ptr) {
         return false;
     }
 
-    if (!can_string_be_word(letters)) {
+    if (!silent_can_string_be_word(letters)) {
         return false;
     }
     *test_secret_word = word__new(letters);
