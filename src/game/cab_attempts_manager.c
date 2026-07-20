@@ -66,6 +66,7 @@ void compare_attempts_to_word(Word word) {
             output("\tX\t");
             output("expected: ");
             guess_result__output(expected);
+            output("\n");
         }
     }
     end_message();

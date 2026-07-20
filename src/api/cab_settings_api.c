@@ -1,5 +1,6 @@
 #include <stddef.h>
 
+#include "cab_errors.h"
 #include "cab_session_api.h"
 #include "cab_settings_api.h"
 
@@ -56,7 +57,6 @@ static SettingsSpec setting_specs[STG_LEN] = {
                                   MAX_PRACTICAL_ATTEMPTS},
     [STG_Display_RevealSecretWordOnAttemptsFinished] =
         {reveal_secret_word_on_attempts_run_out, 0, 1, 1},
-
     [STG_Rule_NonVocabularyGuessesConstraintMode] = {set_vocabulary_constraint,
                                                      CONSTR_None,
                                                      CONSTR_LoseGame,
@@ -73,6 +73,7 @@ static SettingsSpec setting_specs[STG_LEN] = {
         {set_vocab_decimation_percentage, 0, 100, 0},
     [STG_Rule_SpecialCharForCommands] = {set_special_command_char_from_size_t,
                                          0, 255, 0},
+    [STG_Debug_LogMode] = {set_log_mode, 0, 256, LOG_ToFile},
 };
 
 

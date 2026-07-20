@@ -35,6 +35,9 @@ void setup_session() {
     if (session_setup) {
         return;
     }
+    reset_extra_io_log();
+    extra_io_warning("\n======== new session ===========\n");
+
     load_vocabulary();
     session_setup = true;
     setup_vars();

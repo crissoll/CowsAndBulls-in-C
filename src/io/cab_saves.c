@@ -6,9 +6,11 @@
 #include <time.h>
 
 #include "attempts.h"
+#include "cab_errors.h"
 #include "cab_files.h"
 #include "cab_io_consts.h"
 #include "cab_io_utils.h"
+
 
 #include "cab_attempts_manager.h"
 #include "cab_output.h"
@@ -256,6 +258,9 @@ void load_vocabulary() {
         return;
     }
 
+    extra_io_warning("load_vocabulary: loading vocabulary from file %s",
+                     get_vocabulary_file_path());
+
     if (random_vocabulary_decimation_percentage > 0) {
         // session id must be generated to make sure there are deterministic results
         generate_session_id();
@@ -264,25 +269,30 @@ void load_vocabulary() {
 
     FILE* file = open_file_safe(get_vocabulary_file_path(), "r");
 
+
     const char buffer_len = 99;
     char buffer[buffer_len + 1];
     size_t i = 0;
+    size_t max_alloc_size = word_count * 100 + 1;
+    char* debug_wrong_length_words = malloc(max_alloc_size);
+    char* debug_dup_letters_words = malloc(max_alloc_size);
+    bool debug_log_enabled = true;
+
     if (detect_word_len_from_voc) {
         while (fscanf(file, "%99s", buffer) == 1) {
             if (strlen(buffer) > MAX_PRACTICAL_WORD_LEN) {
-                message(OT_WARNING,
-                        "load_vocabulary: word %s len is too high, it can't be "
-                        "used as word_len\n",
-                        buffer);
+                extra_io_warning(
+                    "load_vocabulary: word %s len is too high, it can't be "
+                    "used as word_len\n",
+                    buffer);
                 continue;
             }
             to_lower(buffer, buffer_len);
             if (!allow_duplicate_letters && has_duplicate_letters(buffer)) {
-                message(
-                    OT_WARNING,
-                    "load_vocabulary: word %s has duplicate letters, that are "
-                    "not allowed. it will be skipped\n",
-                    buffer);
+                if (debug_log_enabled) {
+                    strcat(debug_dup_letters_words, buffer);
+                    strcat(debug_dup_letters_words, " ");
+                }
                 continue;
             }
 
@@ -297,20 +307,35 @@ void load_vocabulary() {
         }
     }
 
+    if (debug_wrong_length_words == NULL || debug_dup_letters_words == NULL) {
+        extra_io_warning(
+            "load_vocabulary: malloc failure for debug logging, skipped "
+            "logging detail");
+        free(debug_wrong_length_words);
+        free(debug_dup_letters_words);
+        debug_wrong_length_words = NULL;
+        debug_dup_letters_words = NULL;
+        debug_log_enabled = false;
+    } else {
+        strcpy(debug_wrong_length_words, "");
+        strcpy(debug_dup_letters_words, "");
+    }
+
     for (; (fscanf(file, "%99s", buffer) == 1);) {
         if (strlen(buffer) != get_word_len()) {
-            /*message(OT_WARNING,
-                    "load_vocabulary: word %s has a wrong length. it will be "
-                    "skipped\n",
-                    buffer);*/
+            if (debug_log_enabled) {
+                strcat(debug_wrong_length_words, buffer);
+                strcat(debug_wrong_length_words, " ");
+            }
             continue;
         }
         to_lower(buffer, buffer_len);
         if (!allow_duplicate_letters && has_duplicate_letters(buffer)) {
-            /* message(OT_WARNING,
-                    "load_vocabulary: word %s has duplicate letters, that are "
-                    "not allowed. it will be skipped\n",
-                    buffer);*/
+            if (debug_log_enabled) {
+                strcat(debug_dup_letters_words, buffer);
+                strcat(debug_dup_letters_words, " ");
+            }
+
             continue;
         }
 
@@ -324,6 +349,21 @@ void load_vocabulary() {
     reset_list_history();
     fclose(file);
     free(words);
+
+    if (debug_log_enabled) {
+        if (debug_wrong_length_words[0] != '\0') {
+            extra_io_warning("the following words have wrong length:\n%s",
+                             debug_wrong_length_words);
+        }
+        if (debug_dup_letters_words[0] != '\0') {
+            extra_io_warning(
+                "duplicate letters aren't allowed; removed the following "
+                "words:\n%s",
+                debug_dup_letters_words);
+        }
+        free(debug_wrong_length_words);
+        free(debug_dup_letters_words);
+    }
 }
 
 

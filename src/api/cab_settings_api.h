@@ -23,6 +23,8 @@ typedef enum {
     STG_Internal_EraseRandomWordsPercentage,  // remove some of the words to change the optimal words each time
     STG_Internal_MaxAttempts,
 
+    STG_Debug_LogMode,  // bitmask: 0 - No Log; 1 - to file; 2 - to stdout;
+
     STG_LEN
 } Settings;
 

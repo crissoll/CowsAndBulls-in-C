@@ -4,6 +4,7 @@
 #include "cab_io_consts.h"
 #include "cab_output.h"
 #include "cab_used_vocabulary.h"
+#include "vocabulary.h"
 
 
 WordSet help_word_set;
