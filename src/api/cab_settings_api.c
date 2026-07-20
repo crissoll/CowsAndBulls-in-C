@@ -5,6 +5,7 @@
 
 #include "attempts.h"
 #include "cab_attempts_manager.h"
+#include "cab_constraints.h"
 #include "cab_io_consts.h"
 #include "cab_saves.h"
 #include "cmd_surrender.h"
@@ -51,6 +52,17 @@ static SettingsSpec setting_specs[STG_LEN] = {
                                   MAX_PRACTICAL_ATTEMPTS},
     [STG_Display_RevealSecretWordOnAttemptsFinished] =
         {reveal_secret_word_on_attempts_run_out, 0, 1, 1},
+
+    [STG_Rule_NonVocabularyGuessesConstraintMode] = {set_vocabulary_constraint,
+                                                     CONSTR_None,
+                                                     CONSTR_LoseGame,
+                                                     CONSTR_SkipAttempt},
+    [STG_Rule_PreviousAttemptsCoherencyConstraintMode] =
+        {set_attempts_coherence_constraint, CONSTR_None, CONSTR_LoseGame,
+         CONSTR_None},
+    [STG_Rule_WordEqualToPrevAttemptConstraintMode] =
+        {set_attempts_equality_constraint, CONSTR_None, CONSTR_LoseGame,
+         CONSTR_SkipAttempt},
 };
 
 

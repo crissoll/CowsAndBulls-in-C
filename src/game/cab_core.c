@@ -1,6 +1,7 @@
 #include <stdbool.h>
 
 
+#include "cab_constraints.h"
 #include "cab_io_consts.h"
 #include "cab_output.h"
 
@@ -8,21 +9,18 @@
 
 #include "cab_attempts_manager.h"
 #include "cab_secret_word.h"
-#include "cab_used_vocabulary.h"
 
 
 static bool secret_word_found = false;
 
 
 void play_word(Word word) {
-    if (!word_is_in_used_vocabulary(word)) {
-        message(OT_ALERT, "word not contained in vocabulary\n");
+
+    const ConstraintResult constr_result = handle_contraints(word);
+    if (constr_result == Constraint_Failed) {
         return;
     }
-    if (is_word_already_attempted(word)) {
-        message(OT_ALERT, "word already attempted\n");
-        return;
-    }
+
     GuessResult result = compare_with_secret_word(word);
 
     if (result.bulls >= get_word_len()) {
