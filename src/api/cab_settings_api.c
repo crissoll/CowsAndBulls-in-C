@@ -81,20 +81,21 @@ void cab_set_setting(Settings setting, size_t value) {
     if (cab_get_game_state() != GS_NOT_STARTED) {
         message(OT_WARNING,
                 "cab_set_setting: this function can only be used before game "
-                "starts");
+                "starts; current game state = %d",
+                cab_get_game_state());
         return;
     }
     if (setting >= STG_LEN) {
-        message(OT_WARNING,
-                "cab_set_setting: tried assigning non existing setting with "
-                "number %d\n",
-                setting);
+        extra_io_warning(
+            "cab_set_setting: tried assigning non existing setting with "
+            "number %d\n",
+            setting);
         return;
     }
     if (setting_specs[setting].func == NULL) {
-        message(OT_WARNING,
-                "cab_set_setting: setting number %d has no assigned function\n",
-                setting);
+        extra_io_warning(
+            "cab_set_setting: setting number %d has no assigned function\n",
+            setting);
         return;
     }
     if (value < setting_specs[setting].min_value) {
