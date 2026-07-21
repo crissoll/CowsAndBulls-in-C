@@ -5,7 +5,6 @@
 #include "cab_constraints.h"
 #include "cab_secret_word.h"
 #include "cab_settings_api.h"
-#include "utils/input_test.h"
 
 int main() {
     cab_set_setting(STG_Rule_PreviousAttemptsCoherencyConstraintMode,

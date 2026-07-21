@@ -44,12 +44,10 @@ void setup_session() {
 }
 
 GameState cab_get_game_state() {
-    if (!are_save_files_valid()) {
-        if (!session_setup) {
-            setup_session();
-        }
-        game_state = GS_FIRST_TURN;
+    if (!session_setup) {
+        setup_session();
     }
+
     return game_state;
 }
 
@@ -143,10 +141,13 @@ void update_saves() {
 void cab_process_turn() {
     switch (game_state) {
         case GS_NOT_STARTED:
-            if (prompt_to_load_game()) {
-                game_state = GS_FIRST_TURN;
+            if (are_save_files_valid()) {
+                if (prompt_to_load_game()) {
+                    game_state = GS_FIRST_TURN;
+                }
+                return;
             }
-            return;
+            game_state = GS_FIRST_TURN;
 
         case GS_FIRST_TURN:
             if (loading_saves) {
