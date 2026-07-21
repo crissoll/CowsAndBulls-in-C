@@ -15,6 +15,8 @@
 #include "cab_paths.h"
 #include "cab_used_vocabulary.h"
 
+#include "cab_session_api.h"
+
 
 typedef enum {
     OS_OutputStale,
@@ -137,4 +139,15 @@ char** cab_get_messages_with_tag(OutputTags tag, size_t* message_count) {
     }
 
     return result;
+}
+
+
+const char* cab_get_input_prompt() {
+    switch (cab_get_game_state()) {
+        case GS_NOT_STARTED:
+            return "load previous game? (y/n)\n> ";
+        case GS_FIRST_TURN:
+        case GS_PLAYING:
+            return "Enter guess or command: ";
+    }
 }

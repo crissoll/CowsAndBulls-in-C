@@ -9,7 +9,7 @@
 #include "cab_errors.h"
 
 typedef struct {
-    IndexArray words[LETTERS_IN_WORD][ALPHABET_SIZE];
+    IndexArray words[MAX_PRACTICAL_WORD_LEN][ALPHABET_SIZE];
 } WordSet;
 
 IndexArray word_set__get_words_with_letter_at_pos(char letter,
@@ -20,11 +20,11 @@ IndexArray word_set__get_words_with_letter_at_pos(char letter,
 
 void word_set__init_from_vocabulary(WordSet* word_set,
                                     const Vocabulary* vocabulary) {
-    size_t matrix[ALPHABET_SIZE][LETTERS_IN_WORD];
+    size_t matrix[ALPHABET_SIZE][get_word_len()];
 
     vocabulary__get_words_frequencies(vocabulary, matrix);
 
-    for (size_t i = 0; i < LETTERS_IN_WORD; i++) {
+    for (size_t i = 0; i < get_word_len(); i++) {
         for (size_t j = 0; j < ALPHABET_SIZE; j++) {
             IndexArray arr;
             index_array__init(&arr, matrix[j][i]);
@@ -34,7 +34,7 @@ void word_set__init_from_vocabulary(WordSet* word_set,
 
     for (size_t i = 0; i < vocabulary->size; i++) {
         Word word = vocabulary->words[i];
-        for (size_t p = 0; p < LETTERS_IN_WORD; p++) {
+        for (size_t p = 0; p < get_word_len(); p++) {
             size_t letter_idx = (size_t)((unsigned char)word.letters[p] - 'a');
             if (matrix[letter_idx][p] == 0) {
                 push_fatal_error(
@@ -56,7 +56,7 @@ IndexArray word_set__get_words_containing_letter(const WordSet* word_set,
     index_array__init(&result, 0);
 
     bool have_result = false;
-    for (size_t pos = 0; pos < LETTERS_IN_WORD; pos++) {
+    for (size_t pos = 0; pos < get_word_len(); pos++) {
         IndexArray source = word_set->words[pos][letter_idx];
         IndexArray source_copy = index_array__copy(&source);
 

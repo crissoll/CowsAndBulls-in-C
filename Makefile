@@ -112,7 +112,7 @@ libcab_game.a: $(LIB_OBJS) | $(COMPILE_COMMANDS)
 %.o: %.c | $(COMPILE_COMMANDS)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-word.o: src/core/word.c | $(COMPILE_COMMANDS)
+word.o: src/data_types/word.c | $(COMPILE_COMMANDS)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 # =============================================================================

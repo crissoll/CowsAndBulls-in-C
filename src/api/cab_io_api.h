@@ -8,16 +8,18 @@
 
 
 // must be called at the end of execution to avoid memory leaks
-void cab_io_shutdown(); 
+void cab_io_shutdown();
 
 // clear the inner buffer and insert input_string into it.
 // if it's called twice without processing it (with session functions) the first input will be discarded
-InputStatus cab_input(const char *input_string);
+InputStatus cab_input(const char* input_string);
 
 // returns a simple stream of all messages
-char *cab_get_output();
+char* cab_get_output();
 
 // returns all the messages with the specified tag
 char** cab_get_messages_with_tag(OutputTags tag, size_t* message_count);
+
+const char* cab_get_input_prompt();
 
 #endif

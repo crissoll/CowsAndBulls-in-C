@@ -9,13 +9,8 @@
 #include "cab_input_internal.h"
 #include "cab_output.h"
 
-static void to_lower(char* string, size_t max_length) {
-    for (size_t k = 0; k < max_length && string[k] != '\0'; k++) {
-        if (string[k] >= 'A' && string[k] <= 'Z') {
-            string[k] = string[k] - 'A' + 'a';
-        }
-    }
-}
+#include "cab_io_utils.h"
+
 
 static size_t normalize_spaces_in_place(char* string) {
     size_t src_idx = 0;

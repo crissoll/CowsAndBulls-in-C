@@ -35,18 +35,19 @@ void setup_session() {
     if (session_setup) {
         return;
     }
+    reset_extra_io_log();
+    extra_io_warning("\n======== new session ===========\n");
+
     load_vocabulary();
     session_setup = true;
     setup_vars();
 }
 
 GameState cab_get_game_state() {
-    if (!are_save_files_valid()) {
-        if (!session_setup) {
-            setup_session();
-        }
-        game_state = GS_FIRST_TURN;
+    if (!session_setup) {
+        setup_session();
     }
+
     return game_state;
 }
 
@@ -125,7 +126,7 @@ void parse_input() {
 }
 
 static bool cab_secret_word_revealed() {
-    return is_secret_word_found() || has_surrendered();
+    return is_secret_word_found() || has_surrendered() || attempts_run_out();
 }
 
 void update_saves() {
@@ -140,10 +141,13 @@ void update_saves() {
 void cab_process_turn() {
     switch (game_state) {
         case GS_NOT_STARTED:
-            if (prompt_to_load_game()) {
-                game_state = GS_FIRST_TURN;
+            if (are_save_files_valid()) {
+                if (prompt_to_load_game()) {
+                    game_state = GS_FIRST_TURN;
+                }
+                return;
             }
-            return;
+            game_state = GS_FIRST_TURN;
 
         case GS_FIRST_TURN:
             if (loading_saves) {

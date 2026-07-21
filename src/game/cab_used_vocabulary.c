@@ -37,6 +37,10 @@ Word get_word(size_t index) {
 
 Word get_random_word() {
     srand((unsigned int)time(NULL));
+    if (vocab_storage.size == 0) {
+        push_fatal_error("get_random_word: vocabulary size is 0");
+        return (Word){.letters = ""};
+    }
     return vocab_storage.words[rand() % vocab_storage.size];
 }
 

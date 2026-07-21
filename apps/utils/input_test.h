@@ -1,22 +1,26 @@
 #ifndef _INPUT_TEST
 #define _INPUT_TEST
 
+#include <stdbool.h>
 #include <stddef.h>
 
+
+static bool start_new_game = true;
 
 typedef struct {
     const char** inputs;
     size_t count;
 } InputTest;
 
-typedef struct{
+typedef struct {
     InputTest* tests;
     size_t count;
 } InputTestSet;
 
 
 typedef void (*TurnFunction)(const char*);
-typedef void (*TestFunction)(InputTest,TurnFunction);
+typedef void (*PrepFunction)();
+
 
 InputTest get_empty_test();
 
@@ -26,9 +30,11 @@ void add_test_to_test_set(InputTestSet* test_set, InputTest test);
 
 InputTestSet load_test_set_from_file(const char* file_name);
 
-void play_test_set(const char* file_name, TurnFunction turn_func);
+void play_test_set(const char* file_name, TurnFunction turn_func,
+                   PrepFunction prep_func);
 
-void play_game_test(InputTest test, TurnFunction turn_function);
+void play_game_test(InputTest test, TurnFunction turn_function,
+                    PrepFunction prep_func);
 
 void free_test_set(InputTestSet* test_set);
 

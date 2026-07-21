@@ -23,11 +23,13 @@ void alert_too_many_arguments();
 
 void alert_too_few_arguments();
 
+bool parse_args(const CommandSpec* specifier, const char* tokens[],
+                size_t token_count);
 
 void parse_command(const CommandSpec* specifier, const char* tokens[],
                    size_t token_count);
 
-                   
+
 void disable_command(size_t token_count, const char* tokens[],
-                      const CommandSpec* base_spec);
+                     const CommandSpec* base_spec);
 #endif

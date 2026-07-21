@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "cab_api.h"
+
 #include "cab_io_api.h"
 #include "cab_io_consts.h"
 #include "cab_io_tag_names.h"
@@ -48,6 +48,6 @@ void turn_function(const char* input_buffer) {
 
 
 int main() {
-    play_test_set("apps/tests/tests.txt", turn_function);
+    play_test_set("apps/tests/tests.txt", turn_function, NULL);
     return 0;
 }

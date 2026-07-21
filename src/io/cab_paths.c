@@ -294,7 +294,6 @@ InitFilePathsStatus init_file_paths() {
     }
 
     file_paths_initialized = true;
-    set_file_paths_editing(false);
 
     switch (init_save_file_paths()) {
         case ISFP_PreviousValuesWillBeKept:

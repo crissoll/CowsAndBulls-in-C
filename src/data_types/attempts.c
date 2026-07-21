@@ -1,3 +1,4 @@
+#include <stddef.h>
 #include <stdio.h>
 #include <string.h>
 #include "cab_io_consts.h"
@@ -9,6 +10,18 @@
 #include "guess.h"
 #include "index_array.h"
 #include "vocabulary.h"
+#include "word.h"
+
+
+static size_t max_attempts = MAX_PRACTICAL_ATTEMPTS;
+size_t get_max_attempts() {
+    return max_attempts;
+}
+
+void set_max_attempts(size_t value) {
+    max_attempts = value;
+}
+
 
 Attempt attempt__new(Word word, GuessResult result) {
     Attempt attempt = {.word = word, .result = result};
@@ -64,7 +77,8 @@ bool is_word_in_attempt_array(Word word, const Attempt* attempts,
 }
 
 void store_attempt_array(const Attempt* attempts, size_t attempt_number,
-                         const char* file_name, unsigned long session_id) {
+                         size_t invalid_attempts_number, const char* file_name,
+                         unsigned long session_id) {
     if (file_name == NULL) {
         message(OT_WARNING, "store_attempt_array: file_name is NULL");
         return;
@@ -76,9 +90,10 @@ void store_attempt_array(const Attempt* attempts, size_t attempt_number,
         message(OT_WARNING, "store_attempt_array: attempts_file not found\n");
     }
     fprintf(attempts_file, "session_id %lu\n", session_id);
+    fprintf(attempts_file, "invalid_attempts %zu\n", invalid_attempts_number);
 
     for (size_t i = 0; i < attempt_number; i++) {
-        for (size_t j = 0; j < LETTERS_IN_WORD; j++) {
+        for (size_t j = 0; j < get_word_len(); j++) {
             char chr = attempts[i].word.letters[j];
             fprintf(attempts_file, "%c", chr);
         }
@@ -89,7 +104,8 @@ void store_attempt_array(const Attempt* attempts, size_t attempt_number,
 }
 
 bool load_attempt_array(Attempt* attempts, size_t* attempt_number,
-                        const char* file_name, unsigned long* session_id) {
+                        size_t* invalid_attempts_number, const char* file_name,
+                        unsigned long* session_id) {
     if (file_name == NULL || attempt_number == NULL || session_id == NULL) {
         message(OT_WARNING, "load_attempt_array: invalid arguments");
     }
@@ -102,26 +118,34 @@ bool load_attempt_array(Attempt* attempts, size_t* attempt_number,
         return false;
     }
 
-    char label[16] = {0};
+    char label[32] = {0};
 
     if (fscanf(attempts_file, "%15s %lu", label, session_id) != 2 ||
         strcmp(label, "session_id") != 0) {
         fclose(attempts_file);
         return false;
     }
+
+    if (fscanf(attempts_file, "%31s %zu", label, invalid_attempts_number) !=
+            2 ||
+        strcmp(label, "invalid_attempts") != 0) {
+        fclose(attempts_file);
+        return false;
+    }
+
     while (true) {
-        char letters[LETTERS_IN_WORD + 1] = {0};
+        char letters[MAX_PRACTICAL_WORD_LEN + 1] = {0};
         GuessResult result;
         unsigned long cows, bulls;
 
         /* read a word plus cows and bulls; stop on EOF or malformed line */
         int scanned =
-            fscanf(attempts_file, "%5s %lu %lu", letters, &cows, &bulls);
+            fscanf(attempts_file, "%s %lu %lu", letters, &cows, &bulls);
         if (scanned != 3) {
             break;
         }
 
-        if (!can_string_be_word(letters)) {
+        if (!silent_can_string_be_word(letters)) {
             break;
         }
 
@@ -132,7 +156,7 @@ bool load_attempt_array(Attempt* attempts, size_t* attempt_number,
 
         Attempt attempt = attempt__new(word, result);
         attempts[(*attempt_number)++] = attempt;
-        if (*attempt_number >= MAX_ATTEMPTS) {
+        if (*attempt_number >= get_max_attempts()) {
             break; /* prevent overflow */
         }
     }
