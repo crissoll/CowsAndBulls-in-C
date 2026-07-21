@@ -6,7 +6,7 @@
 
 #include "cab_io_consts.h"
 
-typedef struct{
+typedef struct {
     size_t* messages;
     OutputTags* tags;
     size_t size;
@@ -25,5 +25,7 @@ bool is_message_started();
 Messages get_messages_tags();
 
 void output__shutdown();
+
+void set_log_messages_from_size_t(size_t value);
 
 #endif

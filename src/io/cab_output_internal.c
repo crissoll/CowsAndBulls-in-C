@@ -17,6 +17,11 @@
 // extremely high, so its never checked. PLS don't go anywhere near it
 #define MAX_TEXTS_PER_SINGLE_OUTPUT 256
 
+static bool log_messages = true;
+void set_log_messages_from_size_t(size_t value) {
+    log_messages = value;
+}
+
 
 typedef struct {
     char* buffer;
@@ -141,6 +146,10 @@ void print_to_default_buffer(const char* text) {
         init_output_buffer(&default_buffer);
     }
     print_to_buffer(&default_buffer, text);
+
+    if (log_messages) {
+        extra_io_warning(text);
+    }
 }
 
 char* flush_output_buffer() {

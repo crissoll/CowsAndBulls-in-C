@@ -24,7 +24,7 @@ typedef enum {
     STG_Internal_MaxAttempts,
 
     STG_Debug_LogMode,  // bitmask: 0 - No Log; 1 - to file; 2 - to stdout;
-
+    STG_Debug_LogMessages,
     STG_LEN
 } Settings;
 
