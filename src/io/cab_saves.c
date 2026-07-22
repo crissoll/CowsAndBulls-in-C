@@ -278,6 +278,20 @@ void load_vocabulary() {
     char* debug_dup_letters_words = malloc(max_alloc_size);
     bool debug_log_enabled = true;
 
+    if (debug_wrong_length_words == NULL || debug_dup_letters_words == NULL) {
+        extra_io_warning(
+            "load_vocabulary: malloc failure for debug logging, skipped "
+            "logging detail");
+        free(debug_wrong_length_words);
+        free(debug_dup_letters_words);
+        debug_wrong_length_words = NULL;
+        debug_dup_letters_words = NULL;
+        debug_log_enabled = false;
+    } else {
+        debug_wrong_length_words[0] = '\0';
+        debug_dup_letters_words[0] = '\0';
+    }
+
     if (detect_word_len_from_voc) {
         while (fscanf(file, "%99s", buffer) == 1) {
             if (strlen(buffer) > MAX_PRACTICAL_WORD_LEN) {
@@ -305,20 +319,6 @@ void load_vocabulary() {
             strcpy_s(words[i].letters, sizeof(words[i].letters), buffer);
             i++;
         }
-    }
-
-    if (debug_wrong_length_words == NULL || debug_dup_letters_words == NULL) {
-        extra_io_warning(
-            "load_vocabulary: malloc failure for debug logging, skipped "
-            "logging detail");
-        free(debug_wrong_length_words);
-        free(debug_dup_letters_words);
-        debug_wrong_length_words = NULL;
-        debug_dup_letters_words = NULL;
-        debug_log_enabled = false;
-    } else {
-        strcpy(debug_wrong_length_words, "");
-        strcpy(debug_dup_letters_words, "");
     }
 
     for (; (fscanf(file, "%99s", buffer) == 1);) {
