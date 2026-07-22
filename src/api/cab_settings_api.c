@@ -49,28 +49,27 @@ static SettingsSpec setting_specs[STG_LEN] = {
         {index_array__set_output_words_per_line, 0, 100, 10},
     [STG_Display_RevealSecretWordOnSurrender] = {surrender_show_secret_word, 0,
                                                  1, 1},
-    [STG_Rule_LettersInWord] = {set_word_len, 1, MAX_PRACTICAL_WORD_LEN, 5},
-    [STG_Internal_GetWordLenFromVocabulary] = {saves_autodetect_word_len, 0, 1,
-                                               1},
+    [STG_Internal_WordLen] = {set_word_len, 1, MAX_PRACTICAL_WORD_LEN, 5},
+    [STG_Internal_VocabLoad_AutoWordLenDetection] = {saves_autodetect_word_len,
+                                                     0, 1, 1},
     [STG_Rule_LoseOnMaxAttemptsReached] = {attempts_lose_on_limit_reached, 0, 1,
                                            0},
     [STG_Internal_MaxAttempts] = {set_max_attempts, 1, MAX_PRACTICAL_ATTEMPTS,
                                   MAX_PRACTICAL_ATTEMPTS},
     [STG_Display_RevealSecretWordOnAttemptsFinished] =
         {reveal_secret_word_on_attempts_run_out, 0, 1, 1},
-    [STG_Rule_NonVocabularyGuessesConstraintMode] = {set_vocabulary_constraint,
-                                                     CONSTR_None,
-                                                     CONSTR_LoseGame,
-                                                     CONSTR_SkipAttempt},
-    [STG_Rule_PreviousAttemptsCoherencyConstraintMode] =
+    [STG_Rule_VocabularyConstraintMode] = {set_vocabulary_constraint,
+                                           CONSTR_None, CONSTR_LoseGame,
+                                           CONSTR_SkipAttempt},
+    [STG_Rule_AttemptsCoherencyConstraintMode] =
         {set_attempts_coherence_constraint, CONSTR_None, CONSTR_LoseGame,
          CONSTR_None},
-    [STG_Rule_WordEqualToPrevAttemptConstraintMode] =
+    [STG_Rule_AttemptsEqualityConstraintMode] =
         {set_attempts_equality_constraint, CONSTR_None, CONSTR_LoseGame,
          CONSTR_SkipAttempt},
-    [STG_Internal_AllowDuplicateLetters] = {vocab_allow_duplicate_letters, 0, 1,
-                                            1},
-    [STG_Internal_EraseRandomWordsPercentage] =
+    [STG_Internal_VocabLoad_AllowDuplicateLetters] =
+        {vocab_allow_duplicate_letters, 0, 1, 1},
+    [STG_Internal_VocabLoad_RandomWordsErasurePercentage] =
         {set_vocab_decimation_percentage, 0, 100, 0},
     [STG_Rule_SpecialCharForCommands] = {set_special_command_char_from_size_t,
                                          0, 255, 0},

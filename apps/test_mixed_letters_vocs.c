@@ -21,22 +21,22 @@ void prep_function() {
 
 int main() {
     printf("============ len = 5 ============");
-    cab_set_setting(STG_Internal_GetWordLenFromVocabulary, 0);
-    cab_set_setting(STG_Rule_LettersInWord, 5);
+    cab_set_setting(STG_Internal_VocabLoad_AutoWordLenDetection, 0);
+    cab_set_setting(STG_Internal_WordLen, 5);
     play_test_set("apps/tests/animals_tests.txt", turn_function, prep_function);
 
     printf("\n============ len = 3 ============");
-    cab_set_setting(STG_Internal_GetWordLenFromVocabulary, 0);
-    cab_set_setting(STG_Rule_LettersInWord, 3);
+    cab_set_setting(STG_Internal_VocabLoad_AutoWordLenDetection, 0);
+    cab_set_setting(STG_Internal_WordLen, 3);
     play_test_set("apps/tests/animals_tests.txt", turn_function, prep_function);
 
     printf("\n============ len = 6 ============");
-    cab_set_setting(STG_Internal_GetWordLenFromVocabulary, 0);
-    cab_set_setting(STG_Rule_LettersInWord, 6);
+    cab_set_setting(STG_Internal_VocabLoad_AutoWordLenDetection, 0);
+    cab_set_setting(STG_Internal_WordLen, 6);
     play_test_set("apps/tests/animals_tests.txt", turn_function, prep_function);
 
     printf("\n============ len = auto ============");
-    cab_set_setting(STG_Internal_GetWordLenFromVocabulary, 1);
+    cab_set_setting(STG_Internal_VocabLoad_AutoWordLenDetection, 1);
     play_test_set("apps/tests/animals_tests.txt", turn_function, prep_function);
     return 0;
 }

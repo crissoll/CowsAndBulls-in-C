@@ -7,7 +7,7 @@
 
 
 int main() {
-    cab_set_setting(STG_Rule_PreviousAttemptsCoherencyConstraintMode,
+    cab_set_setting(STG_Rule_AttemptsCoherencyConstraintMode,
                     CONSTR_SpendAttempt);
     char string[1000];
     while (!cab_is_game_ended()) {
