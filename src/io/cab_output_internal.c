@@ -153,7 +153,7 @@ void print_to_default_buffer(const char* text) {
 }
 
 char* flush_output_buffer() {
-    if (!buffer_initialized) {
+    if (!buffer_initialized || default_buffer.buffer == NULL) {
         return strdup("");
     }
     char* result = strdup(default_buffer.buffer);
@@ -187,7 +187,7 @@ Messages get_messages_tags() {
     };
 
     if (result.messages == NULL || result.tags == NULL) {
-        extra_io_warning("couldn't ");
+        extra_io_warning("get_messages_tags: malloc failure");
         return (Messages){
             .messages = NULL,
             .tags = NULL,
