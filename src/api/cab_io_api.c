@@ -7,6 +7,7 @@
 
 #include "cab_io_api.h"
 #include "cab_io_consts.h"
+#include "cab_io_utils.h"
 
 #include "cab_errors.h"
 
@@ -73,6 +74,11 @@ void update_output_messages() {
     free(cur_txt);
     msg_tags = get_messages_tags();
     cur_txt = flush_output_buffer();
+    if (msg_tags.size > 1) {
+        for (size_t msg = 0; msg < msg_tags.size - 1; msg++) {
+            text_wrap(&cur_txt[msg_tags.messages[msg]]);
+        }
+    }
     output_state = OS_MessagesUpToDate;
 }
 
