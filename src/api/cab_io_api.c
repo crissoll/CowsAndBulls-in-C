@@ -80,6 +80,9 @@ char* cab_get_output() {
     if (output_state != OS_MessagesUpToDate) {
         update_output_messages();
     }
+    if (cur_txt == NULL) {
+        return strdup("");
+    }
     return strdup(cur_txt);
 }
 
@@ -96,7 +99,7 @@ char** cab_get_messages_with_tag(OutputTags tag, size_t* message_count) {
         update_output_messages();
     }
 
-    if (msg_tags.size == 0) {
+    if (msg_tags.size <= 1) {
         return NULL;
     }
 
