@@ -12,6 +12,7 @@ typedef enum {
     //STG_Rule_RemoveUsedWordsAcrossGames, // additional setting for possible future "campaign" mode
     STG_Rule_SpecialCharForCommands,  // any character, can't be a letter; if set to '\0', no special char will be needed
 
+    STG_Display_TextWrapMaxLineLength,
     STG_Display_IndexArray_WordsPerLine,
     //STG_Display_ColorsEnabled, //uses ANSI escape color coding // WIP
     //STG_Display_CaseFormat, // lowercase, UPPERCASE, Capitalized, Normal (capitalized only in the beginning of each sentence) // WIP

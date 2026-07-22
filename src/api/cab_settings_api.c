@@ -9,6 +9,7 @@
 #include "cab_attempts_manager.h"
 #include "cab_constraints.h"
 #include "cab_io_consts.h"
+#include "cab_io_utils.h"
 #include "cab_output_internal.h"
 #include "cab_saves.h"
 #include "cmd.h"
@@ -75,6 +76,8 @@ static SettingsSpec setting_specs[STG_LEN] = {
                                          0, 255, 0},
     [STG_Debug_LogMode] = {set_log_mode, 0, 256, LOG_ToFile},
     [STG_Debug_LogMessages] = {set_log_messages_from_size_t, 0, 1, 0},
+    [STG_Display_TextWrapMaxLineLength] = {set_max_chars_per_line, 10, 1000,
+                                           25},
 };
 
 
