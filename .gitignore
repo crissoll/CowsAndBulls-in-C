@@ -1,9 +1,21 @@
+# Build Artifacts & Binaries
+*.o
+*.a
+*.exe
+
+# Runtime Data & Logs
 *.saves
 *.log
-*.o
-*.exe
-/.vscode
-*.a
+.ps_history
+
+# Language Server & Build Metadata
 compile_commands.json
-.clang-format
-.clangd
+.clangd/
+.cache/
+
+# VS Code (Ignore user state, keep shared settings & tasks)
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
