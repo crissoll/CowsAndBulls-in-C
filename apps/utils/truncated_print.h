@@ -1,9 +1,9 @@
 #ifndef _TRUNC_PRINT
 #define _TRUNC_PRINT
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdio.h>
-#include <stdbool.h>
 #include <string.h>
 
 void print_truncated_string(char* string, size_t len) {

@@ -1,10 +1,14 @@
-#include "cab_attempts_manager.h"
 #include <stdbool.h>
 #include <stdlib.h>
+
 #include "attempts.h"
+
 #include "cab_io_consts.h"
 #include "cab_output.h"
+
 #include "cab_secret_word.h"
+
+#include "cab_attempts_manager.h"
 
 
 static Attempt attempts[MAX_PRACTICAL_ATTEMPTS];
