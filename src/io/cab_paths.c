@@ -69,7 +69,19 @@ SetPathStringStatus set_path_string(char** path, const char* value) {
 }
 
 
+static bool dir_exists(const char* path) {
+    struct stat st;
+    if (stat(path, &st) == 0) {
+        return S_ISDIR(st.st_mode);
+    }
+    return false;
+}
+
 bool create_directories_if_missing(const char* path) {
+    if (path == NULL || path[0] == '\0') {
+        return false;
+    }
+
     char tmp[256];
 
     snprintf(tmp, sizeof(tmp), "%s", path);
@@ -80,35 +92,42 @@ bool create_directories_if_missing(const char* path) {
     }
 
     for (char* p = tmp + 1; *p; p++) {
-        if (*p == '/') {
+        if (*p == '/' || *p == '\\') {
+            char original = *p;
             *p = '\0';
-            if (MKDIR(tmp) != 0 && errno != EEXIST) {
-                return false;
+            if (!(p == tmp + 2 && tmp[1] == ':')) {
+                if (!dir_exists(tmp)) {
+                    if (MKDIR(tmp) != 0 && !dir_exists(tmp)) {
+                        return false;
+                    }
+                }
             }
-            *p = '/';
+            *p = original;
         }
     }
 
-    if (MKDIR(tmp) != 0 && errno != EEXIST) {
-        return false;
+    if (!dir_exists(tmp)) {
+        if (MKDIR(tmp) != 0 && !dir_exists(tmp)) {
+            return false;
+        }
     }
 
     return true;
 }
 
 static size_t get_normalized_path_len(const char* path) {
-    char* last = (char*)path + strlen(path) - 1;
-
-    while (last > path + 1 && (*last == ' ' || *last == '\t')) {
-        last--;
+    if (path == NULL || path[0] == '\0') {
+        return 0;
     }
-
-    if (last > path &&
-        (*last == '\\' || *last == '/' || *last == ' ' || *last == '\t')) {
-        last--;
+    size_t len = strlen(path);
+    while (len > 0 && (path[len - 1] == ' ' || path[len - 1] == '\t' ||
+                       path[len - 1] == '/' || path[len - 1] == '\\')) {
+        len--;
     }
-
-    return last - path + 1;
+    if (len == 0 && (path[0] == '/' || path[0] == '\\')) {
+        return 1;
+    }
+    return len;
 }
 
 typedef enum {
@@ -155,21 +174,23 @@ typedef enum {
 } InitSavesFilePathStatus;
 
 InitSavesFilePathStatus init_save_file_paths() {
+    if (saves_folder_path == NULL || saves_folder_path[0] == '\0') {
+        switch (set_path_string(&saves_folder_path,
+                                DEFAULT_SAVES_FOLDER_PATH)) {
+            case SPS_EmptyArgument:
+            case SPS_MallocFailure:
+                message(OT_WARNING,
+                        "init_save_file_paths: cannot set path string\n");
+                return ISFP_NoInitPossible;
+            case SPS_Success:
+                break;
+        }
+    }
+
     switch (check_saves_folder_path(saves_folder_path)) {
         case CSFP_Success:
             break;
         case CSFP_NullOrEmptyArgument:
-            switch (set_path_string(&saves_folder_path,
-                                    DEFAULT_SAVES_FOLDER_PATH)) {
-                case SPS_EmptyArgument:
-                case SPS_MallocFailure:
-                    message(OT_WARNING,
-                            "init_save_file_paths: cannot set path string\n");
-                    return ISFP_NoInitPossible;
-                case SPS_Success:
-                    break;
-            }
-            break;
         case CSFP_MallocFailure:
         case CSFP_DirCreationFailure:
             start_message(OT_WARNING);
@@ -350,6 +371,20 @@ bool set_saves_folder_path(const char* path) {
             return false;
     }
 }
+
+const char* get_saves_folder_path() {
+    if (!file_paths_initialized) {
+        switch (init_file_paths()) {
+            case IFP_Success:
+                break;
+            case IFP_Failure:
+            case IFP_NoSaves:
+                return NULL;
+        }
+    }
+    return saves_folder_path;
+}
+
 
 bool set_vocabulary_file_path(const char* path) {
     if (file_paths_editing_enabled == false) {
