@@ -88,6 +88,7 @@ void store_attempt_array(const Attempt* attempts, size_t attempt_number,
 
     if (attempts_file == NULL) {
         message(OT_WARNING, "store_attempt_array: attempts_file not found\n");
+        return;
     }
     fprintf(attempts_file, "session_id %lu\n", session_id);
     fprintf(attempts_file, "invalid_attempts %zu\n", invalid_attempts_number);
