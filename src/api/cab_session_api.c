@@ -6,8 +6,6 @@
 
 
 #include "cab_input.h"
-#include "cab_io_consts.h"
-#include "cab_output.h"
 
 #include "cab_attempts_manager.h"
 #include "cab_core.h"
@@ -87,25 +85,12 @@ bool prompt_to_load_game() {
         loading_saves = false;
         return true;
     }
-
-    char buffer[100];
-    char** input_tokens = NULL;
-
-    size_t input_size =
-        get_tokens_from_input(buffer, sizeof(buffer), &input_tokens);
-
-    free(input_tokens);
-
-    if (input_size == 0 ||
-        (strcmp(buffer, "y") != 0 && strcmp(buffer, "n") != 0)) {
-        message(OT_INPUT_ERROR, "input must be y or n\n");
-        return false;
-    }
-
-    if (buffer[0] == 'y') {
-        loading_saves = true;
-    } else {
-        loading_saves = false;
+    YORN_Result y_or_n = get_y_or_n_from_input();
+    switch (y_or_n) {
+        case YORN_Invalid:
+            return false;
+        default:
+            loading_saves = y_or_n;
     }
     return true;
 }
