@@ -13,7 +13,7 @@ void to_lower(char* string, size_t max_length) {
 }
 
 
-static size_t max_chars_per_line = 25;
+static size_t max_chars_per_line = 80;
 
 void set_max_chars_per_line(size_t value) {
     max_chars_per_line = value;
