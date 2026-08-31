@@ -160,7 +160,8 @@ const char* cab_get_input_prompt() {
                 return "load previous game? (y/n)\n> ";
             }
         case GS_FIRST_TURN:
-            return "Type a 5-letter word to guess, or 'help' for commands\n> ";
+            return "Type a 5-letter word to guess, or 'help' to display "
+                   "available commands:\n> ";
         case GS_PLAYING:
             return "Enter guess or command: ";
     }

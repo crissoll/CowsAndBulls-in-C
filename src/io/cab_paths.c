@@ -1,4 +1,3 @@
-#include <errno.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
@@ -175,8 +174,8 @@ typedef enum {
 
 InitSavesFilePathStatus init_save_file_paths() {
     if (saves_folder_path == NULL || saves_folder_path[0] == '\0') {
-        switch (set_path_string(&saves_folder_path,
-                                DEFAULT_SAVES_FOLDER_PATH)) {
+        switch (
+            set_path_string(&saves_folder_path, DEFAULT_SAVES_FOLDER_PATH)) {
             case SPS_EmptyArgument:
             case SPS_MallocFailure:
                 message(OT_WARNING,
