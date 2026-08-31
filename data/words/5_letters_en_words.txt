@@ -30,6 +30,7 @@ adder
 adela
 adept
 adieu
+adios
 admit
 adobe
 adopt
@@ -269,10 +270,14 @@ bilge
 bills
 billy
 binds
+binge
+bingo
+biome
 biped
 birch
 birds
 birth
+bisex
 bison
 bitch
 bites
@@ -644,6 +649,7 @@ craft
 crags
 craig
 cramp
+crams
 crane
 crank
 crape
@@ -2935,6 +2941,7 @@ taken
 takes
 tales
 talks
+talky
 tally
 talon
 tamed
@@ -2943,6 +2950,7 @@ tammy
 tampa
 tanks
 taper
+taped
 tapes
 tardy
 tares
@@ -3110,6 +3118,7 @@ truss
 trust
 truth
 tryst
+tubed
 tubes
 tufts
 tulip
@@ -3411,6 +3420,8 @@ zaxes
 zazen
 zebec
 zebra
+zelda
+zelot
 zeros
 zests
 zesty
