@@ -11,6 +11,8 @@
 #include "cab_core.h"
 #include "cab_errors.h"
 #include "cab_help_filter.h"
+#include "cab_io_consts.h"
+#include "cab_output.h"
 #include "cab_saves.h"
 #include "cmd.h"
 
@@ -26,6 +28,11 @@ static bool session_setup = false;
 
 static GameState game_state = GS_NOT_STARTED;
 
+static bool play_again_prompt = true;
+
+void set_play_again_prompt_visible(bool value) {
+    play_again_prompt = play_again_prompt;
+}
 
 void setup_vars();
 
@@ -116,12 +123,13 @@ static bool cab_secret_word_revealed() {
 
 void update_saves() {
     if (cab_secret_word_revealed()) {
-        game_state = GS_NOT_STARTED;
+        game_state = GS_PLAY_AGAIN;
         delete_save_files();
         return;
     }
     store_saves();
 }
+
 
 void cab_process_turn() {
     switch (game_state) {
@@ -144,18 +152,41 @@ void cab_process_turn() {
                 update_saves();
                 game_state = GS_PLAYING;
             }
+            if (cab_is_game_ended()) {
+                game_state = GS_PLAY_AGAIN;
+            }
             return;
 
         case GS_PLAYING:
             parse_input();
             update_saves();
+            if (cab_is_game_ended()) {
+                game_state = GS_PLAY_AGAIN;
+            }
             return;
+        case GS_PLAY_AGAIN:
+            if (!play_again_prompt) {
+                game_state = GS_NOT_STARTED;
+                return;
+            }
+            switch (get_y_or_n_from_input()) {
+                case YORN_Yes:
+                    session_setup = false;
+                    setup_session();
+                    game_state = GS_FIRST_TURN;
+                    break;
+                case YORN_No:
+                    game_state = GS_NOT_STARTED;
+                case YORN_Invalid:
+                    return;
+            }
     }
 }
 
 
 bool cab_is_game_ended() {
-    return cab_secret_word_revealed() || fatal_error_met();
+    return (cab_secret_word_revealed() || fatal_error_met()) &&
+           (!play_again_prompt || game_state != GS_PLAY_AGAIN);
 }
 
 size_t cab_get_attempt_number() {

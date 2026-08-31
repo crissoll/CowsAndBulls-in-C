@@ -8,6 +8,7 @@ typedef enum {
     GS_NOT_STARTED,
     GS_FIRST_TURN,
     GS_PLAYING,
+    GS_PLAY_AGAIN,
 } GameState;
 
 GameState cab_get_game_state();
@@ -25,5 +26,7 @@ bool cab_is_game_ended();
 size_t cab_get_attempt_number();
 
 void cab_session_shutdown();
+
+void set_play_again_prompt_visible(bool value);
 
 #endif

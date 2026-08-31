@@ -164,5 +164,10 @@ const char* cab_get_input_prompt() {
                    "available commands:\n> ";
         case GS_PLAYING:
             return "Enter guess or command: ";
+        case GS_PLAY_AGAIN:
+            if (cab_is_game_ended()) {  // convoluted way to access "show_play_again_prompt"...
+                return "";
+            }
+            return "Play Again? (y/n)\n>";
     }
 }
