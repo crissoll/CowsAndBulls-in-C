@@ -40,7 +40,7 @@ void word_set__init_from_vocabulary(WordSet* word_set,
                 push_fatal_error(
                     "word_set__init_from_vocabulary: failed to add word to "
                     "word_set. data integrity cannot be ensured\n");
-                continue;
+                break;
             }
             IndexArray* arr = &word_set->words[p][letter_idx];
             size_t index = (arr->size - matrix[letter_idx][p]);

@@ -31,6 +31,7 @@ Word get_word(size_t index) {
         push_fatal_error(
             "get_word: tried getting word with index out of bounds");  // hard
                                                                        // to fix
+        return (Word){.letters = ""};
     }
     return vocab_storage.words[index];
 }
