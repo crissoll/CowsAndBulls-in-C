@@ -1,0 +1,23 @@
+{
+  "files.associations": {
+    "*.h": "c",
+  },
+  "editor.formatOnSave": true,
+  "editor.rulers": [
+    80
+  ],
+  "files.exclude": {
+    "**/.cache": true,
+    "**/*.o": true,
+    "**/*.a": true,
+  },
+  "lldb.launch.initCommands": [
+    "type summary add -x -s \"${var%s}\" \"^char\\[[0-9]+\\]$\"",
+    "type summary add -s \"${var.letters%s}\" Word",
+    "type summary add -s \"cows: ${var.cows}, bulls: ${var.bulls}\" GuessResult",
+    "type summary add -s \"${var.word.letters%s} (cows: ${var.result.cows}, bulls: ${var.result.bulls})\" Attempt",
+    "type summary add -s \"size: ${var.size}\" IndexArray",
+    "type summary add -s \"${var.size} words\" Vocabulary",
+    "type summary add -s \"${var.name%s}\" CommandSpec",
+  ]
+}

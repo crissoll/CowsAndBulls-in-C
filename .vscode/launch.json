@@ -1,0 +1,24 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug Game (CodeLLDB)",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/cab_game.exe",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "Build Game",
+    },
+    {
+      "name": "Debug Game (External Window)",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/cab_game.exe",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+      "terminal": "external",
+      "preLaunchTask": "Build Game",
+    }
+  ]
+}
