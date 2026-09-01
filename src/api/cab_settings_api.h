@@ -28,6 +28,7 @@ typedef enum {
     STG_Debug_LogMode,  // bitmask: 0 - No Log; 1 - to file; 2 - to stdout;
     STG_Debug_LogMessages,
     STG_Debug_LogInput,
+    STG_Debug_LogInputPrompt,
 
 
     STG_LEN

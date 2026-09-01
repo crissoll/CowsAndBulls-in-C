@@ -152,8 +152,7 @@ char** cab_get_messages_with_tag(OutputTags tag, size_t* message_count) {
     return result;
 }
 
-
-const char* cab_get_input_prompt() {
+const char* get_input_prompt() {
     switch (cab_get_game_state()) {
         case GS_NOT_STARTED:
             if (are_save_files_valid()) {
@@ -170,4 +169,18 @@ const char* cab_get_input_prompt() {
             }
             return "Play Again? (y/n)\n>";
     }
+}
+
+static bool log_input_prompt = true;
+
+void set_log_input_prompt(bool value) {
+    log_input_prompt = value;
+}
+
+const char* cab_get_input_prompt() {
+    const char* prompt = get_input_prompt();
+    if (log_input_prompt) {
+        extra_io_warning("[input prompt]: %s", prompt);
+    }
+    return prompt;
 }

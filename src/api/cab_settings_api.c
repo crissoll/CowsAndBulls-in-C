@@ -1,6 +1,7 @@
 #include <stddef.h>
 
 #include "cab_errors.h"
+#include "cab_io_api.h"
 #include "cab_session_api.h"
 #include "cab_settings_api.h"
 
@@ -46,6 +47,7 @@ DEFINE_BOOL_FUNC_WRAPPER(reveal_secret_word_on_attempts_run_out,
 DEFINE_BOOL_FUNC_WRAPPER(vocab_allow_duplicate_letters,
                          set_allow_duplicate_letters)
 DEFINE_BOOL_FUNC_WRAPPER(setting__set_log_input, set_log_input)
+DEFINE_BOOL_FUNC_WRAPPER(setting__set_log_input_prompt, set_log_input_prompt)
 
 static SettingsSpec setting_specs[STG_LEN] = {
     [STG_Display_IndexArray_WordsPerLine] =
@@ -81,6 +83,8 @@ static SettingsSpec setting_specs[STG_LEN] = {
     [STG_Display_TextWrapMaxLineLength] = {set_max_chars_per_line, 10, 1000,
                                            25},
     [STG_Debug_LogInput] = {setting__set_log_input, 0, 1, 1},
+    [STG_Debug_LogInputPrompt] = {setting__set_log_input_prompt, 0, 1, 1},
+
 };
 
 
