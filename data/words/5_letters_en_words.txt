@@ -171,6 +171,7 @@ award
 aware
 awful
 awoke
+axial
 axiom
 axles
 ayelp
@@ -432,6 +433,8 @@ butte
 butts
 buxom
 buyer
+bylaw
+bytes
 cabal
 cabby
 cabin
@@ -462,6 +465,7 @@ canto
 caper
 capes
 capon
+carat
 cards
 cared
 cares
@@ -511,6 +515,7 @@ cheer
 chefs
 chess
 chest
+chews
 chick
 chide
 chief
@@ -528,6 +533,7 @@ choir
 choke
 chops
 chord
+chore
 chose
 chuck
 chump
@@ -704,6 +710,7 @@ cults
 curds
 cured
 cures
+curie
 curls
 curly
 curry
@@ -1216,6 +1223,7 @@ gates
 gaudy
 gauge
 gaunt
+gauss
 gauze
 gauzy
 gavel
@@ -1408,6 +1416,7 @@ heavy
 hedge
 heeds
 heels
+hefty
 heirs
 helen
 helix
@@ -1496,6 +1505,7 @@ imbue
 impel
 imply
 inane
+inbox
 incur
 index
 india
@@ -2091,6 +2101,7 @@ pared
 paris
 parka
 parks
+parma
 parry
 parse
 parts
@@ -2986,6 +2997,7 @@ tepid
 terms
 terry
 terse
+tesla
 tests
 testy
 texts
@@ -3052,6 +3064,7 @@ tones
 tonga
 tongs
 tonic
+tonne
 tools
 tooth
 topaz
@@ -3280,6 +3293,7 @@ wasps
 waste
 watch
 water
+watts
 waved
 waver
 waves
@@ -3289,6 +3303,7 @@ waxes
 wears
 weary
 weave
+weber
 wedge
 weeds
 weedy
