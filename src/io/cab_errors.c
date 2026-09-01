@@ -11,6 +11,8 @@ static bool fatal_error = false;
 static bool log_to_file = true;
 static bool log_to_stdout = false;
 
+static size_t file_interaction_count = 0;
+
 void set_log_mode(size_t value) {
     log_to_file = value & LOG_ToFile;
     log_to_stdout = value & LOG_ToStdout;
@@ -24,6 +26,7 @@ void reset_extra_io_log() {
 
 void va_extra_io_log_to_stream(const char* format_text, va_list vargs,
                                FILE* stream) {
+    fprintf(stream, "[_%06zu_]:", file_interaction_count++);
     vfprintf(stream, format_text, vargs);
     if (format_text[strlen(format_text) - 1] != '\n') {
         fprintf(stream, "\n");
