@@ -146,15 +146,14 @@ void print_to_default_buffer(const char* text) {
         init_output_buffer(&default_buffer);
     }
     print_to_buffer(&default_buffer, text);
-
-    if (log_messages) {
-        extra_io_warning(text);
-    }
 }
 
 char* flush_output_buffer() {
     if (!buffer_initialized || default_buffer.buffer == NULL) {
         return strdup("");
+    }
+    if (log_messages) {
+        extra_io_warning("%s", default_buffer.buffer);
     }
     char* result = strdup(default_buffer.buffer);
     reset_output_buffer(&default_buffer);
