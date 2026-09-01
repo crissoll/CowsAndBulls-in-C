@@ -31,7 +31,7 @@ static GameState game_state = GS_NOT_STARTED;
 static bool play_again_prompt = true;
 
 void set_play_again_prompt_visible(bool value) {
-    play_again_prompt = play_again_prompt;
+    play_again_prompt = value;
 }
 
 void setup_vars();
