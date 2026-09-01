@@ -7,7 +7,7 @@
 
 // transcription of the names of OutputTags values
 // can be used for debugging purposes
-const char* OUTPUT_TAG_NAMES[LOG2(OT_END - 1) + 1] = {
+static const char* const OUTPUT_TAG_NAMES[LOG2(OT_END - 1) + 1] = {
     [OT_NONE] = "NONE",
     [LOG2(OT_USER)] = "USER",
     [LOG2(OT_GUESS_RESULT)] = "GUESS_RESULT",
