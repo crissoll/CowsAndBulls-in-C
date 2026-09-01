@@ -28,6 +28,19 @@
       "problemMatcher": []
     },
     {
+      "label": "Build App",
+      "type": "shell",
+      "command": "make",
+      "args": [
+        "build-app",
+        "f=${input:appName}"
+      ],
+      "group": {
+        "kind": "build"
+      },
+      "problemMatcher": []
+    },
+    {
       "label": "Run Example App",
       "type": "shell",
       "command": "make",

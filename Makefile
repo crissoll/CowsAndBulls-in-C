@@ -54,7 +54,7 @@ COMPILE_COMMANDS := compile_commands.json
 # ==============================================================================
 # 3. BUILD TARGETS
 # ==============================================================================
-.PHONY: all game game-lib debug app test clean clean-objs distclean rebuild help
+.PHONY: all game game-lib debug app build-app test clean clean-objs distclean rebuild help
 
 # Clean up intermediate objects automatically
 .INTERMEDIATE: $(LIB_OBJS)
@@ -100,6 +100,12 @@ app: | $(COMPILE_COMMANDS)
 	$(if $(f),,$(error Error: Specify the app with f=<name>, e.g., 'make app f=simplest_example'))
 	$(CC) $(CFLAGS) -o apps/$(f)$(EXE) apps/$(f).c $(APP_UTIL_SRCS) $(LIB_SRCS)
 	$(call RUN_CMD,apps/$(f)$(EXE))
+
+# Compile any app from apps/ without running it (for debugging)
+build-app: CFLAGS += -O0
+build-app: | $(COMPILE_COMMANDS)
+	$(if $(f),,$(error Error: Specify the app with f=<name>, e.g., 'make build-app f=simplest_example'))
+	$(CC) $(CFLAGS) -o apps/$(f)$(EXE) apps/$(f).c $(APP_UTIL_SRCS) $(LIB_SRCS)
 
 # ==============================================================================
 # 5. LANGUAGE SERVER (compile_commands.json)
