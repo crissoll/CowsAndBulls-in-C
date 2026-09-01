@@ -23,19 +23,18 @@ void play_word(Word word) {
 
     GuessResult result = compare_with_secret_word(word);
 
-    add_attempt(word, result);
-
     if (result.bulls >= get_word_len()) {
         message(OT_USER,
                 "Congratulations, you found the word in %zu attempts!\n",
-                get_attempt_number());
+                get_attempt_number() + 1);
         secret_word_found = true;
-        return;
+    } else {
+        start_message(OT_GUESS_RESULT);
+        guess_result__output(result);
+        end_message();
     }
 
-    start_message(OT_GUESS_RESULT);
-    guess_result__output(result);
-    end_message();
+    add_attempt(word, result);
 }
 
 bool is_secret_word_found() {

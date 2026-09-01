@@ -3,6 +3,7 @@
 
 #include "attempts.h"
 
+#include "cab_core.h"
 #include "cab_io_consts.h"
 #include "cab_output.h"
 
@@ -10,6 +11,7 @@
 
 #include "cab_attempts_manager.h"
 
+extern bool is_secret_word_found();
 
 static Attempt attempts[MAX_PRACTICAL_ATTEMPTS];
 size_t attempt_number = 0;
@@ -31,6 +33,16 @@ void reset_attempts() {
     invalid_attempts_number = 0;
 }
 
+size_t get_remaining_attempts() {
+    return get_max_attempts() - attempt_number - invalid_attempts_number;
+}
+
+void display_remaining_attempts() {
+    const size_t remaining_attempts = get_remaining_attempts();
+    message(OT_USER, "you still have %d attempt%s\n", remaining_attempts,
+            (remaining_attempts != 1) ? "s" : "");
+}
+
 void print_attempts() {
     if (attempt_number == 0) {
         message(OT_ATTEMPTS, "no attempts yet!\n");
@@ -44,8 +56,7 @@ void print_attempts() {
         message(OT_ATTEMPTS, "%d invalid attempts\n", invalid_attempts_number);
     }
     if (lose_on_attempts_finished) {
-        message(OT_USER, "you still have %d attempts\n",
-                get_max_attempts() - attempt_number - invalid_attempts_number);
+        display_remaining_attempts();
     }
 }
 
@@ -107,7 +118,7 @@ bool attempts_run_out() {
 }
 
 void handle_attempts_deplition() {
-    if (lose_on_attempts_finished == false) {
+    if (lose_on_attempts_finished == false || is_secret_word_found()) {
         return;
     }
     if (attempts_run_out()) {
@@ -118,15 +129,16 @@ void handle_attempts_deplition() {
         }
         return;
     }
-    message(OT_USER, "you still have %d attempts\n",
-            get_max_attempts() - get_attempt_number());
+    display_remaining_attempts();
 }
 
 void add_attempt(Word word, GuessResult result) {
     if (attempt_number >= get_max_attempts()) {
-        message(
-            OT_USER,
-            "reached maximum amount of attempts! oldest one will be deleted\n");
+        if (lose_on_attempts_finished == false) {  // simply hide it
+            message(OT_USER,
+                    "reached maximum amount of attempts! oldest one will be "
+                    "deleted\n");
+        }
 
         for (size_t i = 0; i < get_max_attempts() - 1; i++) {
             attempts[i] = attempts[i + 1];
