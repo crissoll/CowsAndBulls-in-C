@@ -6,4 +6,5 @@
 
 const CommandSpec* get_cmd_tree_root();
 
+void cab_set_command_root(const CommandSpec* new_root);
 #endif
