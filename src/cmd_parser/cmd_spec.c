@@ -1,5 +1,7 @@
+#include <stdbool.h>
 #include <string.h>
 
+#include "attempts.h"
 #include "cab_io_consts.h"
 #include "cab_output.h"
 #include "cmd_spec.h"
@@ -13,33 +15,32 @@ void alert_too_few_arguments() {
     message(OT_INPUT_ERROR, "too few arguments\n");
 }
 
-void parse_command(const CommandSpec* specifier, const char* tokens[],
-                   size_t token_count);
-
-bool parse_args(const CommandSpec* specifier, const char* tokens[],
-                size_t token_count) {
-    if (specifier->args == NULL) {
-        return false;
+const CommandSpec* command_spec_find_arg(const CommandSpec* parent,
+                                         const char* searched_name) {
+    if (parent == NULL || searched_name == NULL) {
+        message(OT_WARNING,
+                "command_spec_find_arg: NULL arguments not accepted");
+        return NULL;
     }
-
-    const CommandSpec* candidate_arg = specifier->args;
+    const CommandSpec* candidate_arg = parent->args;
+    if (candidate_arg == NULL) {
+        return NULL;
+    }
     while (candidate_arg->name != NULL) {
-        if (!(*candidate_arg->allowed)) {
-            candidate_arg++;
-            message(OT_ALERT, "command is not allowed\n");
-            return true;
-        }
-        if (strcmp(tokens[0], candidate_arg->name) == 0) {
-            parse_command(candidate_arg, tokens + 1, token_count - 1);
-            return true;
+        if (strcmp(searched_name, candidate_arg->name) == 0) {
+            return candidate_arg;
         }
         candidate_arg++;
     }
-    return false;
+    return NULL;
 }
 
 void parse_command(const CommandSpec* specifier, const char* tokens[],
                    size_t token_count) {
+    if (specifier->allowed == false) {
+        return;
+    }
+
     if (token_count == 0) {
         if (specifier->case_no_args == NULL) {
             alert_too_few_arguments();
@@ -48,12 +49,13 @@ void parse_command(const CommandSpec* specifier, const char* tokens[],
         specifier->case_no_args();
         return;
     }
-    const bool args_correctly_parsed =
-        parse_args(specifier, tokens, token_count);
+    const CommandSpec* argument = command_spec_find_arg(specifier, tokens[0]);
 
-    if (args_correctly_parsed) {
+    if (argument != NULL) {
+        parse_command(argument, tokens + 1, token_count - 1);
         return;
     }
+
     if (specifier->default_handler == NULL) {
         alert_too_many_arguments();
         return;
