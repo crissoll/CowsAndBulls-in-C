@@ -22,5 +22,5 @@ char** cab_get_messages_with_tag(OutputTags tag, size_t* message_count);
 
 const char* cab_get_input_prompt();
 
-void set_log_input_prompt(bool value);
+
 #endif

@@ -1,7 +1,6 @@
 #include <stddef.h>
 
 #include "cab_errors.h"
-#include "cab_io_api.h"
 #include "cab_session_api.h"
 #include "cab_settings_api.h"
 
@@ -19,6 +18,8 @@
 #include "index_array.h"
 #include "word.h"
 
+extern void set_play_again_prompt_visible(bool value);
+extern void set_log_input_prompt(bool value);
 
 #include "cab_output.h"
 
