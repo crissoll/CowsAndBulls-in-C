@@ -162,7 +162,7 @@ void log_tagged_output() {
             continue;
         }
 
-        const char* tag = OUTPUT_TAG_NAMES[LOG2(raw_tag)];
+        const char* tag = CAB_OUTPUT_TAG_NAMES[LOG2(raw_tag)];
         size_t start = tagged_output.messages[i];
         size_t end = (i + 1 < tagged_output.size)
                          ? tagged_output.messages[i + 1]

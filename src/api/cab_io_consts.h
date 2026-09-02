@@ -23,6 +23,8 @@ typedef enum {
     OT_END,  // upper bound, use for cycling through tags
 } OutputTags;
 
+#define CAB_GET_TAG_FROM_I(I) (I == 0) ? OT_NONE : (OutputTags)(1U << (I - 1))
+
 
 typedef enum {
     INPUT_SUCCESS,

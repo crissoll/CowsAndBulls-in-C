@@ -7,7 +7,7 @@
 
 // transcription of the names of OutputTags values
 // can be used for debugging purposes
-static const char* const OUTPUT_TAG_NAMES[LOG2(OT_END - 1) + 1] = {
+static const char* const CAB_OUTPUT_TAG_NAMES[LOG2(OT_END - 1) + 1] = {
     [OT_NONE] = "NONE",
     [LOG2(OT_USER)] = "USER",
     [LOG2(OT_GUESS_RESULT)] = "GUESS_RESULT",
@@ -20,5 +20,8 @@ static const char* const OUTPUT_TAG_NAMES[LOG2(OT_END - 1) + 1] = {
     [LOG2(OT_HELP)] = "HELP",
     [LOG2(OT_WORD_COUNT)] = "WORD_COUNT",
 };
+
+#define CAB_GET_TAG_NAME(TAG) \
+    (TAG == OT_NONE) ? 0 : CAB_OUTPUT_TAG_NAMES[LOG2(TAG)]
 
 #endif
