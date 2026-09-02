@@ -6,6 +6,7 @@
 
 #include "cab_io_consts.h"
 #include "cab_output.h"
+#include "cmd_spec.h"
 #include "cmd_tree.h"
 
 static char special_command_char = '\0';
@@ -15,6 +16,7 @@ void set_special_command_char(char value) {
         extra_io_warning(
             "set_special_command_char: value must not be a letter");
     }
+    special_command_char = value;
 }
 
 void set_special_command_char_from_size_t(size_t value) {
