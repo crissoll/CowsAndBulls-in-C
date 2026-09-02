@@ -3,7 +3,7 @@
 
 #include "word_set_filter.h"
 
-WordSetFilter *get_current_help_filter();
+WordSetFilter* get_current_help_filter();
 
 size_t get_current_help_filter_word_count();
 

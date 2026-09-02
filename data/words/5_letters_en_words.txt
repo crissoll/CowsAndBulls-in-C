@@ -30,6 +30,7 @@ adder
 adela
 adept
 adieu
+adios
 admit
 adobe
 adopt
@@ -170,6 +171,7 @@ award
 aware
 awful
 awoke
+axial
 axiom
 axles
 ayelp
@@ -269,10 +271,14 @@ bilge
 bills
 billy
 binds
+binge
+bingo
+biome
 biped
 birch
 birds
 birth
+bisex
 bison
 bitch
 bites
@@ -427,6 +433,8 @@ butte
 butts
 buxom
 buyer
+bylaw
+bytes
 cabal
 cabby
 cabin
@@ -457,6 +465,7 @@ canto
 caper
 capes
 capon
+carat
 cards
 cared
 cares
@@ -506,6 +515,7 @@ cheer
 chefs
 chess
 chest
+chews
 chick
 chide
 chief
@@ -523,6 +533,7 @@ choir
 choke
 chops
 chord
+chore
 chose
 chuck
 chump
@@ -644,6 +655,7 @@ craft
 crags
 craig
 cramp
+crams
 crane
 crank
 crape
@@ -698,6 +710,7 @@ cults
 curds
 cured
 cures
+curie
 curls
 curly
 curry
@@ -1210,6 +1223,7 @@ gates
 gaudy
 gauge
 gaunt
+gauss
 gauze
 gauzy
 gavel
@@ -1402,6 +1416,7 @@ heavy
 hedge
 heeds
 heels
+hefty
 heirs
 helen
 helix
@@ -1490,6 +1505,7 @@ imbue
 impel
 imply
 inane
+inbox
 incur
 index
 india
@@ -2085,6 +2101,7 @@ pared
 paris
 parka
 parks
+parma
 parry
 parse
 parts
@@ -2935,6 +2952,7 @@ taken
 takes
 tales
 talks
+talky
 tally
 talon
 tamed
@@ -2943,6 +2961,7 @@ tammy
 tampa
 tanks
 taper
+taped
 tapes
 tardy
 tares
@@ -2978,6 +2997,7 @@ tepid
 terms
 terry
 terse
+tesla
 tests
 testy
 texts
@@ -3044,6 +3064,7 @@ tones
 tonga
 tongs
 tonic
+tonne
 tools
 tooth
 topaz
@@ -3110,6 +3131,7 @@ truss
 trust
 truth
 tryst
+tubed
 tubes
 tufts
 tulip
@@ -3271,6 +3293,7 @@ wasps
 waste
 watch
 water
+watts
 waved
 waver
 waves
@@ -3280,6 +3303,7 @@ waxes
 wears
 weary
 weave
+weber
 wedge
 weeds
 weedy
@@ -3411,6 +3435,8 @@ zaxes
 zazen
 zebec
 zebra
+zelda
+zelot
 zeros
 zests
 zesty

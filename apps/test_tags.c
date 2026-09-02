@@ -28,7 +28,7 @@ void turn_function(const char* input_buffer) {
     for (OutputTags t = 1; t < OT_END; t *= 2) {
         char** strings = cab_get_messages_with_tag(t, &message_count);
         if (strings != NULL && message_count > 0) {
-            printf("%s:\n", OUTPUT_TAG_NAMES[j]);
+            printf("%s:\n", CAB_OUTPUT_TAG_NAMES[j]);
             if (message_count == 1) {
                 print_truncated_string(strings[0], MAX_DISPLAYED_MSG_LEN);
             } else {

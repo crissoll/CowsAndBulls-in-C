@@ -7,13 +7,16 @@
 
 #include "cab_io_api.h"
 #include "cab_io_consts.h"
+#include "cab_io_utils.h"
 
 #include "cab_errors.h"
 
 #include "cab_input_internal.h"
 #include "cab_output_internal.h"
 #include "cab_paths.h"
+#include "cab_saves.h"
 #include "cab_used_vocabulary.h"
+
 
 #include "cab_session_api.h"
 
@@ -73,12 +76,20 @@ void update_output_messages() {
     free(cur_txt);
     msg_tags = get_messages_tags();
     cur_txt = flush_output_buffer();
+    if (msg_tags.size > 1) {
+        for (size_t msg = 0; msg < msg_tags.size - 1; msg++) {
+            text_wrap(&cur_txt[msg_tags.messages[msg]]);
+        }
+    }
     output_state = OS_MessagesUpToDate;
 }
 
 char* cab_get_output() {
     if (output_state != OS_MessagesUpToDate) {
         update_output_messages();
+    }
+    if (cur_txt == NULL) {
+        return strdup("");
     }
     return strdup(cur_txt);
 }
@@ -96,7 +107,7 @@ char** cab_get_messages_with_tag(OutputTags tag, size_t* message_count) {
         update_output_messages();
     }
 
-    if (msg_tags.size == 0) {
+    if (msg_tags.size <= 1) {
         return NULL;
     }
 
@@ -141,13 +152,35 @@ char** cab_get_messages_with_tag(OutputTags tag, size_t* message_count) {
     return result;
 }
 
-
-const char* cab_get_input_prompt() {
+const char* get_input_prompt() {
     switch (cab_get_game_state()) {
         case GS_NOT_STARTED:
-            return "load previous game? (y/n)\n> ";
+            if (are_save_files_valid()) {
+                return "load previous game? (y/n)\n> ";
+            }
         case GS_FIRST_TURN:
+            return "Type a 5-letter word to guess, or 'help' to display "
+                   "available commands:\n> ";
         case GS_PLAYING:
             return "Enter guess or command: ";
+        case GS_PLAY_AGAIN:
+            if (cab_is_game_ended()) {  // convoluted way to access "show_play_again_prompt"...
+                return "";
+            }
+            return "Play Again? (y/n)\n>";
     }
+}
+
+static bool log_input_prompt = true;
+
+void set_log_input_prompt(bool value) {
+    log_input_prompt = value;
+}
+
+const char* cab_get_input_prompt() {
+    const char* prompt = get_input_prompt();
+    if (log_input_prompt) {
+        extra_io_warning("[input prompt]: %s", prompt);
+    }
+    return prompt;
 }

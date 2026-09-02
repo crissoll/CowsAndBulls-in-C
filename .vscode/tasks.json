@@ -1,0 +1,89 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build Game",
+      "type": "shell",
+      "command": "make",
+      "args": [
+        "game"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Tests",
+      "type": "shell",
+      "command": "make",
+      "args": [
+        "test"
+      ],
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Build App",
+      "type": "shell",
+      "command": "make",
+      "args": [
+        "build-app",
+        "f=${input:appName}"
+      ],
+      "group": {
+        "kind": "build"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Example App",
+      "type": "shell",
+      "command": "make",
+      "args": [
+        "app",
+        "f=${input:appName}"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "Build Static Library",
+      "type": "shell",
+      "command": "make",
+      "args": [
+        "game-lib"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "Rebuild",
+      "type": "shell",
+      "command": "make",
+      "args": [
+        "rebuild"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "Clean",
+      "type": "shell",
+      "command": "make",
+      "args": [
+        "clean"
+      ],
+      "problemMatcher": []
+    }
+  ],
+  "inputs": [
+    {
+      "id": "appName",
+      "type": "promptString",
+      "description": "Enter app name from apps/ (e.g. simplest_example, 6_letters_example):",
+      "default": "simplest_example"
+    }
+  ]
+}

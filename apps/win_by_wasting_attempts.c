@@ -7,7 +7,7 @@
 #include "cab_settings_api.h"
 
 int main() {
-    cab_set_setting(STG_Rule_PreviousAttemptsCoherencyConstraintMode,
+    cab_set_setting(STG_Rule_AttemptsCoherencyConstraintMode,
                     CONSTR_SkipAttempt);
     cab_start_new_game();
     printf("the word you have to find is %s\n", get_secret_word().letters);

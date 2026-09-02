@@ -6,8 +6,6 @@
 
 
 #include "cab_input.h"
-#include "cab_io_consts.h"
-#include "cab_output.h"
 
 #include "cab_attempts_manager.h"
 #include "cab_core.h"
@@ -28,6 +26,11 @@ static bool session_setup = false;
 
 static GameState game_state = GS_NOT_STARTED;
 
+static bool play_again_prompt = true;
+
+void set_play_again_prompt_visible(bool value) {
+    play_again_prompt = value;
+}
 
 void setup_vars();
 
@@ -87,25 +90,12 @@ bool prompt_to_load_game() {
         loading_saves = false;
         return true;
     }
-
-    char buffer[100];
-    char** input_tokens = NULL;
-
-    size_t input_size =
-        get_tokens_from_input(buffer, sizeof(buffer), &input_tokens);
-
-    free(input_tokens);
-
-    if (input_size == 0 ||
-        (strcmp(buffer, "y") != 0 && strcmp(buffer, "n") != 0)) {
-        message(OT_INPUT_ERROR, "input must be y or n\n");
-        return false;
-    }
-
-    if (buffer[0] == 'y') {
-        loading_saves = true;
-    } else {
-        loading_saves = false;
+    YORN_Result y_or_n = get_y_or_n_from_input();
+    switch (y_or_n) {
+        case YORN_Invalid:
+            return false;
+        default:
+            loading_saves = y_or_n;
     }
     return true;
 }
@@ -131,12 +121,13 @@ static bool cab_secret_word_revealed() {
 
 void update_saves() {
     if (cab_secret_word_revealed()) {
-        game_state = GS_NOT_STARTED;
+        game_state = GS_PLAY_AGAIN;
         delete_save_files();
         return;
     }
     store_saves();
 }
+
 
 void cab_process_turn() {
     switch (game_state) {
@@ -159,18 +150,41 @@ void cab_process_turn() {
                 update_saves();
                 game_state = GS_PLAYING;
             }
+            if (cab_is_game_ended()) {
+                game_state = GS_PLAY_AGAIN;
+            }
             return;
 
         case GS_PLAYING:
             parse_input();
             update_saves();
+            if (cab_is_game_ended()) {
+                game_state = GS_PLAY_AGAIN;
+            }
             return;
+        case GS_PLAY_AGAIN:
+            if (!play_again_prompt) {
+                game_state = GS_NOT_STARTED;
+                return;
+            }
+            switch (get_y_or_n_from_input()) {
+                case YORN_Yes:
+                    session_setup = false;
+                    setup_session();
+                    game_state = GS_FIRST_TURN;
+                    break;
+                case YORN_No:
+                    game_state = GS_NOT_STARTED;
+                case YORN_Invalid:
+                    return;
+            }
     }
 }
 
 
 bool cab_is_game_ended() {
-    return cab_secret_word_revealed() || fatal_error_met();
+    return (cab_secret_word_revealed() || fatal_error_met()) &&
+           (!play_again_prompt || game_state != GS_PLAY_AGAIN);
 }
 
 size_t cab_get_attempt_number() {

@@ -4,8 +4,7 @@
 
 #include "cab_errors.h"
 
-#include "cab_io_consts.h"
-#include "cab_output.h"
+#include "cmd_spec.h"
 #include "cmd_tree.h"
 
 static char special_command_char = '\0';
@@ -15,6 +14,7 @@ void set_special_command_char(char value) {
         extra_io_warning(
             "set_special_command_char: value must not be a letter");
     }
+    special_command_char = value;
 }
 
 void set_special_command_char_from_size_t(size_t value) {
@@ -24,18 +24,12 @@ void set_special_command_char_from_size_t(size_t value) {
 
 
 void parse(const char* tokens[], size_t token_count) {
-    if (special_command_char == '\0') {
-        parse_command(get_cmd_tree_root(), tokens, token_count);
-        return;
-    }
-
-    if (tokens[0][0] == special_command_char) {
-        tokens[0]++;
-        if (!parse_args(get_cmd_tree_root(), tokens, token_count)) {
-            message(OT_USER, "command not found!");
+    if (special_command_char != '\0') {
+        if (tokens[0][0] != special_command_char) {
+            get_cmd_tree_root()->default_handler(token_count, tokens);
+            return;
         }
-        tokens[0]--;
-        return;
+        tokens[0]++;
     }
-    get_cmd_tree_root()->default_handler(token_count, tokens);
+    parse_command(get_cmd_tree_root(), tokens, token_count);
 }
