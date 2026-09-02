@@ -8,6 +8,7 @@ typedef enum {
     GS_NOT_STARTED,
     GS_FIRST_TURN,
     GS_PLAYING,
+    GS_PLAY_AGAIN,
 } GameState;
 
 GameState cab_get_game_state();

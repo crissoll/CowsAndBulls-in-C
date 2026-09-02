@@ -1,12 +1,17 @@
 #ifndef _TRUNC_PRINT
 #define _TRUNC_PRINT
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdio.h>
-#include <stdbool.h>
 #include <string.h>
 
 void print_truncated_string(char* string, size_t len) {
+    if (string == NULL) {
+        printf("(null)\n");
+        fflush(stdout);
+        return;
+    }
     const bool msg_too_long = strlen(string) > len;
     if (msg_too_long) {
         printf("%.*s", (int)len, string);
@@ -14,6 +19,7 @@ void print_truncated_string(char* string, size_t len) {
     } else {
         printf("%s", string);
     }
+    fflush(stdout);
 }
 
 #endif

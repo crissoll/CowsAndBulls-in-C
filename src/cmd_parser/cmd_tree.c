@@ -1,4 +1,5 @@
 
+#include <stdbool.h>
 #include "cab_attempts_manager.h"
 
 #include "cab_help_filter.h"
@@ -89,12 +90,18 @@ const CommandSpec command_specs[] = {
 };
 
 
-const CommandSpec* ROOT =
-    &(CommandSpec){.case_no_args = NULL,
-                   .default_handler = cmd__try_word_from_tokens,
-                   .args = command_specs};
+const CommandSpec* ROOT = &(CommandSpec){
+    .case_no_args = NULL,
+    .default_handler = cmd__try_word_from_tokens,
+    .args = command_specs,
+    .allowed = &(bool){true},
+};
 
 
 const CommandSpec* get_cmd_tree_root() {
     return ROOT;
+}
+
+void cab_set_command_root(const CommandSpec* new_root) {
+    ROOT = new_root;
 }

@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "cab_errors.h"
 #include "cab_input_internal.h"
 #include "cab_io_consts.h"
 #include "cab_output.h"
@@ -13,12 +14,24 @@
 static char input_buffer[MAX_INPUT_BUFFER_SIZE];
 static size_t input_buffer_size = 0;
 
+static bool log_input = true;
+
+void set_log_input(bool value) {
+    log_input = value;
+}
+
+
 InputStatus write_to_input_buffer(const char* input_string) {
     if (input_string == NULL) {
         message(OT_WARNING,
                 "tried adding NULL string to input_buffer; no input will be "
                 "added\n");
     }
+
+    if (log_input) {
+        extra_io_warning("[user]> %s", input_string);
+    }
+
     input_buffer_size = 0;
     const size_t len = strlen(input_string);
     if (len >= MAX_INPUT_BUFFER_SIZE) {

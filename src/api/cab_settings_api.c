@@ -8,7 +8,9 @@
 #include "attempts.h"
 #include "cab_attempts_manager.h"
 #include "cab_constraints.h"
+#include "cab_input_internal.h"
 #include "cab_io_consts.h"
+#include "cab_io_utils.h"
 #include "cab_output_internal.h"
 #include "cab_saves.h"
 #include "cmd.h"
@@ -16,6 +18,8 @@
 #include "index_array.h"
 #include "word.h"
 
+extern void set_play_again_prompt_visible(bool value);
+extern void set_log_input_prompt(bool value);
 
 #include "cab_output.h"
 
@@ -43,39 +47,45 @@ DEFINE_BOOL_FUNC_WRAPPER(reveal_secret_word_on_attempts_run_out,
                          set_reveal_word_on_attempts_run_out)
 DEFINE_BOOL_FUNC_WRAPPER(vocab_allow_duplicate_letters,
                          set_allow_duplicate_letters)
+DEFINE_BOOL_FUNC_WRAPPER(setting__set_log_input, set_log_input)
+DEFINE_BOOL_FUNC_WRAPPER(setting__set_log_input_prompt, set_log_input_prompt)
 
 static SettingsSpec setting_specs[STG_LEN] = {
     [STG_Display_IndexArray_WordsPerLine] =
         {index_array__set_output_words_per_line, 0, 100, 10},
     [STG_Display_RevealSecretWordOnSurrender] = {surrender_show_secret_word, 0,
                                                  1, 1},
-    [STG_Rule_LettersInWord] = {set_word_len, 1, MAX_PRACTICAL_WORD_LEN, 5},
-    [STG_Internal_GetWordLenFromVocabulary] = {saves_autodetect_word_len, 0, 1,
-                                               1},
+    [STG_Internal_WordLen] = {set_word_len, 1, MAX_PRACTICAL_WORD_LEN, 5},
+    [STG_Internal_VocabLoad_AutoWordLenDetection] = {saves_autodetect_word_len,
+                                                     0, 1, 1},
     [STG_Rule_LoseOnMaxAttemptsReached] = {attempts_lose_on_limit_reached, 0, 1,
                                            0},
     [STG_Internal_MaxAttempts] = {set_max_attempts, 1, MAX_PRACTICAL_ATTEMPTS,
                                   MAX_PRACTICAL_ATTEMPTS},
     [STG_Display_RevealSecretWordOnAttemptsFinished] =
         {reveal_secret_word_on_attempts_run_out, 0, 1, 1},
-    [STG_Rule_NonVocabularyGuessesConstraintMode] = {set_vocabulary_constraint,
-                                                     CONSTR_None,
-                                                     CONSTR_LoseGame,
-                                                     CONSTR_SkipAttempt},
-    [STG_Rule_PreviousAttemptsCoherencyConstraintMode] =
+    [STG_Rule_VocabularyConstraintMode] = {set_vocabulary_constraint,
+                                           CONSTR_None, CONSTR_LoseGame,
+                                           CONSTR_SkipAttempt},
+    [STG_Rule_AttemptsCoherencyConstraintMode] =
         {set_attempts_coherence_constraint, CONSTR_None, CONSTR_LoseGame,
          CONSTR_None},
-    [STG_Rule_WordEqualToPrevAttemptConstraintMode] =
+    [STG_Rule_AttemptsEqualityConstraintMode] =
         {set_attempts_equality_constraint, CONSTR_None, CONSTR_LoseGame,
          CONSTR_SkipAttempt},
-    [STG_Internal_AllowDuplicateLetters] = {vocab_allow_duplicate_letters, 0, 1,
-                                            1},
-    [STG_Internal_EraseRandomWordsPercentage] =
+    [STG_Internal_VocabLoad_AllowDuplicateLetters] =
+        {vocab_allow_duplicate_letters, 0, 1, 1},
+    [STG_Internal_VocabLoad_RandomWordsErasurePercentage] =
         {set_vocab_decimation_percentage, 0, 100, 0},
     [STG_Rule_SpecialCharForCommands] = {set_special_command_char_from_size_t,
                                          0, 255, 0},
     [STG_Debug_LogMode] = {set_log_mode, 0, 256, LOG_ToFile},
     [STG_Debug_LogMessages] = {set_log_messages_from_size_t, 0, 1, 0},
+    [STG_Display_TextWrapMaxLineLength] = {set_max_chars_per_line, 10, 1000,
+                                           25},
+    [STG_Debug_LogInput] = {setting__set_log_input, 0, 1, 1},
+    [STG_Debug_LogInputPrompt] = {setting__set_log_input_prompt, 0, 1, 1},
+
 };
 
 

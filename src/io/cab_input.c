@@ -1,4 +1,5 @@
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -101,4 +102,25 @@ size_t get_tokens_from_input(char buffer[], size_t buffer_size,
     split_tokens(buffer, *tokens);
 
     return token_count;
+}
+
+YORN_Result get_y_or_n_from_input() {
+    char buffer[100];
+    char** input_tokens = NULL;
+
+    size_t input_size =
+        get_tokens_from_input(buffer, sizeof(buffer), &input_tokens);
+
+    free(input_tokens);
+
+    if (input_size == 0 ||
+        (strcmp(buffer, "y") != 0 && strcmp(buffer, "n") != 0)) {
+        message(OT_INPUT_ERROR, "input must be y or n\n");
+        return YORN_Invalid;
+    }
+
+    if (buffer[0] == 'y') {
+        return YORN_Yes;
+    }
+    return YORN_No;
 }

@@ -1,0 +1,51 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug Game (CodeLLDB)",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/cab_game.exe",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "Build Game"
+    },
+    {
+      "name": "Debug Game (External Window)",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/cab_game.exe",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+      "terminal": "external",
+      "preLaunchTask": "Build Game"
+    },
+    {
+      "name": "Debug App (CodeLLDB)",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/apps/${input:appName}.exe",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "Build App"
+    },
+    {
+      "name": "Debug App (External Window)",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/apps/${input:appName}.exe",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+      "terminal": "external",
+      "preLaunchTask": "Build App"
+    }
+  ],
+  "inputs": [
+    {
+      "id": "appName",
+      "type": "promptString",
+      "description": "Enter app name from apps/ (e.g. simplest_example, tags_usage_example):",
+      "default": "tags_usage_example"
+    }
+  ]
+}

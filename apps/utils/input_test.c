@@ -8,6 +8,7 @@
 
 #include "cab_api.h"
 #include "cab_session_api.h"
+#include "cab_settings_api.h"
 
 #include "input_test.h"
 
@@ -102,6 +103,8 @@ void play_test_set(const char* file_name, TurnFunction turn_func,
 
 void play_game_test(InputTest test, TurnFunction turn_function,
                     PrepFunction prep_func) {
+
+    cab_set_setting(STG_Internal_ShowPlayAgainPrompt, false);
     if (prep_func != NULL) {
         prep_func();
     }

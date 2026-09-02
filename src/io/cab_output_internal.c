@@ -6,6 +6,7 @@
 
 #include "cab_errors.h"
 #include "cab_io_consts.h"
+#include "cab_io_tag_names.h"
 #include "cab_output_internal.h"
 
 
@@ -37,7 +38,8 @@ OutputBuffer default_buffer = (OutputBuffer){
 };
 
 Messages tagged_output = (Messages){
-    .messages = NULL,
+    .messages =
+        NULL,  //NOTE: messages are indices that points to an OutputBuffer (default_buffer in this case)
     .size = 0,
     .tags = NULL,
 };
@@ -146,16 +148,41 @@ void print_to_default_buffer(const char* text) {
         init_output_buffer(&default_buffer);
     }
     print_to_buffer(&default_buffer, text);
+}
 
-    if (log_messages) {
-        extra_io_warning(text);
+void log_tagged_output() {
+    if (!messages_initialized || tagged_output.tags == NULL ||
+        tagged_output.messages == NULL || default_buffer.buffer == NULL) {
+        return;
+    }
+
+    for (size_t i = 0; i < tagged_output.size; i++) {
+        OutputTags raw_tag = tagged_output.tags[i];
+        if (raw_tag == OT_NONE) {
+            continue;
+        }
+
+        const char* tag = CAB_OUTPUT_TAG_NAMES[LOG2(raw_tag)];
+        size_t start = tagged_output.messages[i];
+        size_t end = (i + 1 < tagged_output.size)
+                         ? tagged_output.messages[i + 1]
+                         : default_buffer.current_size;
+        int len = (int)(end > start ? end - start : 0);
+
+        extra_io_warning("[message:%s]: %.*s", tag, len,
+                         default_buffer.buffer + start);
     }
 }
 
 char* flush_output_buffer() {
-    if (!buffer_initialized) {
+    if (!buffer_initialized || default_buffer.buffer == NULL) {
         return strdup("");
     }
+
+    if (log_messages) {
+        log_tagged_output();
+    }
+
     char* result = strdup(default_buffer.buffer);
     reset_output_buffer(&default_buffer);
     return result;
@@ -180,6 +207,10 @@ Messages get_messages_tags() {
         end_message();
     }
 
+    if (log_messages) {
+        log_tagged_output();
+    }
+
     Messages result = (Messages){
         .messages = malloc(sizeof(result.messages[0]) * tagged_output.size),
         .tags = malloc(sizeof(result.tags[0]) * tagged_output.size),
@@ -187,7 +218,7 @@ Messages get_messages_tags() {
     };
 
     if (result.messages == NULL || result.tags == NULL) {
-        extra_io_warning("couldn't ");
+        extra_io_warning("get_messages_tags: malloc failure");
         return (Messages){
             .messages = NULL,
             .tags = NULL,
@@ -200,6 +231,7 @@ Messages get_messages_tags() {
 
     memcpy(result.tags, tagged_output.tags,
            tagged_output.size * sizeof(result.tags[0]));
+
     tagged_output.size = 0;
     return result;
 }
