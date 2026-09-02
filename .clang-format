@@ -1,3 +1,6 @@
+# Clang-Format configuration for Cows and Bulls in C
+# Adapted from @ZephyrCodesStuff (based on Google C/C++ style)
+---
 Language: Cpp
 BasedOnStyle: Google
 AccessModifierOffset: -1
