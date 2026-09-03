@@ -19,6 +19,7 @@ void set_log_mode(size_t value) {
 }
 
 void reset_extra_io_log() {
+    file_interaction_count = 0;
     FILE* fp = fopen("last.log", "w");
     fwrite(&" ", 1, 1, fp);
     fclose(fp);
