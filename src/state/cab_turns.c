@@ -107,7 +107,7 @@ TURN_FUNCS_DEF(
 TURN_FUNCS_DEF(
     GS_PLAY_AGAIN,
     /* input prompt */
-    (cab_is_game_ended()) ? "" : "Play Again? (y/n)\n>",
+    (cab_is_game_ended()) ? "" : "Play Again? (y/n)\n> ",
     /* process */
     if (!play_again_prompt) { return GS_NOT_STARTED; }
 
