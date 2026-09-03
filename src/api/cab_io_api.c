@@ -8,13 +8,14 @@
 #include "cab_io_api.h"
 #include "cab_io_consts.h"
 #include "cab_io_utils.h"
+#include "cab_turns.h"
+
 
 #include "cab_errors.h"
 
 #include "cab_input_internal.h"
 #include "cab_output_internal.h"
 #include "cab_paths.h"
-#include "cab_saves.h"
 #include "cab_used_vocabulary.h"
 
 
@@ -153,22 +154,7 @@ char** cab_get_messages_with_tag(OutputTags tag, size_t* message_count) {
 }
 
 const char* get_input_prompt() {
-    switch (cab_get_game_state()) {
-        case GS_NOT_STARTED:
-            if (are_save_files_valid()) {
-                return "load previous game? (y/n)\n> ";
-            }
-        case GS_FIRST_TURN:
-            return "Type a 5-letter word to guess, or 'help' to display "
-                   "available commands:\n> ";
-        case GS_PLAYING:
-            return "Enter guess or command: ";
-        case GS_PLAY_AGAIN:
-            if (cab_is_game_ended()) {  // convoluted way to access "show_play_again_prompt"...
-                return "";
-            }
-            return "Play Again? (y/n)\n>";
-    }
+    return get_turn_state(cab_get_game_state()).get_input_prompt();
 }
 
 static bool log_input_prompt = true;

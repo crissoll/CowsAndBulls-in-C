@@ -4,14 +4,9 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-typedef enum {
-    GS_NOT_STARTED,
-    GS_FIRST_TURN,
-    GS_PLAYING,
-    GS_PLAY_AGAIN,
-} GameState;
+#include "cab_turns.h"
 
-GameState cab_get_game_state();
+CabTurnId cab_get_game_state();
 
 void cab_start_new_game();
 

@@ -12,6 +12,7 @@
 #include "cab_errors.h"
 #include "cab_help_filter.h"
 #include "cab_saves.h"
+#include "cab_turns.h"
 #include "cmd.h"
 
 
@@ -21,12 +22,14 @@
 
 static bool loading_saves = false;
 
-static bool session_setup = false;
+bool session_setup = false;
 
 
-static GameState game_state = GS_NOT_STARTED;
+static CabTurnId game_state = GS_NOT_STARTED;
 
-static bool play_again_prompt = true;
+bool play_again_prompt = true;
+
+bool play_again = true;
 
 void set_play_again_prompt_visible(bool value) {
     play_again_prompt = value;
@@ -38,6 +41,10 @@ void setup_session() {
     if (session_setup) {
         return;
     }
+
+    if (!are_save_files_valid()) {
+        game_state = GS_FIRST_TURN;
+    }
     reset_extra_io_log();
     extra_io_warning("\n======== new session ===========\n");
 
@@ -46,7 +53,12 @@ void setup_session() {
     setup_vars();
 }
 
-GameState cab_get_game_state() {
+void force_setup_session() {
+    session_setup = false;
+    setup_session();
+}
+
+CabTurnId cab_get_game_state() {
     if (!session_setup) {
         setup_session();
     }
@@ -58,6 +70,8 @@ void setup_vars() {
     if (!session_setup) {
         setup_session();
     }
+
+    play_again = true;
     loading_saves = false;
 
     reset_list_history();
@@ -128,63 +142,24 @@ void update_saves() {
     store_saves();
 }
 
-
-void cab_process_turn() {
-    switch (game_state) {
-        case GS_NOT_STARTED:
-            if (are_save_files_valid()) {
-                if (prompt_to_load_game()) {
-                    game_state = GS_FIRST_TURN;
-                }
-                return;
-            }
-            game_state = GS_FIRST_TURN;
-
-        case GS_FIRST_TURN:
-            if (loading_saves) {
-                load_saves();
-                loading_saves = false;
-            }
-            parse_input();
-            if (get_attempt_number() > 0) {
-                update_saves();
-                game_state = GS_PLAYING;
-            }
-            if (cab_is_game_ended()) {
-                game_state = GS_PLAY_AGAIN;
-            }
-            return;
-
-        case GS_PLAYING:
-            parse_input();
-            update_saves();
-            if (cab_is_game_ended()) {
-                game_state = GS_PLAY_AGAIN;
-            }
-            return;
-        case GS_PLAY_AGAIN:
-            if (!play_again_prompt) {
-                game_state = GS_NOT_STARTED;
-                return;
-            }
-            switch (get_y_or_n_from_input()) {
-                case YORN_Yes:
-                    session_setup = false;
-                    setup_session();
-                    game_state = GS_FIRST_TURN;
-                    break;
-                case YORN_No:
-                    game_state = GS_NOT_STARTED;
-                case YORN_Invalid:
-                    return;
-            }
+void load_saves_wrapper() {
+    if (loading_saves) {
+        load_saves();
+        loading_saves = false;
     }
 }
 
+void cab_process_turn() {
+    game_state = get_turn_state(game_state).process();
+}
+
+
+bool _cab_is_game_ended() {
+    (cab_secret_word_revealed() || fatal_error_met());
+}
 
 bool cab_is_game_ended() {
-    return (cab_secret_word_revealed() || fatal_error_met()) &&
-           (!play_again_prompt || game_state != GS_PLAY_AGAIN);
+    return _cab_is_game_ended() && (!play_again_prompt || !play_again);
 }
 
 size_t cab_get_attempt_number() {
