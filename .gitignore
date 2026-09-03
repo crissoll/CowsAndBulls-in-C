@@ -2,6 +2,8 @@
 *.o
 *.a
 *.exe
+build/
+out/
 
 # Runtime Data & Logs
 *.saves

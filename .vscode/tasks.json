@@ -2,11 +2,25 @@
   "version": "2.0.0",
   "tasks": [
     {
+      "label": "CMake Configure",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        "-B",
+        "build"
+      ],
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
       "label": "Build Game",
       "type": "shell",
-      "command": "make",
+      "command": "cmake",
       "args": [
-        "game"
+        "--build",
+        "build",
+        "--target",
+        "cab_game"
       ],
       "group": {
         "kind": "build",
@@ -15,66 +29,90 @@
       "problemMatcher": []
     },
     {
+      "label": "Build Tests",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        "--build",
+        "build",
+        "--target",
+        "cab_test"
+      ],
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
       "label": "Run Tests",
       "type": "shell",
-      "command": "make",
+      "command": "ctest",
       "args": [
-        "test"
+        "--test-dir",
+        "build",
+        "--output-on-failure"
       ],
       "group": {
         "kind": "test",
         "isDefault": true
       },
+      "dependsOn": "Build Tests",
       "problemMatcher": []
     },
     {
       "label": "Build App",
       "type": "shell",
-      "command": "make",
+      "command": "cmake",
       "args": [
-        "build-app",
-        "f=${input:appName}"
+        "--build",
+        "build",
+        "--target",
+        "${input:appName}"
       ],
-      "group": {
-        "kind": "build"
-      },
+      "group": "build",
       "problemMatcher": []
     },
     {
       "label": "Run Example App",
       "type": "shell",
-      "command": "make",
-      "args": [
-        "app",
-        "f=${input:appName}"
-      ],
+      "command": "${workspaceFolder}/build/${input:appName}.exe",
+      "dependsOn": "Build App",
       "problemMatcher": []
     },
     {
       "label": "Build Static Library",
       "type": "shell",
-      "command": "make",
+      "command": "cmake",
       "args": [
-        "game-lib"
+        "--build",
+        "build",
+        "--target",
+        "cab_core"
       ],
+      "group": "build",
       "problemMatcher": []
     },
     {
       "label": "Rebuild",
       "type": "shell",
-      "command": "make",
+      "command": "cmake",
       "args": [
-        "rebuild"
+        "--build",
+        "build",
+        "--clean-first"
       ],
+      "group": "build",
       "problemMatcher": []
     },
     {
       "label": "Clean",
       "type": "shell",
-      "command": "make",
+      "command": "cmake",
       "args": [
+        "--build",
+        "build",
+        "--target",
         "clean"
       ],
+      "group": "build",
       "problemMatcher": []
     }
   ],

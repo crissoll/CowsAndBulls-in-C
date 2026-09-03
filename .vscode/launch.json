@@ -5,7 +5,7 @@
       "name": "Debug Game (CodeLLDB)",
       "type": "lldb",
       "request": "launch",
-      "program": "${workspaceFolder}/cab_game.exe",
+      "program": "${workspaceFolder}/build/cab_game.exe",
       "args": [],
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "Build Game"
@@ -14,17 +14,26 @@
       "name": "Debug Game (External Window)",
       "type": "lldb",
       "request": "launch",
-      "program": "${workspaceFolder}/cab_game.exe",
+      "program": "${workspaceFolder}/build/cab_game.exe",
       "args": [],
       "cwd": "${workspaceFolder}",
       "terminal": "external",
       "preLaunchTask": "Build Game"
     },
     {
+      "name": "Debug Tests (CodeLLDB)",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/cab_test.exe",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "Build Tests"
+    },
+    {
       "name": "Debug App (CodeLLDB)",
       "type": "lldb",
       "request": "launch",
-      "program": "${workspaceFolder}/apps/${input:appName}.exe",
+      "program": "${workspaceFolder}/build/${input:appName}.exe",
       "args": [],
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "Build App"
@@ -33,7 +42,7 @@
       "name": "Debug App (External Window)",
       "type": "lldb",
       "request": "launch",
-      "program": "${workspaceFolder}/apps/${input:appName}.exe",
+      "program": "${workspaceFolder}/build/${input:appName}.exe",
       "args": [],
       "cwd": "${workspaceFolder}",
       "terminal": "external",
