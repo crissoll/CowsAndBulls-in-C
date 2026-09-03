@@ -15,7 +15,8 @@
     "**/*.a": true,
   },
   "clangd.arguments": [
-    "--compile-commands-dir=build"
+    "--compile-commands-dir=build",
+    "--background-index"
   ],
   "lldb.launch.initCommands": [
     "type summary add -x -s \"${var%s}\" \"^char\\[[0-9]+\\]$\"",

@@ -20,7 +20,7 @@ typedef struct {
 ListHistoryEntry help_filter_history[HELP_FILTER_HISTORY_MAX];
 size_t help_filter_history_size = 0;
 
-size_t get_current_help_filter_word_count() {
+size_t get_current_help_filter_word_count(void) {
     IndexArray tmp = filter__get_words_from_word_set(&help_word_set,
                                                      get_current_help_filter());
     size_t result = tmp.size;
@@ -28,7 +28,7 @@ size_t get_current_help_filter_word_count() {
     return result;
 }
 
-void add_current_filter_to_history() {
+void add_current_filter_to_history(void) {
     const size_t word_count = get_current_help_filter_word_count();
     if (help_filter_history_size >= HELP_FILTER_HISTORY_MAX) {
         message(
@@ -46,11 +46,11 @@ void add_current_filter_to_history() {
     help_filter_history_size++;
 }
 
-WordSetFilter* get_current_help_filter() {
+WordSetFilter* get_current_help_filter(void) {
     return &help_filter;
 }
 
-size_t get_filter_history_size() {
+size_t get_filter_history_size(void) {
     return help_filter_history_size;
 }
 
@@ -66,7 +66,7 @@ static void free_word_set(WordSet* word_set) {
     }
 }
 
-void reset_list_history() {
+void reset_list_history(void) {
     help_filter_history_size = 0;
     filter__init(&help_filter);
 
@@ -76,7 +76,7 @@ void reset_list_history() {
     word_set__init_from_vocabulary(&help_word_set, &voc);
 }
 
-void print_current_filter() {
+void print_current_filter(void) {
     start_message(OT_FILTER);
     WordSetFilter* help_filter = get_current_help_filter();
     const size_t word_count = get_current_help_filter_word_count();
@@ -85,7 +85,7 @@ void print_current_filter() {
     end_message();
 }
 
-void print_filter_history() {
+void print_filter_history(void) {
     const size_t history_count = get_filter_history_size();
     if (history_count == 0) {
         message(OT_FILTER, "(no history yet)\n");
@@ -103,7 +103,7 @@ void print_filter_history() {
     end_message();
 }
 
-void print_filtered_word_list() {
+void print_filtered_word_list(void) {
     start_message(OT_LIST);
     IndexArray filtered = filter__get_words_from_word_set(
         &help_word_set, get_current_help_filter());

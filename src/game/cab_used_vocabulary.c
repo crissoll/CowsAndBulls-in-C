@@ -9,11 +9,11 @@
 
 static Vocabulary vocab_storage;
 
-size_t get_used_vocabulary_size() {
+size_t get_used_vocabulary_size(void) {
     return vocab_storage.size;
 }
 
-Vocabulary get_used_vocabulary() {
+Vocabulary get_used_vocabulary(void) {
     return vocab_storage;
 }
 
@@ -36,7 +36,7 @@ Word get_word(size_t index) {
     return vocab_storage.words[index];
 }
 
-Word get_random_word() {
+Word get_random_word(void) {
     srand((unsigned int)time(NULL));
     if (vocab_storage.size == 0) {
         push_fatal_error("get_random_word: vocabulary size is 0");
@@ -45,7 +45,7 @@ Word get_random_word() {
     return vocab_storage.words[rand() % vocab_storage.size];
 }
 
-void free_used_vocabulary() {
+void free_used_vocabulary(void) {
     if (vocab_storage.words != NULL) {
         free(vocab_storage.words);
         vocab_storage.words = NULL;

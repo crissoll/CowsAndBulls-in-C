@@ -4,7 +4,7 @@
 #include "cab_api.h"
 #include "cab_settings_api.h"
 
-int main() {
+int main(void) {
     cab_set_setting(STG_Internal_VocabLoad_RandomWordsErasurePercentage, 33);
     char string[1000];
     while (!cab_is_game_ended()) {

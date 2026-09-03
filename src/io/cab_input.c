@@ -104,7 +104,7 @@ size_t get_tokens_from_input(char buffer[], size_t buffer_size,
     return token_count;
 }
 
-YORN_Result get_y_or_n_from_input() {
+YORN_Result get_y_or_n_from_input(void) {
     char buffer[100];
     char** input_tokens = NULL;
 

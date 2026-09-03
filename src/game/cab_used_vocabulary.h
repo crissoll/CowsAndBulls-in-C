@@ -7,18 +7,18 @@
 #include "word.h"
 
 
-Vocabulary get_used_vocabulary();
+Vocabulary get_used_vocabulary(void);
 
-size_t get_used_vocabulary_size();
+size_t get_used_vocabulary_size(void);
 
 bool word_is_in_used_vocabulary(Word word);
 
 Word get_word(size_t index);
 
-Word get_random_word();
+Word get_random_word(void);
 
 void init_used_vocabulary(Word* words, size_t word_count);
 
-void free_used_vocabulary();
+void free_used_vocabulary(void);
 
 #endif

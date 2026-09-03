@@ -6,7 +6,7 @@
 #include "cab_settings_api.h"
 
 
-int main() {
+int main(void) {
     cab_set_setting(STG_Rule_AttemptsCoherencyConstraintMode,
                     CONSTR_SpendAttempt);
     char string[1000];

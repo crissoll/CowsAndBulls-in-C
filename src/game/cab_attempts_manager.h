@@ -5,25 +5,25 @@
 
 #include "attempts.h"
 
-Attempt* get_attempts();
-size_t get_attempt_number();
+Attempt* get_attempts(void);
+size_t get_attempt_number(void);
 
-void reset_attempts();
+void reset_attempts(void);
 
 bool is_word_already_attempted(Word word);
 
-void print_attempts();
+void print_attempts(void);
 
 
 void set_lose_on_attempts_finished(bool value);
 
 void set_reveal_word_on_attempts_run_out(bool value);
 
-bool attempts_run_out();
+bool attempts_run_out(void);
 
 void add_attempt(Word word, GuessResult result);
 
-void add_invalid_attempt();
+void add_invalid_attempt(void);
 
 void compare_attempts_to_word(Word word);
 

@@ -4,18 +4,18 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-void load_vocabulary();
+void load_vocabulary(void);
 
-bool are_save_files_valid();
+bool are_save_files_valid(void);
 
-void load_saves();
+void load_saves(void);
 
-void store_saves();
+void store_saves(void);
 
-void delete_save_files();
+void delete_save_files(void);
 
 
-void generate_secret_word();
+void generate_secret_word(void);
 
 void set_detect_word_len_from_voc(bool value);
 

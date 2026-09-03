@@ -10,7 +10,7 @@ void start_message(OutputTags tags);
 
 void output(const char* format_string, ...);
 
-void end_message();
+void end_message(void);
 
 
 #endif

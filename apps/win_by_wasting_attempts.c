@@ -6,10 +6,10 @@
 #include "cab_secret_word.h"
 #include "cab_settings_api.h"
 
-int main() {
+int main(void) {
     cab_set_setting(STG_Rule_AttemptsCoherencyConstraintMode,
                     CONSTR_SkipAttempt);
-    cab_start_new_game();
+    cab_start_new_game(void);
     printf("the word you have to find is %s\n", get_secret_word().letters);
     char string[1000];
     while (!cab_is_game_ended()) {

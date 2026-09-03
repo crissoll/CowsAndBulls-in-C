@@ -29,14 +29,14 @@ void print_help_text(const char* command_name) {
 
 void print_help_text_from_tokens(size_t token_count, const char* tokens[]) {
     if (token_count > 1) {
-        alert_too_many_arguments();
+        alert_too_many_arguments(token_count, tokens);
         return;
     }
     print_help_text(tokens[0]);
 }
 
 
-void print_whole_help_text() {
+void print_whole_help_text(void) {
     const CommandSpec* cur_spec = get_cmd_tree_root()->args;
     start_message(OT_HELP);
     while (cur_spec->name != NULL) {

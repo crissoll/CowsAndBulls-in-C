@@ -13,7 +13,7 @@ void set_word_len(size_t new_len) {
     word_len = new_len;
 }
 
-size_t get_word_len() {
+size_t get_word_len(void) {
     return word_len;
 }
 

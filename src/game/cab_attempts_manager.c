@@ -11,7 +11,7 @@
 
 #include "cab_attempts_manager.h"
 
-extern bool is_secret_word_found();
+extern bool is_secret_word_found(void);
 
 static Attempt attempts[MAX_PRACTICAL_ATTEMPTS];
 size_t attempt_number = 0;
@@ -19,31 +19,31 @@ size_t invalid_attempts_number = 0;
 
 static bool lose_on_attempts_finished = false;
 
-Attempt* get_attempts() {
+Attempt* get_attempts(void) {
 
     return attempts;
 }
 
-size_t get_attempt_number() {
+size_t get_attempt_number(void) {
     return attempt_number + invalid_attempts_number;
 }
 
-void reset_attempts() {
+void reset_attempts(void) {
     attempt_number = 0;
     invalid_attempts_number = 0;
 }
 
-size_t get_remaining_attempts() {
+size_t get_remaining_attempts(void) {
     return get_max_attempts() - attempt_number - invalid_attempts_number;
 }
 
-void display_remaining_attempts() {
+void display_remaining_attempts(void) {
     const size_t remaining_attempts = get_remaining_attempts();
     message(OT_USER, "you still have %d attempt%s\n", remaining_attempts,
             (remaining_attempts != 1) ? "s" : "");
 }
 
-void print_attempts() {
+void print_attempts(void) {
     if (attempt_number == 0) {
         message(OT_ATTEMPTS, "no attempts yet!\n");
         return;
@@ -113,11 +113,11 @@ void set_reveal_word_on_attempts_run_out(bool value) {
     reveal_word_on_attempts_run_out = value;
 }
 
-bool attempts_run_out() {
+bool attempts_run_out(void) {
     return (attempt_number + invalid_attempts_number) >= get_max_attempts();
 }
 
-void handle_attempts_deplition() {
+void handle_attempts_deplition(void) {
     if (lose_on_attempts_finished == false || is_secret_word_found()) {
         return;
     }
@@ -152,7 +152,7 @@ void add_attempt(Word word, GuessResult result) {
     handle_attempts_deplition();
 }
 
-void add_invalid_attempt() {
+void add_invalid_attempt(void) {
     invalid_attempts_number++;
     handle_attempts_deplition();
 }

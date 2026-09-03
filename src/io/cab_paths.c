@@ -172,7 +172,7 @@ typedef enum {
     ISFP_PreviousValuesWillBeKept,
 } InitSavesFilePathStatus;
 
-InitSavesFilePathStatus init_save_file_paths() {
+InitSavesFilePathStatus init_save_file_paths(void) {
     if (saves_folder_path == NULL || saves_folder_path[0] == '\0') {
         switch (
             set_path_string(&saves_folder_path, DEFAULT_SAVES_FOLDER_PATH)) {
@@ -245,7 +245,7 @@ typedef enum {
     IVFPS_MallocFailure,
 } InitVocabularyFilePathStatus;
 
-InitVocabularyFilePathStatus init_vocabulary_file_path() {
+InitVocabularyFilePathStatus init_vocabulary_file_path(void) {
     if (vocabulary_file_path == NULL) {
         switch (set_path_string(&vocabulary_file_path, DEFAULT_VOCAB_PATH)) {
             case SPS_Success:
@@ -304,7 +304,7 @@ typedef enum {
     IFP_Failure,
 } InitFilePathsStatus;
 
-InitFilePathsStatus init_file_paths() {
+InitFilePathsStatus init_file_paths(void) {
     switch (init_vocabulary_file_path()) {
         case IVFPS_Success:
             break;
@@ -371,7 +371,7 @@ bool set_saves_folder_path(const char* path) {
     }
 }
 
-const char* get_saves_folder_path() {
+const char* get_saves_folder_path(void) {
     if (!file_paths_initialized) {
         switch (init_file_paths()) {
             case IFP_Success:
@@ -417,7 +417,7 @@ bool set_vocabulary_file_path(const char* path) {
 }
 
 
-const char* get_secret_file_path() {
+const char* get_secret_file_path(void) {
     if (!file_paths_initialized) {
         switch (init_file_paths()) {
             case IFP_Success:
@@ -430,7 +430,7 @@ const char* get_secret_file_path() {
     return secret_file_path;
 }
 
-const char* get_attempts_file_path() {
+const char* get_attempts_file_path(void) {
     if (!file_paths_initialized) {
         switch (init_file_paths()) {
             case IFP_Success:
@@ -443,7 +443,7 @@ const char* get_attempts_file_path() {
     return attempts_file_path;
 }
 
-const char* get_vocabulary_file_path() {
+const char* get_vocabulary_file_path(void) {
     if (!file_paths_initialized) {
         switch (init_file_paths()) {
             case IFP_Success:
@@ -456,7 +456,7 @@ const char* get_vocabulary_file_path() {
     return vocabulary_file_path;
 }
 
-void free_file_paths() {
+void free_file_paths(void) {
     free(saves_folder_path);
     saves_folder_path = NULL;
     free(secret_file_path);

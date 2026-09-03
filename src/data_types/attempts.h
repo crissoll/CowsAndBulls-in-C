@@ -14,7 +14,7 @@ typedef struct {
     GuessResult result;
 } Attempt;
 
-size_t get_max_attempts();
+size_t get_max_attempts(void);
 
 void set_max_attempts(size_t value);
 

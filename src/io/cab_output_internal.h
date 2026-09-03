@@ -14,17 +14,17 @@ typedef struct {
 
 void print_to_default_buffer(const char* text);
 
-char* flush_output_buffer();
+char* flush_output_buffer(void);
 
 void start_message(OutputTags tags);
 
 void end_message();
 
-bool is_message_started();
+bool is_message_started(void);
 
-Messages get_messages_tags();
+Messages get_messages_tags(void);
 
-void output__shutdown();
+void output__shutdown(void);
 
 void set_log_messages_from_size_t(size_t value);
 

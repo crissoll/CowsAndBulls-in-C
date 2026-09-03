@@ -13,7 +13,7 @@ typedef struct {
     char letters[MAX_PRACTICAL_WORD_LEN + 1];  //
 } Word;
 
-size_t get_word_len();
+size_t get_word_len(void);
 void set_word_len(size_t new_len);
 
 Word word__new(const char letters[MAX_PRACTICAL_WORD_LEN + 1]);

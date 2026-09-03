@@ -35,9 +35,9 @@ void set_play_again_prompt_visible(bool value) {
     play_again_prompt = value;
 }
 
-void setup_vars();
+void setup_vars(void);
 
-void setup_session() {
+void setup_session(void) {
     if (session_setup) {
         return;
     }
@@ -53,12 +53,12 @@ void setup_session() {
     setup_vars();
 }
 
-void force_setup_session() {
+void force_setup_session(void) {
     session_setup = false;
     setup_session();
 }
 
-CabTurnId cab_get_game_state() {
+CabTurnId cab_get_game_state(void) {
     if (!session_setup) {
         setup_session();
     }
@@ -66,7 +66,7 @@ CabTurnId cab_get_game_state() {
     return game_state;
 }
 
-void setup_vars() {
+void setup_vars(void) {
     if (!session_setup) {
         setup_session();
     }
@@ -84,19 +84,19 @@ void setup_vars() {
     reset_error_state();
 }
 
-void cab_start_new_game() {
+void cab_start_new_game(void) {
     setup_vars();
     game_state = GS_FIRST_TURN;
 }
 
-void cab_load_game() {
+void cab_load_game(void) {
     setup_vars();
     load_saves();
     game_state = GS_FIRST_TURN;
 }
 
 
-bool prompt_to_load_game() {
+bool prompt_to_load_game(void) {
     if (!session_setup) {
         setup_session();
     }
@@ -115,7 +115,7 @@ bool prompt_to_load_game() {
 }
 
 
-void parse_input() {
+void parse_input(void) {
     char input_buffer[1024];
     char** input_tokens = NULL;
 
@@ -129,11 +129,11 @@ void parse_input() {
     free(input_tokens);
 }
 
-static bool cab_secret_word_revealed() {
+static bool cab_secret_word_revealed(void) {
     return is_secret_word_found() || has_surrendered() || attempts_run_out();
 }
 
-void update_saves() {
+void update_saves(void) {
     if (cab_secret_word_revealed()) {
         game_state = GS_PLAY_AGAIN;
         delete_save_files();
@@ -142,31 +142,31 @@ void update_saves() {
     store_saves();
 }
 
-void load_saves_wrapper() {
+void load_saves_wrapper(void) {
     if (loading_saves) {
         load_saves();
         loading_saves = false;
     }
 }
 
-void cab_process_turn() {
+void cab_process_turn(void) {
     game_state = get_turn_state(game_state).process();
 }
 
 
-bool _cab_is_game_ended() {
-    (cab_secret_word_revealed() || fatal_error_met());
+bool _cab_is_game_ended(void) {
+    return (cab_secret_word_revealed() || fatal_error_met());
 }
 
-bool cab_is_game_ended() {
+bool cab_is_game_ended(void) {
     return _cab_is_game_ended() && (!play_again_prompt || !play_again);
 }
 
-size_t cab_get_attempt_number() {
+size_t cab_get_attempt_number(void) {
     return get_attempt_number();
 }
 
-void cab_session_shutdown() {
+void cab_session_shutdown(void) {
     session_setup = false;
     game_state = GS_NOT_STARTED;
 }

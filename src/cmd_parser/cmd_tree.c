@@ -98,7 +98,7 @@ const CommandSpec* ROOT = &(CommandSpec){
 };
 
 
-const CommandSpec* get_cmd_tree_root() {
+const CommandSpec* get_cmd_tree_root(void) {
     return ROOT;
 }
 

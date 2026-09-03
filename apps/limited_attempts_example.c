@@ -6,7 +6,7 @@
 #include "cab_settings_api.h"
 
 
-int main() {
+int main(void) {
     cab_set_setting(STG_Internal_MaxAttempts, 4);
     cab_set_setting(STG_Rule_LoseOnMaxAttemptsReached, true);
     char string[1000];

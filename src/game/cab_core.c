@@ -37,11 +37,11 @@ void play_word(Word word) {
     add_attempt(word, result);
 }
 
-bool is_secret_word_found() {
+bool is_secret_word_found(void) {
     return secret_word_found;
 }
 
 
-void reset_victory() {
+void reset_victory(void) {
     secret_word_found = false;
 }

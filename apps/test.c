@@ -14,7 +14,7 @@ void turn_function(const char* input_string) {
     free(output_string);
 }
 
-int main() {
+int main(void) {
     play_test_set("apps/tests/tests.txt", turn_function, NULL);
 
     return 0;

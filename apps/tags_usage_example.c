@@ -37,7 +37,7 @@ static bool read_line(char* buffer, size_t buffer_size) {
 void turn_function(const char* input_buffer) {
 
     cab_input(input_buffer);
-    cab_process_turn();
+    cab_process_turn(void);
 
     size_t message_count;
 
@@ -64,7 +64,7 @@ void turn_function(const char* input_buffer) {
 }
 
 
-int main() {
+int main(void) {
     while (!cab_is_game_ended()) {
         char buffer[100];
         printf("%s", cab_get_input_prompt());

@@ -13,7 +13,7 @@
 #include "input_test.h"
 
 
-InputTest get_empty_test() {
+InputTest get_empty_test(void) {
     return (InputTest){
         .count = 0,
         .inputs = NULL,

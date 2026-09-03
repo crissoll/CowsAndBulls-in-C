@@ -12,6 +12,6 @@ GuessResult compare_with_secret_word(Word attempt) {
     return compare_words(attempt, secret_word);
 }
 
-Word get_secret_word() {
+Word get_secret_word(void) {
     return secret_word;
 }

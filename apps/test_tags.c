@@ -20,7 +20,7 @@
 void turn_function(const char* input_buffer) {
 
     cab_input(input_buffer);
-    cab_process_turn();
+    cab_process_turn(void);
 
     size_t message_count;
 
@@ -47,7 +47,7 @@ void turn_function(const char* input_buffer) {
 }
 
 
-int main() {
+int main(void) {
     play_test_set("apps/tests/tests.txt", turn_function, NULL);
     return 0;
 }

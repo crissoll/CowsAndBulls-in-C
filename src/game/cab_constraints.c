@@ -11,11 +11,11 @@ static Constraint vocabulary_constraint = CONSTR_SkipAttempt;
 static Constraint attempts_coherence_constraint = CONSTR_None;
 static Constraint attempts_equality_constraint = CONSTR_SkipAttempt;
 
-bool is_fatal_constraint_broke() {
+bool is_fatal_constraint_broke(void) {
     return fatal_constraint_broke;
 }
 
-void reset_fatal_constraint_broke() {
+void reset_fatal_constraint_broke(void) {
     fatal_constraint_broke = false;
 }
 

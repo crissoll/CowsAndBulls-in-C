@@ -4,7 +4,7 @@
 #include "guess.h"
 #include "word.h"
 
-Word get_secret_word();
+Word get_secret_word(void);
 void set_secret_word(Word new_secret_word);
 
 GuessResult compare_with_secret_word(Word attempt);

@@ -19,10 +19,10 @@ typedef struct {
 
 
 typedef void (*TurnFunction)(const char*);
-typedef void (*PrepFunction)();
+typedef void (*PrepFunction)(void);
 
 
-InputTest get_empty_test();
+InputTest get_empty_test(void);
 
 void add_input_line_to_test(InputTest* test, const char* input_line);
 

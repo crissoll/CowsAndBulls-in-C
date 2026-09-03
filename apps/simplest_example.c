@@ -3,7 +3,7 @@
 
 #include "cab_api.h"
 
-int main() {
+int main(void) {
     char string[1000];
     while (!cab_is_game_ended()) {
         printf("%s", cab_get_input_prompt());

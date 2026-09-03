@@ -14,12 +14,12 @@ void turn_function(const char* input_string) {
     free(output_string);
 }
 
-void prep_function() {
+void prep_function(void) {
     cab_set_vocabulary_file_path(
         "./apps/vocabularies/6_letters_example_voc.txt");
 }
 
-int main() {
+int main(void) {
 
 
     play_test_set("apps/tests/6_letters_tests.txt", turn_function,

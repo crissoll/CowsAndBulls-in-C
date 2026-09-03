@@ -1,17 +1,18 @@
 #include <stdbool.h>
 #include <string.h>
 
-#include "attempts.h"
 #include "cab_io_consts.h"
 #include "cab_output.h"
 #include "cmd_spec.h"
 
 
-void alert_too_many_arguments() {
+void alert_too_many_arguments(size_t token_count, const char* tokens[]) {
+    (void)token_count;
+    (void)tokens;
     message(OT_INPUT_ERROR, "too many arguments\n");
 }
 
-void alert_too_few_arguments() {
+void alert_too_few_arguments(void) {
     message(OT_INPUT_ERROR, "too few arguments\n");
 }
 
@@ -57,7 +58,7 @@ void parse_command(const CommandSpec* specifier, const char* tokens[],
     }
 
     if (specifier->default_handler == NULL) {
-        alert_too_many_arguments();
+        alert_too_many_arguments(token_count, tokens);
         return;
     }
     specifier->default_handler(token_count, tokens);
@@ -78,7 +79,7 @@ void disable_command(size_t token_count, const char* tokens[],
             }
 
             if (candidate_spec->args == NULL) {
-                alert_too_many_arguments();
+                alert_too_many_arguments(token_count, tokens);
                 return;
             }
             disable_command(token_count - 1, tokens + 1, candidate_spec);

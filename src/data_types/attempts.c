@@ -14,7 +14,7 @@
 
 
 static size_t max_attempts = MAX_PRACTICAL_ATTEMPTS;
-size_t get_max_attempts() {
+size_t get_max_attempts(void) {
     return max_attempts;
 }
 

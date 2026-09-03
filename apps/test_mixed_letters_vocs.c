@@ -15,11 +15,11 @@ void turn_function(const char* input_string) {
     free(output_string);
 }
 
-void prep_function() {
+void prep_function(void) {
     cab_set_vocabulary_file_path("./apps/vocabularies/animals.txt");
 }
 
-int main() {
+int main(void) {
     printf("============ len = 5 ============");
     cab_set_setting(STG_Internal_VocabLoad_AutoWordLenDetection, 0);
     cab_set_setting(STG_Internal_WordLen, 5);

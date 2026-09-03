@@ -32,7 +32,7 @@ extern size_t attempt_number;
 extern size_t invalid_attempts_number;
 
 
-static void generate_session_id() {
+static void generate_session_id(void) {
     if (session_id_generated) {
         return;
     }
@@ -43,14 +43,14 @@ static void generate_session_id() {
 }
 
 
-static SessionId* get_session_id_ptr() {
+static SessionId* get_session_id_ptr(void) {
     if (!session_id_generated) {
         generate_session_id();
     }
     return &session_id;
 }
 
-bool load_attempts() {
+bool load_attempts(void) {
     const char* path = get_attempts_file_path();
     if (path == NULL) {
         return false;
@@ -63,7 +63,7 @@ bool load_attempts() {
                               get_session_id_ptr());
 }
 
-void store_attempts() {
+void store_attempts(void) {
     const char* path = get_attempts_file_path();
     if (path == NULL) {
         message(OT_WARNING,
@@ -80,7 +80,7 @@ void store_attempts() {
 }
 
 
-void store_secret_word() {
+void store_secret_word(void) {
     if (get_attempt_number() != 1) {
         return;
     }
@@ -107,7 +107,7 @@ void store_secret_word() {
     fclose(file);
 }
 
-void store_saves() {
+void store_saves(void) {
     store_secret_word();
     store_attempts();
 }
@@ -142,7 +142,7 @@ bool load_test_secret_word(Word* test_secret_word, SessionId* session_id_ptr) {
     return true;
 }
 
-bool load_secret_word() {
+bool load_secret_word(void) {
     Word temp_secret_word = get_secret_word();
     bool loaded =
         load_test_secret_word(&temp_secret_word, get_session_id_ptr());
@@ -154,12 +154,12 @@ bool load_secret_word() {
     return loaded;
 }
 
-bool are_there_previous_save_files() {
+bool are_there_previous_save_files(void) {
     return (check_file_exists(get_attempts_file_path()) &&
             check_file_exists(get_secret_file_path()));
 }
 
-bool are_save_files_valid() {
+bool are_save_files_valid(void) {
     Attempt dummy_attempts[get_max_attempts()];
     size_t dummy_attempt_number = 0;
     size_t dummy_invalid_attempt_number = 0;
@@ -188,7 +188,7 @@ bool are_save_files_valid() {
     return true;
 }
 
-void delete_save_files() {
+void delete_save_files(void) {
     if (remove(get_secret_file_path()) != 0) {
         message(OT_WARNING, "error while removing secret_word.txt\n");
     }
@@ -198,7 +198,7 @@ void delete_save_files() {
     }
 }
 
-void generate_secret_word() {
+void generate_secret_word(void) {
     session_id_generated = false;
     generate_session_id();
     set_secret_word(get_random_word());
@@ -219,7 +219,7 @@ void set_allow_duplicate_letters(bool value) {
 }
 
 static bool has_duplicate_letters(const char* letters) {
-    bool alphabet[26] = {};
+    bool alphabet[26] = {0};
     for (size_t i = 0; i < strlen(letters); i++) {
         if (alphabet[letters[i] - 'a']) {
             return true;
@@ -235,7 +235,7 @@ void set_vocab_decimation_percentage(size_t value) {
     random_vocabulary_decimation_percentage = value;
 }
 
-static bool random_skip() {
+static bool random_skip(void) {
     if (random_vocabulary_decimation_percentage > 0) {
         const size_t N = ((size_t)rand()) % 100;
         return (N) < random_vocabulary_decimation_percentage;
@@ -244,7 +244,7 @@ static bool random_skip() {
 }
 
 
-void load_vocabulary() {
+void load_vocabulary(void) {
     size_t word_count = get_line_count(get_vocabulary_file_path());
     if (word_count == 0) {
         message(OT_WARNING, "load_vocabulary: vocabulary file is empty\n");
@@ -316,7 +316,7 @@ void load_vocabulary() {
             break;
         }
         if (!random_skip()) {
-            strcpy_s(words[i].letters, sizeof(words[i].letters), buffer);
+            strcpy(words[i].letters, buffer);
             i++;
         }
     }
@@ -340,7 +340,7 @@ void load_vocabulary() {
         }
 
         if (!random_skip()) {
-            strcpy_s(words[i].letters, sizeof(words[i].letters), buffer);
+            strcpy(words[i].letters, buffer);
             i++;
         }
     }
@@ -367,7 +367,7 @@ void load_vocabulary() {
 }
 
 
-void load_saves() {
+void load_saves(void) {
     if (are_save_files_valid()) {
         load_secret_word();
         load_attempts();

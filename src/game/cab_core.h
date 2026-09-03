@@ -8,7 +8,7 @@
 
 void play_word(Word attempt);
 
-bool is_secret_word_found();
+bool is_secret_word_found(void);
 
-void reset_victory();
+void reset_victory(void);
 #endif

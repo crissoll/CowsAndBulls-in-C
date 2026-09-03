@@ -4,7 +4,7 @@
 #include "cab_api.h"
 #include "cab_settings_api.h"
 
-int main() {
+int main(void) {
     cab_set_setting(STG_Internal_WordLen, 6);
     cab_set_vocabulary_file_path(
         "./apps/vocabularies/6_letters_example_voc.txt");

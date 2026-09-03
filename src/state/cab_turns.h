@@ -19,8 +19,8 @@ typedef enum {
 
 typedef struct _cab_turn_struct CabTurn;
 
-typedef CabTurnId (*CabTurnProcFunc)();
-typedef const char* (*CabTurnInputPrompt)();
+typedef CabTurnId (*CabTurnProcFunc)(void);
+typedef const char* (*CabTurnInputPrompt)(void);
 
 struct _cab_turn_struct {
     CabTurnInputPrompt get_input_prompt;

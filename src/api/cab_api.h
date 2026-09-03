@@ -13,14 +13,14 @@ bool cab_set_vocabulary_file_path(const char* path);
 
 
 // starts a new game ignoring existing saves
-void cab_start_new_game();
+void cab_start_new_game(void);
 
 // starts a new game and tries to load saves
-void cab_load_game();
+void cab_load_game(void);
 
 
 // returns an appropriate prompt to print before asking for player input
-const char* cab_get_input_prompt();
+const char* cab_get_input_prompt(void);
 
 // the core function of the game.
 // if you call this without using load_game or start_new_game,
@@ -28,10 +28,10 @@ const char* cab_get_input_prompt();
 char* cab_play_turn(char* input_string);
 
 // returns true if you find the secret word
-bool cab_is_game_ended();
+bool cab_is_game_ended(void);
 
 
 // must be called to avoid memory leaks when closing the game
-void cab_shutdown_game();
+void cab_shutdown_game(void);
 
 #endif

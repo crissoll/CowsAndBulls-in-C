@@ -6,20 +6,20 @@
 
 #include "cab_turns.h"
 
-CabTurnId cab_get_game_state();
+CabTurnId cab_get_game_state(void);
 
-void cab_start_new_game();
+void cab_start_new_game(void);
 
-void cab_load_game();
-
-
-void cab_process_turn();
-
-bool cab_is_game_ended();
+void cab_load_game(void);
 
 
-size_t cab_get_attempt_number();
+void cab_process_turn(void);
 
-void cab_session_shutdown();
+bool cab_is_game_ended(void);
+
+
+size_t cab_get_attempt_number(void);
+
+void cab_session_shutdown(void);
 
 #endif

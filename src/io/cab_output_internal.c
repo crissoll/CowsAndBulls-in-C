@@ -150,7 +150,7 @@ void print_to_default_buffer(const char* text) {
     print_to_buffer(&default_buffer, text);
 }
 
-void log_tagged_output() {
+void log_tagged_output(void) {
     if (!messages_initialized || tagged_output.tags == NULL ||
         tagged_output.messages == NULL || default_buffer.buffer == NULL) {
         return;
@@ -174,7 +174,7 @@ void log_tagged_output() {
     }
 }
 
-char* flush_output_buffer() {
+char* flush_output_buffer(void) {
     if (!buffer_initialized || default_buffer.buffer == NULL) {
         return strdup("");
     }
@@ -188,7 +188,7 @@ char* flush_output_buffer() {
     return result;
 }
 
-void output__shutdown() {
+void output__shutdown(void) {
     free_output_buffer(&default_buffer);
     free(tagged_output.messages);
     free(tagged_output.tags);
@@ -197,7 +197,7 @@ void output__shutdown() {
 }
 
 
-Messages get_messages_tags() {
+Messages get_messages_tags(void) {
     if (!messages_initialized) {
         init_messages(&tagged_output);
     }
@@ -262,7 +262,7 @@ void start_message(OutputTags tag) {
     tagged_output.size++;
 }
 
-void end_message() {
+void end_message(void) {
     if (default_buffer.current_size > 0 &&
         default_buffer.buffer[default_buffer.current_size - 1] != '\n') {
         print_to_buffer(&default_buffer, "\n");
@@ -270,7 +270,7 @@ void end_message() {
     start_message(OT_NONE);
 }
 
-bool is_message_started() {
+bool is_message_started(void) {
     return (tagged_output.size > 0 &&
             tagged_output.tags[tagged_output.size - 1] != OT_NONE);
 }

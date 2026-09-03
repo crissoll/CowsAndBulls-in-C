@@ -8,17 +8,17 @@
 
 // temp solution
 
-extern void load_saves_wrapper();
-extern bool prompt_to_load_game();
-extern void parse_input();
-extern size_t get_attempt_number();
-extern void update_saves();
+extern void load_saves_wrapper(void);
+extern bool prompt_to_load_game(void);
+extern void parse_input(void);
+extern size_t get_attempt_number(void);
+extern void update_saves(void);
 
-extern void force_setup_session();
+extern void force_setup_session(void);
 extern bool play_again_prompt;
 extern bool play_again;
 
-extern bool _cab_is_game_ended();
+extern bool _cab_is_game_ended(void);
 
 #pragma region  // turn functions declarations
 #define TURN_FUNCS_DECL(TURN_NAME)                       \

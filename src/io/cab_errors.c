@@ -18,7 +18,7 @@ void set_log_mode(size_t value) {
     log_to_stdout = value & LOG_ToStdout;
 }
 
-void reset_extra_io_log() {
+void reset_extra_io_log(void) {
     file_interaction_count = 0;
     FILE* fp = fopen("last.log", "w");
     fwrite(&" ", 1, 1, fp);
@@ -64,10 +64,10 @@ void push_fatal_error(const char* error_message, ...) {
 }
 
 
-void reset_error_state() {
+void reset_error_state(void) {
     fatal_error = false;
 }
 
-bool fatal_error_met() {
+bool fatal_error_met(void) {
     return fatal_error;
 }

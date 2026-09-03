@@ -10,15 +10,15 @@ typedef enum {
     LOG_ToStdout = 2,
 } LogMode;
 
-void reset_extra_io_log();
+void reset_extra_io_log(void);
 
 void extra_io_warning(const char* warning_message, ...);
 
 void push_fatal_error(const char* error_message, ...);
 
-void reset_error_state();
+void reset_error_state(void);
 
-bool fatal_error_met();
+bool fatal_error_met(void);
 
 void set_log_mode(size_t value);
 

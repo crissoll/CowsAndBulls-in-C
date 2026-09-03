@@ -40,7 +40,7 @@ Messages msg_tags = (Messages){
 char* cur_txt = NULL;
 
 
-void cab_io_shutdown() {
+void cab_io_shutdown(void) {
     output__shutdown();
     free(msg_tags.messages);
     msg_tags.messages = NULL;
@@ -59,7 +59,7 @@ InputStatus cab_input(const char* input_string) {
     return write_to_input_buffer(input_string);
 }
 
-void update_output_messages() {
+void update_output_messages(void) {
     if (output_state == OS_OutputStale) {  // this should be impossible to reach
         extra_io_warning(
             "update_output_messages: no input was received, messages "
@@ -85,7 +85,7 @@ void update_output_messages() {
     output_state = OS_MessagesUpToDate;
 }
 
-char* cab_get_output() {
+char* cab_get_output(void) {
     if (output_state != OS_MessagesUpToDate) {
         update_output_messages();
     }
@@ -153,7 +153,7 @@ char** cab_get_messages_with_tag(OutputTags tag, size_t* message_count) {
     return result;
 }
 
-const char* get_input_prompt() {
+const char* get_input_prompt(void) {
     return get_turn_state(cab_get_game_state()).get_input_prompt();
 }
 
@@ -163,7 +163,7 @@ void set_log_input_prompt(bool value) {
     log_input_prompt = value;
 }
 
-const char* cab_get_input_prompt() {
+const char* cab_get_input_prompt(void) {
     const char* prompt = get_input_prompt();
     if (log_input_prompt) {
         extra_io_warning("[input prompt]: %s", prompt);

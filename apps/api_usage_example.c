@@ -25,7 +25,7 @@ static bool read_line(char* buffer, size_t buffer_size) {
     return true;
 }
 
-int main() {
+int main(void) {
     while (!cab_is_game_ended()) {
         char buffer[100];
 

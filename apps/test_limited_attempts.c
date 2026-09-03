@@ -16,7 +16,7 @@ void turn_function(const char* input_string) {
     free(output_string);
 }
 
-int main() {
+int main(void) {
     cab_set_setting(STG_Internal_MaxAttempts, 4);
     cab_set_setting(STG_Rule_LoseOnMaxAttemptsReached, true);
     play_test_set("apps/tests/tests.txt", turn_function, NULL);
