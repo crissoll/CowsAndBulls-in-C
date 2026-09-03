@@ -18,7 +18,7 @@ char* flush_output_buffer(void);
 
 void start_message(OutputTags tags);
 
-void end_message();
+void end_message(void);
 
 bool is_message_started(void);
 
