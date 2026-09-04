@@ -16,6 +16,14 @@ void alert_too_few_arguments(void) {
     message(OT_INPUT_ERROR, "too few arguments\n");
 }
 
+bool command_spec_is_end_spec(CommandSpec spec) {
+    return spec.name == NULL;
+}
+
+bool command_spec_name_match(CommandSpec spec, const char* searched_name) {
+    return strcmp(searched_name, spec.name) == 0;
+}
+
 const CommandSpec* command_spec_find_arg(const CommandSpec* parent,
                                          const char* searched_name) {
     if (parent == NULL || searched_name == NULL) {
@@ -27,8 +35,8 @@ const CommandSpec* command_spec_find_arg(const CommandSpec* parent,
     if (candidate_arg == NULL) {
         return NULL;
     }
-    while (candidate_arg->name != NULL) {
-        if (strcmp(searched_name, candidate_arg->name) == 0) {
+    while (!command_spec_is_end_spec(*candidate_arg)) {
+        if (command_spec_name_match(*candidate_arg, searched_name)) {
             return candidate_arg;
         }
         candidate_arg++;
@@ -69,7 +77,7 @@ void parse_command(const CommandSpec* specifier, const char* tokens[],
 void disable_command(size_t token_count, const char* tokens[],
                      const CommandSpec* base_spec) {
     const CommandSpec* candidate_spec = base_spec->args;
-    while (candidate_spec->name != NULL) {
+    while (!command_spec_is_end_spec(*candidate_spec)) {
         if (strcmp(candidate_spec->name, tokens[0]) == 0) {
             if (token_count == 1) {
                 *candidate_spec->allowed = false;

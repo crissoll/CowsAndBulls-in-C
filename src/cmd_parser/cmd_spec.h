@@ -18,6 +18,7 @@ typedef struct CommandSpec {
     bool* const allowed;
 } CommandSpec;
 
+bool command_spec_is_end_spec(CommandSpec spec);
 
 void alert_too_many_arguments(size_t token_count, const char* tokens[]);
 
