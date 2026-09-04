@@ -3,6 +3,7 @@
 #include <stddef.h>
 
 #include "attempts.h"
+#include "cab_turns.h"
 #include "word.h"
 
 #include "cab_constraints.h"
@@ -102,7 +103,8 @@ void cab_set_setting(Settings setting, size_t value) {
         setting, value);
 
     if (locked_in_game_settings[setting] == true &&
-        cab_get_game_state() != GS_NOT_STARTED) {
+        cab_get_game_state() != GS_NOT_STARTED &&
+        cab_get_game_state() != GS_FIRST_TURN) {
         message(
             OT_WARNING,
             "cab_set_setting: setting number %d can only be used before game "
