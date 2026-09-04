@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "cab_api.h"
+#include "cab_settings_api.h"
 
 static bool read_line(char* buffer, size_t buffer_size) {
     if (buffer_size == 0) {
@@ -26,6 +27,7 @@ static bool read_line(char* buffer, size_t buffer_size) {
 }
 
 int main(void) {
+    cab_set_setting(STG_Rule_SpecialCharForCommands, '/');
     while (!cab_is_game_ended()) {
         char buffer[100];
 

@@ -1,8 +1,10 @@
 #include <stdlib.h>
 
 #include "cab_output.h"
+#include "cab_settings_api.h"
 #include "index_array.h"
 #include "word.h"
+
 
 
 void index_array__init(IndexArray* array, size_t size) {
@@ -111,21 +113,16 @@ IndexArray join(IndexArray a, IndexArray b) {
     return result;
 }
 
-static size_t index_array_words_per_line = 10;
 
 void index_array__output(IndexArray index_array, const Vocabulary* vocabulary) {
     size_t j = 0;
     for (size_t i = 0; i < index_array.size; i++) {
         word__output(vocabulary->words[index_array.indexes[i]]);
         output(" ");
-        if (++j > index_array_words_per_line) {
+        if (++j > cab_get_setting(STG_Display_IndexArray_WordsPerLine)) {
             output("\n");
             j = 0;
         }
     }
     output("\n");
-}
-
-void index_array__set_output_words_per_line(size_t words_per_line) {
-    index_array_words_per_line = words_per_line;
 }

@@ -37,7 +37,7 @@ static bool read_line(char* buffer, size_t buffer_size) {
 void turn_function(const char* input_buffer) {
 
     cab_input(input_buffer);
-    cab_process_turn(void);
+    cab_process_turn();
 
     size_t message_count;
 

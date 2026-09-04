@@ -20,7 +20,4 @@ void reset_error_state(void);
 
 bool fatal_error_met(void);
 
-void set_log_mode(size_t value);
-
-
 #endif

@@ -8,7 +8,7 @@
 #include "cab_io_consts.h"
 #include "cab_io_tag_names.h"
 #include "cab_output_internal.h"
-
+#include "cab_settings_api.h"
 
 #include "cab_output.h"
 
@@ -17,12 +17,6 @@
 
 // extremely high, so its never checked. PLS don't go anywhere near it
 #define MAX_TEXTS_PER_SINGLE_OUTPUT 256
-
-static bool log_messages = true;
-void set_log_messages_from_size_t(size_t value) {
-    log_messages = value;
-}
-
 
 typedef struct {
     char* buffer;
@@ -179,7 +173,7 @@ char* flush_output_buffer(void) {
         return strdup("");
     }
 
-    if (log_messages) {
+    if (cab_get_setting(STG_Debug_LogMessages)) {
         log_tagged_output();
     }
 
@@ -207,7 +201,7 @@ Messages get_messages_tags(void) {
         end_message();
     }
 
-    if (log_messages) {
+    if (cab_get_setting(STG_Debug_LogMessages)) {
         log_tagged_output();
     }
 

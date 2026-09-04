@@ -8,6 +8,7 @@
 #include "cab_io_api.h"
 #include "cab_io_consts.h"
 #include "cab_io_utils.h"
+#include "cab_settings_api.h"
 #include "cab_turns.h"
 
 
@@ -157,15 +158,10 @@ const char* get_input_prompt(void) {
     return get_turn_state(cab_get_game_state()).get_input_prompt();
 }
 
-static bool log_input_prompt = true;
-
-void set_log_input_prompt(bool value) {
-    log_input_prompt = value;
-}
 
 const char* cab_get_input_prompt(void) {
     const char* prompt = get_input_prompt();
-    if (log_input_prompt) {
+    if (cab_get_setting(STG_Debug_LogInputPrompt)) {
         extra_io_warning("[input prompt]: %s", prompt);
     }
     return prompt;

@@ -11,13 +11,13 @@
 
 #include "cab_attempts_manager.h"
 
+#include "cab_settings_api.h"
+
 extern bool is_secret_word_found(void);
 
 static Attempt attempts[MAX_PRACTICAL_ATTEMPTS];
 size_t attempt_number = 0;
 size_t invalid_attempts_number = 0;
-
-static bool lose_on_attempts_finished = false;
 
 Attempt* get_attempts(void) {
 
@@ -55,7 +55,7 @@ void print_attempts(void) {
     if (invalid_attempts_number > 1) {
         message(OT_ATTEMPTS, "%d invalid attempts\n", invalid_attempts_number);
     }
-    if (lose_on_attempts_finished) {
+    if (cab_get_setting(STG_Rule_LoseOnMaxAttemptsReached)) {
         display_remaining_attempts();
     }
 }
@@ -103,27 +103,18 @@ bool word_is_compatible_with_attempts(Word word) {
 }
 
 
-void set_lose_on_attempts_finished(bool value) {
-    lose_on_attempts_finished = value;
-}
-
-static bool reveal_word_on_attempts_run_out = true;
-
-void set_reveal_word_on_attempts_run_out(bool value) {
-    reveal_word_on_attempts_run_out = value;
-}
-
 bool attempts_run_out(void) {
     return (attempt_number + invalid_attempts_number) >= get_max_attempts();
 }
 
 void handle_attempts_deplition(void) {
-    if (lose_on_attempts_finished == false || is_secret_word_found()) {
+    if (cab_get_setting(STG_Rule_LoseOnMaxAttemptsReached) == false ||
+        is_secret_word_found()) {
         return;
     }
     if (attempts_run_out()) {
         message(OT_USER, "reached maximum amount of attempts! you lose\n");
-        if (reveal_word_on_attempts_run_out) {
+        if (cab_get_setting(STG_Display_RevealSecretWordOnAttemptsFinished)) {
             message(OT_USER, "the secret word was %s\n",
                     get_secret_word().letters);
         }
@@ -134,10 +125,14 @@ void handle_attempts_deplition(void) {
 
 void add_attempt(Word word, GuessResult result) {
     if (attempt_number >= get_max_attempts()) {
-        if (lose_on_attempts_finished == false) {  // simply hide it
+        if (cab_get_setting(STG_Rule_LoseOnMaxAttemptsReached) == false) {
             message(OT_USER,
                     "reached maximum amount of attempts! oldest one will be "
                     "deleted\n");
+        } else {
+            // this shouldn't happen
+            message(OT_WARNING,
+                    "add_attempt: reached branch that shouldn't be reacheable");
         }
 
         for (size_t i = 0; i < get_max_attempts() - 1; i++) {

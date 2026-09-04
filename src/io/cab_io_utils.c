@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "cab_errors.h"
+#include "cab_settings_api.h"
 
 void to_lower(char* string, size_t max_length) {
     for (size_t k = 0; k < max_length && string[k] != '\0'; k++) {
@@ -10,13 +11,6 @@ void to_lower(char* string, size_t max_length) {
             string[k] = string[k] - 'A' + 'a';
         }
     }
-}
-
-
-static size_t max_chars_per_line = 80;
-
-void set_max_chars_per_line(size_t value) {
-    max_chars_per_line = value;
 }
 
 
@@ -31,7 +25,8 @@ void text_wrap(char* text) {
         if (text[i] == ' ' || text[i] == '\t') {
             last_space = i;
         }
-        if (i - last_line_start > max_chars_per_line) {
+        if (i - last_line_start >
+            cab_get_setting(STG_Display_TextWrapMaxLineLength)) {
             if (last_space > last_line_start) {
                 text[last_space] = '\n';
                 last_line_start = last_space + 1;

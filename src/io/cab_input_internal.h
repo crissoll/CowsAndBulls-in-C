@@ -11,6 +11,4 @@ InputStatus write_to_input_buffer(const char* input_string);
 
 GetInputStatus get_input(char* buffer, size_t buffer_size);
 
-void set_log_input(bool);
-
 #endif

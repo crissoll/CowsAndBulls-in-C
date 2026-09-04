@@ -22,11 +22,6 @@ Constraint get_total_constraint(Word word);
 
 ConstraintResult handle_contraints(Word word);
 
-
-void set_vocabulary_constraint(size_t value);
-
-void set_attempts_coherence_constraint(size_t value);
-
 void set_attempts_equality_constraint(size_t value);
 
 #endif

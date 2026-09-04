@@ -14,11 +14,6 @@ bool is_word_already_attempted(Word word);
 
 void print_attempts(void);
 
-
-void set_lose_on_attempts_finished(bool value);
-
-void set_reveal_word_on_attempts_run_out(bool value);
-
 bool attempts_run_out(void);
 
 void add_attempt(Word word, GuessResult result);

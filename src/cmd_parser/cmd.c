@@ -1,31 +1,14 @@
-#include <ctype.h>
 #include <stdbool.h>
 #include <stddef.h>
 
-#include "cab_errors.h"
-
+#include "cab_settings_api.h"
 #include "cmd_spec.h"
 #include "cmd_tree.h"
 
-static char special_command_char = '\0';
-
-void set_special_command_char(char value) {
-    if (isalpha(value)) {
-        extra_io_warning(
-            "set_special_command_char: value must not be a letter");
-    }
-    special_command_char = value;
-}
-
-void set_special_command_char_from_size_t(size_t value) {
-
-    set_special_command_char((char)value);
-}
-
-
 void parse(const char* tokens[], size_t token_count) {
-    if (special_command_char != '\0') {
-        if (tokens[0][0] != special_command_char) {
+    if (cab_get_setting(STG_Rule_SpecialCharForCommands) != '\0') {
+        if (tokens[0][0] !=
+            (char)cab_get_setting(STG_Rule_SpecialCharForCommands)) {
             get_cmd_tree_root()->default_handler(token_count, tokens);
             return;
         }

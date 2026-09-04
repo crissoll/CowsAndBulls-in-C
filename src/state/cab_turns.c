@@ -3,7 +3,7 @@
 #include <stdbool.h>
 #include "cab_attempts_manager.h"
 #include "cab_input.h"
-#include "cab_session_api.h"
+#include "cab_settings_api.h"
 
 
 // temp solution
@@ -15,7 +15,6 @@ extern size_t get_attempt_number(void);
 extern void update_saves(void);
 
 extern void force_setup_session(void);
-extern bool play_again_prompt;
 extern bool play_again;
 
 extern bool _cab_is_game_ended(void);
@@ -107,9 +106,13 @@ TURN_FUNCS_DEF(
 TURN_FUNCS_DEF(
     GS_PLAY_AGAIN,
     /* input prompt */
-    (cab_is_game_ended()) ? "" : "Play Again? (y/n)\n> ",
+    (cab_get_setting(STG_Internal_ShowPlayAgainPrompt))
+        ? "Play Again? (y/n)\n> "
+        : "Nothing more to do\n> ",
     /* process */
-    if (!play_again_prompt) { return GS_NOT_STARTED; }
+    if (cab_get_setting(STG_Internal_ShowPlayAgainPrompt) == false) {
+        return GS_NOT_STARTED;
+    }
 
     switch (get_y_or_n_from_input()) {
         case YORN_Yes:

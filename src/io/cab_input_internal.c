@@ -7,18 +7,12 @@
 #include "cab_input_internal.h"
 #include "cab_io_consts.h"
 #include "cab_output.h"
-
+#include "cab_settings_api.h"
 
 #define MAX_INPUT_BUFFER_SIZE 1024
 
 static char input_buffer[MAX_INPUT_BUFFER_SIZE];
 static size_t input_buffer_size = 0;
-
-static bool log_input = true;
-
-void set_log_input(bool value) {
-    log_input = value;
-}
 
 
 InputStatus write_to_input_buffer(const char* input_string) {
@@ -28,7 +22,7 @@ InputStatus write_to_input_buffer(const char* input_string) {
                 "added\n");
     }
 
-    if (log_input) {
+    if (cab_get_setting(STG_Debug_LogInput)) {
         extra_io_warning("[user]> %s", input_string);
     }
 

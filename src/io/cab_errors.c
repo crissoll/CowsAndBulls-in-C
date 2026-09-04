@@ -5,17 +5,19 @@
 #include <string.h>
 
 #include "cab_errors.h"
+#include "cab_settings_api.h"
 
 static bool fatal_error = false;
 
-static bool log_to_file = true;
-static bool log_to_stdout = false;
-
 static size_t file_interaction_count = 0;
 
-void set_log_mode(size_t value) {
-    log_to_file = value & LOG_ToFile;
-    log_to_stdout = value & LOG_ToStdout;
+
+bool get_log_to_file(void) {
+    return cab_get_setting(STG_Debug_LogMode) & LOG_ToFile;
+}
+
+bool get_log_to_stdout(void) {
+    return cab_get_setting(STG_Debug_LogMode) & LOG_ToStdout;
 }
 
 void reset_extra_io_log(void) {
@@ -35,14 +37,13 @@ void va_extra_io_log_to_stream(const char* format_text, va_list vargs,
 }
 
 void va_extra_io_log(const char* format_text, va_list vargs) {
-    if (log_to_file) {
+    if (get_log_to_file()) {
         FILE* fp = fopen("last.log", "a+");
         va_extra_io_log_to_stream(format_text, vargs, fp);
-        if (log_to_file) {
-            fclose(fp);
-        }
+        fclose(fp);
     }
-    if (log_to_stdout) {
+
+    if (get_log_to_stdout()) {
         va_extra_io_log_to_stream(format_text, vargs, stdout);
     }
 }

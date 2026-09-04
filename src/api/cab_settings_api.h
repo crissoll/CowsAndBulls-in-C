@@ -39,5 +39,7 @@ void cab_set_setting(Settings setting, size_t value);
 size_t cab_get_setting(Settings setting);
 size_t cab_get_default_setting(Settings setting);
 
+void reset_setting(Settings setting);
+void reset_all_settings(void);
 
 #endif

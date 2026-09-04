@@ -6,15 +6,12 @@
 #include "cab_errors.h"
 #include "cab_io_consts.h"
 #include "cab_output.h"
+#include "cab_settings_api.h"
 #include "word.h"
 
-static size_t word_len = 5;
-void set_word_len(size_t new_len) {
-    word_len = new_len;
-}
 
 size_t get_word_len(void) {
-    return word_len;
+    return cab_get_setting(STG_Internal_WordLen);
 }
 
 Word word__new(const char letters[MAX_PRACTICAL_WORD_LEN + 1]) {

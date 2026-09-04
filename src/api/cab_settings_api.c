@@ -1,115 +1,131 @@
+#include <ctype.h>
+#include <stdbool.h>
 #include <stddef.h>
 
-#include "cab_errors.h"
-#include "cab_session_api.h"
-#include "cab_settings_api.h"
-
-
 #include "attempts.h"
-#include "cab_attempts_manager.h"
-#include "cab_constraints.h"
-#include "cab_input_internal.h"
-#include "cab_io_consts.h"
-#include "cab_io_utils.h"
-#include "cab_output_internal.h"
-#include "cab_saves.h"
-#include "cmd.h"
-#include "cmd_surrender.h"
-#include "index_array.h"
 #include "word.h"
 
-extern void set_play_again_prompt_visible(bool value);
-extern void set_log_input_prompt(bool value);
+#include "cab_constraints.h"
 
+#include "cab_errors.h"
+#include "cab_io_consts.h"
 #include "cab_output.h"
+
+#include "cab_session_api.h"
+
+#include "cab_settings_api.h"
+
 
 #define DEFINE_BOOL_FUNC_WRAPPER(wrapper_name, base_func) \
     static void wrapper_name(size_t value) {              \
         base_func((bool)value);                           \
     }
 
-typedef void (*SettingsFunction)(size_t);
+typedef bool (*SettingValueValidationFunc)(size_t value);
 
 typedef struct {
-    SettingsFunction func;
     size_t min_value;
     size_t max_value;
     size_t default_value;
+
 } SettingsSpec;
 
-DEFINE_BOOL_FUNC_WRAPPER(surrender_show_secret_word,
-                         set_display_secret_word_on_surrender)
-DEFINE_BOOL_FUNC_WRAPPER(saves_autodetect_word_len,
-                         set_detect_word_len_from_voc)
-DEFINE_BOOL_FUNC_WRAPPER(attempts_lose_on_limit_reached,
-                         set_lose_on_attempts_finished)
-DEFINE_BOOL_FUNC_WRAPPER(reveal_secret_word_on_attempts_run_out,
-                         set_reveal_word_on_attempts_run_out)
-DEFINE_BOOL_FUNC_WRAPPER(vocab_allow_duplicate_letters,
-                         set_allow_duplicate_letters)
-DEFINE_BOOL_FUNC_WRAPPER(setting__set_log_input, set_log_input)
-DEFINE_BOOL_FUNC_WRAPPER(setting__set_log_input_prompt, set_log_input_prompt)
 
-static SettingsSpec setting_specs[STG_LEN] = {
-    [STG_Display_IndexArray_WordsPerLine] =
-        {index_array__set_output_words_per_line, 0, 100, 10},
-    [STG_Display_RevealSecretWordOnSurrender] = {surrender_show_secret_word, 0,
-                                                 1, 1},
-    [STG_Internal_WordLen] = {set_word_len, 1, MAX_PRACTICAL_WORD_LEN, 5},
-    [STG_Internal_VocabLoad_AutoWordLenDetection] = {saves_autodetect_word_len,
-                                                     0, 1, 1},
-    [STG_Rule_LoseOnMaxAttemptsReached] = {attempts_lose_on_limit_reached, 0, 1,
-                                           0},
-    [STG_Internal_MaxAttempts] = {set_max_attempts, 1, MAX_PRACTICAL_ATTEMPTS,
+bool validate_special_command_char(size_t value) {
+    return !isalnum((unsigned char)value);
+}
+
+static const SettingsSpec setting_specs[STG_LEN] = {
+    [STG_Display_IndexArray_WordsPerLine] = {0, 100, 10},
+    [STG_Display_RevealSecretWordOnSurrender] = {false, true, true},
+    [STG_Internal_WordLen] = {1, MAX_PRACTICAL_WORD_LEN, 5},
+    [STG_Internal_VocabLoad_AutoWordLenDetection] = {false, true, true},
+    [STG_Rule_LoseOnMaxAttemptsReached] = {false, true, false},
+    [STG_Internal_MaxAttempts] = {1, MAX_PRACTICAL_ATTEMPTS,
                                   MAX_PRACTICAL_ATTEMPTS},
-    [STG_Display_RevealSecretWordOnAttemptsFinished] =
-        {reveal_secret_word_on_attempts_run_out, 0, 1, 1},
-    [STG_Rule_VocabularyConstraintMode] = {set_vocabulary_constraint,
-                                           CONSTR_None, CONSTR_LoseGame,
+    [STG_Display_RevealSecretWordOnAttemptsFinished] = {false, true, true},
+    [STG_Rule_VocabularyConstraintMode] = {CONSTR_None, CONSTR_LoseGame,
                                            CONSTR_SkipAttempt},
-    [STG_Rule_AttemptsCoherencyConstraintMode] =
-        {set_attempts_coherence_constraint, CONSTR_None, CONSTR_LoseGame,
-         CONSTR_None},
-    [STG_Rule_AttemptsEqualityConstraintMode] =
-        {set_attempts_equality_constraint, CONSTR_None, CONSTR_LoseGame,
-         CONSTR_SkipAttempt},
-    [STG_Internal_VocabLoad_AllowDuplicateLetters] =
-        {vocab_allow_duplicate_letters, 0, 1, 1},
-    [STG_Internal_VocabLoad_RandomWordsErasurePercentage] =
-        {set_vocab_decimation_percentage, 0, 100, 0},
-    [STG_Rule_SpecialCharForCommands] = {set_special_command_char_from_size_t,
-                                         0, 255, 0},
-    [STG_Debug_LogMode] = {set_log_mode, 0, 256, LOG_ToFile},
-    [STG_Debug_LogMessages] = {set_log_messages_from_size_t, 0, 1, 0},
-    [STG_Display_TextWrapMaxLineLength] = {set_max_chars_per_line, 10, 1000,
-                                           25},
-    [STG_Debug_LogInput] = {setting__set_log_input, 0, 1, 1},
-    [STG_Debug_LogInputPrompt] = {setting__set_log_input_prompt, 0, 1, 1},
+    [STG_Rule_AttemptsCoherencyConstraintMode] = {CONSTR_None, CONSTR_LoseGame,
+                                                  CONSTR_None},
+    [STG_Rule_AttemptsEqualityConstraintMode] = {CONSTR_None, CONSTR_LoseGame,
+                                                 CONSTR_SkipAttempt},
+    [STG_Internal_VocabLoad_AllowDuplicateLetters] = {false, true, true},
+    [STG_Internal_VocabLoad_RandomWordsErasurePercentage] = {0, 100, 0},
+    [STG_Rule_SpecialCharForCommands] = {1, 255, 0},
+    [STG_Debug_LogMode] = {0, 256, LOG_ToFile},
+    [STG_Debug_LogMessages] = {false, true, true},
+    [STG_Display_TextWrapMaxLineLength] = {10, 1000, 80},
+    [STG_Debug_LogInput] = {false, true, true},
+    [STG_Debug_LogInputPrompt] = {false, true, true},
+    [STG_Internal_ShowPlayAgainPrompt] = {false, true, true},
 
 };
 
+static const SettingValueValidationFunc validation_funcs[STG_LEN] = {
+    [STG_Rule_SpecialCharForCommands] = validate_special_command_char,
+};
+
+static const bool locked_in_game_settings[STG_LEN] = {
+    [STG_Internal_WordLen] = true,
+    [STG_Internal_VocabLoad_AllowDuplicateLetters] = true,
+    [STG_Internal_VocabLoad_RandomWordsErasurePercentage] = true,
+};
+
+
+bool overriden_settings[STG_LEN] = {0};
+size_t settings[STG_LEN] = {0};
+
+size_t cab_get_setting(Settings setting) {
+    if (overriden_settings[setting]) {
+        return settings[setting];
+    }
+    return setting_specs[setting].default_value;
+}
+
+
+void reset_setting(Settings setting) {
+    overriden_settings[setting] = false;
+}
+
+
+void reset_all_settings(void) {
+    for (size_t i = 0; i < STG_LEN; i++) {
+        overriden_settings[i] = false;
+    }
+}
+
 
 void cab_set_setting(Settings setting, size_t value) {
-    if (cab_get_game_state() != GS_NOT_STARTED) {
-        message(OT_WARNING,
-                "cab_set_setting: this function can only be used before game "
-                "starts; current game state = %d",
-                cab_get_game_state());
+    extra_io_warning(
+        "cab_set_setting: trying to set setting number %d to value %zu",
+        setting, value);
+
+    if (locked_in_game_settings[setting] == true &&
+        cab_get_game_state() != GS_NOT_STARTED) {
+        message(
+            OT_WARNING,
+            "cab_set_setting: setting number %d can only be used before game "
+            "starts; current game state = %d",
+            setting, cab_get_game_state());
         return;
     }
+
     if (setting >= STG_LEN) {
         extra_io_warning(
-            "cab_set_setting: tried assigning non existing setting with "
-            "number %d\n",
+            "cab_set_setting: tried assigning non existing setting number %d\n",
             setting);
         return;
     }
-    if (setting_specs[setting].func == NULL) {
-        extra_io_warning(
-            "cab_set_setting: setting number %d has no assigned function\n",
-            setting);
+
+    if (setting_specs[setting].min_value == setting_specs[setting].max_value) {
+        message(OT_WARNING,
+                "cab_set_setting: tried assigning setting number "
+                "%d; invalid setting: min_value equal to max_value\n",
+                setting);  // avoids access to uninitialized settings
         return;
     }
+
     if (value < setting_specs[setting].min_value) {
         message(OT_WARNING,
                 "cab_set_setting: tried assigning value %zu to setting number "
@@ -117,6 +133,7 @@ void cab_set_setting(Settings setting, size_t value) {
                 value, setting);
         return;
     }
+
     if (value > setting_specs[setting].max_value) {
         message(OT_WARNING,
                 "cab_set_setting: tried assigning value %zu to setting number "
@@ -125,5 +142,15 @@ void cab_set_setting(Settings setting, size_t value) {
         return;
     }
 
-    setting_specs[setting].func(value);
+    if (validation_funcs[setting] != NULL &&
+        validation_funcs[setting](value) == false) {
+        message(OT_WARNING,
+                "cab_set_setting: tried assigning value %zu to setting number "
+                "%d; value not allowed by validation function",
+                value,
+                setting);  // TODO: create array of settings names
+        return;
+    }
+    overriden_settings[setting] = true;
+    settings[setting] = value;
 }

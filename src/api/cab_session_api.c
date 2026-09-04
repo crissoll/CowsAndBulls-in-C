@@ -1,5 +1,4 @@
 
-#include "cab_session_api.h"
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
@@ -15,6 +14,7 @@
 #include "cab_turns.h"
 #include "cmd.h"
 
+#include "cab_settings_api.h"
 
 #include "cmd_surrender.h"
 
@@ -27,13 +27,7 @@ bool session_setup = false;
 
 static CabTurnId game_state = GS_NOT_STARTED;
 
-bool play_again_prompt = true;
-
 bool play_again = true;
-
-void set_play_again_prompt_visible(bool value) {
-    play_again_prompt = value;
-}
 
 void setup_vars(void);
 
@@ -41,6 +35,7 @@ void setup_session(void) {
     if (session_setup) {
         return;
     }
+    session_setup = true;
 
     if (!are_save_files_valid()) {
         game_state = GS_FIRST_TURN;
@@ -49,12 +44,10 @@ void setup_session(void) {
     extra_io_warning("\n======== new session ===========\n");
 
     load_vocabulary();
-    session_setup = true;
     setup_vars();
 }
 
 void force_setup_session(void) {
-    session_setup = false;
     setup_session();
 }
 
@@ -159,7 +152,8 @@ bool _cab_is_game_ended(void) {
 }
 
 bool cab_is_game_ended(void) {
-    return _cab_is_game_ended() && (!play_again_prompt || !play_again);
+    return _cab_is_game_ended() &&
+           (!cab_get_setting(STG_Internal_ShowPlayAgainPrompt) || !play_again);
 }
 
 size_t cab_get_attempt_number(void) {

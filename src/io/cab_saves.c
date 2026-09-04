@@ -15,6 +15,7 @@
 #include "cab_attempts_manager.h"
 #include "cab_output.h"
 #include "cab_paths.h"
+#include "cab_settings_api.h"
 #include "cab_used_vocabulary.h"
 
 #include "cab_help_filter.h"
@@ -31,6 +32,7 @@ static bool session_id_generated = false;
 extern size_t attempt_number;
 extern size_t invalid_attempts_number;
 
+bool vocabulary_loaded = false;
 
 static void generate_session_id(void) {
     if (session_id_generated) {
@@ -44,9 +46,8 @@ static void generate_session_id(void) {
 
 
 static SessionId* get_session_id_ptr(void) {
-    if (!session_id_generated) {
-        generate_session_id();
-    }
+    generate_session_id();
+
     return &session_id;
 }
 
@@ -55,9 +56,8 @@ bool load_attempts(void) {
     if (path == NULL) {
         return false;
     }
-    if (!session_id_generated) {
-        generate_session_id();
-    }
+    generate_session_id();
+
     return load_attempt_array(get_attempts(), &attempt_number,
                               &invalid_attempts_number, path,
                               get_session_id_ptr());
@@ -199,24 +199,14 @@ void delete_save_files(void) {
 }
 
 void generate_secret_word(void) {
-    session_id_generated = false;
+    session_id_generated =
+        false;  // TODO: note that this mess with the determinism of vocabulary decimation
     generate_session_id();
     set_secret_word(get_random_word());
     set_file_paths_editing(false);
     load_vocabulary();
 }
 
-static bool detect_word_len_from_voc = true;
-
-void set_detect_word_len_from_voc(bool value) {
-    detect_word_len_from_voc = value;
-}
-
-static bool allow_duplicate_letters = true;
-
-void set_allow_duplicate_letters(bool value) {
-    allow_duplicate_letters = value;
-}
 
 static bool has_duplicate_letters(const char* letters) {
     bool alphabet[26] = {0};
@@ -229,22 +219,22 @@ static bool has_duplicate_letters(const char* letters) {
     return false;
 }
 
-static size_t random_vocabulary_decimation_percentage = 0;
-
-void set_vocab_decimation_percentage(size_t value) {
-    random_vocabulary_decimation_percentage = value;
-}
-
 static bool random_skip(void) {
-    if (random_vocabulary_decimation_percentage > 0) {
+    if (cab_get_setting(STG_Internal_VocabLoad_RandomWordsErasurePercentage) >
+        0) {
         const size_t N = ((size_t)rand()) % 100;
-        return (N) < random_vocabulary_decimation_percentage;
+        return (N) < cab_get_setting(
+                         STG_Internal_VocabLoad_RandomWordsErasurePercentage);
     }
     return false;
 }
 
 
 void load_vocabulary(void) {
+    if (vocabulary_loaded) {
+        return;
+    }
+    vocabulary_loaded = true;
     size_t word_count = get_line_count(get_vocabulary_file_path());
     if (word_count == 0) {
         message(OT_WARNING, "load_vocabulary: vocabulary file is empty\n");
@@ -261,7 +251,8 @@ void load_vocabulary(void) {
     extra_io_warning("load_vocabulary: loading vocabulary from file %s",
                      get_vocabulary_file_path());
 
-    if (random_vocabulary_decimation_percentage > 0) {
+    if (cab_get_setting(STG_Internal_VocabLoad_RandomWordsErasurePercentage) >
+        0) {
         // session id must be generated to make sure there are deterministic results
         generate_session_id();
         srand(session_id);
@@ -292,7 +283,7 @@ void load_vocabulary(void) {
         debug_dup_letters_words[0] = '\0';
     }
 
-    if (detect_word_len_from_voc) {
+    if (cab_get_setting(STG_Internal_VocabLoad_AutoWordLenDetection)) {
         while (fscanf(file, "%99s", buffer) == 1) {
             if (strlen(buffer) > MAX_PRACTICAL_WORD_LEN) {
                 extra_io_warning(
@@ -302,7 +293,9 @@ void load_vocabulary(void) {
                 continue;
             }
             to_lower(buffer, buffer_len);
-            if (!allow_duplicate_letters && has_duplicate_letters(buffer)) {
+            if (cab_get_setting(STG_Internal_VocabLoad_AllowDuplicateLetters) ==
+                    false &&
+                has_duplicate_letters(buffer)) {
                 if (debug_log_enabled) {
                     strcat(debug_dup_letters_words, buffer);
                     strcat(debug_dup_letters_words, " ");
@@ -310,7 +303,7 @@ void load_vocabulary(void) {
                 continue;
             }
 
-            set_word_len(strlen(buffer));
+            cab_set_setting(STG_Internal_WordLen, strlen(buffer));
             /*message(OT_WARNING, "load_vocabulary: set word_len to %d\n",
                     get_word_len());*/
             break;
@@ -330,7 +323,9 @@ void load_vocabulary(void) {
             continue;
         }
         to_lower(buffer, buffer_len);
-        if (!allow_duplicate_letters && has_duplicate_letters(buffer)) {
+        if (cab_get_setting(STG_Internal_VocabLoad_AllowDuplicateLetters) ==
+                false &&
+            has_duplicate_letters(buffer)) {
             if (debug_log_enabled) {
                 strcat(debug_dup_letters_words, buffer);
                 strcat(debug_dup_letters_words, " ");

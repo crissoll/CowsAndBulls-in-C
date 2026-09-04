@@ -26,6 +26,4 @@ Messages get_messages_tags(void);
 
 void output__shutdown(void);
 
-void set_log_messages_from_size_t(size_t value);
-
 #endif

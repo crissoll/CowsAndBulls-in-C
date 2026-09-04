@@ -7,19 +7,15 @@
 
 #include "attempts.h"
 #include "cab_files.h"
+#include "cab_settings_api.h"
 #include "guess.h"
 #include "index_array.h"
 #include "vocabulary.h"
 #include "word.h"
 
 
-static size_t max_attempts = MAX_PRACTICAL_ATTEMPTS;
 size_t get_max_attempts(void) {
-    return max_attempts;
-}
-
-void set_max_attempts(size_t value) {
-    max_attempts = value;
+    return cab_get_setting(STG_Internal_MaxAttempts);
 }
 
 
