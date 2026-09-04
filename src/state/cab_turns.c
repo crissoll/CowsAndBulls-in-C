@@ -18,6 +18,7 @@ extern void force_setup_session(void);
 extern bool play_again;
 
 extern bool _cab_is_game_ended(void);
+extern void cab_start_new_game(void);
 
 #pragma region  // turn functions declarations
 #define TURN_FUNCS_DECL(TURN_NAME)                       \
@@ -118,6 +119,7 @@ TURN_FUNCS_DEF(
         case YORN_Yes:
             force_setup_session();
             play_again = true;
+            cab_start_new_game();
             return GS_FIRST_TURN;
         case YORN_No:
             play_again = false;
