@@ -220,11 +220,9 @@ static bool has_duplicate_letters(const char* letters) {
 }
 
 static bool random_skip(void) {
-    if (cab_get_setting(STG_Internal_VocabLoad_RandomWordsErasurePercentage) >
-        0) {
+    if (cab_get_setting(STG_Internal_VocabDecimationPercentage) > 0) {
         const size_t N = ((size_t)rand()) % 100;
-        return (N) < cab_get_setting(
-                         STG_Internal_VocabLoad_RandomWordsErasurePercentage);
+        return (N) < cab_get_setting(STG_Internal_VocabDecimationPercentage);
     }
     return false;
 }
@@ -251,8 +249,7 @@ void load_vocabulary(void) {
     extra_io_warning("load_vocabulary: loading vocabulary from file %s",
                      get_vocabulary_file_path());
 
-    if (cab_get_setting(STG_Internal_VocabLoad_RandomWordsErasurePercentage) >
-        0) {
+    if (cab_get_setting(STG_Internal_VocabDecimationPercentage) > 0) {
         // session id must be generated to make sure there are deterministic results
         generate_session_id();
         srand(session_id);
@@ -283,7 +280,7 @@ void load_vocabulary(void) {
         debug_dup_letters_words[0] = '\0';
     }
 
-    if (cab_get_setting(STG_Internal_VocabLoad_AutoWordLenDetection)) {
+    if (cab_get_setting(STG_Internal_DetectWordLenFromVocab)) {
         while (fscanf(file, "%99s", buffer) == 1) {
             if (strlen(buffer) > MAX_PRACTICAL_WORD_LEN) {
                 extra_io_warning(
@@ -293,8 +290,7 @@ void load_vocabulary(void) {
                 continue;
             }
             to_lower(buffer, buffer_len);
-            if (cab_get_setting(STG_Internal_VocabLoad_AllowDuplicateLetters) ==
-                    false &&
+            if (cab_get_setting(STG_Internal_AllowDuplicateLetters) == false &&
                 has_duplicate_letters(buffer)) {
                 if (debug_log_enabled) {
                     strcat(debug_dup_letters_words, buffer);
@@ -323,8 +319,7 @@ void load_vocabulary(void) {
             continue;
         }
         to_lower(buffer, buffer_len);
-        if (cab_get_setting(STG_Internal_VocabLoad_AllowDuplicateLetters) ==
-                false &&
+        if (cab_get_setting(STG_Internal_AllowDuplicateLetters) == false &&
             has_duplicate_letters(buffer)) {
             if (debug_log_enabled) {
                 strcat(debug_dup_letters_words, buffer);

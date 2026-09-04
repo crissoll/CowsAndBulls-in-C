@@ -5,7 +5,7 @@
 #include "cab_settings_api.h"
 
 int main(void) {
-    cab_set_setting(STG_Internal_VocabLoad_RandomWordsErasurePercentage, 33);
+    cab_set_setting(STG_Internal_VocabDecimationPercentage, 33);
     char string[1000];
     while (!cab_is_game_ended()) {
         printf("%s", cab_get_input_prompt());

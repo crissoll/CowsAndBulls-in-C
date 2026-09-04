@@ -27,7 +27,7 @@ static bool read_line(char* buffer, size_t buffer_size) {
 }
 
 int main(void) {
-    cab_set_setting(STG_Rule_SpecialCharForCommands, '/');
+    cab_set_setting(STG_Internal_CommandPrefixChar, '/');
     while (!cab_is_game_ended()) {
         char buffer[100];
 

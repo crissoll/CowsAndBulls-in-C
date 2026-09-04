@@ -35,7 +35,7 @@ static bool handle_attempts_coherence_constraint(Word word) {
     if (word_is_compatible_with_attempts(word)) {
         return false;
     }
-    if (cab_get_setting(STG_Rule_AttemptsCoherencyConstraintMode) !=
+    if (cab_get_setting(STG_Rule_AttemptsCoherenceConstraintMode) !=
         CONSTR_None) {
         message(OT_ALERT, "word not coherent with previous attempts\n");
         return true;
@@ -60,7 +60,7 @@ Constraint get_total_constraint(Word word) {
         return cab_get_setting(STG_Rule_VocabularyConstraintMode);
     }
     if (handle_attempts_coherence_constraint(word)) {
-        return cab_get_setting(STG_Rule_AttemptsCoherencyConstraintMode);
+        return cab_get_setting(STG_Rule_AttemptsCoherenceConstraintMode);
     }
 
     if (handle_attempts_equality_constraint(word)) {
