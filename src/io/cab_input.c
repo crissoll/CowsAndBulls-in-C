@@ -4,11 +4,13 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "cab_errors.h"
 #include "cab_io_consts.h"
 
 #include "cab_input.h"
 #include "cab_input_internal.h"
 #include "cab_output.h"
+#include "cab_session_api.h"
 
 #include "cab_io_utils.h"
 
@@ -95,7 +97,7 @@ size_t get_tokens_from_input(char buffer[], size_t buffer_size,
     *tokens = malloc(token_count * sizeof **tokens);
 
     if (*tokens == NULL) {
-        message(OT_WARNING, "get_tokens_from_input: malloc failure\n");
+        extra_io_warning("get_tokens_from_input: malloc failure\n");
         return 0;
     }
 
@@ -115,7 +117,7 @@ YORN_Result get_y_or_n_from_input(void) {
 
     if (input_size == 0 ||
         (strcmp(buffer, "y") != 0 && strcmp(buffer, "n") != 0)) {
-        message(OT_INPUT_ERROR, "input must be y or n\n");
+        message(cab_get_session(), OT_INPUT_ERROR, "input must be y or n\n");
         return YORN_Invalid;
     }
 

@@ -5,8 +5,6 @@
 
 #include "cab_errors.h"
 #include "cab_input_internal.h"
-#include "cab_io_consts.h"
-#include "cab_output.h"
 #include "cab_settings_api.h"
 
 #define MAX_INPUT_BUFFER_SIZE 1024
@@ -17,9 +15,9 @@ static size_t input_buffer_size = 0;
 
 InputStatus write_to_input_buffer(const char* input_string) {
     if (input_string == NULL) {
-        message(OT_WARNING,
-                "tried adding NULL string to input_buffer; no input will be "
-                "added\n");
+        extra_io_warning(
+            "tried adding NULL string to input_buffer; no input will be "
+            "added\n");
     }
 
     if (cab_get_setting(STG_Debug_LogInput)) {
@@ -29,7 +27,7 @@ InputStatus write_to_input_buffer(const char* input_string) {
     input_buffer_size = 0;
     const size_t len = strlen(input_string);
     if (len >= MAX_INPUT_BUFFER_SIZE) {
-        message(OT_INPUT_ERROR, "Input String Too Long!\n");
+        extra_io_warning("Input String Too Long!\n");
         return INPUT_STRING_TOO_LONG;
     }
 
@@ -41,14 +39,13 @@ InputStatus write_to_input_buffer(const char* input_string) {
 
 GetInputStatus get_input(char* buffer, size_t buffer_size) {
     if (buffer_size == 0) {
-        message(OT_WARNING,
-                "get_input: buffer_size argument is zero, no input will be "
-                "received\n");
+        extra_io_warning(
+            "get_input: buffer_size argument is zero, no input will be "
+            "received\n");
         return GET_INPUT_FAILURE;
     }
     if (buffer == NULL) {
-        message(
-            OT_WARNING,
+        extra_io_warning(
             "get_input: buffer argument is NULL, no input will be received\n");
         return GET_INPUT_FAILURE;
     }
