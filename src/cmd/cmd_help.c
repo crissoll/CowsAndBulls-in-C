@@ -1,17 +1,20 @@
+#include <stdbool.h>
 #include <string.h>
 
 #include "cab_io_consts.h"
-#include "cmd_spec.h"
-#include "cmd_tree.h"
-
 #include "cab_output.h"
+#include "cmd_spec.h"
+
 
 void print_help_text(CabSession* session, const char* command_name) {
-    const CommandSpec* candidate_spec = get_cmd_tree_root()->args;
+    const CommandSpec* candidate_spec =
+        cab_session__get_cmd_tree_root(session)->args;
     while (!command_spec_is_end_spec(*candidate_spec)) {
         const bool found = strcmp(candidate_spec->name, command_name) == 0;
 
-        if (!(*candidate_spec->allowed) || !found) {
+        if (cab_session__is_command_allowed(*session, candidate_spec) ==
+                false ||
+            !found) {
             candidate_spec++;
             continue;
         }
@@ -38,10 +41,11 @@ void print_help_text_from_tokens(CabSession* session, size_t token_count,
 
 
 void print_whole_help_text(CabSession* session) {
-    const CommandSpec* cur_spec = get_cmd_tree_root()->args;
+    const CommandSpec* cur_spec = cab_session__get_cmd_tree_root(session)->args;
     start_message(session, OT_HELP);
     while (!command_spec_is_end_spec(*cur_spec)) {
-        if ((*cur_spec->allowed) && cur_spec->help_text != NULL) {
+        if ((cab_session__is_command_allowed(*session, cur_spec)) &&
+            cur_spec->help_text != NULL) {
             output(session, "%s", cur_spec->help_text);
         }
         cur_spec++;

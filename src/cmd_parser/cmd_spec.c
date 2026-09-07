@@ -1,9 +1,11 @@
 #include <stdbool.h>
+#include <stddef.h>
 #include <string.h>
 
 #include "cab_errors.h"
 #include "cab_io_consts.h"
 #include "cab_output.h"
+#include "cab_session.h"
 #include "cmd_spec.h"
 
 
@@ -29,7 +31,8 @@ bool command_spec_name_match(CommandSpec spec, const char* searched_name) {
 const CommandSpec* command_spec_find_arg(const CommandSpec* parent,
                                          const char* searched_name) {
     if (parent == NULL || searched_name == NULL) {
-        extra_io_warning("command_spec_find_arg: NULL arguments not accepted\n");
+        extra_io_warning(
+            "command_spec_find_arg: NULL arguments not accepted\n");
         return NULL;
     }
     const CommandSpec* candidate_arg = parent->args;
@@ -45,9 +48,10 @@ const CommandSpec* command_spec_find_arg(const CommandSpec* parent,
     return NULL;
 }
 
+
 void parse_command(CabSession* session, const CommandSpec* specifier,
                    const char* tokens[], size_t token_count) {
-    if (specifier->allowed != NULL && *specifier->allowed == false) {
+    if (cab_session__is_command_allowed(*session, specifier) == false) {
         return;
     }
 
@@ -81,7 +85,7 @@ void disable_command(CabSession* session, size_t token_count,
     while (!command_spec_is_end_spec(*candidate_spec)) {
         if (strcmp(candidate_spec->name, tokens[0]) == 0) {
             if (token_count == 1) {
-                *candidate_spec->allowed = false;
+                cab_session__disable_command(session, base_spec);
                 message(session, OT_USER, "%s has been disabled\n",
                         candidate_spec->name);
                 return;
