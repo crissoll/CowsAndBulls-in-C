@@ -28,6 +28,7 @@ void alert_too_many_arguments(CabSession* session, size_t token_count,
 
 void alert_too_few_arguments(CabSession* session);
 
+bool command_spec_name_match(CommandSpec spec, const char* searched_name);
 
 void parse_command(CabSession* session, const CommandSpec* specifier,
                    const char* tokens[], size_t token_count);

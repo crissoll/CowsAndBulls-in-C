@@ -10,7 +10,8 @@ void print_help_text(CabSession* session, const char* command_name) {
     const CommandSpec* candidate_spec =
         cab_session__get_cmd_tree_root(session)->args;
     while (!command_spec_is_end_spec(*candidate_spec)) {
-        const bool found = strcmp(candidate_spec->name, command_name) == 0;
+        const bool found =
+            command_spec_name_match(*candidate_spec, command_name);
 
         if (cab_session__is_command_allowed(*session, candidate_spec) ==
                 false ||
