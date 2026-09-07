@@ -4,12 +4,14 @@
 #include <stdbool.h>
 #include <stddef.h>
 
+#include "cab_io_buffer.h"
 #include "cab_io_consts.h"
 
 typedef struct {
     size_t* messages;
     OutputTags* tags;
     size_t size;
+    CAB_IOBuffer* buffer;
 } Messages;
 
 void print_to_default_buffer(const char* text);

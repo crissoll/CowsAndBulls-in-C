@@ -5,47 +5,36 @@
 #include <string.h>
 
 #include "cab_errors.h"
-#include "cab_io_consts.h"
-#include "cab_io_tag_names.h"
-#include "cab_output_internal.h"
 #include "cab_settings_api.h"
 
+#include "cab_io_buffer.h"
+#include "cab_io_consts.h"
+#include "cab_io_tag_names.h"
 #include "cab_output.h"
 
 
-#define INITIAL_OUTPUT_BUFFER_ALLOCATED_SIZE 128
+#include "cab_output_internal.h"
 
 // extremely high, so its never checked. PLS don't go anywhere near it
 #define MAX_TEXTS_PER_SINGLE_OUTPUT 256
 
-typedef struct {
-    char* buffer;
-    size_t current_size;
-    size_t allocated_size;
-} OutputBuffer;
 
+Messages tagged_output = (Messages){0};
 
-OutputBuffer default_buffer = (OutputBuffer){
-    .buffer = NULL,
-    .allocated_size = 0,
-    .current_size = 0,
-};
+bool cab_messages__is_initialized(Messages messages) {
+    return messages.messages != NULL && messages.tags != NULL &&
+           messages.buffer != NULL &&
+           cab_io_buffer__is_initialized(*messages.buffer);
+}
 
-Messages tagged_output = (Messages){
-    .messages =
-        NULL,  //NOTE: messages are indices that points to an OutputBuffer (default_buffer in this case)
-    .size = 0,
-    .tags = NULL,
-};
+void cab_messages__free_content(Messages messages) {
+    free(messages.messages);
+    free(messages.tags);
+    free(messages.buffer->buffer);
+    free(messages.buffer);
+}
 
-
-static bool buffer_initialized = false;
-static bool messages_initialized = false;
-
-void reset_output_buffer(OutputBuffer* buffer) {
-    if (!buffer_initialized) {
-        return;
-    }
+void reset_output_buffer(CAB_IOBuffer* buffer) {
     buffer->buffer =
         realloc(buffer->buffer, sizeof(buffer->buffer[0]) *
                                     INITIAL_OUTPUT_BUFFER_ALLOCATED_SIZE);
@@ -61,19 +50,12 @@ void reset_output_buffer(OutputBuffer* buffer) {
     buffer->buffer[0] = '\0';
 }
 
-void init_output_buffer(OutputBuffer* buffer) {
-    if (buffer_initialized) {
-        return;
-    }
-    buffer->buffer = NULL;
-    reset_output_buffer(buffer);
-    buffer_initialized = true;
-}
-
 
 void init_messages(Messages* messages) {
-    if (messages_initialized) {
-        return;
+    if (messages->buffer == NULL) {
+        messages->buffer = malloc(sizeof(*messages->buffer));
+        *messages->buffer = (CAB_IOBuffer){0};
+        reset_output_buffer(messages->buffer);
     }
     *messages = (Messages){
         .messages = malloc(MAX_TEXTS_PER_SINGLE_OUTPUT *
@@ -81,21 +63,17 @@ void init_messages(Messages* messages) {
         .tags =
             malloc(MAX_TEXTS_PER_SINGLE_OUTPUT * sizeof(tagged_output.tags[0])),
         .size = 0,
+        .buffer = messages->buffer,
     };
-    if (messages->messages == NULL || messages->tags == NULL) {
-        *messages = (Messages){
-            .messages = NULL,
-            .tags = NULL,
-            .size = 0,
-        };
+    if (messages->messages == NULL || messages->tags == NULL ||
+        messages->buffer == NULL) {
+        *messages = (Messages){0};
         extra_io_warning("init_messages: malloc failure\n");
         return;
     }
-
-    messages_initialized = true;
 }
 
-void free_output_buffer(OutputBuffer* buffer) {
+void free_output_buffer(CAB_IOBuffer* buffer) {
     free(buffer->buffer);
     buffer->buffer = NULL;
     buffer->allocated_size = 0;
@@ -103,13 +81,14 @@ void free_output_buffer(OutputBuffer* buffer) {
 }
 
 
-void print_to_buffer(OutputBuffer* buffer, const char* text) {
+void print_to_buffer(CAB_IOBuffer* buffer, const char* text) {
     if (buffer == NULL) {
-        push_fatal_error("print_to_buffer: tried printing to empty buffer\n");
+        push_fatal_error(
+            "print_to_buffer: tried printing to non existing buffer\n");
         return;
     }
 
-    if (buffer->buffer == NULL) {
+    if (cab_io_buffer__is_initialized(*buffer) == false) {
         reset_output_buffer(buffer);
     }
 
@@ -138,15 +117,11 @@ void print_to_buffer(OutputBuffer* buffer, const char* text) {
 }
 
 void print_to_default_buffer(const char* text) {
-    if (!buffer_initialized) {
-        init_output_buffer(&default_buffer);
-    }
-    print_to_buffer(&default_buffer, text);
+    print_to_buffer(tagged_output.buffer, text);
 }
 
-void log_tagged_output(void) {
-    if (!messages_initialized || tagged_output.tags == NULL ||
-        tagged_output.messages == NULL || default_buffer.buffer == NULL) {
+void log_tagged_output(Messages* messages) {
+    if (cab_messages__is_initialized(tagged_output) == false) {
         return;
     }
 
@@ -160,39 +135,38 @@ void log_tagged_output(void) {
         size_t start = tagged_output.messages[i];
         size_t end = (i + 1 < tagged_output.size)
                          ? tagged_output.messages[i + 1]
-                         : default_buffer.current_size;
+                         : messages->buffer->current_size;
         int len = (int)(end > start ? end - start : 0);
 
         extra_io_warning("[message:%s]: %.*s", tag, len,
-                         default_buffer.buffer + start);
+                         messages->buffer->buffer + start);
     }
 }
 
-char* flush_output_buffer(void) {
-    if (!buffer_initialized || default_buffer.buffer == NULL) {
+char* _flush_output_buffer(CAB_IOBuffer* buffer) {
+    if (buffer->allocated_size == 0 || buffer->buffer == NULL) {
         return strdup("");
     }
 
     if (cab_get_setting(STG_Debug_LogMessages)) {
-        log_tagged_output();
+        log_tagged_output(&tagged_output);
     }
 
-    char* result = strdup(default_buffer.buffer);
-    reset_output_buffer(&default_buffer);
+    char* result = strdup(buffer->buffer);
+    reset_output_buffer(buffer);
     return result;
 }
 
-void output__shutdown(void) {
-    free_output_buffer(&default_buffer);
-    free(tagged_output.messages);
-    free(tagged_output.tags);
-    buffer_initialized = false;
-    messages_initialized = false;
+char* flush_output_buffer(void) {
+    return _flush_output_buffer(tagged_output.buffer);
 }
 
+void output__shutdown(void) {
+    cab_messages__free_content(tagged_output);
+}
 
 Messages get_messages_tags(void) {
-    if (!messages_initialized) {
+    if (cab_messages__is_initialized(tagged_output) == false) {
         init_messages(&tagged_output);
     }
     // ensures a trailing empty message for easier message traversal
@@ -202,7 +176,7 @@ Messages get_messages_tags(void) {
     }
 
     if (cab_get_setting(STG_Debug_LogMessages)) {
-        log_tagged_output();
+        log_tagged_output(&tagged_output);
     }
 
     Messages result = (Messages){
@@ -232,7 +206,7 @@ Messages get_messages_tags(void) {
 
 
 void start_message(OutputTags tag) {
-    if (!messages_initialized) {
+    if (cab_messages__is_initialized(tagged_output) == false) {
         init_messages(&tagged_output);
     }
 
@@ -244,22 +218,25 @@ void start_message(OutputTags tag) {
         if (last_tag == OT_NONE) {
             tagged_output.size--;
 
-        } else if (last_msg == default_buffer.current_size) {
+        } else if (last_msg == tagged_output.buffer->current_size) {
             // stops multiple tagging of same message
             tagged_output.size--;
-            message(OT_WARNING, "last message was empty; it will be deleted\n");
+            extra_io_warning("last message was empty; it will be deleted\n");
         }
     }
 
-    tagged_output.messages[tagged_output.size] = default_buffer.current_size;
+    tagged_output.messages[tagged_output.size] =
+        tagged_output.buffer->current_size;
     tagged_output.tags[tagged_output.size] = tag;
     tagged_output.size++;
 }
 
 void end_message(void) {
-    if (default_buffer.current_size > 0 &&
-        default_buffer.buffer[default_buffer.current_size - 1] != '\n') {
-        print_to_buffer(&default_buffer, "\n");
+    if (tagged_output.buffer != NULL &&
+        tagged_output.buffer->current_size > 0 &&
+        tagged_output.buffer->buffer[tagged_output.buffer->current_size - 1] !=
+            '\n') {
+        print_to_buffer(tagged_output.buffer, "\n");
     }
     start_message(OT_NONE);
 }
