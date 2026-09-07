@@ -9,21 +9,22 @@
 #include "word.h"
 
 
-void compare_attempts_to_first_token(size_t token_count, const char* tokens[]) {
+void compare_attempts_to_first_token(CabSession* session, size_t token_count,
+                                     const char* tokens[]) {
     if (token_count > 1) {
-        message(OT_INPUT_ERROR,
+        message(session, OT_INPUT_ERROR,
                 "too many arguments, only first will be used\n");
     }
 
-    if (!can_string_be_word(tokens[0])) {
+    if (!can_string_be_word(session, tokens[0])) {
         return;
     }
 
     Word candidate_word = word__new(tokens[0]);
     if (!word_is_in_used_vocabulary(candidate_word)) {
-        message(OT_ALERT, "word not contained in vocabulary\n");
+        message(session, OT_ALERT, "word not contained in vocabulary\n");
         return;
     }
-    compare_attempts_to_word(candidate_word);
+    compare_attempts_to_word(session, candidate_word);
     return;
 }

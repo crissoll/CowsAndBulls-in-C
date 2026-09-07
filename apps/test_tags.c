@@ -26,7 +26,8 @@ void turn_function(const char* input_buffer) {
 
     size_t j = 1;
     for (OutputTags t = 1; t < OT_END; t *= 2) {
-        char** strings = cab_get_messages_with_tag(t, &message_count);
+        char** strings =
+            cab_get_messages_with_tag(cab_get_session(), t, &message_count);
         if (strings != NULL && message_count > 0) {
             printf("%s:\n", CAB_OUTPUT_TAG_NAMES[j]);
             if (message_count == 1) {

@@ -4,7 +4,10 @@
 #include <stdbool.h>
 #include <stddef.h>
 
+#include "cab_session.h"
 #include "cab_turns.h"
+
+CabSession* cab_get_session(void);
 
 CabTurnId cab_get_game_state(void);
 

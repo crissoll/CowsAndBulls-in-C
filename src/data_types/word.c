@@ -24,23 +24,23 @@ Word word__new(const char letters[MAX_PRACTICAL_WORD_LEN + 1]) {
     return word;
 }
 
-bool can_string_be_word(const char* string) {
+bool can_string_be_word(CabSession* session, const char* string) {
     const size_t len = strlen(string);
 
     for (size_t i = 0; i < len; i++) {
         if (string[i] < 'a' || string[i] > 'z') {
-            message(OT_INPUT_ERROR, "word contains invalid characters\n");
+            message(session, OT_INPUT_ERROR,
+                    "word contains invalid characters\n");
             return false;
         }
     }
 
     if (len > get_word_len()) {
-        message(OT_INPUT_ERROR, "word too long\n");
+        message(session, OT_INPUT_ERROR, "word too long\n");
         return false;
     }
     if (len < get_word_len()) {
-
-        message(OT_INPUT_ERROR, "word too short\n");
+        message(session, OT_INPUT_ERROR, "word too short\n");
         return false;
     }
     return true;
@@ -64,8 +64,8 @@ bool silent_can_string_be_word(const char* string) {
     return true;
 }
 
-void word__output(Word word) {
-    output("%s", word.letters);
+void word__output(CabSession* session, Word word) {
+    output(session, "%s", word.letters);
 }
 
 int word__sort_cmp(Word a, Word b) {

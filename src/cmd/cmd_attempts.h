@@ -4,6 +4,9 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-void compare_attempts_to_first_token(size_t token_count, const char* tokens[]);
+#include "cab_session.h"
+
+void compare_attempts_to_first_token(CabSession* session, size_t token_count,
+                                     const char* tokens[]);
 
 #endif

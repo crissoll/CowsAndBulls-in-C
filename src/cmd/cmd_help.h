@@ -3,9 +3,12 @@
 
 #include <stddef.h>
 
-void print_help_text_from_tokens(size_t token_count, const char* tokens[]);
+#include "cab_session.h"
 
-void print_whole_help_text(void);
+void print_help_text_from_tokens(CabSession* session, size_t token_count,
+                                 const char* tokens[]);
+
+void print_whole_help_text(CabSession* session);
 
 
 #endif

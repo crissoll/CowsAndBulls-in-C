@@ -4,10 +4,12 @@
 #include <stdbool.h>
 #include <stddef.h>
 
+#include "cab_session.h"
+
 #define END_SPEC {.name = NULL}
 
-typedef void (*CommandHandler)(size_t token_count, const char* tokens[]);
-typedef void (*ZeroArgsCommandHandler)(void);
+typedef void (*CommandHandler)(CabSession* session, size_t token_count, const char* tokens[]);
+typedef void (*ZeroArgsCommandHandler)(CabSession* session);
 
 typedef struct CommandSpec {
     const char* name;
@@ -20,15 +22,15 @@ typedef struct CommandSpec {
 
 bool command_spec_is_end_spec(CommandSpec spec);
 
-void alert_too_many_arguments(size_t token_count, const char* tokens[]);
+void alert_too_many_arguments(CabSession* session, size_t token_count, const char* tokens[]);
 
-void alert_too_few_arguments(void);
+void alert_too_few_arguments(CabSession* session);
 
 
-void parse_command(const CommandSpec* specifier, const char* tokens[],
+void parse_command(CabSession* session, const CommandSpec* specifier, const char* tokens[],
                    size_t token_count);
 
 
-void disable_command(size_t token_count, const char* tokens[],
+void disable_command(CabSession* session, size_t token_count, const char* tokens[],
                      const CommandSpec* base_spec);
 #endif

@@ -1,6 +1,8 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <string.h>
+
+#include "cab_errors.h"
 #include "cab_io_consts.h"
 #include "cab_output.h"
 
@@ -24,11 +26,10 @@ Attempt attempt__new(Word word, GuessResult result) {
     return attempt;
 }
 
-void attempt__output(Attempt attempt) {
-
-    word__output(attempt.word);
-    output("\t");
-    guess_result__output(attempt.result);
+void attempt__output(CabSession* session, Attempt attempt) {
+    word__output(session, attempt.word);
+    output(session, "\t");
+    guess_result__output(session, attempt.result);
 }
 
 
@@ -52,13 +53,14 @@ IndexArray get_possible_words_from_attempt(Attempt attempt,
     return result;
 }
 
-void print_attempt_array(const Attempt* attempts, size_t attempt_number) {
-    start_message(OT_ATTEMPTS);
+void print_attempt_array(CabSession* session, const Attempt* attempts,
+                         size_t attempt_number) {
+    start_message(session, OT_ATTEMPTS);
     for (size_t i = 0; i < attempt_number; i++) {
-        attempt__output(attempts[i]);
-        output("\n");
+        attempt__output(session, attempts[i]);
+        output(session, "\n");
     }
-    end_message();
+    end_message(session);
 }
 
 bool is_word_in_attempt_array(Word word, const Attempt* attempts,
@@ -76,14 +78,14 @@ void store_attempt_array(const Attempt* attempts, size_t attempt_number,
                          size_t invalid_attempts_number, const char* file_name,
                          unsigned long session_id) {
     if (file_name == NULL) {
-        message(OT_WARNING, "store_attempt_array: file_name is NULL");
+        extra_io_warning("store_attempt_array: file_name is NULL\n");
         return;
     }
 
     FILE* attempts_file = open_file_safe(file_name, "w");
 
     if (attempts_file == NULL) {
-        message(OT_WARNING, "store_attempt_array: attempts_file not found\n");
+        extra_io_warning("store_attempt_array: attempts_file not found\n");
         return;
     }
     fprintf(attempts_file, "session_id %lu\n", session_id);
@@ -104,14 +106,14 @@ bool load_attempt_array(Attempt* attempts, size_t* attempt_number,
                         size_t* invalid_attempts_number, const char* file_name,
                         unsigned long* session_id) {
     if (file_name == NULL || attempt_number == NULL || session_id == NULL) {
-        message(OT_WARNING, "load_attempt_array: invalid arguments");
+        extra_io_warning("load_attempt_array: invalid arguments\n");
     }
 
     *attempt_number = 0;
 
     FILE* attempts_file = open_file_safe(file_name, "r");
     if (attempts_file == NULL) {
-        message(OT_WARNING, "load_attempt_array: failed to load attempts_file");
+        extra_io_warning("load_attempt_array: failed to load attempts_file\n");
         return false;
     }
 

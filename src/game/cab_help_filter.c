@@ -1,5 +1,6 @@
 #include <stdlib.h>
 
+#include "cab_errors.h"
 #include "cab_help_filter.h"
 #include "cab_io_consts.h"
 #include "cab_output.h"
@@ -31,8 +32,7 @@ size_t get_current_help_filter_word_count(void) {
 void add_current_filter_to_history(void) {
     const size_t word_count = get_current_help_filter_word_count();
     if (help_filter_history_size >= HELP_FILTER_HISTORY_MAX) {
-        message(
-            OT_USER,
+        extra_io_warning(
             "reached filter history limit! oldest filter will be deleted\n");
 
         for (size_t i = 0; i < HELP_FILTER_HISTORY_MAX - 1; i++) {
@@ -76,39 +76,39 @@ void reset_list_history(void) {
     word_set__init_from_vocabulary(&help_word_set, &voc);
 }
 
-void print_current_filter(void) {
-    start_message(OT_FILTER);
-    WordSetFilter* help_filter = get_current_help_filter();
+void print_current_filter(CabSession* session) {
+    start_message(session, OT_FILTER);
+    WordSetFilter* cur_filter = get_current_help_filter();
     const size_t word_count = get_current_help_filter_word_count();
-    output("--- [%zu words] ---\n", word_count);
-    filter__output(help_filter);
-    end_message();
+    output(session, "--- [%zu words] ---\n", word_count);
+    filter__output(session, cur_filter);
+    end_message(session);
 }
 
-void print_filter_history(void) {
+void print_filter_history(CabSession* session) {
     const size_t history_count = get_filter_history_size();
     if (history_count == 0) {
-        message(OT_FILTER, "(no history yet)\n");
+        message(session, OT_FILTER, "(no history yet)\n");
         return;
     }
-    start_message(OT_FILTER);
-    output("List history (%zu entries):\n", history_count);
+    start_message(session, OT_FILTER);
+    output(session, "List history (%zu entries):\n", history_count);
     for (size_t hist_idx = 0; hist_idx < history_count; hist_idx++) {
         const ListHistoryEntry entry = help_filter_history[hist_idx];
 
-        output("\n--- Step %zu: [%zu words] ---\n", hist_idx + 1,
+        output(session, "\n--- Step %zu: [%zu words] ---\n", hist_idx + 1,
                entry.word_count);
-        filter__output(&entry.filter);
+        filter__output(session, &entry.filter);
     }
-    end_message();
+    end_message(session);
 }
 
-void print_filtered_word_list(void) {
-    start_message(OT_LIST);
+void print_filtered_word_list(CabSession* session) {
+    start_message(session, OT_LIST);
     IndexArray filtered = filter__get_words_from_word_set(
         &help_word_set, get_current_help_filter());
     const Vocabulary voc = get_used_vocabulary();
-    index_array__output(filtered, &voc);
+    index_array__output(session, filtered, &voc);
     index_array__free_content(&filtered);
-    end_message();
+    end_message(session);
 }

@@ -4,9 +4,10 @@
 #include <stdbool.h>
 #include <stddef.h>
 
+#include "cab_session.h"
 #include "word.h"
 
-void play_word(Word attempt);
+void play_word(CabSession* session, Word attempt);
 
 bool is_secret_word_found(void);
 

@@ -132,7 +132,7 @@ IndexArray filter__get_words_from_word_set(const WordSet* word_set,
     return result;
 }
 
-void filter__output(const WordSetFilter* filter) {
+void filter__output(CabSession* session, const WordSetFilter* filter) {
     bool fixed_letters[get_word_len()];
     size_t fixed_letter_index[get_word_len()];
     for (size_t i = 0; i < get_word_len(); i++) {
@@ -176,11 +176,12 @@ void filter__output(const WordSetFilter* filter) {
 
         if (impossible_letter != '\0') {
             for (size_t i = 0; i < get_word_len(); i++) {
-                output("  [%zu] (none)\n", i + 1);
+                output(session, "  [%zu] (none)\n", i + 1);
             }
-            output(
-                "empty pattern: required letter '%c' has no valid placement\n",
-                impossible_letter);
+            output(session,
+                   "empty pattern: required letter '%c' has no valid "
+                   "placement\n",
+                   impossible_letter);
             return;
         }
     }
@@ -206,21 +207,20 @@ void filter__output(const WordSetFilter* filter) {
 
         not_allowed[count] = '\0';
 
-        output("  [%zu] ", i + 1);
+        output(session, "  [%zu] ", i + 1);
         if (count == ALPHABET_SIZE) {
-            output("(none)\n");
+            output(session, "(none)\n");
             continue;
-            ;
         }
         if (count == ALPHABET_SIZE - 1) {
-            output("%c\n", fixed_char);
+            output(session, "%c\n", fixed_char);
             continue;
         }
 
         if (count == 0) {
-            output("* ");
+            output(session, "* ");
         } else {
-            output("!%s ", not_allowed);
+            output(session, "!%s ", not_allowed);
         }
 
         char candidate_chars[ALPHABET_SIZE + 1];
@@ -233,8 +233,8 @@ void filter__output(const WordSetFilter* filter) {
         }
         candidate_chars[candidate_count] = '\0';
         if (candidate_count > 0) {
-            output("?%s", candidate_chars);
+            output(session, "?%s", candidate_chars);
         }
-        output("\n");
+        output(session, "\n");
     }
 }

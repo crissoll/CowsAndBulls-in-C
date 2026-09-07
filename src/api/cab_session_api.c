@@ -19,11 +19,22 @@
 #include "cmd_surrender.h"
 
 #include "cab_session_api.h"
+#include "cab_session.h"
+
+void setup_session(void);
 
 static bool loading_saves = false;
 
 bool session_setup = false;
 
+static CabSession default_session = (CabSession){0};
+
+CabSession* cab_get_session(void) {
+    if (!session_setup) {
+        setup_session();
+    }
+    return &default_session;
+}
 
 static CabTurnId game_state = GS_NOT_STARTED;
 
@@ -36,6 +47,10 @@ void setup_session(void) {
         return;
     }
     session_setup = true;
+
+    if (default_session.output_buffer == NULL) {
+        default_session = cab_session__new();
+    }
 
     if (!are_save_files_valid()) {
         game_state = GS_FIRST_TURN;
@@ -116,7 +131,7 @@ void parse_input(void) {
         input_buffer, sizeof(input_buffer), &input_tokens);
 
     if (token_count > 0) {
-        parse((const char**)input_tokens, token_count);
+        parse(cab_get_session(), (const char**)input_tokens, token_count);
     }
 
     free(input_tokens);
@@ -161,6 +176,7 @@ size_t cab_get_attempt_number(void) {
 }
 
 void cab_session_shutdown(void) {
+    cab_session__free_content(&default_session);
     session_setup = false;
     game_state = GS_NOT_STARTED;
 }

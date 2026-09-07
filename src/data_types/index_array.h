@@ -2,6 +2,7 @@
 
 #define INDEX_ARRAY
 
+#include "cab_session.h"
 #include "vocabulary.h"
 
 typedef struct {
@@ -19,7 +20,8 @@ void index_array__free_content(IndexArray* array);
 IndexArray index_array__copy(const IndexArray* src);
 
 // Display
-void index_array__output(IndexArray index_array, const Vocabulary* vocabulary);
+void index_array__output(CabSession* session, IndexArray index_array,
+                         const Vocabulary* vocabulary);
 
 void index_array__set_output_words_per_line(size_t words_per_line);
 

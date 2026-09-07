@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 
+#include "cab_session.h"
 #include "word.h"
 
 typedef struct {
@@ -12,6 +13,6 @@ typedef struct {
 
 GuessResult compare_words(Word word, Word secret_word);
 
-void guess_result__output(GuessResult result);
+void guess_result__output(CabSession* session, GuessResult result);
 
 #endif

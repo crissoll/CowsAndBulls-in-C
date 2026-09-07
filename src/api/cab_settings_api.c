@@ -9,9 +9,6 @@
 #include "cab_constraints.h"
 
 #include "cab_errors.h"
-#include "cab_io_consts.h"
-#include "cab_output.h"
-
 #include "cab_session_api.h"
 
 #include "cab_settings_api.h"
@@ -105,8 +102,7 @@ void cab_set_setting(Settings setting, size_t value) {
     if (locked_in_game_settings[setting] == true &&
         cab_get_game_state() != GS_NOT_STARTED &&
         cab_get_game_state() != GS_FIRST_TURN) {
-        message(
-            OT_WARNING,
+        extra_io_warning(
             "cab_set_setting: setting number %d can only be used before game "
             "starts; current game state = %d",
             setting, cab_get_game_state());
@@ -121,36 +117,36 @@ void cab_set_setting(Settings setting, size_t value) {
     }
 
     if (setting_specs[setting].min_value == setting_specs[setting].max_value) {
-        message(OT_WARNING,
-                "cab_set_setting: tried assigning setting number "
-                "%d; invalid setting: min_value equal to max_value\n",
-                setting);  // avoids access to uninitialized settings
+        extra_io_warning(
+            "cab_set_setting: tried assigning setting number "
+            "%d; invalid setting: min_value equal to max_value\n",
+            setting);  // avoids access to uninitialized settings
         return;
     }
 
     if (value < setting_specs[setting].min_value) {
-        message(OT_WARNING,
-                "cab_set_setting: tried assigning value %zu to setting number "
-                "%d; this value is too low for that setting\n",
-                value, setting);
+        extra_io_warning(
+            "cab_set_setting: tried assigning value %zu to setting number "
+            "%d; this value is too low for that setting\n",
+            value, setting);
         return;
     }
 
     if (value > setting_specs[setting].max_value) {
-        message(OT_WARNING,
-                "cab_set_setting: tried assigning value %zu to setting number "
-                "%d; this value is too high for that setting\n",
-                value, setting);
+        extra_io_warning(
+            "cab_set_setting: tried assigning value %zu to setting number "
+            "%d; this value is too high for that setting\n",
+            value, setting);
         return;
     }
 
     if (validation_funcs[setting] != NULL &&
         validation_funcs[setting](value) == false) {
-        message(OT_WARNING,
-                "cab_set_setting: tried assigning value %zu to setting number "
-                "%d; value not allowed by validation function",
-                value,
-                setting);  // TODO: create array of settings names
+        extra_io_warning(
+            "cab_set_setting: tried assigning value %zu to setting number "
+            "%d; value not allowed by validation function",
+            value,
+            setting);  // TODO: create array of settings names
         return;
     }
     overriden_settings[setting] = true;

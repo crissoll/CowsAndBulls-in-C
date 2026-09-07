@@ -4,7 +4,9 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-void parse(const char* tokens[], size_t token_count);
+#include "cab_session.h"
+
+void parse(CabSession* session, const char* tokens[], size_t token_count);
 
 void set_special_command_char(char value);
 

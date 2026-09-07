@@ -11,9 +11,10 @@ bool has_surrendered(void) {
     return surrendered;
 }
 
-void cmd__surrender(void) {
+void cmd__surrender(CabSession* session) {
     if (cab_get_setting(STG_Display_RevealSecretWordOnSurrender)) {
-        message(OT_USER, "the secret word was %s\n", get_secret_word().letters);
+        message(session, OT_USER, "the secret word was %s\n",
+                get_secret_word().letters);
     }
     surrendered = true;
 }

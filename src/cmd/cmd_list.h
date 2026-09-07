@@ -4,12 +4,18 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-void load_filter_from_history(size_t token_count, const char* tokens[]);
+#include "cab_session.h"
 
-void cmd__list_intersect_letters(size_t token_count, const char* tokens[]);
+void load_filter_from_history(CabSession* session, size_t token_count,
+                              const char* tokens[]);
 
-void cmd__list_remove_letters(size_t token_count, const char* tokens[]);
+void cmd__list_intersect_letters(CabSession* session, size_t token_count,
+                                 const char* tokens[]);
 
-void setup_list_from_pattern(size_t token_count, const char* tokens[]);
+void cmd__list_remove_letters(CabSession* session, size_t token_count,
+                              const char* tokens[]);
+
+void setup_list_from_pattern(CabSession* session, size_t token_count,
+                             const char* tokens[]);
 
 #endif

@@ -4,9 +4,9 @@
 
 char* cab_play_turn(char* input_string) {
     if (cab_input(input_string) != INPUT_SUCCESS) {
-        return cab_get_output();
+        return cab_get_output(cab_get_session());
     }
     cab_process_turn();
 
-    return cab_get_output();
+    return cab_get_output(cab_get_session());
 }

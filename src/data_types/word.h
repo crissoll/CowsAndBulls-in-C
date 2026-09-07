@@ -4,6 +4,8 @@
 #include <stdbool.h>
 #include <stddef.h>
 
+#include "cab_session.h"
+
 
 #define ALPHABET_SIZE 26
 #define MAX_PRACTICAL_WORD_LEN 10
@@ -17,11 +19,11 @@ size_t get_word_len(void);
 
 Word word__new(const char letters[MAX_PRACTICAL_WORD_LEN + 1]);
 
-bool can_string_be_word(const char* string);
+bool can_string_be_word(CabSession* session, const char* string);
 
 bool silent_can_string_be_word(const char* string);
 
-void word__output(Word word);
+void word__output(CabSession* session, Word word);
 
 int word__sort_cmp(Word a, Word b);
 

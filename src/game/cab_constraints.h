@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 
+#include "cab_session.h"
 #include "word.h"
 
 typedef enum {
@@ -18,9 +19,9 @@ typedef enum {
 } ConstraintResult;
 
 
-Constraint get_total_constraint(Word word);
+Constraint get_total_constraint(CabSession* session, Word word);
 
-ConstraintResult handle_contraints(Word word);
+ConstraintResult handle_contraints(CabSession* session, Word word);
 
 void set_attempts_equality_constraint(size_t value);
 

@@ -3,6 +3,9 @@
 
 #include <stddef.h>
 
-void disable_command_from_tree(size_t token_count, const char* tokens[]);
+#include "cab_session.h"
+
+void disable_command_from_tree(CabSession* session, size_t token_count,
+                               const char* tokens[]);
 
 #endif

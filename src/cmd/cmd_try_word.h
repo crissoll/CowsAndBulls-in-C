@@ -3,6 +3,9 @@
 
 #include <stddef.h>
 
-void cmd__try_word_from_tokens(size_t token_count, const char* tokens[]);
+#include "cab_session.h"
+
+void cmd__try_word_from_tokens(CabSession* session, size_t token_count,
+                               const char* tokens[]);
 
 #endif

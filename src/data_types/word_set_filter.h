@@ -2,6 +2,7 @@
 #define WORD_SET_FILTER_H
 
 #include <stdbool.h>
+#include "cab_session.h"
 #include "index_array.h"
 #include "word.h"
 #include "word_set.h"
@@ -40,6 +41,6 @@ IndexArray filter__get_words_from_word_set(const WordSet* word_set,
                                            const WordSetFilter* filter);
 
 /* Print a compact, human-readable view of allowed letters by position. */
-void filter__output(const WordSetFilter* filter);
+void filter__output(CabSession* session, const WordSetFilter* filter);
 
 #endif /* WORD_SET_FILTER_H */

@@ -114,15 +114,16 @@ IndexArray join(IndexArray a, IndexArray b) {
 }
 
 
-void index_array__output(IndexArray index_array, const Vocabulary* vocabulary) {
+void index_array__output(CabSession* session, IndexArray index_array,
+                         const Vocabulary* vocabulary) {
     size_t j = 0;
     for (size_t i = 0; i < index_array.size; i++) {
-        word__output(vocabulary->words[index_array.indexes[i]]);
-        output(" ");
+        word__output(session, vocabulary->words[index_array.indexes[i]]);
+        output(session, " ");
         if (++j > cab_get_setting(STG_Display_IndexArray_WordsPerLine)) {
-            output("\n");
+            output(session, "\n");
             j = 0;
         }
     }
-    output("\n");
+    output(session, "\n");
 }

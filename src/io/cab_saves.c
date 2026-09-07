@@ -66,9 +66,9 @@ bool load_attempts(void) {
 void store_attempts(void) {
     const char* path = get_attempts_file_path();
     if (path == NULL) {
-        message(OT_WARNING,
-                "store_attempts: attempts_file_path wasn't found. "
-                "attempts won't be stored\n");
+        extra_io_warning(
+            "store_attempts: attempts_file_path wasn't found. "
+            "attempts won't be stored\n");
         return;
     }
 
@@ -88,16 +88,16 @@ void store_secret_word(void) {
     const char* path = get_secret_file_path();
 
     if (path == NULL) {
-        message(OT_WARNING,
-                "store_secret_word: secret_file_path couldn't be loaded. "
-                "secret word won't be stored\n");
+        extra_io_warning(
+            "store_secret_word: secret_file_path couldn't be loaded. "
+            "secret word won't be stored\n");
         return;
     }
     FILE* file = open_file_safe(path, "w");
 
     if (file == NULL) {
-        message(OT_WARNING,
-                "secret word couldn't be stored. secret word won't be stored");
+        extra_io_warning(
+            "secret word couldn't be stored. secret word won't be stored\n");
         return;
     }
 
@@ -117,9 +117,9 @@ bool load_test_secret_word(Word* test_secret_word, SessionId* session_id_ptr) {
     FILE* file = open_file_safe(get_secret_file_path(), "r");
 
     if (file == NULL) {
-        message(OT_WARNING,
-                "load_test_secret_word: open_file_safe didn't find the "
-                "secret_file_path");
+        extra_io_warning(
+            "load_test_secret_word: open_file_safe didn't find the "
+            "secret_file_path\n");
         return false;
     }
 
@@ -190,11 +190,11 @@ bool are_save_files_valid(void) {
 
 void delete_save_files(void) {
     if (remove(get_secret_file_path()) != 0) {
-        message(OT_WARNING, "error while removing secret_word.txt\n");
+        extra_io_warning("error while removing secret_word.txt\n");
     }
 
     if (remove(get_attempts_file_path()) != 0) {
-        message(OT_WARNING, "error while removing attempts.txt\n");
+        extra_io_warning("error while removing attempts.txt\n");
     }
 }
 
@@ -235,13 +235,13 @@ void load_vocabulary(void) {
     vocabulary_loaded = true;
     size_t word_count = get_line_count(get_vocabulary_file_path());
     if (word_count == 0) {
-        message(OT_WARNING, "load_vocabulary: vocabulary file is empty\n");
+        extra_io_warning("load_vocabulary: vocabulary file is empty\n");
         init_used_vocabulary(NULL, 0);
         return;
     }
     Word* words = malloc(sizeof(words[0]) * word_count);
     if (words == NULL) {
-        message(OT_WARNING, "load_vocabulary: malloc failure \n");
+        extra_io_warning("load_vocabulary: malloc failure \n");
         init_used_vocabulary(NULL, 0);
         return;
     }
@@ -300,8 +300,6 @@ void load_vocabulary(void) {
             }
 
             cab_set_setting(STG_Internal_WordLen, strlen(buffer));
-            /*message(OT_WARNING, "load_vocabulary: set word_len to %d\n",
-                    get_word_len());*/
             break;
         }
         if (!random_skip()) {
@@ -364,7 +362,7 @@ void load_saves(void) {
         load_vocabulary();
         return;
     }
-    message(OT_WARNING,
-            "no valid game saves found. generated new saves instead\n");
+    extra_io_warning(
+        "no valid game saves found. generated new saves instead\n");
     return;
 }
