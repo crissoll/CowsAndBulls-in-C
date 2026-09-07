@@ -1,8 +1,10 @@
+#include <stdarg.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 
 #include "cab_errors.h"
 #include "cab_settings_api.h"
@@ -32,7 +34,9 @@ void cab_output_buffer__free_content(OutputBuffer messages) {
 }
 
 void reset_output_buffer(CAB_IOBuffer* buffer) {
-    if (buffer == NULL) return;
+    if (buffer == NULL) {
+        return;
+    }
     buffer->content =
         realloc(buffer->content, sizeof(buffer->content[0]) *
                                      INITIAL_OUTPUT_BUFFER_ALLOCATED_SIZE);
@@ -50,7 +54,9 @@ void reset_output_buffer(CAB_IOBuffer* buffer) {
 
 
 void cab_output_buffer__init(OutputBuffer* messages) {
-    if (messages == NULL) return;
+    if (messages == NULL) {
+        return;
+    }
     if (messages->text_buffer == NULL) {
         messages->text_buffer = malloc(sizeof(*messages->text_buffer));
         if (messages->text_buffer == NULL) {
@@ -62,8 +68,9 @@ void cab_output_buffer__init(OutputBuffer* messages) {
         reset_output_buffer(messages->text_buffer);
     }
     messages->message_indexes = malloc(MAX_TEXTS_PER_SINGLE_OUTPUT *
-                                      sizeof(messages->message_indexes[0]));
-    messages->tags = malloc(MAX_TEXTS_PER_SINGLE_OUTPUT * sizeof(messages->tags[0]));
+                                       sizeof(messages->message_indexes[0]));
+    messages->tags =
+        malloc(MAX_TEXTS_PER_SINGLE_OUTPUT * sizeof(messages->tags[0]));
     messages->size = 0;
     if (messages->message_indexes == NULL || messages->tags == NULL) {
         extra_io_warning("cab_output_buffer__init: malloc failure\n");
@@ -139,8 +146,7 @@ void log_tagged_output(OutputBuffer output_buffer) {
 }
 
 char* output_buffer__flush(OutputBuffer* output_buffer) {
-    if (output_buffer == NULL ||
-        output_buffer->text_buffer == NULL ||
+    if (output_buffer == NULL || output_buffer->text_buffer == NULL ||
         output_buffer->text_buffer->allocated_size == 0 ||
         output_buffer->text_buffer->content == NULL) {
         return strdup("");
