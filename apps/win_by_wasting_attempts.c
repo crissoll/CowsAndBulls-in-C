@@ -9,7 +9,7 @@
 int main(void) {
     cab_set_setting(STG_Rule_AttemptsCoherenceConstraintMode,
                     CONSTR_SkipAttempt);
-    cab_start_new_game(void);
+    cab_start_new_game();
     printf("the word you have to find is %s\n", get_secret_word().letters);
     char string[1000];
     while (!cab_is_game_ended()) {
