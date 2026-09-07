@@ -54,9 +54,11 @@ void parse_command(CabSession* session, const CommandSpec* specifier,
     if (cab_session__is_command_allowed(*session, specifier) == false) {
         return;
     }
+    CabCmdDisabledFlags flags =
+        cab_session__get_command_spec_disable_flags(*session, specifier);
 
     if (token_count == 0) {
-        if (specifier->case_no_args == NULL) {
+        if (specifier->case_no_args == NULL || flags & CMD_DISABLE_NO_ARGS) {
             alert_too_few_arguments(session);
             return;
         }
@@ -65,12 +67,13 @@ void parse_command(CabSession* session, const CommandSpec* specifier,
     }
     const CommandSpec* argument = command_spec_find_arg(specifier, tokens[0]);
 
-    if (argument != NULL) {
+    if (argument != NULL && !(flags & CMD_DISABLE_ARGS)) {
         parse_command(session, argument, tokens + 1, token_count - 1);
         return;
     }
 
-    if (specifier->default_handler == NULL) {
+    if (specifier->default_handler == NULL ||
+        flags & (CMD_DISABLE_DEF_HANDLER)) {
         alert_too_many_arguments(session, token_count, tokens);
         return;
     }
@@ -78,29 +81,25 @@ void parse_command(CabSession* session, const CommandSpec* specifier,
     return;
 }
 
-
-void disable_command(CabSession* session, size_t token_count,
-                     const char* tokens[], const CommandSpec* base_spec) {
-    const CommandSpec* candidate_spec = base_spec->args;
+const CommandSpec* find_command_spec_in_tree(CabSession* session,
+                                             size_t token_count,
+                                             const char* tokens[],
+                                             const CommandSpec* tree_root) {
+    const CommandSpec* candidate_spec = tree_root->args;
     while (!command_spec_is_end_spec(*candidate_spec)) {
         if (strcmp(candidate_spec->name, tokens[0]) == 0) {
             if (token_count == 1) {
-                cab_session__disable_command(session, base_spec);
-                message(session, OT_USER, "%s has been disabled\n",
-                        candidate_spec->name);
-                return;
+                return candidate_spec;
             }
 
             if (candidate_spec->args == NULL) {
                 alert_too_many_arguments(session, token_count, tokens);
-                return;
+                return NULL;
             }
-            disable_command(session, token_count - 1, tokens + 1,
-                            candidate_spec);
-            return;
+            return find_command_spec_in_tree(session, token_count - 1,
+                                             tokens + 1, candidate_spec);
         }
         candidate_spec++;
     }
-    message(session, OT_ALERT, "command not found!\n");
-    return;
+    return NULL;
 }

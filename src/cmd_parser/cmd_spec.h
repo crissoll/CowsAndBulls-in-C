@@ -3,8 +3,20 @@
 
 #include <stdbool.h>
 #include <stddef.h>
+#include <stdint.h>
+
+typedef enum {
+    CMD_DISABLE_NOTHING = 0,
+    CMD_DISABLE_NO_ARGS = 1,
+    CMD_DISABLE_DEF_HANDLER = 2,
+    CMD_DISABLE_ARGS = 4,
+
+    CMD_DISABLE_ALL = INT32_MAX,
+} CabCmdDisabledFlags;
+
 
 typedef struct CommandSpec CommandSpec;
+
 typedef struct CabSession CabSession;
 
 #define END_SPEC {.name = NULL}
@@ -32,8 +44,9 @@ bool command_spec_name_match(CommandSpec spec, const char* searched_name);
 
 void parse_command(CabSession* session, const CommandSpec* specifier,
                    const char* tokens[], size_t token_count);
+const CommandSpec* find_command_spec_in_tree(CabSession* session,
+                                             size_t token_count,
+                                             const char* tokens[],
+                                             const CommandSpec* tree_root);
 
-
-void disable_command(CabSession* session, size_t token_count,
-                     const char* tokens[], const CommandSpec* base_spec);
 #endif

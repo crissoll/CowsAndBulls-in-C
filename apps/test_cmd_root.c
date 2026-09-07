@@ -82,18 +82,21 @@ int main(void) {
 
     // 4. Test execution of custom commands through parse_command
     const char* tokens1[] = {"mycmd"};
-    parse_command(&session, cab_session__get_cmd_tree_root(&session), tokens1, 1);
+    parse_command(&session, cab_session__get_cmd_tree_root(&session), tokens1,
+                  1);
     assert(custom_no_args_called == 1);
     printf("[PASS] Custom no-args command executed successfully.\n");
 
     const char* tokens2[] = {"mycmd", "sub", "extra"};
-    parse_command(&session, cab_session__get_cmd_tree_root(&session), tokens2, 3);
+    parse_command(&session, cab_session__get_cmd_tree_root(&session), tokens2,
+                  3);
     assert(custom_sub_called == 1);
     printf("[PASS] Custom sub-command executed successfully.\n");
 
     // 5. Test disabling a command under the custom root
     assert(cab_session__is_command_allowed(session, &custom_specs[0]) == true);
-    cab_session__disable_command(&session, &custom_specs[0]);
+    cab_session__set_command_spec_disable_flags(&session, &custom_specs[0],
+                                                CMD_DISABLE_ALL);
     assert(cab_session__is_command_allowed(session, &custom_specs[0]) == false);
     printf("[PASS] Command disabled successfully.\n");
 

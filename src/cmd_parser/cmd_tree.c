@@ -16,10 +16,36 @@
 static const CommandSpec command_specs[] = {
     {
         .name = "disable",
-        .help_text = NULL,
         .case_no_args = alert_too_few_arguments,
-        .default_handler = disable_command_from_tree,
-        .args = NULL,
+        .default_handler = disable_command,
+        .args =
+            (const CommandSpec[]){
+                {
+                    .name = "--reset",
+                    .case_no_args = alert_too_few_arguments,
+                    .default_handler = disable_command_reset,
+                    .args = NULL,
+                },
+                {
+                    .name = "--zero-args",
+                    .case_no_args = alert_too_few_arguments,
+                    .default_handler = disable_command_no_args,
+                    .args = NULL,
+                },
+                {
+                    .name = "--args",
+                    .case_no_args = alert_too_few_arguments,
+                    .default_handler = disable_command_args,
+                    .args = NULL,
+                },
+                {
+                    .name = "--default",
+                    .case_no_args = alert_too_few_arguments,
+                    .default_handler = disable_command_default_handler,
+                    .args = NULL,
+                },
+                END_SPEC,
+            },
     },
     {
         .name = "help",
@@ -64,13 +90,11 @@ static const CommandSpec command_specs[] = {
                 },
                 {
                     .name = "-r",
-                    .case_no_args = alert_too_few_arguments,
                     .default_handler = cmd__list_remove_letters,
                     .args = NULL,
                 },
                 {
                     .name = "-i",
-                    .case_no_args = alert_too_few_arguments,
                     .default_handler = cmd__list_intersect_letters,
                     .args = NULL,
                 },
