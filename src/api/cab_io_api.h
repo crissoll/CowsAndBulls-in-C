@@ -5,6 +5,7 @@
 #include <stddef.h>
 
 #include "cab_io_consts.h"
+#include "cab_session.h"
 
 
 // must be called at the end of execution to avoid memory leaks
@@ -15,10 +16,11 @@ void cab_io_shutdown(void);
 InputStatus cab_input(const char* input_string);
 
 // returns a simple stream of all messages
-char* cab_get_output(void);
+char* cab_get_output(CabSession* session);
 
 // returns all the messages with the specified tag
-char** cab_get_messages_with_tag(OutputTags tag, size_t* message_count);
+char** cab_get_messages_with_tag(CabSession* session, OutputTags tag,
+                                 size_t* message_count);
 
 const char* cab_get_input_prompt(void);
 

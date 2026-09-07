@@ -8,6 +8,8 @@
 #include "cab_io_api.h"
 #include "cab_io_consts.h"
 #include "cab_io_utils.h"
+#include "cab_output_buffer.h"
+#include "cab_session.h"
 #include "cab_settings_api.h"
 #include "cab_turns.h"
 
@@ -15,7 +17,6 @@
 #include "cab_errors.h"
 
 #include "cab_input_internal.h"
-#include "cab_output_internal.h"
 #include "cab_paths.h"
 #include "cab_used_vocabulary.h"
 
@@ -23,82 +24,41 @@
 #include "cab_session_api.h"
 
 
-typedef enum {
-    OS_OutputStale,
-    OS_OutputRefreshed,
-    OS_MessagesUpToDate,
-} OutputState;
-
-OutputState output_state = OS_OutputStale;
-
-
-OutputBuffer msg_tags = (OutputBuffer){
-    .size = 0,
-    .message_indexes = NULL,
-    .tags = NULL,
-};
-
-char* cur_txt = NULL;
-
-
 void cab_io_shutdown(void) {
-    output__shutdown();
-    free(msg_tags.message_indexes);
-    msg_tags.message_indexes = NULL;
-    free(msg_tags.tags);
-    msg_tags.tags = NULL;
-    msg_tags.size = 0;
-    free(cur_txt);
-    cur_txt = NULL;
-    output_state = OS_OutputStale;
     free_file_paths();
     free_used_vocabulary();
 }
 
-
 InputStatus cab_input(const char* input_string) {
-    output_state = OS_OutputRefreshed;
     return write_to_input_buffer(input_string);
 }
 
-void update_output_messages(void) {
-    if (output_state == OS_OutputStale) {  // this should be impossible to reach
-        extra_io_warning(
-            "update_output_messages: no input was received, messages "
-            "can't be updated\n");
-        return;
+char* cab_get_output(CabSession* session) {
+    if (session == NULL || session->output_buffer == NULL) {
+        return strdup("");
     }
 
-    if (output_state == OS_MessagesUpToDate) {
-        extra_io_warning("messages already up to date\n");
-        return;
-    }
+    OutputBuffer msg_tags =
+        output_buffer__get_tagged_output(session->output_buffer);
+    char* cur_txt = output_buffer__flush(session->output_buffer);
 
-    free(msg_tags.message_indexes);
-    free(msg_tags.tags);
-    free(cur_txt);
-    msg_tags = get_tagged_output();
-    cur_txt = flush_output_buffer();
     if (msg_tags.size > 1) {
         for (size_t msg = 0; msg < msg_tags.size - 1; msg++) {
             text_wrap(&cur_txt[msg_tags.message_indexes[msg]]);
         }
     }
-    output_state = OS_MessagesUpToDate;
-}
 
-char* cab_get_output(void) {
-    if (output_state != OS_MessagesUpToDate) {
-        update_output_messages();
-    }
+    free(msg_tags.message_indexes);
+    free(msg_tags.tags);
+
     if (cur_txt == NULL) {
         return strdup("");
     }
-    return strdup(cur_txt);
+    return cur_txt;
 }
 
-
-char** cab_get_messages_with_tag(OutputTags tag, size_t* message_count) {
+char** cab_get_messages_with_tag(CabSession* session, OutputTags tag,
+                                 size_t* message_count) {
     if (message_count == NULL) {
         extra_io_warning("passed null message_count pointer\n");
         return NULL;
@@ -106,14 +66,26 @@ char** cab_get_messages_with_tag(OutputTags tag, size_t* message_count) {
 
     *message_count = 0;
 
-    if (output_state != OS_MessagesUpToDate) {
-        update_output_messages();
-    }
-
-    if (msg_tags.size <= 1) {
+    if (session == NULL || session->output_buffer == NULL) {
         return NULL;
     }
 
+    OutputBuffer msg_tags =
+        output_buffer__get_tagged_output(session->output_buffer);
+    char* cur_txt = output_buffer__flush(session->output_buffer);
+
+    if (msg_tags.size > 1) {
+        for (size_t msg = 0; msg < msg_tags.size - 1; msg++) {
+            text_wrap(&cur_txt[msg_tags.message_indexes[msg]]);
+        }
+    }
+
+    if (msg_tags.size <= 1) {
+        free(msg_tags.message_indexes);
+        free(msg_tags.tags);
+        free(cur_txt);
+        return NULL;
+    }
 
     for (size_t i = 0; i < msg_tags.size - 1; i++) {
         if (msg_tags.tags[i] & tag) {
@@ -122,15 +94,21 @@ char** cab_get_messages_with_tag(OutputTags tag, size_t* message_count) {
     }
 
     if (*message_count == 0) {
+        free(msg_tags.message_indexes);
+        free(msg_tags.tags);
+        free(cur_txt);
         return NULL;
     }
 
     char** result = malloc(sizeof(char*) * (*message_count));
-
     if (result == NULL) {
         *message_count = 0;
+        free(msg_tags.message_indexes);
+        free(msg_tags.tags);
+        free(cur_txt);
         return NULL;
     }
+
     size_t j = 0;
     for (size_t i = 0; i < msg_tags.size - 1; i++) {
         if (!(msg_tags.tags[i] & tag)) {
@@ -140,17 +118,27 @@ char** cab_get_messages_with_tag(OutputTags tag, size_t* message_count) {
             msg_tags.message_indexes[i + 1] - msg_tags.message_indexes[i] + 1;
 
         result[j] = malloc(sizeof(result[0]) * msg_len);
-
         if (result[j] == NULL) {
-            *message_count = j;
-            return result;
+            for (size_t k = 0; k < j; k++) {
+                free(result[k]);
+            }
+            free(result);
+            free(msg_tags.message_indexes);
+            free(msg_tags.tags);
+            free(cur_txt);
+            *message_count = 0;
+            return NULL;
         }
 
         memcpy(result[j], &cur_txt[msg_tags.message_indexes[i]],
-               msg_len * sizeof(char));
+               (msg_len - 1) * sizeof(char));
         result[j][msg_len - 1] = '\0';
         j++;
     }
+
+    free(msg_tags.message_indexes);
+    free(msg_tags.tags);
+    free(cur_txt);
 
     return result;
 }

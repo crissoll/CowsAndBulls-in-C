@@ -1,19 +1,20 @@
+
 #ifndef CAB_OUTPUT
-    #define CAB_OUTPUT
+#define CAB_OUTPUT
 
-    #include "cab_io_consts.h"
+#include "cab_io_consts.h"
 
+#include "cab_session.h"
 
-void message(OutputTags tags, const char* format_string, ...);
+void message(CabSession* session, OutputTags tags, const char* format_string,
+             ...);
 
-void start_message(OutputTags tags);
+void start_message(CabSession* session, OutputTags tags);
 
-void output(const char* format_string, ...);
+void output(CabSession* session, const char* format_string, ...);
 
-void end_message(void);
+void end_message(CabSession* session);
 
-
-#endif
 
 // use message to send a single text; if you want to send more complex texts, you can use start_message and use multiple output() calls, and then an end_message
 //
@@ -29,3 +30,5 @@ void end_message(void);
 // end_message();
 //
 // end_message() is not necessary, but avoid appending other text to the current message by accident if you call output from other code sections without using start_message
+
+#endif
