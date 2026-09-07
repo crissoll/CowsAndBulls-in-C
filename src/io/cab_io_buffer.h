@@ -8,7 +8,7 @@
 
 
 typedef struct {
-    char* buffer;
+    char* content;
     size_t current_size;
     size_t allocated_size;
 } CAB_IOBuffer;

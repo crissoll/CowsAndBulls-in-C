@@ -32,9 +32,9 @@ typedef enum {
 OutputState output_state = OS_OutputStale;
 
 
-Messages msg_tags = (Messages){
+OutputBuffer msg_tags = (OutputBuffer){
     .size = 0,
-    .messages = NULL,
+    .message_indexes = NULL,
     .tags = NULL,
 };
 
@@ -43,13 +43,14 @@ char* cur_txt = NULL;
 
 void cab_io_shutdown(void) {
     output__shutdown();
-    free(msg_tags.messages);
-    msg_tags.messages = NULL;
+    free(msg_tags.message_indexes);
+    msg_tags.message_indexes = NULL;
     free(msg_tags.tags);
     msg_tags.tags = NULL;
     msg_tags.size = 0;
     free(cur_txt);
     cur_txt = NULL;
+    output_state = OS_OutputStale;
     free_file_paths();
     free_used_vocabulary();
 }
@@ -73,14 +74,14 @@ void update_output_messages(void) {
         return;
     }
 
-    free(msg_tags.messages);
+    free(msg_tags.message_indexes);
     free(msg_tags.tags);
     free(cur_txt);
-    msg_tags = get_messages_tags();
+    msg_tags = get_tagged_output();
     cur_txt = flush_output_buffer();
     if (msg_tags.size > 1) {
         for (size_t msg = 0; msg < msg_tags.size - 1; msg++) {
-            text_wrap(&cur_txt[msg_tags.messages[msg]]);
+            text_wrap(&cur_txt[msg_tags.message_indexes[msg]]);
         }
     }
     output_state = OS_MessagesUpToDate;
@@ -136,7 +137,7 @@ char** cab_get_messages_with_tag(OutputTags tag, size_t* message_count) {
             continue;
         }
         const size_t msg_len =
-            msg_tags.messages[i + 1] - msg_tags.messages[i] + 1;
+            msg_tags.message_indexes[i + 1] - msg_tags.message_indexes[i] + 1;
 
         result[j] = malloc(sizeof(result[0]) * msg_len);
 
@@ -145,7 +146,7 @@ char** cab_get_messages_with_tag(OutputTags tag, size_t* message_count) {
             return result;
         }
 
-        memcpy(result[j], &cur_txt[msg_tags.messages[i]],
+        memcpy(result[j], &cur_txt[msg_tags.message_indexes[i]],
                msg_len * sizeof(char));
         result[j][msg_len - 1] = '\0';
         j++;

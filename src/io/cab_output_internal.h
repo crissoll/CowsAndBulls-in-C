@@ -4,15 +4,8 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-#include "cab_io_buffer.h"
 #include "cab_io_consts.h"
-
-typedef struct {
-    size_t* messages;
-    OutputTags* tags;
-    size_t size;
-    CAB_IOBuffer* buffer;
-} Messages;
+#include "cab_output_buffer.h"
 
 void print_to_default_buffer(const char* text);
 
@@ -24,8 +17,8 @@ void end_message(void);
 
 bool is_message_started(void);
 
-Messages get_messages_tags(void);
-
 void output__shutdown(void);
+
+OutputBuffer get_tagged_output(void);
 
 #endif
