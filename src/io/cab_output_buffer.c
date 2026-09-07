@@ -28,28 +28,9 @@ void cab_output_buffer__free_content(OutputBuffer messages) {
     free(messages.message_indexes);
     free(messages.tags);
     if (messages.text_buffer != NULL) {
-        free(messages.text_buffer->content);
+        cab_io_buffer__free_content(messages.text_buffer);
         free(messages.text_buffer);
     }
-}
-
-void reset_output_buffer(CAB_IOBuffer* buffer) {
-    if (buffer == NULL) {
-        return;
-    }
-    buffer->content =
-        realloc(buffer->content, sizeof(buffer->content[0]) *
-                                     INITIAL_OUTPUT_BUFFER_ALLOCATED_SIZE);
-    if (buffer->content == NULL) {
-        extra_io_warning("reset_output_buffer: malloc failure\n");
-        buffer->allocated_size = 0;
-        buffer->current_size = 0;
-        return;
-    }
-
-    buffer->allocated_size = INITIAL_OUTPUT_BUFFER_ALLOCATED_SIZE;
-    buffer->current_size = 0;
-    buffer->content[0] = '\0';
 }
 
 
@@ -65,7 +46,7 @@ void cab_output_buffer__init(OutputBuffer* messages) {
             return;
         }
         *messages->text_buffer = (CAB_IOBuffer){0};
-        reset_output_buffer(messages->text_buffer);
+        cab_io_buffer__init(messages->text_buffer);
     }
     messages->message_indexes = malloc(MAX_TEXTS_PER_SINGLE_OUTPUT *
                                        sizeof(messages->message_indexes[0]));
@@ -79,11 +60,9 @@ void cab_output_buffer__init(OutputBuffer* messages) {
 }
 
 void free_output_buffer(CAB_IOBuffer* buffer) {
-    free(buffer->content);
-    buffer->content = NULL;
-    buffer->allocated_size = 0;
-    buffer->current_size = 0;
+    cab_io_buffer__free_content(buffer);
 }
+
 
 
 void print_to_buffer(CAB_IOBuffer* buffer, const char* text) {
@@ -94,7 +73,7 @@ void print_to_buffer(CAB_IOBuffer* buffer, const char* text) {
     }
 
     if (cab_io_buffer__is_initialized(*buffer) == false) {
-        reset_output_buffer(buffer);
+        cab_io_buffer__init(buffer);
     }
 
     const size_t text_len = strlen(text);
@@ -146,9 +125,8 @@ void log_tagged_output(OutputBuffer output_buffer) {
 }
 
 char* output_buffer__flush(OutputBuffer* output_buffer) {
-    if (output_buffer == NULL || output_buffer->text_buffer == NULL ||
-        output_buffer->text_buffer->allocated_size == 0 ||
-        output_buffer->text_buffer->content == NULL) {
+    if (output_buffer == NULL ||
+        cab_output_buffer__is_initialized(*output_buffer) == false) {
         return strdup("");
     }
 
@@ -157,7 +135,7 @@ char* output_buffer__flush(OutputBuffer* output_buffer) {
     }
 
     char* result = strdup(output_buffer->text_buffer->content);
-    reset_output_buffer(output_buffer->text_buffer);
+    cab_io_buffer__init(output_buffer->text_buffer);
     return result;
 }
 

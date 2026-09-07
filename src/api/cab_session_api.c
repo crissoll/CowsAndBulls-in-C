@@ -18,8 +18,9 @@
 
 #include "cmd_surrender.h"
 
-#include "cab_session_api.h"
 #include "cab_session.h"
+#include "cab_session_api.h"
+
 
 void setup_session(void);
 
@@ -112,7 +113,7 @@ bool prompt_to_load_game(void) {
         loading_saves = false;
         return true;
     }
-    YORN_Result y_or_n = get_y_or_n_from_input();
+    YORN_Result y_or_n = get_y_or_n_from_input(cab_get_session()->input_buffer);
     switch (y_or_n) {
         case YORN_Invalid:
             return false;
@@ -124,11 +125,10 @@ bool prompt_to_load_game(void) {
 
 
 void parse_input(void) {
-    char input_buffer[1024];
     char** input_tokens = NULL;
 
-    const size_t token_count = get_tokens_from_input(
-        input_buffer, sizeof(input_buffer), &input_tokens);
+    const size_t token_count =
+        get_tokens_from_input(cab_get_session()->input_buffer, &input_tokens);
 
     if (token_count > 0) {
         parse(cab_get_session(), (const char**)input_tokens, token_count);

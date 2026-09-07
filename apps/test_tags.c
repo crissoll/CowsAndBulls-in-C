@@ -19,7 +19,7 @@
 
 void turn_function(const char* input_buffer) {
 
-    cab_input(input_buffer);
+    cab_input(cab_get_session(), input_buffer);
     cab_process_turn();
 
     size_t message_count;

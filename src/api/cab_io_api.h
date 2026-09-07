@@ -13,7 +13,7 @@ void cab_io_shutdown(void);
 
 // clear the inner buffer and insert input_string into it.
 // if it's called twice without processing it (with session functions) the first input will be discarded
-InputStatus cab_input(const char* input_string);
+InputStatus cab_input(CabSession* session, const char* input_string);
 
 // returns a simple stream of all messages
 char* cab_get_output(CabSession* session);

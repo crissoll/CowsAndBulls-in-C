@@ -7,8 +7,9 @@
 
 #include "cab_io_consts.h"
 
-InputStatus write_to_input_buffer(const char* input_string);
+#include "cab_io_buffer.h"
 
-GetInputStatus get_input(char* buffer, size_t buffer_size);
+InputStatus write_to_input_buffer(CAB_IOBuffer* input_buffer,
+                                  const char* input_string);
 
 #endif

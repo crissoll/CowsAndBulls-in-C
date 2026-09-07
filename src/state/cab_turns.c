@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include "cab_attempts_manager.h"
 #include "cab_input.h"
+#include "cab_session_api.h"
 #include "cab_settings_api.h"
 
 
@@ -115,7 +116,7 @@ TURN_FUNCS_DEF(
         return GS_NOT_STARTED;
     }
 
-    switch (get_y_or_n_from_input()) {
+    switch (get_y_or_n_from_input(cab_get_session()->input_buffer)) {
         case YORN_Yes:
             force_setup_session();
             play_again = true;

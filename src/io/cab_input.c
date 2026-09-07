@@ -5,10 +5,10 @@
 #include <string.h>
 
 #include "cab_errors.h"
+#include "cab_io_buffer.h"
 #include "cab_io_consts.h"
 
 #include "cab_input.h"
-#include "cab_input_internal.h"
 #include "cab_output.h"
 #include "cab_session_api.h"
 
@@ -72,23 +72,23 @@ static void split_tokens(char* buffer, char** tokens) {
     }
 }
 
-size_t get_tokens_from_input(char buffer[], size_t buffer_size,
-                             char*** tokens) {
+size_t get_tokens_from_input(CAB_IOBuffer* buffer, char*** tokens) {
     if (tokens != NULL) {
         *tokens = NULL;
     }
-    if (get_input(buffer, buffer_size) != GET_INPUT_SUCCESS) {
+    if (buffer == NULL || cab_io_buffer__is_initialized(*buffer) == false) {
         return 0;
     }
 
-    const size_t len = normalize_spaces_in_place(buffer);
-    if (buffer[0] == '\0') {
+
+    const size_t len = normalize_spaces_in_place(buffer->content);
+    if (buffer->content[0] == '\0') {
         return 0;
     }
 
-    to_lower(buffer, len);
+    to_lower(buffer->content, len);
 
-    const size_t token_count = count_tokens(buffer);
+    const size_t token_count = count_tokens(buffer->content);
 
     if (tokens == NULL) {
         return token_count;
@@ -101,27 +101,26 @@ size_t get_tokens_from_input(char buffer[], size_t buffer_size,
         return 0;
     }
 
-    split_tokens(buffer, *tokens);
+    split_tokens(buffer->content, *tokens);
 
     return token_count;
 }
 
-YORN_Result get_y_or_n_from_input(void) {
-    char buffer[100];
+YORN_Result get_y_or_n_from_input(CAB_IOBuffer* buffer) {
+
     char** input_tokens = NULL;
 
-    size_t input_size =
-        get_tokens_from_input(buffer, sizeof(buffer), &input_tokens);
+    size_t input_size = get_tokens_from_input(buffer, &input_tokens);
 
     free(input_tokens);
 
-    if (input_size == 0 ||
-        (strcmp(buffer, "y") != 0 && strcmp(buffer, "n") != 0)) {
+    if (input_size == 0 || (strcmp(buffer->content, "y") != 0 &&
+                            strcmp(buffer->content, "n") != 0)) {
         message(cab_get_session(), OT_INPUT_ERROR, "input must be y or n\n");
         return YORN_Invalid;
     }
 
-    if (buffer[0] == 'y') {
+    if (buffer->content[0] == 'y') {
         return YORN_Yes;
     }
     return YORN_No;

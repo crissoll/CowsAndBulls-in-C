@@ -16,6 +16,7 @@
 
 #include "cab_errors.h"
 
+
 #include "cab_input_internal.h"
 #include "cab_paths.h"
 #include "cab_used_vocabulary.h"
@@ -29,9 +30,13 @@ void cab_io_shutdown(void) {
     free_used_vocabulary();
 }
 
-InputStatus cab_input(const char* input_string) {
-    return write_to_input_buffer(input_string);
+InputStatus cab_input(CabSession* session, const char* input_string) {
+    if (session == NULL || session->input_buffer == NULL) {
+        return INPUT_ERROR;
+    }
+    return write_to_input_buffer(session->input_buffer, input_string);
 }
+
 
 char* cab_get_output(CabSession* session) {
     if (session == NULL || session->output_buffer == NULL) {

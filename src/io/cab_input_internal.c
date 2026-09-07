@@ -1,68 +1,66 @@
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "cab_errors.h"
 #include "cab_input_internal.h"
+
+#include "cab_io_buffer.h"
 #include "cab_settings_api.h"
 
 #define MAX_INPUT_BUFFER_SIZE 1024
 
-static char input_buffer[MAX_INPUT_BUFFER_SIZE];
-static size_t input_buffer_size = 0;
 
-
-InputStatus write_to_input_buffer(const char* input_string) {
+InputStatus write_to_input_buffer(CAB_IOBuffer* input_buffer,
+                                  const char* input_string) {
     if (input_string == NULL) {
         extra_io_warning(
-            "tried adding NULL string to input_buffer; no input will be "
-            "added\n");
+            "write_to_input_buffer: tried adding NULL string to input_buffer; "
+            "no input will be added\n");
+        return INPUT_ERROR;
+    }
+    if (input_buffer == NULL) {
+        extra_io_warning("write_to_input_buffer: NULL input_buffer\n");
+        return INPUT_ERROR;
+    }
+
+    if (cab_io_buffer__is_initialized(*input_buffer) == false) {
+        cab_io_buffer__init(input_buffer);
+        if (cab_io_buffer__is_initialized(*input_buffer) == false) {
+            extra_io_warning(
+                "write_to_input_buffer: failed to initialize input_buffer\n");
+            return INPUT_ERROR;
+        }
     }
 
     if (cab_get_setting(STG_Debug_LogInput)) {
         extra_io_warning("[user]> %s", input_string);
     }
 
-    input_buffer_size = 0;
     const size_t len = strlen(input_string);
     if (len >= MAX_INPUT_BUFFER_SIZE) {
         extra_io_warning("Input String Too Long!\n");
         return INPUT_STRING_TOO_LONG;
     }
 
-    strcpy(input_buffer, input_string);
+    if (len >= input_buffer->allocated_size) {
+        size_t new_alloc = input_buffer->allocated_size;
+        while (len >= new_alloc) {
+            new_alloc *= 2;
+        }
+        char* new_content = realloc(input_buffer->content, new_alloc);
+        if (new_content == NULL) {
+            extra_io_warning("write_to_input_buffer: malloc failure\n");
+            return INPUT_ERROR;
+        }
+        input_buffer->content = new_content;
+        input_buffer->allocated_size = new_alloc;
+    }
 
-    input_buffer_size = len;
+    strcpy(input_buffer->content, input_string);
+    input_buffer->current_size = len;
     return INPUT_SUCCESS;
 }
 
-GetInputStatus get_input(char* buffer, size_t buffer_size) {
-    if (buffer_size == 0) {
-        extra_io_warning(
-            "get_input: buffer_size argument is zero, no input will be "
-            "received\n");
-        return GET_INPUT_FAILURE;
-    }
-    if (buffer == NULL) {
-        extra_io_warning(
-            "get_input: buffer argument is NULL, no input will be received\n");
-        return GET_INPUT_FAILURE;
-    }
-
-    if (input_buffer_size == 0) {
-        return GET_INPUT_EMPTY;
-    }
-    size_t copy_size = input_buffer_size;
-    if (copy_size > buffer_size - 1) {
-        copy_size = buffer_size - 1;
-    }
-
-    strncpy(buffer, input_buffer, copy_size);
-    buffer[copy_size] = '\0';
-
-    if (copy_size > 0 && buffer[copy_size - 1] == '\n') {
-        buffer[copy_size - 1] = '\0';
-    }
-    return GET_INPUT_SUCCESS;
-}
