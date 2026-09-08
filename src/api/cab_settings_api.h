@@ -2,6 +2,7 @@
 #define CAB_SETTINGS
 
 #include <stddef.h>
+#include "stdbool.h"
 
 typedef enum {
     STG_Rule_VocabularyConstraintMode,  // 0 - No constraint; 1 - Constraint; 2 - Lose attempt; 3 - Lose;
@@ -32,14 +33,17 @@ typedef enum {
 
 
     STG_LEN
-} Settings;
+} CabSettingId;
 
 
-void cab_set_setting(Settings setting, size_t value);
-size_t cab_get_setting(Settings setting);
-size_t cab_get_default_setting(Settings setting);
+void cab_set_setting(CabSettingId setting, size_t value);
+size_t cab_get_setting(CabSettingId setting);
+size_t cab_get_default_setting(CabSettingId setting);
 
-void reset_setting(Settings setting);
-void reset_all_settings(void);
+void cab_reset_setting(CabSettingId setting);
+void cab_reset_all_settings(void);
+
+
+bool cab_is_setting_valid(CabSettingId setting);
 
 #endif
