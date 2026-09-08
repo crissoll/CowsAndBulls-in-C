@@ -40,7 +40,7 @@ _CAB_TURNS(TURN_FUNCS_DECL)
     },
 
 
-CabTurn CABT_TURN_STATES[GS_LEN] = {
+CabTurn CABT_TURN_STATES[CAB_TID_LEN] = {
     _CAB_TURNS(TURN_STATE_DEF)  //
 };
 
@@ -62,18 +62,20 @@ CabTurn get_turn_state(CabTurnId turn_id) {
 
 
 TURN_FUNCS_DEF(
-    GS_NOT_STARTED,
+    CAB_TID_NotStarted,
     /* input prompt */
     "load previous game? (y/n)\n> ",
     /* process */
-    if (prompt_to_load_game()) { return GS_FIRST_TURN; } return GS_NOT_STARTED;
+    if (prompt_to_load_game()) {
+        return CAB_TID_FirstTurn;
+    } return CAB_TID_NotStarted;
 
 
 )
 
 
 TURN_FUNCS_DEF(
-    GS_FIRST_TURN,
+    CAB_TID_FirstTurn,
     /* input prompt */
     "Type a 5-letter word to guess, or 'help' to display "
     "available commands:\n> ",
@@ -83,37 +85,38 @@ TURN_FUNCS_DEF(
 
     if (get_attempt_number() > 0) {
         update_saves();
-        return GS_PLAYING;
+        return CAB_TID_Playing;
     }
 
-    if (_cab_is_game_ended()) { return GS_PLAY_AGAIN; }
+    if (_cab_is_game_ended()) { return CAB_TID_PlayAgain; }
 
-    return GS_FIRST_TURN;
+    return CAB_TID_FirstTurn;
 
 )
 
 
 TURN_FUNCS_DEF(
-    GS_PLAYING,
+    CAB_TID_Playing,
     /* input prompt */
     "Enter guess or command: ",
     /* process */
     parse_input();
 
-    update_saves();
-    if (_cab_is_game_ended()) { return GS_PLAY_AGAIN; } return GS_PLAYING;
+    update_saves(); if (_cab_is_game_ended()) {
+        return CAB_TID_PlayAgain;
+    } return CAB_TID_Playing;
 
 )
 
 TURN_FUNCS_DEF(
-    GS_PLAY_AGAIN,
+    CAB_TID_PlayAgain,
     /* input prompt */
     (cab_get_setting(STG_Internal_ShowPlayAgainPrompt))
         ? "Play Again? (y/n)\n> "
         : "Nothing more to do\n> ",
     /* process */
     if (cab_get_setting(STG_Internal_ShowPlayAgainPrompt) == false) {
-        return GS_NOT_STARTED;
+        return CAB_TID_NotStarted;
     }
 
     switch (get_y_or_n_from_input(cab_get_session()->input_buffer)) {
@@ -121,12 +124,12 @@ TURN_FUNCS_DEF(
             force_setup_session();
             play_again = true;
             cab_start_new_game();
-            return GS_FIRST_TURN;
+            return CAB_TID_FirstTurn;
         case YORN_No:
             play_again = false;
-            return GS_NOT_STARTED;
+            return CAB_TID_NotStarted;
         case YORN_Invalid:
-            return GS_PLAY_AGAIN;
+            return CAB_TID_PlayAgain;
     }
 
 )

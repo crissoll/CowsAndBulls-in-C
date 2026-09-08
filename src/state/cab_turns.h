@@ -3,18 +3,19 @@
 
 #include <stddef.h>
 
-#define _CAB_TURNS(X)      \
-                           \
-    X(GS_NOT_STARTED) /**/ \
-    X(GS_FIRST_TURN)  /**/ \
-    X(GS_PLAYING)     /**/ \
-    X(GS_PLAY_AGAIN)  /**/
+#define _CAB_TURNS(X)          \
+                               \
+    X(CAB_TID_NotStarted) /**/ \
+    X(CAB_TID_FirstTurn)  /**/ \
+    X(CAB_TID_Playing)    /**/ \
+    X(CAB_TID_PlayAgain)  /**/
+
 
 typedef enum {
 #define AS_EVAL(val) val,
     _CAB_TURNS(AS_EVAL)
 #undef AS_EVAL
-        GS_LEN,
+        CAB_TID_LEN,
 } CabTurnId;
 
 typedef struct _cab_turn_struct CabTurn;
