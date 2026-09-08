@@ -6,12 +6,14 @@
 #include "cab_output_buffer.h"
 #include "cab_session_cmd_tree.h"
 #include "cab_settings_override.h"
+#include "cab_turns.h"
 
 
 typedef struct CabSession {
     OutputBuffer* output_buffer;
     CAB_IOBuffer* input_buffer;
     CmdTree* commands_tree;
+    CabTurnId current_turn;
     CabSettingsOverride* settings_override;
 } CabSession;
 
