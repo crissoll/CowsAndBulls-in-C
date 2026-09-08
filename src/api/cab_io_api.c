@@ -148,15 +148,19 @@ char** cab_get_messages_with_tag(CabSession* session, OutputTags tag,
     return result;
 }
 
-const char* get_input_prompt(void) {
-    return get_turn_state(cab_get_current_turn_id()).get_input_prompt();
+const char* cab_session__get_turn_input_prompt(CabSession* session) {
+    return get_turn_state(session->current_turn).get_input_prompt();
 }
 
 
-const char* cab_get_input_prompt(void) {
-    const char* prompt = get_input_prompt();
-    if (cab_get_setting(STG_Debug_LogInputPrompt)) {
-        extra_io_warning("[input prompt]: %s", prompt);
+const char* cab_session__cab_get_input_prompt(CabSession* session) {
+    const char* prompt = cab_session__get_turn_input_prompt(session);
+    if (cab_session__get_setting(*session, STG_Debug_LogInputPrompt)) {
+        extra_io_warning(session, "[input prompt]: %s", prompt);
     }
     return prompt;
+}
+
+const char* cab_get_input_prompt(void) {
+    return cab_session__cab_get_input_prompt(cab_get_session());
 }
