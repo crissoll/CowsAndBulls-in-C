@@ -149,7 +149,7 @@ char** cab_get_messages_with_tag(CabSession* session, OutputTags tag,
 }
 
 const char* get_input_prompt(void) {
-    return get_turn_state(cab_get_game_state()).get_input_prompt();
+    return get_turn_state(cab_get_current_turn_id()).get_input_prompt();
 }
 
 

@@ -37,8 +37,6 @@ CabSession* cab_get_session(void) {
     return &default_session;
 }
 
-static CabTurnId game_state = CAB_TID_NotStarted;
-
 bool play_again = true;
 
 void setup_vars(void);
@@ -54,7 +52,7 @@ void setup_session(void) {
     }
 
     if (!are_save_files_valid()) {
-        game_state = CAB_TID_FirstTurn;
+        default_session.current_turn = CAB_TID_FirstTurn;
     }
     reset_extra_io_log();
     extra_io_warning("\n======== new session ===========\n");
@@ -67,12 +65,12 @@ void force_setup_session(void) {
     setup_session();
 }
 
-CabTurnId cab_get_game_state(void) {
+CabTurnId cab_get_current_turn_id(void) {
     if (!session_setup) {
         setup_session();
     }
 
-    return game_state;
+    return default_session.current_turn;
 }
 
 void setup_vars(void) {
@@ -95,13 +93,13 @@ void setup_vars(void) {
 
 void cab_start_new_game(void) {
     setup_vars();
-    game_state = CAB_TID_FirstTurn;
+    default_session.current_turn = CAB_TID_FirstTurn;
 }
 
 void cab_load_game(void) {
     setup_vars();
     load_saves();
-    game_state = CAB_TID_FirstTurn;
+    default_session.current_turn = CAB_TID_FirstTurn;
 }
 
 
@@ -143,7 +141,7 @@ static bool cab_secret_word_revealed(void) {
 
 void update_saves(void) {
     if (cab_secret_word_revealed()) {
-        game_state = CAB_TID_PlayAgain;
+        default_session.current_turn = CAB_TID_PlayAgain;
         delete_save_files();
         return;
     }
@@ -158,7 +156,8 @@ void load_saves_wrapper(void) {
 }
 
 void cab_process_turn(void) {
-    game_state = get_turn_state(game_state).process();
+    default_session.current_turn =
+        get_turn_state(default_session.current_turn).process();
 }
 
 
@@ -178,5 +177,5 @@ size_t cab_get_attempt_number(void) {
 void cab_session_shutdown(void) {
     cab_session__free_content(&default_session);
     session_setup = false;
-    game_state = CAB_TID_NotStarted;
+    default_session.current_turn = CAB_TID_NotStarted;
 }

@@ -9,7 +9,7 @@
 
 CabSession* cab_get_session(void);
 
-CabTurnId cab_get_game_state(void);
+CabTurnId cab_get_current_turn_id(void);
 
 void cab_start_new_game(void);
 
