@@ -31,8 +31,6 @@ bool command_spec_name_match(CommandSpec spec, const char* searched_name) {
 const CommandSpec* command_spec_find_arg(const CommandSpec* parent,
                                          const char* searched_name) {
     if (parent == NULL || searched_name == NULL) {
-        extra_io_warning(
-            "command_spec_find_arg: NULL arguments not accepted\n");
         return NULL;
     }
     const CommandSpec* candidate_arg = parent->args;
@@ -51,6 +49,10 @@ const CommandSpec* command_spec_find_arg(const CommandSpec* parent,
 
 void parse_command(CabSession* session, const CommandSpec* specifier,
                    const char* tokens[], size_t token_count) {
+    if (specifier == NULL) {
+        extra_io_warning(
+            session, "command_spec_find_arg: NULL arguments not accepted\n");
+    }
     if (cab_session__is_command_allowed(*session, specifier) == false) {
         return;
     }

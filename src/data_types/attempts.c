@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "cab_errors.h"
 #include "cab_io_consts.h"
 #include "cab_output.h"
 
@@ -78,15 +77,16 @@ void store_attempt_array(const Attempt* attempts, size_t attempt_number,
                          size_t invalid_attempts_number, const char* file_name,
                          unsigned long session_id) {
     if (file_name == NULL) {
-        extra_io_warning("store_attempt_array: file_name is NULL\n");
+        // extra_io_warning(session, "store_attempt_array: file_name is NULL\n");
         return;
     }
 
     FILE* attempts_file = open_file_safe(file_name, "w");
 
     if (attempts_file == NULL) {
-        extra_io_warning("store_attempt_array: attempts_file not found\n");
-        return;
+        /* extra_io_warning(session,
+                         "store_attempt_array: attempts_file not found\n");
+                         return;*/
     }
     fprintf(attempts_file, "session_id %lu\n", session_id);
     fprintf(attempts_file, "invalid_attempts %zu\n", invalid_attempts_number);
@@ -106,15 +106,16 @@ bool load_attempt_array(Attempt* attempts, size_t* attempt_number,
                         size_t* invalid_attempts_number, const char* file_name,
                         unsigned long* session_id) {
     if (file_name == NULL || attempt_number == NULL || session_id == NULL) {
-        extra_io_warning("load_attempt_array: invalid arguments\n");
+        // extra_io_warning(session, "load_attempt_array: invalid arguments\n");
     }
 
     *attempt_number = 0;
 
     FILE* attempts_file = open_file_safe(file_name, "r");
     if (attempts_file == NULL) {
-        extra_io_warning("load_attempt_array: failed to load attempts_file\n");
-        return false;
+        /* extra_io_warning(session,
+                         "load_attempt_array: failed to load attempts_file\n");
+                         return false;*/
     }
 
     char label[32] = {0};

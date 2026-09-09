@@ -54,6 +54,7 @@ static const SettingsSpec setting_specs[STG_LEN] = {
     [STG_Debug_LogInput] = {false, true, true},
     [STG_Debug_LogInputPrompt] = {false, true, true},
     [STG_Internal_ShowPlayAgainPrompt] = {false, true, true},
+    [STG_Debug_LogVocabularyDiscardedWords] = {false, true, true},
 
 };
 

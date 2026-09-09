@@ -10,19 +10,10 @@ bool cab_io_buffer__is_initialized(CAB_IOBuffer buffer) {
 }
 
 void cab_io_buffer__init(CAB_IOBuffer* buffer) {
-    if (buffer == NULL) {
-        extra_io_warning("cab_io_buffer__init: passed NULL buffer argument\n");
-        return;
-    }
+
     buffer->content =
         realloc(buffer->content, sizeof(buffer->content[0]) *
                                      INITIAL_OUTPUT_BUFFER_ALLOCATED_SIZE);
-    if (buffer->content == NULL) {
-        extra_io_warning("cab_io_buffer__init: malloc failure\n");
-        buffer->allocated_size = 0;
-        buffer->current_size = 0;
-        return;
-    }
 
     buffer->allocated_size = INITIAL_OUTPUT_BUFFER_ALLOCATED_SIZE;
     buffer->current_size = 0;

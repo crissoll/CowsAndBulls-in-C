@@ -30,6 +30,7 @@ typedef enum {
     INPUT_SUCCESS,
     INPUT_STRING_TOO_LONG,
     INPUT_ERROR,
+    INPUT_USAGE_ERROR,
 } InputStatus;
 
 

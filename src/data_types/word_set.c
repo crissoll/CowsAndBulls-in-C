@@ -6,8 +6,6 @@
 #include "vocabulary.h"
 #include "word.h"
 
-#include "cab_errors.h"
-
 typedef struct {
     IndexArray words[MAX_PRACTICAL_WORD_LEN][ALPHABET_SIZE];
 } WordSet;
@@ -37,9 +35,9 @@ void word_set__init_from_vocabulary(WordSet* word_set,
         for (size_t p = 0; p < get_word_len(); p++) {
             size_t letter_idx = (size_t)((unsigned char)word.letters[p] - 'a');
             if (matrix[letter_idx][p] == 0) {
-                push_fatal_error(
-                    "word_set__init_from_vocabulary: failed to add word to "
-                    "word_set. data integrity cannot be ensured\n");
+                //push_fatal_error(
+                //    "word_set__init_from_vocabulary: failed to add word to "
+                //    "word_set. data integrity cannot be ensured\n");
                 break;
             }
             IndexArray* arr = &word_set->words[p][letter_idx];

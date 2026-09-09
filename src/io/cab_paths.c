@@ -49,7 +49,7 @@ typedef enum {
 
 SetPathStringStatus set_path_string(char** path, const char* value) {
     if (value == NULL || value[0] == '\0') {
-        extra_io_warning("tried assigning empty value to path\n");
+        // extra_io_warning(session, "tried assigning empty value to path\n");
         return SPS_EmptyArgument;
     }
 
@@ -174,8 +174,6 @@ InitSavesFilePathStatus init_save_file_paths(void) {
             set_path_string(&saves_folder_path, DEFAULT_SAVES_FOLDER_PATH)) {
             case SPS_EmptyArgument:
             case SPS_MallocFailure:
-                extra_io_warning(
-                    "init_save_file_paths: cannot set path string\n");
                 return ISFP_NoInitPossible;
             case SPS_Success:
                 break;
@@ -188,15 +186,10 @@ InitSavesFilePathStatus init_save_file_paths(void) {
         case CSFP_NullOrEmptyArgument:
         case CSFP_MallocFailure:
         case CSFP_DirCreationFailure:
-            extra_io_warning("init_save_file_paths: invalid saves folder path\n");
 
             if (secret_file_path == NULL || attempts_file_path == NULL) {
-                extra_io_warning(
-                    "init_save_file_paths: no default values could be found "
-                    "for save files\n");
                 return ISFP_NoInitPossible;
             }
-            extra_io_warning("init_save_file_paths: saves folder won't change\n");
             return ISFP_PreviousValuesWillBeKept;
     }
 
@@ -214,7 +207,6 @@ InitSavesFilePathStatus init_save_file_paths(void) {
         malloc(base_path_len + 1 + strlen(ATTEMPTS_FILE_NAME) + 1);
 
     if (secret_file_path == NULL || attempts_file_path == NULL) {
-        extra_io_warning("init_save_file_paths: malloc failure\n");
         return ISFP_NoInitPossible;
     }
 
@@ -248,14 +240,8 @@ InitVocabularyFilePathStatus init_vocabulary_file_path(void) {
             case SPS_Success:
                 break;
             case SPS_EmptyArgument:
-                extra_io_warning(
-                    "init_vocabulary_file_path: DEFAULT_VOCAB_PATH seems "
-                    "to be NULL\n");
                 return IVFPS_Failure;
             case SPS_MallocFailure:
-                extra_io_warning(
-                    "init_vocabulary_file_path: malloc failure while setting "
-                    "path to default path\n");
                 return IVFPS_MallocFailure;
         }
     }
@@ -266,29 +252,17 @@ InitVocabularyFilePathStatus init_vocabulary_file_path(void) {
         return IVFPS_Success;
     }
 
-    extra_io_warning(
-        "couldn't load vocabulary from defined file path. now trying default "
-        "path...\n");
-
     switch (set_path_string(&vocabulary_file_path, DEFAULT_VOCAB_PATH)) {
         case SPS_Success:
             vocab_file = open_file_safe(vocabulary_file_path, "r");
             if (vocab_file == NULL) {
-                extra_io_warning(
-                    "init_vocabulary_file_path: malloc failure\n");
                 return IVFPS_MallocFailure;
             }
             fclose(vocab_file);
             return IVFPS_Success;
         case SPS_EmptyArgument:
-            extra_io_warning(
-                "init_vocabulary_file_path: DEFAULT_VOCAB_PATH seems "
-                "to be NULL\n");
             return IVFPS_Failure;
         case SPS_MallocFailure:
-            extra_io_warning(
-                "init_vocabolary_file_path: malloc failure while using "
-                "set_path_string\n");
             return IVFPS_MallocFailure;
     }
 }
@@ -326,8 +300,6 @@ void set_file_paths_editing(bool value) {
 
 bool set_saves_folder_path(const char* path) {
     if (file_paths_editing_enabled == false) {
-        extra_io_warning(
-            "cannot change file paths after the game is started\n");
         return false;
     }
 
@@ -335,14 +307,11 @@ bool set_saves_folder_path(const char* path) {
         case CSFP_Success:
             break;
         case CSFP_NullOrEmptyArgument:
-            extra_io_warning(
-                "set_saves_folder_path: invalid saves folder path\n");
+            //extra_io_warning(
+            //    session, "set_saves_folder_path: invalid saves folder path\n");
             return false;
         case CSFP_DirCreationFailure:
         case CSFP_MallocFailure:
-            extra_io_warning(
-                "set_saves_folder_path: malloc or directory creation error "
-                "while using check_saves_folder_path\n");
             return false;
     }
 
@@ -351,9 +320,6 @@ bool set_saves_folder_path(const char* path) {
             break;
         case SPS_EmptyArgument:
         case SPS_MallocFailure:
-            extra_io_warning(
-                "set_saves_folder_path: malloc failure while using "
-                "set_path_string\n");
             return false;
     }
 
@@ -382,8 +348,8 @@ const char* get_saves_folder_path(void) {
 
 bool set_vocabulary_file_path(const char* path) {
     if (file_paths_editing_enabled == false) {
-        extra_io_warning(
-            "cannot change file paths after the game is started\n");
+        //extra_io_warning(
+        //    session, "cannot change file paths after the game is started\n");
         return false;
     }
 
@@ -391,14 +357,8 @@ bool set_vocabulary_file_path(const char* path) {
         case SPS_Success:
             break;
         case SPS_EmptyArgument:
-            extra_io_warning(
-                "set_vocabulary_file_path: passed empty path argument; "
-                "value won't changed\n");
             return false;
         case SPS_MallocFailure:
-            extra_io_warning(
-                "set_vocabulary_file_path: malloc failure; value won't "
-                "change\n");
             return false;
     }
 

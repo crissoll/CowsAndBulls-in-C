@@ -40,11 +40,7 @@ void cab_output_buffer__init(OutputBuffer* messages) {
     }
     if (messages->text_buffer == NULL) {
         messages->text_buffer = malloc(sizeof(*messages->text_buffer));
-        if (messages->text_buffer == NULL) {
-            extra_io_warning("cab_output_buffer__init: malloc failure\n");
-            *messages = (OutputBuffer){0};
-            return;
-        }
+
         *messages->text_buffer = (CAB_IOBuffer){0};
         cab_io_buffer__init(messages->text_buffer);
     }
@@ -53,10 +49,6 @@ void cab_output_buffer__init(OutputBuffer* messages) {
     messages->tags =
         malloc(MAX_TEXTS_PER_SINGLE_OUTPUT * sizeof(messages->tags[0]));
     messages->size = 0;
-    if (messages->message_indexes == NULL || messages->tags == NULL) {
-        extra_io_warning("cab_output_buffer__init: malloc failure\n");
-        return;
-    }
 }
 
 void free_output_buffer(CAB_IOBuffer* buffer) {
@@ -64,11 +56,8 @@ void free_output_buffer(CAB_IOBuffer* buffer) {
 }
 
 
-
 void print_to_buffer(CAB_IOBuffer* buffer, const char* text) {
     if (buffer == NULL) {
-        push_fatal_error(
-            "print_to_buffer: tried printing to non existing buffer\n");
         return;
     }
 
@@ -86,12 +75,6 @@ void print_to_buffer(CAB_IOBuffer* buffer, const char* text) {
     if (prev_allocated_size < buffer->allocated_size) {
         buffer->content = realloc(buffer->content, sizeof(buffer->content[0]) *
                                                        buffer->allocated_size);
-        if (buffer->content == NULL) {
-            extra_io_warning("print_to_buffer: malloc failure\n");
-            buffer->allocated_size = 0;
-            buffer->current_size = 0;
-            return;
-        }
     }
 
     for (size_t i = 0; text[i] != '\0'; i++) {
@@ -107,22 +90,23 @@ void log_tagged_output(OutputBuffer output_buffer) {
     }
 
     for (size_t i = 0; i < output_buffer.size; i++) {
-        OutputTags raw_tag = output_buffer.tags[i];
-        if (raw_tag == OT_NONE) {
+        OutputTags tag = output_buffer.tags[i];
+        if (tag == OT_NONE) {
             continue;
         }
 
-        const char* tag = CAB_OUTPUT_TAG_NAMES[LOG2(raw_tag)];
+        const char* tag_name = CAB_OUTPUT_TAG_NAMES[LOG2(tag)];
         size_t start = output_buffer.message_indexes[i];
         size_t end = (i + 1 < output_buffer.size)
                          ? output_buffer.message_indexes[i + 1]
                          : output_buffer.text_buffer->current_size;
         int len = (int)(end > start ? end - start : 0);
 
-        extra_io_warning("[message:%s]: %.*s", tag, len,
-                         output_buffer.text_buffer->content + start);
+        //extra_io_warning(session, "[message:%s]: %.*s", tag_name, len,
+        //                 output_buffer.text_buffer->content + start);
     }
 }
+
 
 char* output_buffer__flush(OutputBuffer* output_buffer) {
     if (output_buffer == NULL ||
@@ -164,7 +148,8 @@ void output_buffer__start_message(OutputBuffer* output_buffer, OutputTags tag) {
         } else if (last_msg == output_buffer->text_buffer->current_size) {
             // stops multiple tagging of same message
             output_buffer->size--;
-            extra_io_warning("last message was empty; it will be deleted\n");
+            //extra_io_warning(session,
+            //                 "last message was empty; it will be deleted\n");
         }
     }
 
@@ -185,17 +170,7 @@ void output_buffer__end_message(OutputBuffer* output_buffer) {
     output_buffer__start_message(output_buffer, OT_NONE);
 }
 
-
 OutputBuffer output_buffer__get_tagged_output(OutputBuffer* output_buffer) {
-    if (cab_output_buffer__is_initialized(*output_buffer) == false) {
-        cab_output_buffer__init(output_buffer);
-    }
-
-    // ensures a trailing empty message for easier message traversal
-    if (output_buffer__is_message_started(*output_buffer)) {
-        output_buffer__end_message(output_buffer);
-    }
-
     if (cab_get_setting(STG_Debug_LogMessages)) {
         log_tagged_output(*output_buffer);
     }
@@ -208,7 +183,6 @@ OutputBuffer output_buffer__get_tagged_output(OutputBuffer* output_buffer) {
     };
 
     if (result.message_indexes == NULL || result.tags == NULL) {
-        extra_io_warning("get_tagged_output: malloc failure");
         return (OutputBuffer){
             .message_indexes = NULL,
             .tags = NULL,

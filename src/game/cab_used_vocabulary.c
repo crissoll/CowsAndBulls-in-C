@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include "cab_errors.h"
 #include "vocabulary.h"
 
 
@@ -28,9 +27,6 @@ void init_used_vocabulary(Word* words, size_t word_count) {
 
 Word get_word(size_t index) {
     if (index >= vocab_storage.size) {
-        push_fatal_error(
-            "get_word: tried getting word with index out of bounds");  // hard
-                                                                       // to fix
         return (Word){.letters = ""};
     }
     return vocab_storage.words[index];
@@ -39,7 +35,6 @@ Word get_word(size_t index) {
 Word get_random_word(void) {
     srand((unsigned int)time(NULL));
     if (vocab_storage.size == 0) {
-        push_fatal_error("get_random_word: vocabulary size is 0");
         return (Word){.letters = ""};
     }
     return vocab_storage.words[rand() % vocab_storage.size];

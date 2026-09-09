@@ -40,7 +40,7 @@ _CAB_TURNS(TURN_FUNCS_DECL)
     },
 
 
-CabTurn CABT_TURN_STATES[CAB_TID_LEN] = {
+static const CabTurn CABT_TURN_STATES[CAB_TID_LEN] = {
     _CAB_TURNS(TURN_STATE_DEF)  //
 };
 

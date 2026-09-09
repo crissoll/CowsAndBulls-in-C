@@ -8,13 +8,22 @@
 #include "cab_settings_override.h"
 #include "cab_turns.h"
 
+typedef struct Vocabulary Vocabulary;
+
+typedef struct {
+    const char* vocab_path;
+    const char* saves_path;
+    const char* log_path;
+} CabPaths;
 
 typedef struct CabSession {
-    OutputBuffer* output_buffer;
-    CAB_IOBuffer* input_buffer;
-    CmdTree* commands_tree;
-    CabTurnId current_turn;
-    CabSettingsOverride* settings_override;
+    OutputBuffer* output_buffer;             // owned temporarily
+    CAB_IOBuffer* input_buffer;              // owned temporarily
+    CmdTree* commands_tree;                  // owned or shared
+    CabTurnId current_turn;                  // owned
+    CabSettingsOverride* settings_override;  // owned or shared
+    CabPaths file_paths;                     // owned
+    Vocabulary* vocabulary;                  // shared
 } CabSession;
 
 CabSession cab_session__new(void);

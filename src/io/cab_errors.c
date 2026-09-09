@@ -5,7 +5,8 @@
 #include <string.h>
 
 #include "cab_errors.h"
-#include "cab_settings_api.h"
+#include "cab_session.h"
+
 
 static bool fatal_error = false;
 
@@ -36,9 +37,14 @@ void va_extra_io_log_to_stream(const char* format_text, va_list vargs,
     }
 }
 
-void va_extra_io_log(const char* format_text, va_list vargs) {
+void va_extra_io_log(const char* log_file_path, const char* format_text,
+                     va_list vargs) {
+    if (log_file_path == NULL) {
+        return;
+    }
     if (get_log_to_file()) {
-        FILE* fp = fopen("last.log", "a+");
+
+        FILE* fp = fopen(log_file_path, "a+");
         va_extra_io_log_to_stream(format_text, vargs, fp);
         fclose(fp);
     }
@@ -48,17 +54,19 @@ void va_extra_io_log(const char* format_text, va_list vargs) {
     }
 }
 
-void extra_io_warning(const char* warning_message, ...) {
+void extra_io_warning(const CabSession* session, const char* warning_message,
+                      ...) {
     va_list vargs;
     va_start(vargs, warning_message);
-    va_extra_io_log(warning_message, vargs);
+    va_extra_io_log(session->file_paths.log_path, warning_message, vargs);
     va_end(vargs);
 }
 
-void push_fatal_error(const char* error_message, ...) {
+void push_fatal_error(const CabSession* session, const char* error_message,
+                      ...) {
     va_list vargs;
     va_start(vargs, error_message);
-    va_extra_io_log(error_message, vargs);
+    va_extra_io_log(session->file_paths.log_path, error_message, vargs);
     va_end(vargs);
 
     fatal_error = true;

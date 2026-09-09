@@ -55,7 +55,7 @@ void setup_session(void) {
         default_session.current_turn = CAB_TID_FirstTurn;
     }
     reset_extra_io_log();
-    extra_io_warning("\n======== new session ===========\n");
+    extra_io_warning(&default_session, "\n======== new session ===========\n");
 
     load_vocabulary();
     setup_vars();

@@ -32,7 +32,7 @@ static const CabSettingId cab_setting_ids_order[STG_LEN] = {
     STG_Debug_LogMessages,
     STG_Debug_LogInput,
     STG_Debug_LogInputPrompt,
-
+    STG_Debug_LogVocabularyDiscardedWords,
 
 };
 
@@ -123,11 +123,13 @@ void cab_session__reset_all_settings(CabSession* session) {
 void cab_session__set_setting(CabSession* session, CabSettingId setting,
                               size_t value) {
     extra_io_warning(
+        session,
         "cab_set_setting: trying to set setting number %d to value %zu",
         setting, value);
     switch (cab_settings__get_setting_value_validity(setting, value)) {
         case CAB_SV_NotExisting:
             extra_io_warning(
+                session,
                 "cab_set_setting: tried assigning non existing setting number "
                 "%d\n",
                 setting);
@@ -135,6 +137,7 @@ void cab_session__set_setting(CabSession* session, CabSettingId setting,
 
         case CAB_SV_NotInitialized:
             extra_io_warning(
+                session,
                 "cab_set_setting: tried assigning setting number "
                 "%d; invalid setting: min_value bigger or equal to max_value\n",
                 setting);
@@ -142,6 +145,7 @@ void cab_session__set_setting(CabSession* session, CabSettingId setting,
 
         case CAB_SV_TooLow:
             extra_io_warning(
+                session,
                 "cab_set_setting: tried assigning value %zu to setting number "
                 "%d; this value is too low for that setting\n",
                 value, setting);
@@ -149,6 +153,7 @@ void cab_session__set_setting(CabSession* session, CabSettingId setting,
 
         case CAB_SV_TooHigh:
             extra_io_warning(
+                session,
                 "cab_set_setting: tried assigning value %zu to setting number "
                 "%d; this value is too high for that setting\n",
                 value, setting);
@@ -157,6 +162,7 @@ void cab_session__set_setting(CabSession* session, CabSettingId setting,
 
         case CAB_SV_ValueNotAllowed:
             extra_io_warning(
+                session,
                 "cab_set_setting: tried assigning value %zu to setting number "
                 "%d; value not allowed by validation function",
                 value, setting);
@@ -165,6 +171,7 @@ void cab_session__set_setting(CabSession* session, CabSettingId setting,
             if (session->current_turn != CAB_TID_FirstTurn &&
                 session->current_turn != CAB_TID_NotStarted) {
                 extra_io_warning(
+                    session,
                     "cab_set_setting: setting number %d can only be used "
                     "before "
                     "game "

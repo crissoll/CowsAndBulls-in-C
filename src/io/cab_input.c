@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "cab_errors.h"
 #include "cab_io_buffer.h"
 #include "cab_io_consts.h"
 
@@ -95,11 +94,6 @@ size_t get_tokens_from_input(CAB_IOBuffer* buffer, char*** tokens) {
     }
 
     *tokens = malloc(token_count * sizeof **tokens);
-
-    if (*tokens == NULL) {
-        extra_io_warning("get_tokens_from_input: malloc failure\n");
-        return 0;
-    }
 
     split_tokens(buffer->content, *tokens);
 

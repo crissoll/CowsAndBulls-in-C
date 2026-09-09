@@ -4,6 +4,7 @@
 #include "cab_help_filter.h"
 #include "cab_io_consts.h"
 #include "cab_output.h"
+#include "cab_session_api.h"
 #include "cab_used_vocabulary.h"
 #include "vocabulary.h"
 
@@ -33,6 +34,7 @@ void add_current_filter_to_history(void) {
     const size_t word_count = get_current_help_filter_word_count();
     if (help_filter_history_size >= HELP_FILTER_HISTORY_MAX) {
         extra_io_warning(
+            cab_get_session(),
             "reached filter history limit! oldest filter will be deleted\n");
 
         for (size_t i = 0; i < HELP_FILTER_HISTORY_MAX - 1; i++) {

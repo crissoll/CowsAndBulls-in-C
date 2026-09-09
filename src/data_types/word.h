@@ -11,7 +11,7 @@
 #define MAX_PRACTICAL_WORD_LEN 10
 #define UNDEFINED_LETTER '*'
 
-typedef struct {
+typedef struct Word {
     char letters[MAX_PRACTICAL_WORD_LEN + 1];  //
 } Word;
 

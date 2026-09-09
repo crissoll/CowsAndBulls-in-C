@@ -10,7 +10,7 @@
 #include "cab_io_utils.h"
 #include "cab_output_buffer.h"
 #include "cab_session.h"
-#include "cab_settings_api.h"
+//#include "cab_settings_api.h"
 #include "cab_turns.h"
 
 
@@ -23,6 +23,7 @@
 
 
 #include "cab_session_api.h"
+#include "cmd_spec.h"
 
 
 void cab_io_shutdown(void) {
@@ -32,9 +33,36 @@ void cab_io_shutdown(void) {
 
 InputStatus cab_input(CabSession* session, const char* input_string) {
     if (session == NULL || session->input_buffer == NULL) {
+        extra_io_warning(session, "cab_input: NULL input_buffer\n");
+
         return INPUT_ERROR;
     }
-    return write_to_input_buffer(session->input_buffer, input_string);
+
+    if (input_string == NULL) {
+        extra_io_warning(session,
+                         "cab_input: tried adding NULL string to input_buffer; "
+                         "no input will be added\n");
+        return INPUT_USAGE_ERROR;
+    }
+
+    if (cab_session__get_setting(*session, STG_Debug_LogInput)) {
+        extra_io_warning(session, "[user]> %s", input_string);
+    }
+
+    InputStatus status =
+        write_to_input_buffer(session->input_buffer, input_string);
+
+    switch (status) {
+        case INPUT_STRING_TOO_LONG:
+            extra_io_warning(session, "Input String Too Long!\n");
+            break;
+        case INPUT_SUCCESS:
+            break;
+        case INPUT_ERROR:
+        case INPUT_USAGE_ERROR:
+            extra_io_warning(session, "cab_input: unexpected error");
+    }
+    return status;
 }
 
 
@@ -47,9 +75,12 @@ char* cab_get_output(CabSession* session) {
         output_buffer__get_tagged_output(session->output_buffer);
     char* cur_txt = output_buffer__flush(session->output_buffer);
 
+
     if (msg_tags.size > 1) {
+        const size_t max_line_length = cab_session__get_setting(
+            *session, STG_Display_TextWrapMaxLineLength);
         for (size_t msg = 0; msg < msg_tags.size - 1; msg++) {
-            text_wrap(&cur_txt[msg_tags.message_indexes[msg]]);
+            text_wrap(&cur_txt[msg_tags.message_indexes[msg]], max_line_length);
         }
     }
 
@@ -65,7 +96,7 @@ char* cab_get_output(CabSession* session) {
 char** cab_get_messages_with_tag(CabSession* session, OutputTags tag,
                                  size_t* message_count) {
     if (message_count == NULL) {
-        extra_io_warning("passed null message_count pointer\n");
+        extra_io_warning(session, "passed null message_count pointer\n");
         return NULL;
     }
 
@@ -80,8 +111,10 @@ char** cab_get_messages_with_tag(CabSession* session, OutputTags tag,
     char* cur_txt = output_buffer__flush(session->output_buffer);
 
     if (msg_tags.size > 1) {
+        const size_t max_line_length = cab_session__get_setting(
+            *session, STG_Display_TextWrapMaxLineLength);
         for (size_t msg = 0; msg < msg_tags.size - 1; msg++) {
-            text_wrap(&cur_txt[msg_tags.message_indexes[msg]]);
+            text_wrap(&cur_txt[msg_tags.message_indexes[msg]], max_line_length);
         }
     }
 

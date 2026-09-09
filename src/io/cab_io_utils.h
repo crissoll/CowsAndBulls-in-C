@@ -5,6 +5,6 @@
 
 void to_lower(char* string, size_t max_length);
 
-void text_wrap(char* text);
+void text_wrap(char* text, size_t max_line_length);
 
 #endif

@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "cab_errors.h"
 #include "cab_io_consts.h"
 #include "cab_output.h"
 #include "cab_settings_api.h"
@@ -16,7 +15,6 @@ size_t get_word_len(void) {
 
 Word word__new(const char letters[MAX_PRACTICAL_WORD_LEN + 1]) {
     if (!silent_can_string_be_word(letters)) {
-        push_fatal_error("tried creating word with invalid characters in it");
         return (Word){.letters = ""};
     }  // hard to handle
     Word word;

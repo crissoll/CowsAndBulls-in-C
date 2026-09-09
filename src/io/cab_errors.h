@@ -4,6 +4,8 @@
 #include <stdbool.h>
 #include <stddef.h>
 
+#include "cab_session.h"
+
 typedef enum {
     LOG_None = 0,
     LOG_ToFile = 1,
@@ -12,9 +14,10 @@ typedef enum {
 
 void reset_extra_io_log(void);
 
-void extra_io_warning(const char* warning_message, ...);
-
-void push_fatal_error(const char* error_message, ...);
+void extra_io_warning(const CabSession* session, const char* warning_message,
+                      ...);
+void push_fatal_error(const CabSession* session, const char* error_message,
+                      ...);
 
 void reset_error_state(void);
 

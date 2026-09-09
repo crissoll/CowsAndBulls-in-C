@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "cab_errors.h"
 #include "vocabulary.h"
 
 
@@ -22,12 +21,14 @@ void vocabulary__sort(Vocabulary* vocabulary) {
                        vocabulary->words[unique_count - 1].letters) != 0) {
                 vocabulary->words[unique_count] = vocabulary->words[i];
                 unique_count++;
-            } else {
-                extra_io_warning(
-                    "vocabulary__sort: found duplicate word \"%s\", only one "
-                    "copy will be kept\n",
-                    vocabulary->words[i].letters);
             }
+            //else {
+            //    extra_io_warning(
+            //        session,
+            //        "vocabulary__sort: found duplicate word \"%s\", only one "
+            //        "copy will be kept\n",
+            //        vocabulary->words[i].letters);
+            //}
         }
         vocabulary->size = unique_count;
     }
@@ -53,7 +54,7 @@ void vocabulary__init(Vocabulary* vocabulary, const Word* words,
             .words = NULL,
             .size = 0,
         };
-        extra_io_warning("vocabulary__init: malloc failure\n");
+
         return;
     }
     memcpy(vocabulary->words, words, word_count * sizeof(Word));

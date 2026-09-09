@@ -35,11 +35,6 @@ static void output_buffer__va_output(OutputBuffer output_buffer,
 
     formatted_text = malloc(formatted_text_len + 1);
 
-    if (formatted_text == NULL) {
-        extra_io_warning("va_output: malloc failure\n");
-        return;
-    }
-
     vsnprintf(formatted_text, formatted_text_len + 1, format_string, args);
     print_to_buffer(output_buffer.text_buffer, formatted_text);
     free(formatted_text);
@@ -59,6 +54,7 @@ void output(CabSession* session, const char* format_string, ...) {
     va_start(args, format_string);
     if (!output_buffer__is_message_started(*session->output_buffer)) {
         extra_io_warning(
+            session,
             "output() called without starting a message; it will be "
             "printed as a OT_NONE message\n");
         output_buffer__va_message(session->output_buffer, OT_NONE,
