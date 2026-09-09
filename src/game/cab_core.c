@@ -22,7 +22,7 @@ void play_word(CabSession* session, Word word) {
     if (result.bulls >= get_word_len()) {
         message(session, OT_USER,
                 "Congratulations, you found the word in %zu attempts!\n",
-                get_attempt_number() + 1);
+                cab_session__get_attempts_ptr(session)->valid_attempts_count);
         session->ending_flags = CABEND_SecretWordFound;
     } else {
         start_message(session, OT_GUESS_RESULT);
@@ -30,5 +30,5 @@ void play_word(CabSession* session, Word word) {
         end_message(session);
     }
 
-    add_attempt(session, word, result);
+    cab_session__add_attempt(session, word, result);
 }

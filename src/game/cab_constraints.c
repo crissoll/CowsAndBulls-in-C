@@ -1,5 +1,6 @@
 #include <stdbool.h>
 
+
 #include "cab_attempts_manager.h"
 #include "cab_constraints.h"
 #include "cab_end.h"
@@ -7,6 +8,7 @@
 #include "cab_output.h"
 #include "cab_settings_api.h"
 #include "cab_used_vocabulary.h"
+
 
 static bool handle_vocabulary_constraint(CabSession* session, Word word) {
     if (word_is_in_used_vocabulary(word)) {
@@ -35,7 +37,8 @@ static bool handle_attempts_coherence_constraint(CabSession* session,
 
 static bool handle_attempts_equality_constraint(CabSession* session,
                                                 Word word) {
-    if (is_word_already_attempted(word) == false) {
+    if (cab_attempts__contains_word(
+            word, cab_session__get_attempts_ptr(session)) == false) {
         return false;
     }
     if (cab_get_setting(STG_Rule_AttemptsEqualityConstraintMode) !=

@@ -56,8 +56,10 @@ bool load_attempts(void) {
         return false;
     }
     generate_session_id();
+    Attempt* attempts =
+        cab_session__get_attempts_ptr(cab_get_session())->attempts;
 
-    return load_attempt_array(get_attempts(), &attempt_number,
+    return load_attempt_array(attempts, &attempt_number,
                               &invalid_attempts_number, path,
                               get_session_id_ptr());
 }
@@ -71,18 +73,18 @@ void store_attempts(void) {
         return;
     }
 
-    if (get_attempt_number() == 0) {
+    if (cab_session__get_attempts_count(cab_get_session()) == 0) {
         return;
     }
-    store_attempt_array(get_attempts(), attempt_number, invalid_attempts_number,
-                        path, *get_session_id_ptr());
+
+    Attempt* attempts =
+        cab_session__get_attempts_ptr(cab_get_session())->attempts;
+    store_attempt_array(attempts, attempt_number, invalid_attempts_number, path,
+                        *get_session_id_ptr());
 }
 
 
 void store_secret_word(void) {
-    if (get_attempt_number() != 1) {
-        return;
-    }
 
     const char* path = get_secret_file_path();
 
@@ -163,7 +165,7 @@ bool are_there_previous_save_files(void) {
 }
 
 bool are_save_files_valid(void) {
-    Attempt dummy_attempts[get_max_attempts()];
+    Attempt dummy_attempts[MAX_PRACTICAL_ATTEMPTS];
     size_t dummy_attempt_number = 0;
     size_t dummy_invalid_attempt_number = 0;
     SessionId loaded_session_id;

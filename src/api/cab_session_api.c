@@ -81,7 +81,6 @@ void setup_vars(void) {
 
     reset_list_history();
     cab_session__generate_secret_word(cab_get_session());
-    reset_attempts();
 }
 
 void cab_start_new_game(void) {
@@ -164,7 +163,7 @@ bool cab_is_game_ended(void) {
 }
 
 size_t cab_get_attempt_number(void) {
-    return get_attempt_number();
+    return cab_session__get_attempts_count(cab_get_session());
 }
 
 void cab_session_shutdown(void) {

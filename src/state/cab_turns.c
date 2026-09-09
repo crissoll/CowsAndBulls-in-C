@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include "cab_attempts_manager.h"
 #include "cab_input.h"
+#include "cab_session.h"
 #include "cab_session_api.h"
 #include "cab_settings_api.h"
 
@@ -12,7 +13,6 @@
 extern void load_saves_wrapper(void);
 extern bool prompt_to_load_game(void);
 extern void parse_input(void);
-extern size_t get_attempt_number(void);
 extern void update_saves(void);
 
 extern void force_setup_session(void);
@@ -83,7 +83,7 @@ TURN_FUNCS_DEF(
     load_saves_wrapper();
     parse_input();
 
-    if (get_attempt_number() > 0) {
+    if (cab_session__get_attempts_count(cab_get_session()) > 0) {
         update_saves();
         return CAB_TID_Playing;
     }

@@ -13,18 +13,18 @@ typedef struct {
     Attempt attempts[MAX_PRACTICAL_ATTEMPTS];
 } CabAttempts;
 
-Attempt* get_attempts(void);
+
 size_t get_attempt_number(void);
 
 void reset_attempts(void);
 
-bool is_word_already_attempted(Word word);
+bool cab_attempts__contains_word(Word word, const CabAttempts* attempts);
+
 
 void print_attempts(CabSession* session);
 
-bool attempts_run_out(void);
-
-void add_attempt(CabSession* session, Word word, GuessResult result);
+void cab_session__add_attempt(CabSession* session, Word word,
+                              GuessResult result);
 
 void add_invalid_attempt(CabSession* session);
 

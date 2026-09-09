@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 #include "attempts.h"
+#include "cab_attempts_manager.h"
 #include "cab_end.h"
 #include "cab_errors.h"
 #include "cab_io_buffer.h"
@@ -80,4 +81,22 @@ void cab_session__generate_secret_word(CabSession* session) {
     Word secret_word =
         session->vocabulary->words[cab_rand(session) % vocab_size];
     cab_session__set_secret_word(session, secret_word);
+}
+
+
+CabAttempts* cab_session__get_attempts_ptr(CabSession* session) {
+    return &session->attempts;
+}
+
+size_t cab_session__get_attempts_count(CabSession* session) {
+    return session->attempts.valid_attempts_count +
+           session->attempts.invalid_attempts_count;
+}
+
+size_t cab_session__get_attempts_left(CabSession* session) {
+    const size_t max_attempts =
+        cab_session__get_setting(*session, STG_Internal_MaxAttempts);
+    const size_t used_attempts = cab_session__get_attempts_count(session);
+
+    return (used_attempts >= max_attempts) ? 0 : max_attempts - used_attempts;
 }

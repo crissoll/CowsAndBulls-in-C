@@ -10,32 +10,22 @@
 #include "cab_attempts_manager.h"
 
 #include "cab_settings_api.h"
+#include "cab_settings_override.h"
 
 
 static Attempt attempts[MAX_PRACTICAL_ATTEMPTS];
 size_t attempt_number = 0;
 size_t invalid_attempts_number = 0;
 
-Attempt* get_attempts(void) {
-
-    return attempts;
-}
-
-size_t get_attempt_number(void) {
-    return attempt_number + invalid_attempts_number;
-}
 
 void reset_attempts(void) {
     attempt_number = 0;
     invalid_attempts_number = 0;
 }
 
-size_t get_remaining_attempts(void) {
-    return get_max_attempts() - attempt_number - invalid_attempts_number;
-}
-
 void display_remaining_attempts(CabSession* session) {
-    const size_t remaining_attempts = get_remaining_attempts();
+    const size_t remaining_attempts = cab_session__get_attempts_left(session);
+
     message(session, OT_USER, "you still have %d attempt%s\n",
             remaining_attempts, (remaining_attempts != 1) ? "s" : "");
 }
@@ -58,9 +48,6 @@ void print_attempts(CabSession* session) {
     }
 }
 
-bool is_word_already_attempted(Word word) {
-    return is_word_in_attempt_array(word, attempts, attempt_number);
-}
 
 void compare_attempts_to_word(CabSession* session, Word word) {
     if (attempt_number == 0) {
@@ -100,20 +87,17 @@ bool word_is_compatible_with_attempts(Word word) {
     return true;
 }
 
-
-bool attempts_run_out(void) {
-    return (attempt_number + invalid_attempts_number) >= get_max_attempts();
-}
-
 void handle_attempts_deplition(CabSession* session) {
-    if (cab_get_setting(STG_Rule_LoseOnMaxAttemptsReached) == false ||
+    if (cab_session__get_setting(*session, STG_Rule_LoseOnMaxAttemptsReached) ==
+            false ||
         session->ending_flags != CABEND_None) {
         return;
     }
-    if (attempts_run_out()) {
+    if (cab_session__get_attempts_left(session) == 0) {
         message(session, OT_USER,
                 "reached maximum amount of attempts! you lose\n");
-        if (cab_get_setting(STG_Display_RevealSecretWordOnAttemptsFinished)) {
+        if (cab_session__get_setting(
+                *session, STG_Display_RevealSecretWordOnAttemptsFinished)) {
             message(session, OT_USER, "the secret word was %s\n",
                     cab_session__get_secret_word(session).letters);
         }
@@ -122,27 +106,33 @@ void handle_attempts_deplition(CabSession* session) {
     display_remaining_attempts(session);
 }
 
-void add_attempt(CabSession* session, Word word, GuessResult result) {
-    if (attempt_number >= get_max_attempts()) {
+void cab_session__add_attempt(CabSession* session, Word word,
+                              GuessResult result) {
+    Attempt* attempts = cab_session__get_attempts_ptr(session)->attempts;
+    size_t attempts_count =
+        cab_session__get_attempts_ptr(session)->valid_attempts_count;
+    if (cab_session__get_attempts_left(session) == 0) {
         if (cab_get_setting(STG_Rule_LoseOnMaxAttemptsReached) == false) {
             message(session, OT_USER,
                     "reached maximum amount of attempts! oldest one will be "
                     "deleted\n");
         } else {
             // this shouldn't happen
-            message(
-                session, OT_WARNING,
-                "add_attempt: reached branch that shouldn't be reacheable\n");
+            message(session, OT_WARNING,
+                    "cab_session__add_attempt: reached branch that shouldn't "
+                    "be reacheable\n");
         }
-
-        for (size_t i = 0; i < get_max_attempts() - 1; i++) {
+        size_t max_attempts =
+            cab_session__get_setting(*session, STG_Internal_MaxAttempts);
+        for (size_t i = 0; i < max_attempts - 1; i++) {
             attempts[i] = attempts[i + 1];
         }
-        attempt_number = get_max_attempts() - 1;
+        attempts_count = max_attempts - 1;
     }
 
-    attempts[attempt_number] = attempt__new(word, result);
-    attempt_number++;
+    attempts[attempts_count] = attempt__new(word, result);
+    cab_session__get_attempts_ptr(session)->valid_attempts_count =
+        attempts_count + 1;
 
     handle_attempts_deplition(session);
 }
@@ -157,4 +147,14 @@ void init_attempts(Attempt* value, size_t _attempt_number) {
         attempts[i] = value[i];
     }
     attempt_number = _attempt_number;
+}
+
+
+bool cab_attempts__contains_word(Word word, const CabAttempts* attempts) {
+    for (size_t i = 0; i < attempts->valid_attempts_count; i++) {
+        if (word__sort_cmp(attempts->attempts[i].word, word) == 0) {
+            return true;
+        }
+    }
+    return false;
 }

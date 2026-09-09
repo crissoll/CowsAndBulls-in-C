@@ -26,8 +26,6 @@ IndexArray get_possible_words_from_attempt(Attempt attempt,
 void print_attempt_array(CabSession* session, const Attempt* attempts,
                          size_t attempt_number);
 
-bool is_word_in_attempt_array(Word word, const Attempt* attempts,
-                              size_t attempt_number);
 
 void store_attempt_array(const Attempt* attempts, size_t attempt_number,
                          size_t invalid_attempts_number, const char* file_path,

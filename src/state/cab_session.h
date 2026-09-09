@@ -51,4 +51,9 @@ void cab_session__set_secret_word(CabSession* session, Word new_secret_word);
 
 void cab_session__generate_secret_word(CabSession* session);
 
+CabAttempts* cab_session__get_attempts_ptr(CabSession* session);
+
+size_t cab_session__get_attempts_count(CabSession* session);
+
+size_t cab_session__get_attempts_left(CabSession* session);
 #endif

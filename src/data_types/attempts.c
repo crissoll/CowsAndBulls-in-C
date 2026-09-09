@@ -2,13 +2,16 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "cab_attempts_manager.h"
 #include "cab_io_consts.h"
 #include "cab_output.h"
 
 
 #include "attempts.h"
 #include "cab_files.h"
+#include "cab_session_api.h"
 #include "cab_settings_api.h"
+#include "cab_settings_override.h"
 #include "guess.h"
 #include "index_array.h"
 #include "vocabulary.h"
@@ -60,17 +63,6 @@ void print_attempt_array(CabSession* session, const Attempt* attempts,
         output(session, "\n");
     }
     end_message(session);
-}
-
-bool is_word_in_attempt_array(Word word, const Attempt* attempts,
-                              size_t attempt_number) {
-    /* return true if the given word has already been guessed earlier */
-    for (size_t i = 0; i < attempt_number; i++) {
-        if (word__sort_cmp(attempts[i].word, word) == 0) {
-            return true;
-        }
-    }
-    return false;
 }
 
 void store_attempt_array(const Attempt* attempts, size_t attempt_number,
@@ -156,7 +148,7 @@ bool load_attempt_array(Attempt* attempts, size_t* attempt_number,
 
         Attempt attempt = attempt__new(word, result);
         attempts[(*attempt_number)++] = attempt;
-        if (*attempt_number >= get_max_attempts()) {
+        if (cab_session__get_attempts_left(cab_get_session()) == 0) {
             break; /* prevent overflow */
         }
     }
