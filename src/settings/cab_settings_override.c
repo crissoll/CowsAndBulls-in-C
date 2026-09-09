@@ -7,7 +7,8 @@
 #include "cab_session.h"
 
 #include "cab_errors.h"
-#include "cab_settings_api.h"
+
+#include "cab_settings.h"
 #include "cab_settings_override.h"
 #include "cab_settings_values.h"
 

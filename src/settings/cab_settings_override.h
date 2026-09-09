@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-#include "cab_settings_api.h"
+#include "cab_settings.h"
 
 typedef struct CabSession CabSession;
 

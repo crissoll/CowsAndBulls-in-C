@@ -10,6 +10,7 @@
 #include "cab_output_buffer.h"
 #include "cab_rand.h"
 #include "cab_session_cmd_tree.h"
+
 #include "cab_settings_override.h"
 #include "cab_turns.h"
 #include "word.h"
