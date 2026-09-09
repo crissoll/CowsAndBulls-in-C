@@ -3,6 +3,7 @@
 
 #include <stddef.h>
 
+#include "cab_attempts_manager.h"
 #include "cab_end.h"
 #include "cab_io_buffer.h"
 #include "cab_output_buffer.h"
@@ -22,16 +23,19 @@ typedef struct {
 } CabPaths;
 
 typedef struct CabSession {
-    OutputBuffer* output_buffer;             // owned temporarily
-    CAB_IOBuffer* input_buffer;              // owned temporarily
+    OutputBuffer* output_buffer;  // owned temporarily
+    CAB_IOBuffer* input_buffer;   // owned temporarily
+    CabPaths file_paths;          // owned
+    uint32_t rng_state;           //
+
     CmdTree* commands_tree;                  // owned or shared
-    CabTurnId current_turn;                  // owned
     CabSettingsOverride* settings_override;  // owned or shared
-    CabPaths file_paths;                     // owned
     Vocabulary* vocabulary;                  // shared
+
     Word secret_word;
+    CabTurnId current_turn;  // owned
     CABGameEndFlags ending_flags;
-    uint32_t rng_state;
+
 } CabSession;
 
 
