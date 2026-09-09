@@ -3,47 +3,29 @@
 #include <stdlib.h>
 #include <time.h>
 
+#include "cab_session_api.h"
 #include "vocabulary.h"
 
 
-static Vocabulary vocab_storage;
-
 size_t get_used_vocabulary_size(void) {
-    return vocab_storage.size;
+    return cab_get_session()->vocabulary->size;
 }
 
 Vocabulary get_used_vocabulary(void) {
-    return vocab_storage;
+    return *cab_get_session()->vocabulary;
 }
+
 
 bool word_is_in_used_vocabulary(Word word) {
-    return vocabulary__contains_word(&vocab_storage, word);
+    return vocabulary__contains_word(cab_get_session()->vocabulary, word);
 }
 
-void init_used_vocabulary(Word* words, size_t word_count) {
-    vocabulary__init(&vocab_storage, words, word_count);
-}
-
-
-Word get_word(size_t index) {
-    if (index >= vocab_storage.size) {
-        return (Word){.letters = ""};
-    }
-    return vocab_storage.words[index];
-}
 
 Word get_random_word(void) {
     srand((unsigned int)time(NULL));
-    if (vocab_storage.size == 0) {
+    const Vocabulary voc = get_used_vocabulary();
+    if (voc.size == 0) {
         return (Word){.letters = ""};
     }
-    return vocab_storage.words[rand() % vocab_storage.size];
-}
-
-void free_used_vocabulary(void) {
-    if (vocab_storage.words != NULL) {
-        free(vocab_storage.words);
-        vocab_storage.words = NULL;
-    }
-    vocab_storage.size = 0;
+    return voc.words[rand() % voc.size];
 }
