@@ -6,6 +6,7 @@
 #include "cab_end.h"
 #include "cab_io_buffer.h"
 #include "cab_output_buffer.h"
+#include "cab_rand.h"
 #include "cab_session_cmd_tree.h"
 #include "cab_settings_override.h"
 #include "cab_turns.h"
@@ -30,6 +31,7 @@ typedef struct CabSession {
     Vocabulary* vocabulary;                  // shared
     Word secret_word;
     CABGameEndFlags ending_flags;
+    uint32_t rng_state;
 } CabSession;
 
 
@@ -40,5 +42,7 @@ bool cab_session__is_game_started(const CabSession* session);
 
 Word cab_session__get_secret_word(const CabSession* session);
 void cab_session__set_secret_word(CabSession* session, Word new_secret_word);
+
+void cab_session__generate_secret_word(CabSession* session);
 
 #endif

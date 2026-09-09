@@ -6,6 +6,7 @@
 #include "cab_errors.h"
 #include "cab_io_buffer.h"
 #include "cab_output_buffer.h"
+#include "cab_rand.h"
 #include "cab_session.h"
 #include "cab_turns.h"
 #include "cmd_spec.h"
@@ -26,6 +27,8 @@ CabSession cab_session__new(void) {
     }
 
     session.ending_flags = CABEND_None;
+
+    cab_rand_init(&session);
     return session;
 }
 
@@ -69,4 +72,12 @@ void cab_session__set_secret_word(CabSession* session, Word new_secret_word) {
         return;
     }
     session->secret_word = new_secret_word;
+}
+
+
+void cab_session__generate_secret_word(CabSession* session) {
+    size_t vocab_size = session->vocabulary->size;
+    Word secret_word =
+        session->vocabulary->words[cab_rand(session) % vocab_size];
+    cab_session__set_secret_word(session, secret_word);
 }
