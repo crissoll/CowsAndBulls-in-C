@@ -3,7 +3,7 @@
 
 #include "attempts.h"
 
-#include "cab_core.h"
+#include "cab_end.h"
 #include "cab_io_consts.h"
 #include "cab_output.h"
 
@@ -13,7 +13,6 @@
 
 #include "cab_settings_api.h"
 
-extern bool is_secret_word_found(void);
 
 static Attempt attempts[MAX_PRACTICAL_ATTEMPTS];
 size_t attempt_number = 0;
@@ -110,7 +109,7 @@ bool attempts_run_out(void) {
 
 void handle_attempts_deplition(CabSession* session) {
     if (cab_get_setting(STG_Rule_LoseOnMaxAttemptsReached) == false ||
-        is_secret_word_found()) {
+        session->ending_flags != CABEND_None) {
         return;
     }
     if (attempts_run_out()) {
@@ -133,8 +132,9 @@ void add_attempt(CabSession* session, Word word, GuessResult result) {
                     "deleted\n");
         } else {
             // this shouldn't happen
-            message(session, OT_WARNING,
-                    "add_attempt: reached branch that shouldn't be reacheable\n");
+            message(
+                session, OT_WARNING,
+                "add_attempt: reached branch that shouldn't be reacheable\n");
         }
 
         for (size_t i = 0; i < get_max_attempts() - 1; i++) {

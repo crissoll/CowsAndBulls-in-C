@@ -2,6 +2,7 @@
 
 
 #include "cab_constraints.h"
+#include "cab_end.h"
 #include "cab_io_consts.h"
 #include "cab_output.h"
 
@@ -9,9 +10,6 @@
 
 #include "cab_attempts_manager.h"
 #include "cab_secret_word.h"
-
-
-static bool secret_word_found = false;
 
 
 void play_word(CabSession* session, Word word) {
@@ -26,7 +24,7 @@ void play_word(CabSession* session, Word word) {
         message(session, OT_USER,
                 "Congratulations, you found the word in %zu attempts!\n",
                 get_attempt_number() + 1);
-        secret_word_found = true;
+        session->ending_flags = CABEND_SecretWordFound;
     } else {
         start_message(session, OT_GUESS_RESULT);
         guess_result__output(session, result);
@@ -34,13 +32,4 @@ void play_word(CabSession* session, Word word) {
     }
 
     add_attempt(session, word, result);
-}
-
-bool is_secret_word_found(void) {
-    return secret_word_found;
-}
-
-
-void reset_victory(void) {
-    secret_word_found = false;
 }

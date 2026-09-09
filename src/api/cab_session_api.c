@@ -4,10 +4,10 @@
 #include <string.h>
 
 
+#include "cab_end.h"
 #include "cab_input.h"
 
 #include "cab_attempts_manager.h"
-#include "cab_core.h"
 #include "cab_errors.h"
 #include "cab_help_filter.h"
 #include "cab_saves.h"
@@ -82,8 +82,6 @@ void setup_vars(void) {
     loading_saves = false;
 
     reset_list_history();
-
-    reset_victory();
     generate_secret_word();
     reset_attempts();
 
@@ -135,7 +133,7 @@ void parse_input(void) {
 }
 
 static bool cab_secret_word_revealed(void) {
-    return is_secret_word_found() || has_surrendered() || attempts_run_out();
+    return cab_get_session()->ending_flags != CABEND_None;
 }
 
 void update_saves(void) {

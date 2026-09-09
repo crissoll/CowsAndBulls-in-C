@@ -19,7 +19,6 @@
 
 #include "cab_input_internal.h"
 #include "cab_paths.h"
-#include "cab_used_vocabulary.h"
 
 
 #include "cab_session_api.h"

@@ -10,7 +10,6 @@
 #include "cab_settings_api.h"
 #include "cab_settings_override.h"
 #include "cab_settings_values.h"
-#include "cab_turns.h"
 
 static const CabSettingId cab_setting_ids_order[STG_LEN] = {
     STG_Rule_VocabularyConstraintMode,

@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 #include "attempts.h"
+#include "cab_end.h"
 #include "cab_errors.h"
 #include "cab_io_buffer.h"
 #include "cab_output_buffer.h"
@@ -24,6 +25,7 @@ CabSession cab_session__new(void) {
         cab_io_buffer__init(session.input_buffer);
     }
 
+    session.ending_flags = CABEND_None;
     return session;
 }
 
