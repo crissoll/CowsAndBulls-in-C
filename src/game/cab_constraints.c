@@ -23,7 +23,7 @@ static bool handle_vocabulary_constraint(CabSession* session, Word word) {
 
 static bool handle_attempts_coherence_constraint(CabSession* session,
                                                  Word word) {
-    if (word_is_compatible_with_attempts(word)) {
+    if (cab_session__attempts_coherence(session, word)) {
         return false;
     }
     if (cab_get_setting(STG_Rule_AttemptsCoherenceConstraintMode) !=
@@ -72,7 +72,7 @@ ConstraintResult handle_contraints(CabSession* session, Word word) {
         case CONSTR_SkipAttempt:
             return Constraint_Failed;
         case CONSTR_SpendAttempt:
-            add_invalid_attempt(session);
+            cab_session__add_invalid_attempt(session);
             return Constraint_Failed;
         case CONSTR_LoseGame:
             session->ending_flags = CABEND_FatalConstraint;

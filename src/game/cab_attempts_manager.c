@@ -11,17 +11,9 @@
 
 #include "cab_settings_api.h"
 #include "cab_settings_override.h"
+#include "cmd_spec.h"
+#include "word.h"
 
-
-static Attempt attempts[MAX_PRACTICAL_ATTEMPTS];
-size_t attempt_number = 0;
-size_t invalid_attempts_number = 0;
-
-
-void reset_attempts(void) {
-    attempt_number = 0;
-    invalid_attempts_number = 0;
-}
 
 void display_remaining_attempts(CabSession* session) {
     const size_t remaining_attempts = cab_session__get_attempts_left(session);
@@ -31,36 +23,41 @@ void display_remaining_attempts(CabSession* session) {
 }
 
 void print_attempts(CabSession* session) {
-    if (attempt_number == 0) {
+    const size_t attempt_count = cab_session__get_attempts_count(session);
+    if (attempt_count == 0) {
         message(session, OT_ATTEMPTS, "no attempts yet!\n");
         return;
     }
-    print_attempt_array(session, attempts, attempt_number);
-    if (invalid_attempts_number == 1) {
+
+    CabAttempts* attempts = cab_session__get_attempts_ptr(session);
+    print_attempt_array(session, attempts->attempts,
+                        attempts->valid_attempts_count);
+    if (attempts->invalid_attempts_count == 1) {
         message(session, OT_ATTEMPTS, "1 invalid attempt\n");
     }
-    if (invalid_attempts_number > 1) {
+    if (attempts->invalid_attempts_count > 1) {
         message(session, OT_ATTEMPTS, "%d invalid attempts\n",
-                invalid_attempts_number);
+                attempts->invalid_attempts_count);
     }
-    if (cab_get_setting(STG_Rule_LoseOnMaxAttemptsReached)) {
+    if (cab_session__get_setting(*session, STG_Rule_LoseOnMaxAttemptsReached)) {
         display_remaining_attempts(session);
     }
 }
 
 
-void compare_attempts_to_word(CabSession* session, Word word) {
-    if (attempt_number == 0) {
+void cab_session__attempts_word_compare(CabSession* session, Word word) {
+    if (cab_session__get_attempts_left(session) == 0) {
         message(session, OT_USER, "no attempts yet!\n");
     }
 
+    CabAttempts* attempts = cab_session__get_attempts_ptr(session);
     start_message(session, OT_USER);
-    for (size_t i = 0; i < attempt_number; i++) {
-        GuessResult expected = compare_words(attempts[i].word, word);
+    for (size_t i = 0; i < attempts->valid_attempts_count; i++) {
+        GuessResult expected = compare_words(attempts->attempts[i].word, word);
 
-        attempt__output(session, attempts[i]);
-        if (attempts[i].result.cows == expected.cows &&
-            attempts[i].result.bulls == expected.bulls) {
+        attempt__output(session, attempts->attempts[i]);
+        if (attempts->attempts[i].result.cows == expected.cows &&
+            attempts->attempts[i].result.bulls == expected.bulls) {
             output(session, "\tV\n");
         } else {
             output(session, "\tX\t");
@@ -72,15 +69,18 @@ void compare_attempts_to_word(CabSession* session, Word word) {
     end_message(session);
 }
 
-bool word_is_compatible_with_attempts(Word word) {
-    if (attempt_number == 0) {
+bool cab_session__attempts_coherence(const CabSession* session, Word word) {
+    CabAttempts* attempts = cab_session__get_attempts_ptr(session);
+
+    if (attempts->valid_attempts_count == 0) {
         return true;
     }
-    for (size_t i = 0; i < attempt_number; i++) {
-        GuessResult expected = compare_words(attempts[i].word, word);
 
-        if (attempts[i].result.cows != expected.cows ||
-            attempts[i].result.bulls != expected.bulls) {
+    for (size_t i = 0; i < attempts->valid_attempts_count; i++) {
+        GuessResult expected = compare_words(attempts->attempts[i].word, word);
+
+        if (attempts->attempts[i].result.cows != expected.cows ||
+            attempts->attempts[i].result.bulls != expected.bulls) {
             return false;
         }
     }
@@ -137,16 +137,10 @@ void cab_session__add_attempt(CabSession* session, Word word,
     handle_attempts_deplition(session);
 }
 
-void add_invalid_attempt(CabSession* session) {
-    invalid_attempts_number++;
+void cab_session__add_invalid_attempt(CabSession* session) {
+    CabAttempts* attempts = cab_session__get_attempts_ptr(session);
+    attempts->invalid_attempts_count++;
     handle_attempts_deplition(session);
-}
-
-void init_attempts(Attempt* value, size_t _attempt_number) {
-    for (size_t i = 0; i < _attempt_number; i++) {
-        attempts[i] = value[i];
-    }
-    attempt_number = _attempt_number;
 }
 
 

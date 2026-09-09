@@ -28,8 +28,6 @@ typedef unsigned long SessionId;
 static SessionId session_id;
 static bool session_id_generated = true;  //temp fix before changing save system
 
-extern size_t attempt_number;
-extern size_t invalid_attempts_number;
 
 bool vocabulary_loaded = false;
 
@@ -56,12 +54,11 @@ bool load_attempts(void) {
         return false;
     }
     generate_session_id();
-    Attempt* attempts =
-        cab_session__get_attempts_ptr(cab_get_session())->attempts;
+    CabAttempts* attempts = cab_session__get_attempts_ptr(cab_get_session());
 
-    return load_attempt_array(attempts, &attempt_number,
-                              &invalid_attempts_number, path,
-                              get_session_id_ptr());
+    return load_attempt_array(
+        attempts->attempts, &attempts->valid_attempts_count,
+        &attempts->invalid_attempts_count, path, get_session_id_ptr());
 }
 
 void store_attempts(void) {
@@ -77,9 +74,9 @@ void store_attempts(void) {
         return;
     }
 
-    Attempt* attempts =
-        cab_session__get_attempts_ptr(cab_get_session())->attempts;
-    store_attempt_array(attempts, attempt_number, invalid_attempts_number, path,
+    CabAttempts* attempts = cab_session__get_attempts_ptr(cab_get_session());
+    store_attempt_array(attempts->attempts, attempts->valid_attempts_count,
+                        attempts->invalid_attempts_count, path,
                         *get_session_id_ptr());
 }
 

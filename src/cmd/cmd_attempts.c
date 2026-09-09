@@ -25,6 +25,6 @@ void compare_attempts_to_first_token(CabSession* session, size_t token_count,
         message(session, OT_ALERT, "word not contained in vocabulary\n");
         return;
     }
-    compare_attempts_to_word(session, candidate_word);
+    cab_session__attempts_word_compare(session, candidate_word);
     return;
 }

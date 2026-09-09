@@ -16,7 +16,6 @@ typedef struct {
 
 size_t get_attempt_number(void);
 
-void reset_attempts(void);
 
 bool cab_attempts__contains_word(Word word, const CabAttempts* attempts);
 
@@ -26,11 +25,9 @@ void print_attempts(CabSession* session);
 void cab_session__add_attempt(CabSession* session, Word word,
                               GuessResult result);
 
-void add_invalid_attempt(CabSession* session);
+void cab_session__add_invalid_attempt(CabSession* session);
 
-void compare_attempts_to_word(CabSession* session, Word word);
+void cab_session__attempts_word_compare(CabSession* session, Word word);
 
-bool word_is_compatible_with_attempts(Word word);
-
-void init_attempts(Attempt* value, size_t _attempt_number);
+bool cab_session__attempts_coherence(const CabSession* session, Word word);
 #endif
