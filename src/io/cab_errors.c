@@ -30,43 +30,60 @@ void reset_extra_io_log(void) {
 
 void va_extra_io_log_to_stream(const char* format_text, va_list vargs,
                                FILE* stream) {
+    if (format_text == NULL || stream == NULL) {
+        return;
+    }
     fprintf(stream, "[_%06zu_]:", file_interaction_count++);
     vfprintf(stream, format_text, vargs);
-    if (format_text[strlen(format_text) - 1] != '\n') {
+    size_t len = strlen(format_text);
+    if (len > 0 && format_text[len - 1] != '\n') {
         fprintf(stream, "\n");
     }
 }
 
 void va_extra_io_log(const char* log_file_path, const char* format_text,
                      va_list vargs) {
-    if (log_file_path == NULL) {
+    if (format_text == NULL) {
         return;
     }
-    if (get_log_to_file()) {
-
+    if (get_log_to_file() && log_file_path != NULL) {
         FILE* fp = fopen(log_file_path, "a+");
-        va_extra_io_log_to_stream(format_text, vargs, fp);
-        fclose(fp);
+        if (fp != NULL) {
+            va_list vargs_copy;
+            va_copy(vargs_copy, vargs);
+            va_extra_io_log_to_stream(format_text, vargs_copy, fp);
+            va_end(vargs_copy);
+            fclose(fp);
+        }
     }
 
     if (get_log_to_stdout()) {
-        va_extra_io_log_to_stream(format_text, vargs, stdout);
+        va_list vargs_copy;
+        va_copy(vargs_copy, vargs);
+        va_extra_io_log_to_stream(format_text, vargs_copy, stdout);
+        va_end(vargs_copy);
     }
 }
 
 void extra_io_warning(const CabSession* session, const char* warning_message,
                       ...) {
+    const char* log_path = (session != NULL && session->file_paths.log_path != NULL)
+                               ? session->file_paths.log_path
+                               : "last.log";
     va_list vargs;
     va_start(vargs, warning_message);
-    va_extra_io_log(session->file_paths.log_path, warning_message, vargs);
+    va_extra_io_log(log_path, warning_message, vargs);
     va_end(vargs);
 }
 
 void push_fatal_error(const CabSession* session, const char* error_message,
                       ...) {
+    const char* log_path = (session != NULL && session->file_paths.log_path != NULL)
+                               ? session->file_paths.log_path
+                               : "last.log";
     va_list vargs;
     va_start(vargs, error_message);
-    va_extra_io_log(session->file_paths.log_path, error_message, vargs);
+    va_extra_io_log(log_path, error_message, vargs);
     va_end(vargs);
 
     fatal_error = true;
