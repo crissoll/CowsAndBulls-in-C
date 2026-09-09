@@ -208,9 +208,9 @@ void generate_secret_word(void) {
     session_id_generated =
         false;  // TODO: note that this mess with the determinism of vocabulary decimation
     generate_session_id();
+    load_vocabulary();
     set_secret_word(get_random_word());
     set_file_paths_editing(false);
-    load_vocabulary();
 }
 
 
@@ -226,20 +226,34 @@ static bool has_duplicate_letters(const char* letters) {
 }
 
 void cab_session__load_vocabulary(CabSession* session) {
+    if (session == NULL) {
+        return;
+    }
     if (session->vocabulary != NULL) {
         extra_io_warning(session,
                          "load_vocabulary: tried loading vocabulary while it's "
                          "already loaded\n");
         return;
     }
-    size_t word_count = get_line_count(session->file_paths.vocab_path);
+
+    const char* vocab_path = session->file_paths.vocab_path;
+    if (vocab_path == NULL) {
+        vocab_path = get_vocabulary_file_path();
+        session->file_paths.vocab_path = vocab_path;
+    }
+    if (vocab_path == NULL) {
+        extra_io_warning(session,
+                         "load_vocabulary: vocabulary file path is NULL\n");
+        return;
+    }
+
+    size_t word_count = get_line_count(vocab_path);
     extra_io_warning(session,
-                     "load_vocabulary: loading vocabulary from file %s",
-                     session->file_paths.vocab_path);
+                     "load_vocabulary: loading vocabulary from file %s\n",
+                     vocab_path);
     if (word_count == 0) {
         extra_io_warning(session,
                          "load_vocabulary: vocabulary file is empty\n");
-        session->vocabulary = NULL;
         return;
     }
     Word* words = malloc(sizeof(words[0]) * word_count);
@@ -250,7 +264,11 @@ void cab_session__load_vocabulary(CabSession* session) {
         srand(session_id);
     }
 
-    FILE* file = open_file_safe(get_vocabulary_file_path(), "r");
+    FILE* file = open_file_safe(vocab_path, "r");
+    if (file == NULL) {
+        free(words);
+        return;
+    }
 
     const char buffer_len = 99;
     char buffer[buffer_len + 1];
@@ -341,7 +359,8 @@ void cab_session__load_vocabulary(CabSession* session) {
         strcpy(words[initialized_voc_word_count].letters, buffer);
         initialized_voc_word_count++;
     }
-    vocabulary__init(session->vocabulary, words, initialized_voc_word_count);
+    session->vocabulary = calloc(1, sizeof(Vocabulary));
+    vocabulary__init(session->vocabulary, words, word_count);
 
     reset_list_history();  // TODO
     fclose(file);
