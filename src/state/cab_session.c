@@ -22,7 +22,6 @@ CabSession cab_session__new(void) {
         cab_io_buffer__init(session.input_buffer);
     }
 
-    session.commands_tree = NULL;
     return session;
 }
 
@@ -33,20 +32,17 @@ void cab_session__free_content(CabSession* session) {
     if (session->output_buffer != NULL) {
         cab_output_buffer__free_content(*session->output_buffer);
         free(session->output_buffer);
-        session->output_buffer = NULL;
     }
     if (session->input_buffer != NULL) {
         cab_io_buffer__free_content(session->input_buffer);
         free(session->input_buffer);
-        session->input_buffer = NULL;
     }
     if (session->commands_tree != NULL) {
         cab_cmd_tree__free_content(session->commands_tree);
         free(session->commands_tree);
-        session->commands_tree = NULL;
     }
     if (session->settings_override != NULL) {
         free(session->settings_override);
-        session->settings_override = NULL;
     }
+    *session = (CabSession){0};
 }
