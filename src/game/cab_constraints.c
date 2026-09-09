@@ -2,23 +2,11 @@
 
 #include "cab_attempts_manager.h"
 #include "cab_constraints.h"
+#include "cab_end.h"
 #include "cab_io_consts.h"
 #include "cab_output.h"
 #include "cab_settings_api.h"
 #include "cab_used_vocabulary.h"
-
-
-static bool fatal_constraint_broke = false;
-
-
-bool is_fatal_constraint_broke(void) {
-    return fatal_constraint_broke;
-}
-
-void reset_fatal_constraint_broke(void) {
-    fatal_constraint_broke = false;
-}
-
 
 static bool handle_vocabulary_constraint(CabSession* session, Word word) {
     if (word_is_in_used_vocabulary(word)) {
@@ -84,7 +72,7 @@ ConstraintResult handle_contraints(CabSession* session, Word word) {
             add_invalid_attempt(session);
             return Constraint_Failed;
         case CONSTR_LoseGame:
-            fatal_constraint_broke = true;
+            session->ending_flags = CABEND_FatalConstraint;
             return Constraint_Failed;
     }
 }

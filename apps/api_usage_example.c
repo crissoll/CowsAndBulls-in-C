@@ -4,7 +4,6 @@
 #include <string.h>
 
 #include "cab_api.h"
-#include "cab_settings_api.h"
 
 static bool read_line(char* buffer, size_t buffer_size) {
     if (buffer_size == 0) {
