@@ -38,7 +38,7 @@ void vocabulary__sort(Vocabulary* vocabulary) {
 }
 void vocabulary__init(Vocabulary* vocabulary, const Word* words,
                       size_t word_count) {
-    if (vocabulary->words != NULL) {
+    if (vocabulary != NULL) {
         free(vocabulary->words);
         vocabulary->words = NULL;
     }
@@ -49,14 +49,7 @@ void vocabulary__init(Vocabulary* vocabulary, const Word* words,
     }
 
     vocabulary->words = malloc(word_count * sizeof(Word));
-    if (vocabulary->words == NULL) {
-        *vocabulary = (Vocabulary){
-            .words = NULL,
-            .size = 0,
-        };
 
-        return;
-    }
     memcpy(vocabulary->words, words, word_count * sizeof(Word));
     vocabulary->size = word_count;
 
