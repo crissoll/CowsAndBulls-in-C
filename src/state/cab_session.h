@@ -2,11 +2,15 @@
 #define CAB_STATE_SESSION
 
 #include <stddef.h>
+
+#include "cab_end.h"
 #include "cab_io_buffer.h"
 #include "cab_output_buffer.h"
 #include "cab_session_cmd_tree.h"
 #include "cab_settings_override.h"
 #include "cab_turns.h"
+#include "word.h"
+
 
 typedef struct Vocabulary Vocabulary;
 
@@ -24,7 +28,10 @@ typedef struct CabSession {
     CabSettingsOverride* settings_override;  // owned or shared
     CabPaths file_paths;                     // owned
     Vocabulary* vocabulary;                  // shared
+    Word* secret_word;
+    CABGameEndFlags ending_flags;
 } CabSession;
+
 
 CabSession cab_session__new(void);
 void cab_session__free_content(CabSession* session);

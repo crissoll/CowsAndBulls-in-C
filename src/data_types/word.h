@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-#include "cab_session.h"
+typedef struct CabSession CabSession;
 
 
 #define ALPHABET_SIZE 26
