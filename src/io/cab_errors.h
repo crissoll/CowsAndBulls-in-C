@@ -16,11 +16,5 @@ void reset_extra_io_log(void);
 
 void extra_io_warning(const CabSession* session, const char* warning_message,
                       ...);
-void push_fatal_error(const CabSession* session, const char* error_message,
-                      ...);
-
-void reset_error_state(void);
-
-bool fatal_error_met(void);
 
 #endif

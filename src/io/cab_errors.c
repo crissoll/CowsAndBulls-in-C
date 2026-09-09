@@ -7,9 +7,6 @@
 #include "cab_errors.h"
 #include "cab_session.h"
 
-
-static bool fatal_error = false;
-
 static size_t file_interaction_count = 0;
 
 
@@ -67,33 +64,12 @@ void va_extra_io_log(const char* log_file_path, const char* format_text,
 
 void extra_io_warning(const CabSession* session, const char* warning_message,
                       ...) {
-    const char* log_path = (session != NULL && session->file_paths.log_path != NULL)
-                               ? session->file_paths.log_path
-                               : "last.log";
+    const char* log_path =
+        (session != NULL && session->file_paths.log_path != NULL)
+            ? session->file_paths.log_path
+            : "last.log";
     va_list vargs;
     va_start(vargs, warning_message);
     va_extra_io_log(log_path, warning_message, vargs);
     va_end(vargs);
-}
-
-void push_fatal_error(const CabSession* session, const char* error_message,
-                      ...) {
-    const char* log_path = (session != NULL && session->file_paths.log_path != NULL)
-                               ? session->file_paths.log_path
-                               : "last.log";
-    va_list vargs;
-    va_start(vargs, error_message);
-    va_extra_io_log(log_path, error_message, vargs);
-    va_end(vargs);
-
-    fatal_error = true;
-}
-
-
-void reset_error_state(void) {
-    fatal_error = false;
-}
-
-bool fatal_error_met(void) {
-    return fatal_error;
 }
