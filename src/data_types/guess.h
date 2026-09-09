@@ -3,7 +3,6 @@
 
 #include <stdlib.h>
 
-#include "cab_session.h"
 #include "word.h"
 
 typedef struct {

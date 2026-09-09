@@ -2,7 +2,6 @@
 #define ATTEMPTS
 
 #include <stddef.h>
-#include "cab_session.h"
 #include "guess.h"
 #include "index_array.h"
 #include "word.h"

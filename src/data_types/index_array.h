@@ -2,7 +2,6 @@
 
 #define INDEX_ARRAY
 
-#include "cab_session.h"
 #include "vocabulary.h"
 
 typedef struct {

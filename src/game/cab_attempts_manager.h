@@ -4,7 +4,14 @@
 #include <stdbool.h>
 
 #include "attempts.h"
-#include "cab_session.h"
+
+typedef struct CabSession CabSession;
+
+typedef struct {
+    size_t valid_attempts_count;
+    size_t invalid_attempts_count;
+    Attempt attempts[MAX_PRACTICAL_ATTEMPTS];
+} CabAttempts;
 
 Attempt* get_attempts(void);
 size_t get_attempt_number(void);

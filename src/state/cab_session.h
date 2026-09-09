@@ -33,6 +33,8 @@ typedef struct CabSession {
     Vocabulary* vocabulary;                  // shared
 
     Word secret_word;
+    CabAttempts attempts;
+
     CabTurnId current_turn;  // owned
     CABGameEndFlags ending_flags;
 
