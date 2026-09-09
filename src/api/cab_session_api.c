@@ -52,7 +52,6 @@ void setup_session(void) {
     if (!are_save_files_valid()) {
         default_session.current_turn = CAB_TID_FirstTurn;
     }
-    reset_extra_io_log();
     extra_io_warning(&default_session, "\n======== new session ===========\n");
 
     load_vocabulary();

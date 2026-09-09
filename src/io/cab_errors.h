@@ -12,7 +12,6 @@ typedef enum {
     LOG_ToStdout = 2,
 } LogMode;
 
-void reset_extra_io_log(void);
 
 void extra_io_warning(const CabSession* session, const char* warning_message,
                       ...);

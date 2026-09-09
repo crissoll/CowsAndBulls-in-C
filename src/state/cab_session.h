@@ -2,6 +2,7 @@
 #define CAB_STATE_SESSION
 
 #include <stddef.h>
+#include <stdint.h>
 
 #include "cab_attempts_manager.h"
 #include "cab_end.h"
@@ -23,10 +24,11 @@ typedef struct {
 } CabPaths;
 
 typedef struct CabSession {
-    OutputBuffer* output_buffer;  // owned temporarily
-    CAB_IOBuffer* input_buffer;   // owned temporarily
-    CabPaths file_paths;          // owned
-    uint32_t rng_state;           //
+    OutputBuffer* output_buffer;      // owned temporarily
+    CAB_IOBuffer* input_buffer;       // owned temporarily
+    CabPaths file_paths;              // owned
+    uint32_t rng_state;               // owned
+    uint64_t file_interaction_count;  // owned
 
     CmdTree* commands_tree;                  // owned or shared
     CabSettingsOverride* settings_override;  // owned or shared
