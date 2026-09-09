@@ -109,8 +109,8 @@ void print_filtered_word_list(CabSession* session) {
     start_message(session, OT_LIST);
     IndexArray filtered = filter__get_words_from_word_set(
         &help_word_set, get_current_help_filter());
-    const Vocabulary voc = get_used_vocabulary();
-    index_array__output(session, filtered, &voc);
+    const Vocabulary* voc = session->vocabulary;
+    index_array__output(session, filtered, voc);
     index_array__free_content(&filtered);
     end_message(session);
 }
