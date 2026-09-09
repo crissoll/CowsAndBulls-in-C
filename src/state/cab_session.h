@@ -28,12 +28,17 @@ typedef struct CabSession {
     CabSettingsOverride* settings_override;  // owned or shared
     CabPaths file_paths;                     // owned
     Vocabulary* vocabulary;                  // shared
-    Word* secret_word;
+    Word secret_word;
     CABGameEndFlags ending_flags;
 } CabSession;
 
 
 CabSession cab_session__new(void);
 void cab_session__free_content(CabSession* session);
+
+bool cab_session__is_game_started(const CabSession* session);
+
+Word cab_session__get_secret_word(const CabSession* session);
+void cab_session__set_secret_word(CabSession* session, Word new_secret_word);
 
 #endif

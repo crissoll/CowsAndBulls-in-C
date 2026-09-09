@@ -2,9 +2,11 @@
 #include <stdlib.h>
 
 #include "attempts.h"
+#include "cab_errors.h"
 #include "cab_io_buffer.h"
 #include "cab_output_buffer.h"
 #include "cab_session.h"
+#include "cab_turns.h"
 #include "cmd_spec.h"
 
 
@@ -45,4 +47,24 @@ void cab_session__free_content(CabSession* session) {
         free(session->settings_override);
     }
     *session = (CabSession){0};
+}
+
+
+bool cab_session__is_game_started(const CabSession* session) {
+    return session->current_turn != CAB_TID_NotStarted &&
+           session->current_turn != CAB_TID_FirstTurn;
+}
+
+Word cab_session__get_secret_word(const CabSession* session) {
+    return session->secret_word;
+}
+
+void cab_session__set_secret_word(CabSession* session, Word new_secret_word) {
+    if (cab_session__is_game_started(session)) {
+        extra_io_warning(session,
+                         "cab_session__set_secret_word: tried assigning secret "
+                         "word while the game is playing");
+        return;
+    }
+    session->secret_word = new_secret_word;
 }

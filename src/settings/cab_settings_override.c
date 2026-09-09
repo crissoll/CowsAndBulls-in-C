@@ -168,8 +168,7 @@ void cab_session__set_setting(CabSession* session, CabSettingId setting,
                 value, setting);
             return;
         case CAB_SV_LockedInGame:
-            if (session->current_turn != CAB_TID_FirstTurn &&
-                session->current_turn != CAB_TID_NotStarted) {
+            if (cab_session__is_game_started(session)) {
                 extra_io_warning(
                     session,
                     "cab_set_setting: setting number %d can only be used "
