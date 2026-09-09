@@ -28,7 +28,6 @@
 
 void cab_io_shutdown(void) {
     free_file_paths();
-    free_used_vocabulary();
 }
 
 InputStatus cab_input(CabSession* session, const char* input_string) {
