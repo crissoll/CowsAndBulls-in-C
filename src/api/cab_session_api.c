@@ -88,7 +88,6 @@ void setup_vars(void) {
     reset_attempts();
 
     reset_surrender_state();
-    reset_error_state();
 }
 
 void cab_start_new_game(void) {
@@ -162,7 +161,7 @@ void cab_process_turn(void) {
 
 
 bool _cab_is_game_ended(void) {
-    return (cab_secret_word_revealed() || fatal_error_met());
+    return (cab_secret_word_revealed());
 }
 
 bool cab_is_game_ended(void) {
