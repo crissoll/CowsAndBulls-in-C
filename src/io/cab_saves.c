@@ -28,7 +28,7 @@
 typedef unsigned long SessionId;
 
 static SessionId session_id;
-static bool session_id_generated = false;
+static bool session_id_generated = true;  //temp fix before changing save system
 
 extern size_t attempt_number;
 extern size_t invalid_attempts_number;
@@ -105,7 +105,8 @@ void store_secret_word(void) {
     }
 
     fprintf(file, "session_id %lu\n", *get_session_id_ptr());
-    fprintf(file, "%s", get_secret_word().letters);
+    fprintf(file, "%s",
+            cab_session__get_secret_word(cab_get_session()).letters);
 
     fclose(file);
 }
@@ -147,11 +148,11 @@ bool load_test_secret_word(Word* test_secret_word, SessionId* session_id_ptr) {
 }
 
 bool load_secret_word(void) {
-    Word temp_secret_word = get_secret_word();
+    Word temp_secret_word;
     bool loaded =
         load_test_secret_word(&temp_secret_word, get_session_id_ptr());
     session_id_generated = true;
-    set_secret_word(temp_secret_word);
+    cab_session__set_secret_word(cab_get_session(), temp_secret_word);
     if (loaded) {
         set_file_paths_editing(false);
     }
@@ -209,7 +210,7 @@ void generate_secret_word(void) {
         false;  // TODO: note that this mess with the determinism of vocabulary decimation
     generate_session_id();
     load_vocabulary();
-    set_secret_word(get_random_word());
+    //set_secret_word(get_random_word());
     set_file_paths_editing(false);
 }
 

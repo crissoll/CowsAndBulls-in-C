@@ -117,7 +117,7 @@ void handle_attempts_deplition(CabSession* session) {
                 "reached maximum amount of attempts! you lose\n");
         if (cab_get_setting(STG_Display_RevealSecretWordOnAttemptsFinished)) {
             message(session, OT_USER, "the secret word was %s\n",
-                    get_secret_word().letters);
+                    cab_session__get_secret_word(session).letters);
         }
         return;
     }

@@ -16,8 +16,6 @@
 
 #include "cab_settings_api.h"
 
-#include "cmd_surrender.h"
-
 #include "cab_session.h"
 #include "cab_session_api.h"
 
@@ -82,10 +80,8 @@ void setup_vars(void) {
     loading_saves = false;
 
     reset_list_history();
-    generate_secret_word();
+    cab_session__generate_secret_word(cab_get_session());
     reset_attempts();
-
-    reset_surrender_state();
 }
 
 void cab_start_new_game(void) {

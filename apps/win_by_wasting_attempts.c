@@ -3,14 +3,15 @@
 
 #include "cab_api.h"
 #include "cab_constraints.h"
-#include "cab_secret_word.h"
+#include "cab_session_api.h"
 #include "cab_settings_api.h"
 
 int main(void) {
     cab_set_setting(STG_Rule_AttemptsCoherenceConstraintMode,
                     CONSTR_SkipAttempt);
     cab_start_new_game();
-    printf("the word you have to find is %s\n", get_secret_word().letters);
+    printf("the word you have to find is %s\n",
+           cab_session__get_secret_word(cab_get_session()).letters);
     char string[1000];
     while (!cab_is_game_ended()) {
         printf("%s", cab_get_input_prompt());
