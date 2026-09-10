@@ -2,6 +2,7 @@
 #include "cab_turns.h"
 #include <stdbool.h>
 #include "cab_attempts_manager.h"
+#include "cab_end.h"
 #include "cab_input.h"
 #include "cab_session.h"
 #include "cab_session_api.h"
@@ -79,7 +80,7 @@ TURN_FUNCS_DEF(
     "Type a 5-letter word to guess, or 'help' to display "
     "available commands:\n> ",
     /* process */
-    load_saves_wrapper();
+    //load_saves_wrapper();
     parse_input();
 
     if (cab_session__get_attempts_count(cab_get_session()) > 0) {

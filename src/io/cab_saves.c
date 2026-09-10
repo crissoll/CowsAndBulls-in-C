@@ -1,11 +1,13 @@
 #include <stdbool.h>
 #include <stddef.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
 
 #include "attempts.h"
+#include "cab_end.h"
 #include "cab_errors.h"
 #include "cab_files.h"
 #include "cab_io_utils.h"
@@ -21,6 +23,8 @@
 #include "vocabulary.h"
 #include "word.h"
 
+#define STR_(X) #X
+#define STR(X) STR_(X)
 
 typedef unsigned long SessionId;
 
@@ -108,8 +112,7 @@ void store_secret_word(void) {
 }
 
 void store_saves(void) {
-    store_secret_word();
-    store_attempts();
+    cab_session__save_data(cab_get_session());
 }
 
 bool load_test_secret_word(Word* test_secret_word, SessionId* session_id_ptr) {
@@ -238,7 +241,11 @@ void cab_session__load_vocabulary(CabSession* session) {
 
     const char* vocab_path = session->file_paths.vocab_path;
     if (vocab_path == NULL) {
-        vocab_path = get_vocabulary_file_path();
+        vocab_path = DEFAULT_VOCAB_PATH;
+        extra_io_warning(session,
+                         "cab_session__load_vocabulary: NULL path. trying "
+                         "loading default path: %s",
+                         DEFAULT_VOCAB_PATH);
         session->file_paths.vocab_path = vocab_path;
     }
     if (vocab_path == NULL) {
@@ -360,6 +367,7 @@ void cab_session__load_vocabulary(CabSession* session) {
         initialized_voc_word_count++;
     }
     session->vocabulary = calloc(1, sizeof(Vocabulary));
+
     vocabulary__init(session->vocabulary, words, word_count);
 
     cab_session__word_filter_init(session);
@@ -390,14 +398,234 @@ void load_vocabulary(void) {
 
 
 void load_saves(void) {
-    if (are_save_files_valid()) {
-        load_secret_word();
-        load_attempts();
-        load_vocabulary();
-        return;
-    }
+    cab_session__load_data(cab_get_session());
     extra_io_warning(
         cab_get_session(),
         "no valid game saves found. generated new saves instead\n");
     return;
+}
+
+unsigned char get_char_hash(size_t seed) {
+    const unsigned char chr = seed % ALPHABET_SIZE;
+    if (chr != 0) {
+        return chr;
+    }
+    return 1;
+}
+void hash_word(Word* word, size_t seed) {
+    const size_t len = strlen(word->letters);
+    const char hash = get_char_hash(seed);
+    for (size_t i = 0; i < len; i++) {
+        const size_t shift = (hash + i) % ALPHABET_SIZE;
+        word->letters[i] =
+            (char)(((word->letters[i] - 'a' + shift) % ALPHABET_SIZE) + 'a');
+    }
+}
+
+void unhash_word(Word* word, size_t seed) {
+    const size_t len = strlen(word->letters);
+    const char hash = get_char_hash(seed);
+    for (size_t i = 0; i < len; i++) {
+        const size_t shift = (hash + i) % ALPHABET_SIZE;
+        word->letters[i] =
+            (char)(((word->letters[i] - 'a' + ALPHABET_SIZE - shift) %
+                    ALPHABET_SIZE) +
+                   'a');
+    }
+}
+
+
+void cab_session__save_data(CabSession* session) {
+    const char* path = session->file_paths.saves_path;
+    if (path == NULL) {
+        path = DEFAULT_SAVES_PATH;
+        extra_io_warning(session,
+                         "cab_session__save_data: NULL saves path. defaulting "
+                         "to default path: %s",
+                         DEFAULT_SAVES_PATH);
+    }
+    create_directories_if_missing(path);
+    FILE* fp = open_file_safe(path, "w");
+    if (fp == NULL) {
+        extra_io_warning(
+            session,
+            "cab_session__save_data: failed to open save file for writing");
+        return;
+    }
+    // seed and rng state
+    fprintf(fp, "%zu\n", session->seed);
+    fprintf(fp, "%zu\n\n", (size_t)session->rng_state);
+
+    // vocabulary
+    fprintf(fp, "%s\n\n", session->file_paths.vocab_path);
+
+    // secret word (obfuscated)
+    Word stored_secret_word = session->secret_word;
+    hash_word(&stored_secret_word, session->seed);
+    fprintf(fp, "%s\n\n", stored_secret_word.letters);
+
+    // attempts
+    fprintf(fp, "valid: %zu invalid: %zu\n",
+            session->attempts.valid_attempts_count,
+            session->attempts.invalid_attempts_count);
+    for (size_t i = 0; i < session->attempts.valid_attempts_count; i++) {
+        Attempt attempt = session->attempts.attempts[i];
+        fprintf(fp, "%s %zu %zu\n", attempt.word.letters, attempt.result.cows,
+                attempt.result.bulls);
+    }
+
+    // settings
+    fprintf(fp, "\n");
+
+    if (session->settings_override != NULL) {
+        size_t overridden_settings = 0;
+        const size_t settings_count =
+            session->settings_override->settings_count;
+        for (size_t i = 0; i < settings_count; i++) {
+            if (session->settings_override->entries[i].overridden) {
+                overridden_settings++;
+            }
+        }
+        fprintf(fp, "%zu\n", overridden_settings);
+        for (size_t i = 0; i < settings_count; i++) {
+            if (session->settings_override->entries[i].overridden == false) {
+                continue;
+            }
+            const size_t val = session->settings_override->entries[i].value;
+            fprintf(fp, "%zu : %zu\n", i, val);
+        }
+
+    } else {
+        fprintf(fp, "0\n");
+    }
+    fprintf(fp, "\n");
+    fclose(fp);
+}
+
+void cab_session__load_data(CabSession* session) {
+    const char* path = session->file_paths.saves_path;
+    if (path == NULL) {
+        extra_io_warning(session,
+                         "cab_session__load_data: NULL saves path. defaulting "
+                         "to default path: %d",
+                         DEFAULT_SAVES_PATH);
+
+        path = DEFAULT_SAVES_PATH;
+    }
+
+    FILE* fp = open_file_safe(path, "r");
+    if (fp == NULL) {
+        extra_io_warning(
+            session,
+            "cab_session__load_data: failed to open save file for reading");
+        cab_session__set_end_flags(session, CABEND_LoadError);
+        return;
+    }
+
+    // seed and rng state
+    int params;
+    params = fscanf(fp, "%zu", &session->seed);
+    if (params != 1) {
+        extra_io_warning(session,
+                         "cab_session__load_data: failed to load seed");
+        fclose(fp);
+        cab_session__set_end_flags(session, CABEND_LoadError);
+        return;
+    }
+    size_t rng_state;
+    params = fscanf(fp, "%zu", &rng_state);
+    if (params != 1) {
+        extra_io_warning(session,
+                         "cab_session__load_data: failed to load rng_state");
+        fclose(fp);
+        cab_session__set_end_flags(session, CABEND_LoadError);
+        return;
+    }
+    session->rng_state = (uint32_t)rng_state;
+
+    // vocabulary
+    session->file_paths.vocab_path = calloc(256, sizeof(char));
+    params = fscanf(fp, "%255s", (char*)session->file_paths.vocab_path);
+    if (params != 1) {
+        extra_io_warning(session,
+                         "cab_session__load_data: failed to load vocab_path");
+        fclose(fp);
+        cab_session__set_end_flags(session, CABEND_LoadError);
+        return;
+    }
+
+    // secret word
+    params = fscanf(fp, "%" STR(MAX_PRACTICAL_WORD_LEN) "s",
+                    session->secret_word.letters);
+    if (params != 1) {
+        extra_io_warning(session,
+                         "cab_session__load_data: failed to load secret_word");
+        fclose(fp);
+        cab_session__set_end_flags(session, CABEND_LoadError);
+        return;
+    }
+    unhash_word(&session->secret_word, session->seed);
+
+    // attempts
+    params = fscanf(fp, "valid: %zu invalid: %zu",
+                    &session->attempts.valid_attempts_count,
+                    &session->attempts.invalid_attempts_count);
+    if (params != 2) {
+        extra_io_warning(session,
+                         "cab_session__load_data: failed to load attempts");
+        fclose(fp);
+        cab_session__set_end_flags(session, CABEND_LoadError);
+        return;
+    }
+    Attempt attempt;
+    for (size_t i = 0; i < session->attempts.valid_attempts_count; i++) {
+        params = fscanf(fp, "%" STR(MAX_PRACTICAL_WORD_LEN) "s %zu %zu",
+                        attempt.word.letters, &attempt.result.cows,
+                        &attempt.result.bulls);
+        if (params != 3) {
+            extra_io_warning(
+                session, "cab_session__load_data: failed to load attempt n.%zu",
+                i);
+            fclose(fp);
+            cab_session__set_end_flags(session, CABEND_LoadError);
+            return;
+        }
+        session->attempts.attempts[i] = attempt;
+    }
+
+    // settings
+    size_t overridden_settings;
+    params = fscanf(fp, "%zu", &overridden_settings);
+    if (params != 1) {
+        extra_io_warning(session,
+                         "cab_session__load_data: failed to load settings");
+        fclose(fp);
+        cab_session__set_end_flags(session, CABEND_LoadError);
+        return;
+    }
+
+    if (overridden_settings != 0) {
+        session->settings_override = calloc(1, sizeof(CabSettingsOverride));
+        session->settings_override->settings_count = STG_LEN;
+    }
+
+    for (size_t i = 0; i < overridden_settings; i++) {
+        size_t setting_id;
+        size_t val;
+        params = fscanf(fp, "%zu : %zu", &setting_id, &val);
+        if (params != 2) {
+            extra_io_warning(
+                session, "cab_session__load_data: failed to load setting n.%zu",
+                i);
+            fclose(fp);
+            cab_session__set_end_flags(session, CABEND_LoadError);
+            return;
+        }
+        if (session->settings_override != NULL &&
+            setting_id < session->settings_override->settings_count) {
+            session->settings_override->entries[setting_id].overridden = true;
+            session->settings_override->entries[setting_id].value = val;
+        }
+    }
+    fclose(fp);
 }

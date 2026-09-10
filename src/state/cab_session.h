@@ -27,21 +27,22 @@ typedef struct {
 } CabPaths;
 
 typedef struct CabSession {
-    OutputBuffer* output_buffer;      // owned temporarily
-    CAB_IOBuffer* input_buffer;       // owned temporarily
-    CabPaths file_paths;              // owned
-    uint32_t rng_state;               // owned
-    uint64_t file_interaction_count;  // owned
+    OutputBuffer* output_buffer;
+    CAB_IOBuffer* input_buffer;
+    CabPaths file_paths;
+    size_t seed;
+    uint32_t rng_state;
+    uint64_t file_interaction_count;
 
-    CmdTree* commands_tree;                  // owned or shared
-    CabSettingsOverride* settings_override;  // owned or shared
-    Vocabulary* vocabulary;                  // shared
+    CmdTree* commands_tree;
+    Vocabulary* vocabulary;
 
+    CabSettingsOverride* settings_override;
     Word secret_word;
     CabAttempts attempts;
     CabWordFilter word_filter;
 
-    CabTurnId current_turn;  // owned
+    CabTurnId current_turn;
     CABGameEndFlags ending_flags;
 
 } CabSession;

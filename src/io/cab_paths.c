@@ -80,6 +80,14 @@ bool create_directories_if_missing(const char* path) {
     char tmp[256];
 
     snprintf(tmp, sizeof(tmp), "%s", path);
+    char* last_slash = strrchr(tmp, '/');
+    char* last_backslash = strrchr(tmp, '\\');
+    char* cut = (last_slash > last_backslash) ? last_slash : last_backslash;
+    if (cut == NULL) {
+        return true;
+    }
+    *cut = '\0';
+
     size_t len = strlen(tmp);
 
     if (len > 0 && (tmp[len - 1] == '/' || tmp[len - 1] == '\\')) {

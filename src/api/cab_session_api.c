@@ -10,6 +10,8 @@
 #include "cab_attempts_manager.h"
 #include "cab_errors.h"
 #include "cab_help_filter.h"
+#include "cab_io_consts.h"
+#include "cab_output.h"
 #include "cab_saves.h"
 #include "cab_turns.h"
 #include "cmd.h"
@@ -44,18 +46,26 @@ void setup_session(void) {
         return;
     }
     session_setup = true;
-
-    if (default_session.output_buffer == NULL) {
-        default_session = cab_session__new();
-    }
-
-    if (!are_save_files_valid()) {
-        default_session.current_turn = CAB_TID_FirstTurn;
-    }
     extra_io_warning(&default_session, "\n======== new session ===========\n");
 
-    load_vocabulary();
-    setup_vars();
+    default_session = cab_session__new();
+
+    cab_session__load_data(&default_session);
+    bool load_complete = true;
+    if (cab_session__match_all_end_flags(&default_session, CABEND_LoadError)) {
+        default_session.current_turn = CAB_TID_FirstTurn;
+        load_complete = false;
+    }
+    cab_session__reset_end_flags(&default_session);
+
+    cab_session__load_vocabulary(&default_session);
+    if (cab_session__match_all_end_flags(&default_session, CABEND_LoadError)) {
+        message(&default_session, OT_ALERT,
+                "Couldn't load vocabulary, game can't start");
+    }
+    if (!load_complete) {
+        setup_vars();
+    }
 }
 
 void force_setup_session(void) {

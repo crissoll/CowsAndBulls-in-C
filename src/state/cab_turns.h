@@ -32,4 +32,6 @@ struct _cab_turn_struct {
 };
 
 CabTurn get_turn_state(CabTurnId turn_id);
+
+
 #endif

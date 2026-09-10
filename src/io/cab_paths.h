@@ -20,4 +20,7 @@ void set_file_paths_editing(bool value);
 
 void free_file_paths(void);
 
+
+bool create_directories_if_missing(const char* path);
+
 #endif
