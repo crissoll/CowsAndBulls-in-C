@@ -434,6 +434,20 @@ void unhash_word(Word* word, size_t seed) {
     }
 }
 
+size_t vocabulary__hash(const Vocabulary* voc) {
+    if (voc == NULL) {
+        return 0;
+    }
+    size_t hash = 5381;
+    for (size_t i = 0; i < voc->size; i++) {
+        for (const char* p = voc->words[i].letters; *p; p++) {
+            hash =
+                ((hash << 5) + hash) + (unsigned char)(*p); /* hash * 33 + c */
+        }
+    }
+    return hash;
+}
+
 
 void cab_session__save_data(CabSession* session) {
     const char* path = session->file_paths.saves_path;
@@ -457,7 +471,8 @@ void cab_session__save_data(CabSession* session) {
     fprintf(fp, "%zu\n\n", (size_t)session->rng_state);
 
     // vocabulary
-    fprintf(fp, "%s\n\n", session->file_paths.vocab_path);
+    size_t vocab_hash = vocabulary__hash(session->vocabulary);
+    fprintf(fp, "%s %zu\n\n", session->file_paths.vocab_path, vocab_hash);
 
     // secret word (obfuscated)
     Word stored_secret_word = session->secret_word;
@@ -545,13 +560,22 @@ void cab_session__load_data(CabSession* session) {
 
     // vocabulary
     session->file_paths.vocab_path = calloc(256, sizeof(char));
-    params = fscanf(fp, "%255s", (char*)session->file_paths.vocab_path);
-    if (params != 1) {
+    size_t loaded_hash = 0;
+    params = fscanf(fp, "%255s %zu", (char*)session->file_paths.vocab_path,
+                    &loaded_hash);
+    if (params != 2) {
         extra_io_warning(session,
                          "cab_session__load_data: failed to load vocab_path");
         fclose(fp);
         cab_session__set_end_flags(session, CABEND_LoadError);
         return;
+    }
+    cab_session__load_vocabulary(session);
+    size_t vocab_hash = vocabulary__hash(session->vocabulary);
+    if (vocab_hash != loaded_hash) {
+        extra_io_warning(
+            session,
+            "cab_session__load_data: vocabulary changed since last game");
     }
 
     // secret word
