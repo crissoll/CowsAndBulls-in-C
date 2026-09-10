@@ -4,6 +4,9 @@
 #include <string.h>
 
 #include "cab_io_consts.h"
+#include "cab_settings_api.h"
+#include "cab_settings_override.h"
+#include "word.h"
 #include "word_set_filter.h"
 
 #include "cab_help_filter.h"
@@ -12,7 +15,8 @@
 
 #include "cmd_list.h"
 
-static bool check_pattern(const char pattern[get_word_len() + 1]) {
+static bool check_pattern(const char pattern[MAX_PRACTICAL_WORD_LEN + 1],
+                          size_t word_len) {
     const size_t pattern_len = strlen(pattern);
 
     if (pattern_len == 1) {
@@ -20,15 +24,15 @@ static bool check_pattern(const char pattern[get_word_len() + 1]) {
                pattern[0] == UNDEFINED_LETTER;
     }
 
-    if (pattern_len != get_word_len()) {
+    if (pattern_len != word_len) {
         return false;
     }
 
-    if (pattern[get_word_len()] != '\0') {
+    if (pattern[word_len] != '\0') {
         return false;
     }
 
-    for (size_t k = 0; k < get_word_len(); k++) {
+    for (size_t k = 0; k < word_len; k++) {
         const char c = pattern[k];
         if (c == '\0' || ((c < 'a' || c > 'z') && c != UNDEFINED_LETTER)) {
             return false;
@@ -94,11 +98,11 @@ void load_filter_from_history(CabSession* session, size_t token_count,
 }
 
 bool cmd__list_parse_all_patterns(size_t patterns_count, const char* patterns[],
-                                  FilterMode mode) {
+                                  size_t word_len, FilterMode mode) {
     WordSetFilter* help_filter = get_current_help_filter();
 
     for (size_t arg_idx = 0; arg_idx < patterns_count; arg_idx++) {
-        if (!check_pattern(patterns[arg_idx])) {
+        if (!check_pattern(patterns[arg_idx], word_len)) {
             return false;
         }
 
@@ -109,7 +113,9 @@ bool cmd__list_parse_all_patterns(size_t patterns_count, const char* patterns[],
 
 void cmd__list_remove_letters(CabSession* session, size_t token_count,
                               const char* tokens[]) {
-    cmd__list_parse_all_patterns(token_count, tokens, REMOVE);
+    const size_t word_len =
+        cab_session__get_setting(*session, STG_Internal_WordLen);
+    cmd__list_parse_all_patterns(token_count, tokens, word_len, REMOVE);
 
     add_current_filter_to_history();
     const size_t word_count = get_current_help_filter_word_count();
@@ -118,7 +124,9 @@ void cmd__list_remove_letters(CabSession* session, size_t token_count,
 
 void cmd__list_intersect_letters(CabSession* session, size_t token_count,
                                  const char* tokens[]) {
-    cmd__list_parse_all_patterns(token_count, tokens, INTERSECT);
+    const size_t word_len =
+        cab_session__get_setting(*session, STG_Internal_WordLen);
+    cmd__list_parse_all_patterns(token_count, tokens, word_len, INTERSECT);
 
     add_current_filter_to_history();
     const size_t word_count = get_current_help_filter_word_count();
@@ -133,7 +141,8 @@ void setup_list_from_pattern(CabSession* session, size_t token_count,
     }
     WordSetFilter* help_filter = get_current_help_filter();
 
-    if (!check_pattern(tokens[0])) {
+    if (!check_pattern(tokens[0], cab_session__get_setting(
+                                      *session, STG_Internal_WordLen))) {
         message(session, OT_INPUT_ERROR, "invalid pattern!\n");
         return;
     }
