@@ -9,6 +9,7 @@
 #include "cab_core.h"
 
 #include "cab_attempts_manager.h"
+#include "cab_settings_override.h"
 
 void play_word(CabSession* session, Word word) {
     const ConstraintResult constr_result = handle_contraints(session, word);
@@ -18,8 +19,8 @@ void play_word(CabSession* session, Word word) {
 
     GuessResult result =
         compare_words(word, cab_session__get_secret_word(session));
-
-    if (result.bulls >= get_word_len()) {
+    size_t word_len = cab_session__get_setting(*session, STG_Internal_WordLen);
+    if (result.bulls >= word_len) {
         message(session, OT_USER,
                 "Congratulations, you found the word in %zu attempts!\n",
                 cab_session__get_attempts_ptr(session)->valid_attempts_count);

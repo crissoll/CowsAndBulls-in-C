@@ -2,6 +2,7 @@
 #define WORD_SET_FILTER_H
 
 #include <stdbool.h>
+#include <stddef.h>
 #include "cab_session.h"
 #include "index_array.h"
 #include "word.h"
@@ -31,7 +32,7 @@ void filter__init(WordSetFilter* filter);
     Single-letter patterns like "e" are treated as global constraints:
     required/forbidden letter anywhere in the word. */
 void filter__apply_pattern(WordSetFilter* filter,
-                           const char pattern[get_word_len() + 1],
+                           const char pattern[MAX_PRACTICAL_WORD_LEN + 1],
                            FilterMode mode);
 
 /* Extract all words from the word set that match the filter constraints.

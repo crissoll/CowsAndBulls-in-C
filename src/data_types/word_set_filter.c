@@ -10,7 +10,7 @@
 #include "word_set_filter.h"
 
 void filter__init(WordSetFilter* filter) {
-    for (size_t i = 0; i < get_word_len(); i++) {
+    for (size_t i = 0; i < MAX_PRACTICAL_WORD_LEN; i++) {
         for (size_t j = 0; j < ALPHABET_SIZE; j++) {
             filter->present_letters[i][j] = true;
         }
@@ -21,13 +21,11 @@ void filter__init(WordSetFilter* filter) {
     }
 }
 
-void filter__apply_pattern(WordSetFilter* filter,
-                           const char pattern[get_word_len() + 1],
+void filter__apply_pattern(WordSetFilter* filter, const char* pattern,
                            FilterMode mode) {
     if (strlen(pattern) == 1) {
         const size_t letter_idx = (size_t)(pattern[0] - 'a');
         if (mode == REMOVE) {
-            for (size_t i = 0; i < get_word_len(); i++) {
                 filter->present_letters[i][letter_idx] = false;
             }
         } else {
@@ -36,7 +34,7 @@ void filter__apply_pattern(WordSetFilter* filter,
         return;
     }
 
-    for (size_t i = 0; i < get_word_len(); i++) {
+    for (size_t i = 0; i < MAX_PRACTICAL_WORD_LEN && pattern[i] != '\0'; i++) {
         for (size_t j = 0; j < ALPHABET_SIZE; j++) {
             switch (mode) {
                 case JOIN:
@@ -80,7 +78,7 @@ IndexArray filter__get_words_from_word_set(const WordSet* word_set,
 
     /* For each position, union words with allowed letters, then intersect
      * across positions */
-    for (size_t i = 0; i < get_word_len(); i++) {
+    for (size_t i = 0; i < MAX_PRACTICAL_WORD_LEN; i++) {
         IndexArray position_result;
         index_array__init(&position_result, 0);
 
@@ -133,9 +131,10 @@ IndexArray filter__get_words_from_word_set(const WordSet* word_set,
 }
 
 void filter__output(CabSession* session, const WordSetFilter* filter) {
-    bool fixed_letters[get_word_len()];
-    size_t fixed_letter_index[get_word_len()];
-    for (size_t i = 0; i < get_word_len(); i++) {
+    bool fixed_letters[MAX_PRACTICAL_WORD_LEN];
+    size_t fixed_letter_index[MAX_PRACTICAL_WORD_LEN];
+    for (size_t i = 0;
+         i < cab_session__get_setting(*session, STG_Internal_WordLen); i++) {
         fixed_letters[i] = false;
         for (size_t j = 0; j < ALPHABET_SIZE; j++) {
             if (filter->present_letters[i][j] == false) {
@@ -159,7 +158,9 @@ void filter__output(CabSession* session, const WordSetFilter* filter) {
                 continue;
             }
             bool has_valid_placement = false;
-            for (size_t j = 0; j < get_word_len(); j++) {
+            for (size_t j = 0;
+                 j < cab_session__get_setting(*session, STG_Internal_WordLen);
+                 j++) {
                 if (fixed_letters[j] && fixed_letter_index[j] != i) {
                     continue;
                 }
@@ -175,7 +176,9 @@ void filter__output(CabSession* session, const WordSetFilter* filter) {
         }
 
         if (impossible_letter != '\0') {
-            for (size_t i = 0; i < get_word_len(); i++) {
+            for (size_t i = 0;
+                 i < cab_session__get_setting(*session, STG_Internal_WordLen);
+                 i++) {
                 output(session, "  [%zu] (none)\n", i + 1);
             }
             output(session,
@@ -186,7 +189,8 @@ void filter__output(CabSession* session, const WordSetFilter* filter) {
         }
     }
 
-    for (size_t i = 0; i < get_word_len(); i++) {
+    for (size_t i = 0;
+         i < cab_session__get_setting(*session, STG_Internal_WordLen); i++) {
         char not_allowed[ALPHABET_SIZE + 1];
         size_t count = 0;
 

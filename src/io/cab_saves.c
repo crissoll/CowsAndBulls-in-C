@@ -18,6 +18,7 @@
 
 #include "cab_help_filter.h"
 #include "cab_saves.h"
+#include "cab_settings_override.h"
 #include "cmd_spec.h"
 #include "vocabulary.h"
 #include "word.h"
@@ -136,11 +137,14 @@ bool load_test_secret_word(Word* test_secret_word, SessionId* session_id_ptr) {
         strcmp(label, "session_id") != 0) {  // checks for malformed file
         return false;
     }
-
-    if (!silent_can_string_be_word(letters)) {
+    size_t word_len =
+        cab_session__get_setting(*cab_get_session(), STG_Internal_WordLen);
+    if (!silent_can_string_be_word(letters, word_len)) {
         return false;
     }
-    *test_secret_word = word__new(letters);
+    *test_secret_word = word__new(
+        letters,
+        cab_session__get_setting(*cab_get_session(), STG_Internal_WordLen));
     return true;
 }
 
@@ -325,8 +329,8 @@ void cab_session__load_vocabulary(CabSession* session) {
 
     extra_io_warning(session, "load_vocabulary: word len set to %zu", word_len);
 
-    const size_t decimation_percetage =
-        cab_get_setting(STG_Internal_VocabDecimationPercentage);
+    const size_t decimation_percetage = cab_session__get_setting(
+        *session, STG_Internal_VocabDecimationPercentage);
 
     for (; (fscanf(file, "%99s", buffer) == 1);) {
         to_lower(buffer, buffer_len);

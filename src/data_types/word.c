@@ -1,20 +1,18 @@
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "cab_io_consts.h"
 #include "cab_output.h"
-#include "cab_settings_api.h"
+#include "cab_settings_override.h"
 #include "word.h"
 
 
-size_t get_word_len(void) {
-    return cab_get_setting(STG_Internal_WordLen);
-}
-
-Word word__new(const char letters[MAX_PRACTICAL_WORD_LEN + 1]) {
-    if (!silent_can_string_be_word(letters)) {
+Word word__new(const char letters[MAX_PRACTICAL_WORD_LEN + 1],
+               size_t word_len) {
+    if (!silent_can_string_be_word(letters, word_len)) {
         return (Word){.letters = ""};
     }  // hard to handle
     Word word;
@@ -33,11 +31,13 @@ bool can_string_be_word(CabSession* session, const char* string) {
         }
     }
 
-    if (len > get_word_len()) {
+    size_t word_len = cab_session__get_setting(*session, STG_Internal_WordLen);
+
+    if (len > word_len) {
         message(session, OT_INPUT_ERROR, "word too long\n");
         return false;
     }
-    if (len < get_word_len()) {
+    if (len < word_len) {
         message(session, OT_INPUT_ERROR, "word too short\n");
         return false;
     }
@@ -53,12 +53,6 @@ bool silent_can_string_be_word(const char* string) {
         }
     }
 
-    if (len > get_word_len()) {
-        return false;
-    }
-    if (len < get_word_len()) {
-        return false;
-    }
     return true;
 }
 
@@ -67,13 +61,5 @@ void word__output(CabSession* session, Word word) {
 }
 
 int word__sort_cmp(Word a, Word b) {
-    for (size_t i = 0; i < get_word_len(); i++) {
-        if (a.letters[i] > b.letters[i]) {
-            return +1;
-        }
-        if (a.letters[i] < b.letters[i]) {
-            return -1;
-        }
-    }
-    return 0;
+    return strcmp(a.letters, b.letters);
 }

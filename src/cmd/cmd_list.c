@@ -46,7 +46,8 @@ static bool is_undefined_pattern(const char* pattern) {
     return true;
 }
 
-static void cmd_list__set_pattern(const char pattern[get_word_len() + 1]) {
+static void cmd_list__set_pattern(
+    const char pattern[MAX_PRACTICAL_WORD_LEN + 1]) {
     WordSetFilter* help_filter = get_current_help_filter();
     filter__init(help_filter);
     filter__apply_pattern(help_filter, pattern, INTERSECT);

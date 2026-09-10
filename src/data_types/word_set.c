@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 
 #include "index_array.h"
@@ -21,12 +22,13 @@ void word_set__init_from_vocabulary(WordSet* word_set,
     if (word_set == NULL || vocabulary == NULL) {
         return;
     }
-    const size_t word_len = get_word_len();
+    const size_t word_len = strlen(vocabulary->words[0].letters);
+
     if (word_len == 0 || word_len > MAX_PRACTICAL_WORD_LEN) {
         return;
     }
 
-    size_t matrix[ALPHABET_SIZE][word_len];
+    size_t matrix[ALPHABET_SIZE][MAX_PRACTICAL_WORD_LEN];
 
     vocabulary__get_words_frequencies(vocabulary, matrix);
 
@@ -65,7 +67,7 @@ IndexArray word_set__get_words_containing_letter(const WordSet* word_set,
     index_array__init(&result, 0);
 
     bool have_result = false;
-    for (size_t pos = 0; pos < get_word_len(); pos++) {
+    for (size_t pos = 0; pos < MAX_PRACTICAL_WORD_LEN; pos++) {
         IndexArray source = word_set->words[pos][letter_idx];
         IndexArray source_copy = index_array__copy(&source);
 

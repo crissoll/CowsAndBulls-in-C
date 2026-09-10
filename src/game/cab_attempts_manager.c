@@ -112,7 +112,8 @@ void cab_session__add_attempt(CabSession* session, Word word,
     size_t attempts_count =
         cab_session__get_attempts_ptr(session)->valid_attempts_count;
     if (cab_session__get_attempts_left(session) == 0) {
-        if (cab_get_setting(STG_Rule_LoseOnMaxAttemptsReached) == false) {
+        if (cab_session__get_setting(
+                *session, STG_Rule_LoseOnMaxAttemptsReached) == false) {
             message(session, OT_USER,
                     "reached maximum amount of attempts! oldest one will be "
                     "deleted\n");

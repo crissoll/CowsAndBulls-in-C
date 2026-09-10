@@ -6,7 +6,6 @@
 #include "word.h"
 
 
-
 void index_array__init(IndexArray* array, size_t size) {
     array->size = size;
 
@@ -120,7 +119,8 @@ void index_array__output(CabSession* session, IndexArray index_array,
     for (size_t i = 0; i < index_array.size; i++) {
         word__output(session, vocabulary->words[index_array.indexes[i]]);
         output(session, " ");
-        if (++j > cab_get_setting(STG_Display_IndexArray_WordsPerLine)) {
+        if (++j > cab_session__get_setting(
+                      *session, STG_Display_IndexArray_WordsPerLine)) {
             output(session, "\n");
             j = 0;
         }
