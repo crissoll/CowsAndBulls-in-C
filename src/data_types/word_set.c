@@ -84,3 +84,14 @@ IndexArray word_set__get_words_containing_letter(const WordSet* word_set,
 
     return result;
 }
+
+void word_set__free_content(WordSet* word_set) {
+    if (word_set == NULL) {
+        return;
+    }
+    for (size_t pos = 0; pos < MAX_PRACTICAL_WORD_LEN; pos++) {
+        for (size_t letter = 0; letter < ALPHABET_SIZE; letter++) {
+            index_array__free_content(&word_set->words[pos][letter]);
+        }
+    }
+}

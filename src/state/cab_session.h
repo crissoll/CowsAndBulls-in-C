@@ -6,10 +6,12 @@
 
 #include "cab_attempts_manager.h"
 #include "cab_end.h"
+#include "cab_help_filter.h"
 #include "cab_io_buffer.h"
 #include "cab_output_buffer.h"
 #include "cab_rand.h"
 #include "cab_session_cmd_tree.h"
+
 
 #include "cab_settings_override.h"
 #include "cab_turns.h"
@@ -37,6 +39,7 @@ typedef struct CabSession {
 
     Word secret_word;
     CabAttempts attempts;
+    CabWordFilter word_filter;
 
     CabTurnId current_turn;  // owned
     CABGameEndFlags ending_flags;

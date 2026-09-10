@@ -51,6 +51,7 @@ void cab_session__free_content(CabSession* session) {
     if (session->settings_override != NULL) {
         free(session->settings_override);
     }
+    cab_session__word_filter_free_content(session);
     *session = (CabSession){0};
 }
 
