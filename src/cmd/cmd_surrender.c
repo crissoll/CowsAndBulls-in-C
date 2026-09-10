@@ -2,7 +2,6 @@
 
 #include "cab_end.h"
 #include "cab_output.h"
-#include "cab_settings_api.h"
 #include "cab_settings_override.h"
 
 void cmd__surrender(CabSession* session) {

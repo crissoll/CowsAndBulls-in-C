@@ -9,9 +9,7 @@
 
 #include "cab_attempts_manager.h"
 
-#include "cab_settings_api.h"
 #include "cab_settings_override.h"
-#include "cmd_spec.h"
 #include "word.h"
 
 
@@ -70,7 +68,7 @@ void cab_session__attempts_word_compare(CabSession* session, Word word) {
 }
 
 bool cab_session__attempts_coherence(const CabSession* session, Word word) {
-    CabAttempts* attempts = cab_session__get_attempts_ptr(session);
+    CabAttempts* attempts = cab_session__get_attempts_ptr((CabSession*)session);
 
     if (attempts->valid_attempts_count == 0) {
         return true;

@@ -4,7 +4,6 @@
 #include "cab_attempts_manager.h"
 #include "cab_io_consts.h"
 #include "cab_output.h"
-#include "cab_settings_api.h"
 #include "cab_settings_override.h"
 #include "cab_used_vocabulary.h"
 

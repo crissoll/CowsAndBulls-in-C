@@ -1,10 +1,13 @@
 #ifndef CAB_HELP
 #define CAB_HELP
 
-#include "cab_session.h"
+#include <stddef.h>
+
+#include "word_set.h"
 #include "word_set_filter.h"
 
 WordSetFilter* get_current_help_filter(void);
+typedef struct CabSession CabSession;
 
 size_t get_current_help_filter_word_count(void);
 

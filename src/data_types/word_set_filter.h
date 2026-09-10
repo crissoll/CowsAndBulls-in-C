@@ -3,11 +3,12 @@
 
 #include <stdbool.h>
 #include <stddef.h>
-#include "cab_session.h"
+
 #include "index_array.h"
 #include "word.h"
 #include "word_set.h"
 
+typedef struct CabSession CabSession;
 
 typedef enum {
     JOIN,

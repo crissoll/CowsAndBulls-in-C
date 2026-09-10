@@ -10,7 +10,6 @@
 #include "cab_rand.h"
 #include "cab_session.h"
 #include "cab_turns.h"
-#include "cmd_spec.h"
 
 
 CabSession cab_session__new(void) {

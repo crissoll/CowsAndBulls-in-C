@@ -3,17 +3,14 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "cab_help_filter.h"
 #include "cab_io_consts.h"
-#include "cab_settings_api.h"
+#include "cab_output.h"
+#include "cab_session.h"
 #include "cab_settings_override.h"
+#include "cmd_list.h"
 #include "word.h"
 #include "word_set_filter.h"
-
-#include "cab_help_filter.h"
-
-#include "cab_output.h"
-
-#include "cmd_list.h"
 
 static bool check_pattern(const char pattern[MAX_PRACTICAL_WORD_LEN + 1],
                           size_t word_len) {
