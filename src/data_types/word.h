@@ -15,13 +15,11 @@ typedef struct Word {
     char letters[MAX_PRACTICAL_WORD_LEN + 1];  //
 } Word;
 
-size_t get_word_len(void);
-
-Word word__new(const char letters[MAX_PRACTICAL_WORD_LEN + 1]);
+Word word__new(const char letters[MAX_PRACTICAL_WORD_LEN + 1], size_t word_len);
 
 bool can_string_be_word(CabSession* session, const char* string);
 
-bool silent_can_string_be_word(const char* string);
+bool silent_can_string_be_word(const char* string, size_t word_len);
 
 void word__output(CabSession* session, Word word);
 

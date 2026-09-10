@@ -1,3 +1,4 @@
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <string.h>
@@ -10,17 +11,11 @@
 #include "attempts.h"
 #include "cab_files.h"
 #include "cab_session_api.h"
-#include "cab_settings_api.h"
 #include "cab_settings_override.h"
 #include "guess.h"
 #include "index_array.h"
 #include "vocabulary.h"
 #include "word.h"
-
-
-size_t get_max_attempts(void) {
-    return cab_get_setting(STG_Internal_MaxAttempts);
-}
 
 
 Attempt attempt__new(Word word, GuessResult result) {
@@ -84,12 +79,8 @@ void store_attempt_array(const Attempt* attempts, size_t attempt_number,
     fprintf(attempts_file, "invalid_attempts %zu\n", invalid_attempts_number);
 
     for (size_t i = 0; i < attempt_number; i++) {
-        for (size_t j = 0; j < get_word_len(); j++) {
-            char chr = attempts[i].word.letters[j];
-            fprintf(attempts_file, "%c", chr);
-        }
-        fprintf(attempts_file, " %zu %zu\n", attempts[i].result.cows,
-                attempts[i].result.bulls);
+        fprintf(attempts_file, "%s %zu %zu\n", attempts[i].word.letters,
+                attempts[i].result.cows, attempts[i].result.bulls);
     }
     fclose(attempts_file);
 }
@@ -136,15 +127,14 @@ bool load_attempt_array(Attempt* attempts, size_t* attempt_number,
         if (scanned != 3) {
             break;
         }
-
-        if (!silent_can_string_be_word(letters)) {
+        size_t word_len =
+            cab_session__get_setting(*cab_get_session(), STG_Internal_WordLen);
+        Word word = word__new(letters, word_len);
+        if (word.letters[0] == '\0') {
             break;
         }
-
         result.cows = (size_t)cows;
         result.bulls = (size_t)bulls;
-
-        Word word = word__new(letters);
 
         Attempt attempt = attempt__new(word, result);
         attempts[(*attempt_number)++] = attempt;

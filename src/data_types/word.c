@@ -44,8 +44,12 @@ bool can_string_be_word(CabSession* session, const char* string) {
     return true;
 }
 
-bool silent_can_string_be_word(const char* string) {
+bool silent_can_string_be_word(const char* string, size_t word_len) {
     const size_t len = strlen(string);
+
+    if (len != word_len) {
+        return false;
+    }
 
     for (size_t i = 0; i < len; i++) {
         if (string[i] < 'a' || string[i] > 'z') {

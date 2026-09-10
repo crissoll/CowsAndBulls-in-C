@@ -14,7 +14,6 @@ typedef struct {
     GuessResult result;
 } Attempt;
 
-size_t get_max_attempts(void);
 
 Attempt attempt__new(Word word, GuessResult result);
 
