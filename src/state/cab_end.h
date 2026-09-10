@@ -19,4 +19,7 @@ bool cab_session__match_all_end_flags(CabSession* session,
                                       CABGameEndFlags searched_flags);
 
 void cab_session__set_end_flags(CabSession* session, CABGameEndFlags flags);
+
+void cab_session__reset_end_flags(CabSession* session);
+
 #endif
