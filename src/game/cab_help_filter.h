@@ -6,18 +6,37 @@
 #include "word_set.h"
 #include "word_set_filter.h"
 
-WordSetFilter* get_current_help_filter(void);
 typedef struct CabSession CabSession;
 
-size_t get_current_help_filter_word_count(void);
+#define HELP_FILTER_HISTORY_MAX 100
 
-size_t get_filter_history_size(void);
+typedef struct {
+    WordSetFilter filter;
+    size_t word_count;
+} ListHistoryEntry;
 
-void add_current_filter_to_history(void);
+typedef struct {
+    ListHistoryEntry history[HELP_FILTER_HISTORY_MAX];
+    size_t entries_count;
+    WordSet current_word_set;
+} CabWordFilter;
 
-void reset_list_history(void);
+void cab_session__word_filter_init(CabSession* session);
 
-void revert_filter_to_history_step(size_t index);
+void cab_session__word_filter_free_content(CabSession* session);
+
+ListHistoryEntry cab_session__get_last_word_filter(const CabSession* session);
+
+size_t cab_session__compute_filter_word_count(const CabSession* session,
+                                              const WordSetFilter* filter);
+
+void cab_session__word_filter_add_entry(CabSession* session,
+                                       ListHistoryEntry entry);
+
+void cab_session__word_filter_revert_to(CabSession* session,
+                                        size_t history_index);
+
+size_t cab_session__get_filter_history_size(const CabSession* session);
 
 void print_current_filter(CabSession* session);
 

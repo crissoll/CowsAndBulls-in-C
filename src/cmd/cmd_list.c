@@ -47,13 +47,6 @@ static bool is_undefined_pattern(const char* pattern) {
     return true;
 }
 
-static void cmd_list__set_pattern(
-    const char pattern[MAX_PRACTICAL_WORD_LEN + 1]) {
-    WordSetFilter* help_filter = get_current_help_filter();
-    filter__init(help_filter);
-    filter__apply_pattern(help_filter, pattern, INTERSECT);
-}
-
 void load_filter_from_history(CabSession* session, size_t token_count,
                               const char* tokens[]) {
     if (token_count != 1) {
@@ -62,60 +55,58 @@ void load_filter_from_history(CabSession* session, size_t token_count,
     }
 
     int index;
-
     if (sscanf(tokens[0], "%d", &index) != 1) {
         message(session, OT_INPUT_ERROR, "index must be a number\n");
         return;
     }
-    if (index < 0) {
-        index = ((int)get_filter_history_size()) + index;
-        if (index <= 0) {
-            message(session, OT_INPUT_ERROR, "relative index too low\n");
-            return;
-        }
+
+    const size_t history_size = cab_session__get_filter_history_size(session);
+    if (history_size == 0) {
+        message(session, OT_INPUT_ERROR, "no history available\n");
+        return;
     }
-    index--;
+
     if (index < 0) {
+        index = (int)history_size + index + 1;
+    }
+
+    if (index <= 0) {
         message(session, OT_INPUT_ERROR, "index must be > 0\n");
         return;
     }
-    if ((size_t)index >= get_filter_history_size()) {
+    if ((size_t)index > history_size) {
         message(session, OT_INPUT_ERROR, "index too high!\n");
         return;
     }
 
-    revert_filter_to_history_step(index);
+    cab_session__word_filter_revert_to(session, (size_t)(index - 1));
 
-    message(session, OT_USER, "correctly reverted to step number %d\n",
-            index + 1);
-
-    add_current_filter_to_history();
-    const size_t word_count = get_current_help_filter_word_count();
+    message(session, OT_USER, "correctly reverted to step number %d\n", index);
+    const size_t word_count =
+        cab_session__get_last_word_filter(session).word_count;
     message(session, OT_WORD_COUNT, "[%zu words]\n", word_count);
-}
-
-bool cmd__list_parse_all_patterns(size_t patterns_count, const char* patterns[],
-                                  size_t word_len, FilterMode mode) {
-    WordSetFilter* help_filter = get_current_help_filter();
-
-    for (size_t arg_idx = 0; arg_idx < patterns_count; arg_idx++) {
-        if (!check_pattern(patterns[arg_idx], word_len)) {
-            return false;
-        }
-
-        filter__apply_pattern(help_filter, patterns[arg_idx], mode);
-    }
-    return true;
 }
 
 void cmd__list_remove_letters(CabSession* session, size_t token_count,
                               const char* tokens[]) {
     const size_t word_len =
         cab_session__get_setting(*session, STG_Internal_WordLen);
-    cmd__list_parse_all_patterns(token_count, tokens, word_len, REMOVE);
+    for (size_t i = 0; i < token_count; i++) {
+        if (!check_pattern(tokens[i], word_len)) {
+            message(session, OT_INPUT_ERROR, "invalid pattern!\n");
+            return;
+        }
+    }
 
-    add_current_filter_to_history();
-    const size_t word_count = get_current_help_filter_word_count();
+    WordSetFilter filter = cab_session__get_last_word_filter(session).filter;
+    for (size_t i = 0; i < token_count; i++) {
+        filter__apply_pattern(&filter, tokens[i], REMOVE);
+    }
+
+    const size_t word_count =
+        cab_session__compute_filter_word_count(session, &filter);
+    cab_session__word_filter_add_entry(
+        session, (ListHistoryEntry){.filter = filter, .word_count = word_count});
     message(session, OT_WORD_COUNT, "[%zu words]\n", word_count);
 }
 
@@ -123,10 +114,22 @@ void cmd__list_intersect_letters(CabSession* session, size_t token_count,
                                  const char* tokens[]) {
     const size_t word_len =
         cab_session__get_setting(*session, STG_Internal_WordLen);
-    cmd__list_parse_all_patterns(token_count, tokens, word_len, INTERSECT);
+    for (size_t i = 0; i < token_count; i++) {
+        if (!check_pattern(tokens[i], word_len)) {
+            message(session, OT_INPUT_ERROR, "invalid pattern!\n");
+            return;
+        }
+    }
 
-    add_current_filter_to_history();
-    const size_t word_count = get_current_help_filter_word_count();
+    WordSetFilter filter = cab_session__get_last_word_filter(session).filter;
+    for (size_t i = 0; i < token_count; i++) {
+        filter__apply_pattern(&filter, tokens[i], INTERSECT);
+    }
+
+    const size_t word_count =
+        cab_session__compute_filter_word_count(session, &filter);
+    cab_session__word_filter_add_entry(
+        session, (ListHistoryEntry){.filter = filter, .word_count = word_count});
     message(session, OT_WORD_COUNT, "[%zu words]\n", word_count);
 }
 
@@ -135,22 +138,24 @@ void setup_list_from_pattern(CabSession* session, size_t token_count,
     if (token_count > 1) {
         message(session, OT_INPUT_ERROR,
                 "list can only be initialized with a single pattern\n");
+        return;
     }
-    WordSetFilter* help_filter = get_current_help_filter();
-
-    if (!check_pattern(tokens[0], cab_session__get_setting(
-                                      *session, STG_Internal_WordLen))) {
+    const size_t word_len =
+        cab_session__get_setting(*session, STG_Internal_WordLen);
+    if (!check_pattern(tokens[0], word_len)) {
         message(session, OT_INPUT_ERROR, "invalid pattern!\n");
         return;
     }
 
-    if (is_undefined_pattern(tokens[0])) {
-        filter__init(help_filter);
-    } else {
-        cmd_list__set_pattern(tokens[0]);
+    WordSetFilter filter;
+    filter__init(&filter);
+    if (!is_undefined_pattern(tokens[0])) {
+        filter__apply_pattern(&filter, tokens[0], INTERSECT);
     }
 
-    add_current_filter_to_history();
-    const size_t word_count = get_current_help_filter_word_count();
+    const size_t word_count =
+        cab_session__compute_filter_word_count(session, &filter);
+    cab_session__word_filter_add_entry(
+        session, (ListHistoryEntry){.filter = filter, .word_count = word_count});
     message(session, OT_WORD_COUNT, "[%zu words]\n", word_count);
 }

@@ -18,7 +18,6 @@
 #include "cab_help_filter.h"
 #include "cab_saves.h"
 #include "cab_settings_override.h"
-#include "cmd_spec.h"
 #include "vocabulary.h"
 #include "word.h"
 
@@ -363,7 +362,7 @@ void cab_session__load_vocabulary(CabSession* session) {
     session->vocabulary = calloc(1, sizeof(Vocabulary));
     vocabulary__init(session->vocabulary, words, word_count);
 
-    reset_list_history();  // TODO
+    cab_session__word_filter_init(session);
     fclose(file);
     free(words);
 

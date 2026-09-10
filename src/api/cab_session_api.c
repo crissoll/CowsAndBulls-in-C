@@ -78,7 +78,7 @@ void setup_vars(void) {
     play_again = true;
     loading_saves = false;
 
-    reset_list_history();
+    cab_session__word_filter_init(cab_get_session());
     cab_session__generate_secret_word(cab_get_session());
 }
 

@@ -4,91 +4,106 @@
 #include "cab_help_filter.h"
 #include "cab_io_consts.h"
 #include "cab_output.h"
-#include "cab_session_api.h"
-#include "cab_used_vocabulary.h"
+#include "cab_session.h"
+#include "index_array.h"
 #include "vocabulary.h"
+#include "word_set.h"
+#include "word_set_filter.h"
 
+void cab_session__word_filter_init(CabSession* session) {
+    if (session == NULL) {
+        return;
+    }
+    word_set__free_content(&session->word_filter.current_word_set);
+    session->word_filter.entries_count = 0;
 
-WordSet help_word_set;
-WordSetFilter help_filter;
+    if (session->vocabulary != NULL) {
+        word_set__init_from_vocabulary(&session->word_filter.current_word_set,
+                                       session->vocabulary);
+    }
+}
 
-#define HELP_FILTER_HISTORY_MAX 100
+void cab_session__word_filter_free_content(CabSession* session) {
+    if (session == NULL) {
+        return;
+    }
+    word_set__free_content(&session->word_filter.current_word_set);
+    session->word_filter.entries_count = 0;
+}
 
-typedef struct {
-    WordSetFilter filter;
-    size_t word_count;
-} ListHistoryEntry;
+ListHistoryEntry cab_session__get_last_word_filter(const CabSession* session) {
+    if (session == NULL || session->word_filter.entries_count == 0) {
+        ListHistoryEntry default_entry = {0};
+        filter__init(&default_entry.filter);
+        if (session != NULL && session->vocabulary != NULL) {
+            default_entry.word_count = session->vocabulary->size;
+        }
+        return default_entry;
+    }
+    return session->word_filter.history[session->word_filter.entries_count - 1];
+}
 
-ListHistoryEntry help_filter_history[HELP_FILTER_HISTORY_MAX];
-size_t help_filter_history_size = 0;
-
-size_t get_current_help_filter_word_count(void) {
-    IndexArray tmp = filter__get_words_from_word_set(&help_word_set,
-                                                     get_current_help_filter());
+size_t cab_session__compute_filter_word_count(const CabSession* session,
+                                              const WordSetFilter* filter) {
+    if (session == NULL || filter == NULL) {
+        return 0;
+    }
+    IndexArray tmp = filter__get_words_from_word_set(
+        &session->word_filter.current_word_set, filter);
     size_t result = tmp.size;
     index_array__free_content(&tmp);
     return result;
 }
 
-void add_current_filter_to_history(void) {
-    const size_t word_count = get_current_help_filter_word_count();
-    if (help_filter_history_size >= HELP_FILTER_HISTORY_MAX) {
+void cab_session__word_filter_add_entry(CabSession* session,
+                                       ListHistoryEntry entry) {
+    if (session == NULL) {
+        return;
+    }
+    if (session->word_filter.entries_count >= HELP_FILTER_HISTORY_MAX) {
         extra_io_warning(
-            cab_get_session(),
+            session,
             "reached filter history limit! oldest filter will be deleted\n");
 
         for (size_t i = 0; i < HELP_FILTER_HISTORY_MAX - 1; i++) {
-            help_filter_history[i] = help_filter_history[i + 1];
+            session->word_filter.history[i] =
+                session->word_filter.history[i + 1];
         }
-        help_filter_history_size = HELP_FILTER_HISTORY_MAX - 1;
-    }
-
-    help_filter_history[help_filter_history_size].filter = help_filter;
-    help_filter_history[help_filter_history_size].word_count = word_count;
-    help_filter_history_size++;
-}
-
-WordSetFilter* get_current_help_filter(void) {
-    return &help_filter;
-}
-
-size_t get_filter_history_size(void) {
-    return help_filter_history_size;
-}
-
-void revert_filter_to_history_step(size_t index) {
-    help_filter = help_filter_history[index].filter;
-}
-
-static void free_word_set(WordSet* word_set) {
-    for (size_t i = 0; i < MAX_PRACTICAL_WORD_LEN; i++) {
-        for (size_t j = 0; j < ALPHABET_SIZE; j++) {
-            index_array__free_content(&word_set->words[i][j]);
-        }
+        session->word_filter.history[HELP_FILTER_HISTORY_MAX - 1] = entry;
+        session->word_filter.entries_count = HELP_FILTER_HISTORY_MAX;
+    } else {
+        session->word_filter.history[session->word_filter.entries_count] = entry;
+        session->word_filter.entries_count++;
     }
 }
 
-void reset_list_history(void) {
-    help_filter_history_size = 0;
-    filter__init(&help_filter);
+void cab_session__word_filter_revert_to(CabSession* session,
+                                        size_t history_index) {
+    if (session == NULL ||
+        history_index >= session->word_filter.entries_count) {
+        return;
+    }
+    cab_session__word_filter_add_entry(
+        session, session->word_filter.history[history_index]);
+}
 
-    free_word_set(&help_word_set);
-
-    const Vocabulary voc = get_used_vocabulary();
-    word_set__init_from_vocabulary(&help_word_set, &voc);
+size_t cab_session__get_filter_history_size(const CabSession* session) {
+    if (session == NULL) {
+        return 0;
+    }
+    return session->word_filter.entries_count;
 }
 
 void print_current_filter(CabSession* session) {
     start_message(session, OT_FILTER);
-    WordSetFilter* cur_filter = get_current_help_filter();
-    const size_t word_count = get_current_help_filter_word_count();
-    output(session, "--- [%zu words] ---\n", word_count);
-    filter__output(session, cur_filter);
+    ListHistoryEntry cur_entry = cab_session__get_last_word_filter(session);
+    output(session, "--- [%zu words] ---\n", cur_entry.word_count);
+    filter__output(session, &cur_entry.filter);
     end_message(session);
 }
 
 void print_filter_history(CabSession* session) {
-    const size_t history_count = get_filter_history_size();
+    const size_t history_count = cab_session__get_filter_history_size(session);
     if (history_count == 0) {
         message(session, OT_FILTER, "(no history yet)\n");
         return;
@@ -96,7 +111,7 @@ void print_filter_history(CabSession* session) {
     start_message(session, OT_FILTER);
     output(session, "List history (%zu entries):\n", history_count);
     for (size_t hist_idx = 0; hist_idx < history_count; hist_idx++) {
-        const ListHistoryEntry entry = help_filter_history[hist_idx];
+        const ListHistoryEntry entry = session->word_filter.history[hist_idx];
 
         output(session, "\n--- Step %zu: [%zu words] ---\n", hist_idx + 1,
                entry.word_count);
@@ -107,8 +122,9 @@ void print_filter_history(CabSession* session) {
 
 void print_filtered_word_list(CabSession* session) {
     start_message(session, OT_LIST);
+    ListHistoryEntry cur_entry = cab_session__get_last_word_filter(session);
     IndexArray filtered = filter__get_words_from_word_set(
-        &help_word_set, get_current_help_filter());
+        &session->word_filter.current_word_set, &cur_entry.filter);
     const Vocabulary* voc = session->vocabulary;
     index_array__output(session, filtered, voc);
     index_array__free_content(&filtered);
