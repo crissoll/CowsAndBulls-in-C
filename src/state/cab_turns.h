@@ -3,6 +3,8 @@
 
 #include <stddef.h>
 
+typedef struct CabSession CabSession;
+
 #define _CAB_TURNS(X)          \
                                \
     X(CAB_TID_NotStarted) /**/ \
@@ -20,10 +22,11 @@ typedef enum {
 
 typedef struct _cab_turn_struct CabTurn;
 
-typedef CabTurnId (*CabTurnProcFunc)(void);
-typedef const char* (*CabTurnInputPrompt)(void);
+typedef CabTurnId (*CabTurnProcFunc)(CabSession* session);
+typedef const char* (*CabTurnInputPrompt)(CabSession* session);
 
 struct _cab_turn_struct {
+    CabSession* session;
     CabTurnInputPrompt get_input_prompt;
     CabTurnProcFunc process;
 };

@@ -180,7 +180,8 @@ char** cab_get_messages_with_tag(CabSession* session, OutputTags tag,
 }
 
 const char* cab_session__get_turn_input_prompt(CabSession* session) {
-    return get_turn_state(session->current_turn).get_input_prompt();
+    return get_turn_state(session->current_turn)
+        .get_input_prompt(cab_get_session());
 }
 
 

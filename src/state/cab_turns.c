@@ -5,7 +5,6 @@
 #include "cab_input.h"
 #include "cab_session.h"
 #include "cab_session_api.h"
-#include "cab_settings_api.h"
 
 
 // temp solution
@@ -22,10 +21,10 @@ extern bool _cab_is_game_ended(void);
 extern void cab_start_new_game(void);
 
 #pragma region  // turn functions declarations
-#define TURN_FUNCS_DECL(TURN_NAME)                       \
-    const char* cab_turn_input_prompt_##TURN_NAME(void); \
-                                                         \
-    CabTurnId cab_turn_process_##TURN_NAME(void);
+#define TURN_FUNCS_DECL(TURN_NAME)                                      \
+    const char* cab_turn_input_prompt_##TURN_NAME(CabSession* session); \
+                                                                        \
+    CabTurnId cab_turn_process_##TURN_NAME(CabSession* session);
 
 _CAB_TURNS(TURN_FUNCS_DECL)
 
@@ -51,13 +50,13 @@ CabTurn get_turn_state(CabTurnId turn_id) {
 }
 
 
-#define TURN_FUNCS_DEF(TURN_NAME, INPUT_PROMPT_FUNC, PROC_FUNC) \
-    const char* cab_turn_input_prompt_##TURN_NAME(void) {       \
-        return (INPUT_PROMPT_FUNC);                             \
-    }                                                           \
-                                                                \
-    CabTurnId cab_turn_process_##TURN_NAME(void) {              \
-        PROC_FUNC                                               \
+#define TURN_FUNCS_DEF(TURN_NAME, INPUT_PROMPT_FUNC, PROC_FUNC)          \
+    const char* cab_turn_input_prompt_##TURN_NAME(CabSession* session) { \
+        return (INPUT_PROMPT_FUNC);                                      \
+    }                                                                    \
+                                                                         \
+    CabTurnId cab_turn_process_##TURN_NAME(CabSession* session) {        \
+        PROC_FUNC                                                        \
     }
 
 
@@ -111,13 +110,12 @@ TURN_FUNCS_DEF(
 TURN_FUNCS_DEF(
     CAB_TID_PlayAgain,
     /* input prompt */
-    (cab_get_setting(STG_Internal_ShowPlayAgainPrompt))
+    (cab_session__get_setting(*session, STG_Internal_ShowPlayAgainPrompt))
         ? "Play Again? (y/n)\n> "
         : "Nothing more to do\n> ",
     /* process */
-    if (cab_get_setting(STG_Internal_ShowPlayAgainPrompt) == false) {
-        return CAB_TID_NotStarted;
-    }
+    if (cab_session__get_setting(*session, STG_Internal_ShowPlayAgainPrompt) ==
+        false) { return CAB_TID_NotStarted; }
 
     switch (get_y_or_n_from_input(cab_get_session()->input_buffer)) {
         case YORN_Yes:

@@ -148,7 +148,7 @@ void load_saves_wrapper(void) {
 
 void cab_process_turn(void) {
     default_session.current_turn =
-        get_turn_state(default_session.current_turn).process();
+        get_turn_state(default_session.current_turn).process(cab_get_session());
 }
 
 
