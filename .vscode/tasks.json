@@ -10,7 +10,18 @@
         "build"
       ],
       "group": "build",
-      "problemMatcher": []
+      "problemMatcher": {
+        "owner": "c",
+        "fileLocation": ["autoDetect", "${workspaceFolder}"],
+        "pattern": {
+          "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error|fatal error|note):\\s+(.*)$",
+          "file": 1,
+          "line": 2,
+          "column": 3,
+          "severity": 4,
+          "message": 5
+        }
+      }
     },
     {
       "label": "Build Game",
@@ -26,7 +37,18 @@
         "kind": "build",
         "isDefault": true
       },
-      "problemMatcher": []
+      "problemMatcher": {
+        "owner": "c",
+        "fileLocation": ["autoDetect", "${workspaceFolder}"],
+        "pattern": {
+          "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error|fatal error|note):\\s+(.*)$",
+          "file": 1,
+          "line": 2,
+          "column": 3,
+          "severity": 4,
+          "message": 5
+        }
+      }
     },
     {
       "label": "Build Tests",
@@ -39,7 +61,18 @@
         "cab_test"
       ],
       "group": "build",
-      "problemMatcher": []
+      "problemMatcher": {
+        "owner": "c",
+        "fileLocation": ["autoDetect", "${workspaceFolder}"],
+        "pattern": {
+          "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error|fatal error|note):\\s+(.*)$",
+          "file": 1,
+          "line": 2,
+          "column": 3,
+          "severity": 4,
+          "message": 5
+        }
+      }
     },
     {
       "label": "Run Tests",
@@ -68,7 +101,18 @@
         "${input:appName}"
       ],
       "group": "build",
-      "problemMatcher": []
+      "problemMatcher": {
+        "owner": "c",
+        "fileLocation": ["autoDetect", "${workspaceFolder}"],
+        "pattern": {
+          "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error|fatal error|note):\\s+(.*)$",
+          "file": 1,
+          "line": 2,
+          "column": 3,
+          "severity": 4,
+          "message": 5
+        }
+      }
     },
     {
       "label": "Run Example App",
@@ -88,7 +132,18 @@
         "cab_core"
       ],
       "group": "build",
-      "problemMatcher": []
+      "problemMatcher": {
+        "owner": "c",
+        "fileLocation": ["autoDetect", "${workspaceFolder}"],
+        "pattern": {
+          "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error|fatal error|note):\\s+(.*)$",
+          "file": 1,
+          "line": 2,
+          "column": 3,
+          "severity": 4,
+          "message": 5
+        }
+      }
     },
     {
       "label": "Rebuild",
@@ -100,7 +155,18 @@
         "--clean-first"
       ],
       "group": "build",
-      "problemMatcher": []
+      "problemMatcher": {
+        "owner": "c",
+        "fileLocation": ["autoDetect", "${workspaceFolder}"],
+        "pattern": {
+          "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error|fatal error|note):\\s+(.*)$",
+          "file": 1,
+          "line": 2,
+          "column": 3,
+          "severity": 4,
+          "message": 5
+        }
+      }
     },
     {
       "label": "Clean",
