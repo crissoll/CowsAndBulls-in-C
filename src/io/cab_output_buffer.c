@@ -7,7 +7,6 @@
 
 
 #include "cab_errors.h"
-#include "cab_settings_api.h"
 
 #include "cab_io_buffer.h"
 #include "cab_io_consts.h"
@@ -84,7 +83,8 @@ void print_to_buffer(CAB_IOBuffer* buffer, const char* text) {
 }
 
 
-void log_tagged_output(OutputBuffer output_buffer) {
+void log_tagged_output(CabSession* session) {
+    OutputBuffer output_buffer = *session->output_buffer;
     if (cab_output_buffer__is_initialized(output_buffer) == false) {
         return;
     }
@@ -102,8 +102,8 @@ void log_tagged_output(OutputBuffer output_buffer) {
                          : output_buffer.text_buffer->current_size;
         int len = (int)(end > start ? end - start : 0);
 
-        //extra_io_warning(session, "[message:%s]: %.*s", tag_name, len,
-        //                 output_buffer.text_buffer->content + start);
+        extra_io_warning(session, "[message:%s]: %.*s", tag_name, len,
+                         output_buffer.text_buffer->content + start);
     }
 }
 
@@ -112,10 +112,6 @@ char* output_buffer__flush(OutputBuffer* output_buffer) {
     if (output_buffer == NULL ||
         cab_output_buffer__is_initialized(*output_buffer) == false) {
         return strdup("");
-    }
-
-    if (cab_get_setting(STG_Debug_LogMessages)) {
-        log_tagged_output(*output_buffer);
     }
 
     char* result = strdup(output_buffer->text_buffer->content);
@@ -171,10 +167,6 @@ void output_buffer__end_message(OutputBuffer* output_buffer) {
 }
 
 OutputBuffer output_buffer__get_tagged_output(OutputBuffer* output_buffer) {
-    if (cab_get_setting(STG_Debug_LogMessages)) {
-        log_tagged_output(*output_buffer);
-    }
-
     OutputBuffer result = (OutputBuffer){
         .message_indexes =
             malloc(sizeof(result.message_indexes[0]) * output_buffer->size),

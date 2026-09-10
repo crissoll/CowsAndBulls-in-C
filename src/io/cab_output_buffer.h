@@ -7,6 +7,7 @@
 #include "cab_io_buffer.h"
 #include "cab_io_consts.h"
 
+typedef struct CabSession CabSession;
 typedef struct {
     size_t* message_indexes;
     OutputTags* tags;
@@ -33,4 +34,6 @@ void output_buffer__end_message(OutputBuffer* output_buffer);
 
 bool output_buffer__is_message_started(OutputBuffer output_buffer);
 
+
+void log_tagged_output(CabSession* session);
 #endif

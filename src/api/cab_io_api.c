@@ -72,6 +72,9 @@ char* cab_get_output(CabSession* session) {
     OutputBuffer msg_tags =
         output_buffer__get_tagged_output(session->output_buffer);
     char* cur_txt = output_buffer__flush(session->output_buffer);
+    if (cab_session__get_setting(*session, STG_Debug_LogMessages)) {
+        log_tagged_output(session);
+    }
 
 
     if (msg_tags.size > 1) {
@@ -107,6 +110,9 @@ char** cab_get_messages_with_tag(CabSession* session, OutputTags tag,
     OutputBuffer msg_tags =
         output_buffer__get_tagged_output(session->output_buffer);
     char* cur_txt = output_buffer__flush(session->output_buffer);
+    if (cab_session__get_setting(*session, STG_Debug_LogMessages)) {
+        log_tagged_output(session);
+    }
 
     if (msg_tags.size > 1) {
         const size_t max_line_length = cab_session__get_setting(
