@@ -14,7 +14,6 @@
 #include "cab_attempts_manager.h"
 #include "cab_paths.h"
 #include "cab_session_api.h"
-#include "cab_settings_api.h"
 
 #include "cab_help_filter.h"
 #include "cab_saves.h"

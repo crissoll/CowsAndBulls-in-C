@@ -2,14 +2,14 @@
 #include <stddef.h>
 
 #include "cab_session.h"
-#include "cab_settings_api.h"
 #include "cmd_spec.h"
 
 
 void parse(CabSession* session, const char* tokens[], size_t token_count) {
-    if (cab_get_setting(STG_Internal_CommandPrefixChar) != '\0') {
-        if (tokens[0][0] !=
-            (char)cab_get_setting(STG_Internal_CommandPrefixChar)) {
+    if (cab_session__get_setting(*session, STG_Internal_CommandPrefixChar) !=
+        '\0') {
+        if (tokens[0][0] != (char)cab_session__get_setting(
+                                *session, STG_Internal_CommandPrefixChar)) {
             cab_session__get_cmd_tree_root(session)->default_handler(
                 session, token_count, tokens);
             return;

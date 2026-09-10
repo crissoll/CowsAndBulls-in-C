@@ -4,6 +4,8 @@
 #include "cab_output.h"
 
 
+#include "cab_settings_api.h"
+#include "cab_settings_override.h"
 #include "index_array.h"
 #include "word.h"
 #include "word_set.h"
@@ -26,6 +28,7 @@ void filter__apply_pattern(WordSetFilter* filter, const char* pattern,
     if (strlen(pattern) == 1) {
         const size_t letter_idx = (size_t)(pattern[0] - 'a');
         if (mode == REMOVE) {
+            for (size_t i = 0; i < MAX_PRACTICAL_WORD_LEN; i++) {
                 filter->present_letters[i][letter_idx] = false;
             }
         } else {
