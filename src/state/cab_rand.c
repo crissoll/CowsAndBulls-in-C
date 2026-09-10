@@ -18,4 +18,5 @@ void cab_rand_init(CabSession* session) {
     uint32_t seed = t % (1u << 31) ^ t >> 31;
     session->rng_state = (seed != 0) ? seed : 0x80085;
     cab_rand(session);
+    session->seed = session->rng_state;
 }
