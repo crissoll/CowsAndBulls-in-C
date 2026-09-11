@@ -301,11 +301,6 @@ InitFilePathsStatus init_file_paths(void) {
     }
 }
 
-
-void set_file_paths_editing(bool value) {
-    file_paths_editing_enabled = value;
-}
-
 bool set_saves_folder_path(const char* path) {
     if (file_paths_editing_enabled == false) {
         return false;
@@ -377,57 +372,4 @@ bool set_vocabulary_file_path(const char* path) {
         case IVFPS_Failure:
             return false;
     }
-}
-
-
-const char* get_secret_file_path(void) {
-    if (!file_paths_initialized) {
-        switch (init_file_paths()) {
-            case IFP_Success:
-                break;
-            case IFP_Failure:
-            case IFP_NoSaves:
-                return NULL;
-        }
-    }
-    return secret_file_path;
-}
-
-const char* get_attempts_file_path(void) {
-    if (!file_paths_initialized) {
-        switch (init_file_paths()) {
-            case IFP_Success:
-                break;
-            case IFP_Failure:
-            case IFP_NoSaves:
-                return NULL;
-        }
-    }
-    return attempts_file_path;
-}
-
-const char* get_vocabulary_file_path(void) {
-    if (!file_paths_initialized) {
-        switch (init_file_paths()) {
-            case IFP_Success:
-            case IFP_NoSaves:
-                break;
-            case IFP_Failure:
-                return NULL;
-        }
-    }
-    return vocabulary_file_path;
-}
-
-void free_file_paths(void) {
-    free(saves_folder_path);
-    saves_folder_path = NULL;
-    free(secret_file_path);
-    secret_file_path = NULL;
-    free(attempts_file_path);
-    attempts_file_path = NULL;
-    free(vocabulary_file_path);
-    vocabulary_file_path = NULL;
-    file_paths_initialized = false;
-    file_paths_editing_enabled = true;
 }
