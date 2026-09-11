@@ -10,7 +10,6 @@
 
 // temp solution
 
-extern void load_saves_wrapper(void);
 extern bool prompt_to_load_game(void);
 extern void parse_input(void);
 extern void update_saves(void);
@@ -61,14 +60,17 @@ CabTurn get_turn_state(CabTurnId turn_id) {
     }
 
 
-TURN_FUNCS_DEF(
+TURN_FUNCS_DEF(  //
     CAB_TID_NotStarted,
     /* input prompt */
     "load previous game? (y/n)\n> ",
     /* process */
-    if (prompt_to_load_game()) {
-        return CAB_TID_FirstTurn;
-    } return CAB_TID_NotStarted;
+    {
+        if (prompt_to_load_game()) {
+            return CAB_TID_FirstTurn;
+        }
+        return CAB_TID_NotStarted;
+    }
 
 
 )
@@ -81,30 +83,38 @@ TURN_FUNCS_DEF(
     "available commands:\n> ",
     /* process */
     //load_saves_wrapper();
-    parse_input();
+    cab_session__parse_input(session);
 
-    if (cab_session__get_attempts_count(cab_get_session()) > 0) {
+    if (cab_session__get_attempts_count(session) > 0) {
         update_saves();
         return CAB_TID_Playing;
     }
 
-    if (_cab_is_game_ended()) { return CAB_TID_PlayAgain; }
+    if (cab_session__get_end_flags(session) != CABEND_None) {
+        return CAB_TID_PlayAgain;
+    }
 
     return CAB_TID_FirstTurn;
 
 )
 
 
-TURN_FUNCS_DEF(
+TURN_FUNCS_DEF(  //
     CAB_TID_Playing,
     /* input prompt */
     "Enter guess or command: ",
     /* process */
-    parse_input();
+    {
+        parse_input();
 
-    update_saves(); if (_cab_is_game_ended()) {
-        return CAB_TID_PlayAgain;
-    } return CAB_TID_Playing;
+        update_saves();
+
+        if (_cab_is_game_ended()) {
+            return CAB_TID_PlayAgain;
+        }
+
+        return CAB_TID_Playing;
+    }
 
 )
 
@@ -115,20 +125,24 @@ TURN_FUNCS_DEF(
         ? "Play Again? (y/n)\n> "
         : "Nothing more to do\n> ",
     /* process */
-    if (cab_session__get_setting(*session, STG_Internal_ShowPlayAgainPrompt) ==
-        false) { return CAB_TID_NotStarted; }
-
-    switch (get_y_or_n_from_input(cab_get_session()->input_buffer)) {
-        case YORN_Yes:
-            force_setup_session();
-            play_again = true;
-            cab_start_new_game();
-            return CAB_TID_FirstTurn;
-        case YORN_No:
-            play_again = false;
+    {
+        if (cab_session__get_setting(
+                *session, STG_Internal_ShowPlayAgainPrompt) == false) {
             return CAB_TID_NotStarted;
-        case YORN_Invalid:
-            return CAB_TID_PlayAgain;
+        }
+
+        switch (get_y_or_n_from_input(cab_get_session()->input_buffer)) {
+            case YORN_Yes:
+                force_setup_session();
+                play_again = true;
+                cab_start_new_game();
+                return CAB_TID_FirstTurn;
+            case YORN_No:
+                play_again = false;
+                return CAB_TID_NotStarted;
+            case YORN_Invalid:
+                return CAB_TID_PlayAgain;
+        }
     }
 
 )
