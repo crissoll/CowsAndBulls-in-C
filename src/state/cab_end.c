@@ -8,7 +8,7 @@ bool cab_session__match_all_end_flags(CabSession* session,
 
 bool cab_session__get_end_flags(CabSession* session) {
     return session->ending_flags;
-};
+}
 
 void cab_session__set_end_flags(CabSession* session, CABGameEndFlags flags) {
     session->ending_flags |= flags;

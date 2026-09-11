@@ -12,7 +12,6 @@
 #include "cab_session.h"
 #include "cab_turns.h"
 
-
 #include "cab_errors.h"
 #include "cab_input_internal.h"
 

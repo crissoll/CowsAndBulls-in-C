@@ -19,4 +19,5 @@ void cab_session__load_data(CabSession* session);
 void cab_session__delete_data(CabSession* session);
 
 void cab_session__load_vocabulary(CabSession* session);
+
 #endif

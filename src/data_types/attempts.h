@@ -25,13 +25,4 @@ IndexArray get_possible_words_from_attempt(Attempt attempt,
 void print_attempt_array(CabSession* session, const Attempt* attempts,
                          size_t attempt_number);
 
-
-void store_attempt_array(const Attempt* attempts, size_t attempt_number,
-                         size_t invalid_attempts_number, const char* file_path,
-                         unsigned long session_id);
-
-bool load_attempt_array(Attempt* attempts, size_t* attempt_number,
-                        size_t* invalid_attempts_number, const char* file_path,
-                        unsigned long* session_id);
-
 #endif

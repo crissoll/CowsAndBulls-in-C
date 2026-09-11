@@ -26,11 +26,6 @@
 #define STR_(X) #X
 #define STR(X) STR_(X)
 
-typedef unsigned long SessionId;
-
-bool vocabulary_loaded = false;
-
-
 static bool has_duplicate_letters(const char* letters) {
     bool alphabet[26] = {0};
     for (size_t i = 0; i < strlen(letters); i++) {
@@ -40,6 +35,64 @@ static bool has_duplicate_letters(const char* letters) {
         alphabet[letters[i] - 'a'] = true;
     }
     return false;
+}
+
+typedef struct {
+    char* wrong_length_words;
+    char* dup_letters_words;
+} VocabDebugInfo;
+
+VocabDebugInfo vdi__new(size_t alloc_size, bool remove_wrong_length_words,
+                        bool remove_dup_letters_words) {
+    VocabDebugInfo vdi = (VocabDebugInfo){0};
+    if (alloc_size == 0) {
+        return vdi;
+    }
+    if (remove_wrong_length_words) {
+        vdi.wrong_length_words = malloc(alloc_size);
+        vdi.wrong_length_words[0] = '\0';
+    }
+    if (remove_dup_letters_words) {
+        vdi.dup_letters_words = malloc(alloc_size);
+        vdi.dup_letters_words[0] = '\0';
+    }
+    return vdi;
+}
+
+
+void vdi__add_wrong_len_word(VocabDebugInfo* vdi, const char* word) {
+    if (vdi->wrong_length_words == NULL) {
+        return;
+    }
+    strcat(vdi->wrong_length_words, word);
+    strcat(vdi->wrong_length_words, " ");
+}
+
+
+void vdi__add_dup_letter_word(VocabDebugInfo* vdi, const char* word) {
+    if (vdi->dup_letters_words == NULL) {
+        return;
+    }
+    strcat(vdi->dup_letters_words, word);
+    strcat(vdi->dup_letters_words, " ");
+}
+
+void vdi__flush_log(VocabDebugInfo* vdi, CabSession* session) {
+    if (vdi->wrong_length_words != NULL && vdi->wrong_length_words[0] != '\0') {
+        extra_io_warning(session, "the following words have wrong length:\n%s",
+                         vdi->wrong_length_words);
+    }
+    if (vdi->dup_letters_words != NULL && vdi->dup_letters_words[0] != '\0') {
+        extra_io_warning(
+            session,
+            "duplicate letters aren't allowed; removed the following "
+            "words:\n%s",
+            vdi->dup_letters_words);
+    }
+
+    free(vdi->dup_letters_words);
+    free(vdi->wrong_length_words);
+    *vdi = (VocabDebugInfo){0};
 }
 
 void cab_session__load_vocabulary(CabSession* session) {
@@ -89,25 +142,23 @@ void cab_session__load_vocabulary(CabSession* session) {
         return;
     }
 
+    const bool remove_dup_letters_words =
+        cab_session__get_setting(*session,
+                                 STG_Internal_AllowDuplicateLetters) == false;
+
     const char buffer_len = 99;
     char buffer[buffer_len + 1];
 
-    size_t max_alloc_size = word_count * 100 + 1;
-    char* debug_wrong_length_words = NULL;
-    char* debug_dup_letters_words = NULL;
-
     const bool debug_log_enabled = cab_session__get_setting(
         *session, STG_Debug_LogVocabularyDiscardedWords);
-    if (debug_log_enabled) {
-        debug_wrong_length_words = malloc(max_alloc_size);
-        debug_dup_letters_words = malloc(max_alloc_size);
-        debug_wrong_length_words[0] = '\0';
-        debug_dup_letters_words[0] = '\0';
-    }
 
-    const bool remove_words_with_duplicate_letters =
-        cab_session__get_setting(*session,
-                                 STG_Internal_AllowDuplicateLetters) == false;
+    VocabDebugInfo vdi;
+    if (debug_log_enabled) {
+        const size_t max_alloc_size = word_count * (buffer_len + 1);
+        vdi = vdi__new(max_alloc_size, true, remove_dup_letters_words);
+    } else {
+        vdi = vdi__new(0, false, false);
+    }
 
 
     size_t initialized_voc_word_count = 0;
@@ -124,12 +175,8 @@ void cab_session__load_vocabulary(CabSession* session) {
                 continue;
             }
             to_lower(buffer, buffer_len);
-            if (remove_words_with_duplicate_letters &&
-                has_duplicate_letters(buffer)) {
-                if (debug_log_enabled) {
-                    strcat(debug_dup_letters_words, buffer);
-                    strcat(debug_dup_letters_words, " ");
-                }
+            if (remove_dup_letters_words && has_duplicate_letters(buffer)) {
+                vdi__add_dup_letter_word(&vdi, buffer);
                 continue;
             }
 
@@ -152,19 +199,12 @@ void cab_session__load_vocabulary(CabSession* session) {
     for (; (fscanf(file, "%99s", buffer) == 1);) {
         to_lower(buffer, buffer_len);
         if (strlen(buffer) != word_len) {
-            if (debug_log_enabled) {
-                strcat(debug_wrong_length_words, buffer);
-                strcat(debug_wrong_length_words, " ");
-            }
+            vdi__add_wrong_len_word(&vdi, buffer);
             continue;
         }
 
-        if (remove_words_with_duplicate_letters &&
-            has_duplicate_letters(buffer)) {
-            if (debug_log_enabled) {
-                strcat(debug_dup_letters_words, buffer);
-                strcat(debug_dup_letters_words, " ");
-            }
+        if (remove_dup_letters_words && has_duplicate_letters(buffer)) {
+            vdi__add_dup_letter_word(&vdi, buffer);
             continue;
         }
 
@@ -186,22 +226,7 @@ void cab_session__load_vocabulary(CabSession* session) {
     fclose(file);
     free(words);
 
-    if (debug_log_enabled) {
-        if (debug_wrong_length_words[0] != '\0') {
-            extra_io_warning(session,
-                             "the following words have wrong length:\n%s",
-                             debug_wrong_length_words);
-        }
-        if (debug_dup_letters_words[0] != '\0') {
-            extra_io_warning(
-                session,
-                "duplicate letters aren't allowed; removed the following "
-                "words:\n%s",
-                debug_dup_letters_words);
-        }
-    }
-    free(debug_wrong_length_words);
-    free(debug_dup_letters_words);
+    vdi__flush_log(&vdi, session);
 }
 
 void load_saves(void) {
