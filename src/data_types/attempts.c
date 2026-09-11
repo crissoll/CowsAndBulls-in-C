@@ -9,8 +9,6 @@
 
 
 #include "attempts.h"
-#include "cab_files.h"
-#include "cab_session_api.h"
 #include "cab_settings_override.h"
 #include "guess.h"
 #include "index_array.h"
@@ -58,90 +56,4 @@ void print_attempt_array(CabSession* session, const Attempt* attempts,
         output(session, "\n");
     }
     end_message(session);
-}
-
-void store_attempt_array(const Attempt* attempts, size_t attempt_number,
-                         size_t invalid_attempts_number, const char* file_name,
-                         unsigned long session_id) {
-    if (file_name == NULL) {
-        // extra_io_warning(session, "store_attempt_array: file_name is NULL\n");
-        return;
-    }
-
-    FILE* attempts_file = open_file_safe(file_name, "w");
-
-    if (attempts_file == NULL) {
-        /* extra_io_warning(session,
-                         "store_attempt_array: attempts_file not found\n");
-                         return;*/
-    }
-    fprintf(attempts_file, "session_id %lu\n", session_id);
-    fprintf(attempts_file, "invalid_attempts %zu\n", invalid_attempts_number);
-
-    for (size_t i = 0; i < attempt_number; i++) {
-        fprintf(attempts_file, "%s %zu %zu\n", attempts[i].word.letters,
-                attempts[i].result.cows, attempts[i].result.bulls);
-    }
-    fclose(attempts_file);
-}
-
-bool load_attempt_array(Attempt* attempts, size_t* attempt_number,
-                        size_t* invalid_attempts_number, const char* file_name,
-                        unsigned long* session_id) {
-    if (file_name == NULL || attempt_number == NULL || session_id == NULL) {
-        // extra_io_warning(session, "load_attempt_array: invalid arguments\n");
-    }
-
-    *attempt_number = 0;
-
-    FILE* attempts_file = open_file_safe(file_name, "r");
-    if (attempts_file == NULL) {
-        /* extra_io_warning(session,
-                         "load_attempt_array: failed to load attempts_file\n");
-                         return false;*/
-    }
-
-    char label[32] = {0};
-
-    if (fscanf(attempts_file, "%15s %lu", label, session_id) != 2 ||
-        strcmp(label, "session_id") != 0) {
-        fclose(attempts_file);
-        return false;
-    }
-
-    if (fscanf(attempts_file, "%31s %zu", label, invalid_attempts_number) !=
-            2 ||
-        strcmp(label, "invalid_attempts") != 0) {
-        fclose(attempts_file);
-        return false;
-    }
-
-    while (true) {
-        char letters[MAX_PRACTICAL_WORD_LEN + 1] = {0};
-        GuessResult result;
-        unsigned long cows, bulls;
-
-        /* read a word plus cows and bulls; stop on EOF or malformed line */
-        int scanned =
-            fscanf(attempts_file, "%s %lu %lu", letters, &cows, &bulls);
-        if (scanned != 3) {
-            break;
-        }
-        size_t word_len =
-            cab_session__get_setting(*cab_get_session(), STG_Internal_WordLen);
-        Word word = word__new(letters, word_len);
-        if (word.letters[0] == '\0') {
-            break;
-        }
-        result.cows = (size_t)cows;
-        result.bulls = (size_t)bulls;
-
-        Attempt attempt = attempt__new(word, result);
-        attempts[(*attempt_number)++] = attempt;
-        if (cab_session__get_attempts_left(cab_get_session()) == 0) {
-            break; /* prevent overflow */
-        }
-    }
-    fclose(attempts_file);
-    return true;
 }

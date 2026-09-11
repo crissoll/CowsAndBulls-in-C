@@ -143,10 +143,10 @@ static bool cab_secret_word_revealed(void) {
 void update_saves(void) {
     if (cab_secret_word_revealed()) {
         default_session.current_turn = CAB_TID_PlayAgain;
-        delete_save_files();
+        //delete_save_files();
         return;
     }
-    store_saves();
+    cab_session__save_data(cab_get_session());
 }
 
 void load_saves_wrapper(void) {

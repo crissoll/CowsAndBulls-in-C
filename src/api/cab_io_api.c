@@ -10,24 +10,13 @@
 #include "cab_io_utils.h"
 #include "cab_output_buffer.h"
 #include "cab_session.h"
-//#include "cab_settings_api.h"
 #include "cab_turns.h"
 
 
 #include "cab_errors.h"
-
-
 #include "cab_input_internal.h"
-#include "cab_paths.h"
-
 
 #include "cab_session_api.h"
-
-
-
-void cab_io_shutdown(void) {
-    free_file_paths();
-}
 
 InputStatus cab_input(CabSession* session, const char* input_string) {
     if (session == NULL || session->input_buffer == NULL) {
