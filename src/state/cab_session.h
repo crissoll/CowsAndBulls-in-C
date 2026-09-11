@@ -64,4 +64,7 @@ CabAttempts* cab_session__get_attempts_ptr(CabSession* session);
 size_t cab_session__get_attempts_count(CabSession* session);
 
 size_t cab_session__get_attempts_left(CabSession* session);
+
+
+void cab_session__reset_attempts(CabSession* session);
 #endif

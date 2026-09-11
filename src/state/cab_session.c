@@ -100,6 +100,11 @@ CabAttempts* cab_session__get_attempts_ptr(CabSession* session) {
     return &session->attempts;
 }
 
+void cab_session__reset_attempts(CabSession* session) {
+    session->attempts.valid_attempts_count = 0;
+    session->attempts.invalid_attempts_count = 0;
+}
+
 size_t cab_session__get_attempts_count(CabSession* session) {
     return session->attempts.valid_attempts_count +
            session->attempts.invalid_attempts_count;
