@@ -15,7 +15,6 @@ extern void parse_input(void);
 extern void update_saves(void);
 
 extern void force_setup_session(void);
-extern bool play_again;
 
 extern bool _cab_is_game_ended(void);
 extern void cab_start_new_game(void);
@@ -138,7 +137,7 @@ TURN_FUNCS_DEF(
                 cab_start_new_game();
                 return CAB_TID_FirstTurn;
             case YORN_No:
-                play_again = false;
+                cab_session__set_end_flags(session, CABEND_DontPlayAgain);
                 return CAB_TID_NotStarted;
             case YORN_Invalid:
                 return CAB_TID_PlayAgain;

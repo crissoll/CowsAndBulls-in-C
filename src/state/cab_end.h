@@ -12,6 +12,7 @@ typedef enum {
     CABEND_AttemptsRanOut = 4,
     CABEND_FatalConstraint = 8,
     CABEND_LoadError = 16,
+    CABEND_DontPlayAgain = 32,
 } CABGameEndFlags;
 
 

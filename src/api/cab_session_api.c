@@ -37,7 +37,6 @@ CabSession* cab_get_session(void) {
     return &default_session;
 }
 
-bool play_again = true;
 
 void setup_vars(void);
 
@@ -85,7 +84,6 @@ void setup_vars(void) {
         setup_session();
     }
 
-    play_again = true;
     loading_saves = false;
 
     cab_session__word_filter_init(cab_get_session());
