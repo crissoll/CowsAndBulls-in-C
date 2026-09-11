@@ -28,28 +28,7 @@
 
 typedef unsigned long SessionId;
 
-static SessionId session_id;
-static bool session_id_generated = true;  //temp fix before changing save system
-
-
 bool vocabulary_loaded = false;
-
-static void generate_session_id(void) {
-    if (session_id_generated) {
-        return;
-    }
-    srand((unsigned int)time(NULL));
-    session_id =
-        ((SessionId)rand() << 16) ^ (SessionId)rand() ^ (SessionId)time(NULL);
-    session_id_generated = true;
-}
-
-
-static SessionId* get_session_id_ptr(void) {
-    generate_session_id();
-
-    return &session_id;
-}
 
 
 static bool has_duplicate_letters(const char* letters) {
@@ -101,9 +80,7 @@ void cab_session__load_vocabulary(CabSession* session) {
     Word* words = malloc(sizeof(words[0]) * word_count);
     if (cab_session__get_setting(*session,
                                  STG_Internal_VocabDecimationPercentage) > 0) {
-        // session id must be generated to make sure there are deterministic results
-        generate_session_id();
-        srand(session_id);
+        srand(session->seed);
     }
 
     FILE* file = open_file_safe(vocab_path, "r");
