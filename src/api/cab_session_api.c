@@ -108,7 +108,7 @@ bool prompt_to_load_game(void) {
     if (!session_setup) {
         setup_session();
     }
-    if (!are_save_files_valid()) {
+    if (cab_get_session()->loaded == false) {
         loading_saves = false;
         return true;
     }

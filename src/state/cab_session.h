@@ -45,6 +45,7 @@ typedef struct CabSession {
     CabTurnId current_turn;
     CABGameEndFlags ending_flags;
 
+    bool loaded;
 } CabSession;
 
 

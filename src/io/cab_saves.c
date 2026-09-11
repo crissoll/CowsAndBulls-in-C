@@ -651,5 +651,7 @@ void cab_session__load_data(CabSession* session) {
             session->settings_override->entries[setting_id].value = val;
         }
     }
+    session->loaded = true;
+
     fclose(fp);
 }
