@@ -4,6 +4,7 @@
 #include "cab_attempts_manager.h"
 #include "cab_end.h"
 #include "cab_input.h"
+#include "cab_rand.h"
 #include "cab_saves.h"
 #include "cab_session.h"
 #include "cab_session_api.h"
@@ -59,6 +60,16 @@ CabTurn get_turn_state(CabTurnId turn_id) {
     }
 
 
+CabTurnId cab_end_game(CabSession* session) {
+    cab_session__delete_data(session);
+    if (cab_session__get_setting(*session, STG_Internal_ShowPlayAgainPrompt)) {
+        cab_session__reset_end_flags(session);
+        return CAB_TID_PlayAgain;
+    }
+    return CAB_TID_NotStarted;
+}
+
+
 TURN_FUNCS_DEF(  //
     CAB_TID_NotStarted,
     /* input prompt */
@@ -84,14 +95,15 @@ TURN_FUNCS_DEF(
     //load_saves_wrapper();
     cab_session__parse_input(session);
 
+    if (cab_session__get_end_flags(session) != CABEND_None) {
+        return cab_end_game(session);
+    }
+
     if (cab_session__get_attempts_count(session) > 0) {
-        cab_session__update_saves(session);
+        cab_session__save_data(session);
         return CAB_TID_Playing;
     }
 
-    if (cab_session__get_end_flags(session) != CABEND_None) {
-        return CAB_TID_PlayAgain;
-    }
 
     return CAB_TID_FirstTurn;
 
@@ -105,17 +117,11 @@ TURN_FUNCS_DEF(  //
     /* process */
     {
         cab_session__parse_input(session);
-
-        cab_session__update_saves(session);
-
         if (cab_session__get_end_flags(session) != CABEND_None) {
-            if (cab_session__get_setting(*session,
-                                         STG_Internal_ShowPlayAgainPrompt)) {
-                cab_session__reset_end_flags(session);
-                return CAB_TID_PlayAgain;
-            }
-            return CAB_TID_NotStarted;
+            return cab_end_game(session);
         }
+
+        cab_session__save_data(session);
 
         return CAB_TID_Playing;
     }
@@ -138,8 +144,9 @@ TURN_FUNCS_DEF(
 
         switch (get_y_or_n_from_input(cab_get_session()->input_buffer)) {
             case YORN_Yes:
-                force_setup_session();
-                cab_start_new_game();
+                cab_rand_init(session);
+                cab_session__generate_secret_word(session);
+                cab_session__reset_attempts(session);
                 return CAB_TID_FirstTurn;
             case YORN_No:
                 cab_session__set_end_flags(session, CABEND_DontPlayAgain);

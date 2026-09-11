@@ -16,8 +16,6 @@
 #include "cab_turns.h"
 #include "cmd.h"
 
-#include "cab_settings_api.h"
-
 #include "cab_session.h"
 #include "cab_session_api.h"
 #include "cmd_spec.h"
@@ -142,16 +140,6 @@ void parse_input(void) {
 static bool cab_secret_word_revealed(void) {
     return cab_get_session()->ending_flags != CABEND_None;
 }
-
-void cab_session__update_saves(CabSession* session) {
-    if (session->ending_flags != CABEND_None) {
-        session->current_turn = CAB_TID_PlayAgain;
-        cab_session__delete_data(session);
-        return;
-    }
-    cab_session__save_data(session);
-}
-
 
 void cab_process_turn(void) {
     default_session.current_turn =
