@@ -462,3 +462,19 @@ void cab_session__load_data(CabSession* session) {
 
     fclose(fp);
 }
+
+
+void cab_session__delete_data(CabSession* session) {
+    const char* path = session->file_paths.saves_path;
+    if (path == NULL) {
+        extra_io_warning(
+            session,
+            "cab_session__delete_data: NULL saves path. defaulting "
+            "to default path: %d",
+            DEFAULT_SAVES_PATH);
+
+        path = DEFAULT_SAVES_PATH;
+    }
+
+    remove(path);
+}
