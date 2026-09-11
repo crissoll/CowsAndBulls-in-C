@@ -10,6 +10,7 @@
 #include "cab_rand.h"
 #include "cab_session.h"
 #include "cab_turns.h"
+#include "word.h"
 
 
 CabSession cab_session__new(void) {
@@ -57,8 +58,19 @@ void cab_session__free_content(CabSession* session) {
 
 
 bool cab_session__is_game_started(const CabSession* session) {
-    return session->current_turn != CAB_TID_NotStarted &&
-           session->current_turn != CAB_TID_FirstTurn;
+    switch (session->current_turn) {
+        case CAB_TID_NotStarted:
+        case CAB_TID_FirstTurn:
+        case CAB_TID_PlayAgain:
+            return false;
+        case CAB_TID_Playing:
+            return true;
+        case CAB_TID_LEN:
+            extra_io_warning(session,
+                             "cab_session__is_game_started: current_turn is "
+                             "set as CAB_TID_LEN; this value shouldnt be used");
+            return false;
+    }
 }
 
 Word cab_session__get_secret_word(const CabSession* session) {
