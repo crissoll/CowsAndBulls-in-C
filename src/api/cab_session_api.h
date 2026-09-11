@@ -26,4 +26,9 @@ size_t cab_get_attempt_number(void);
 void cab_session_shutdown(void);
 
 
+void cab_session__parse_input(CabSession* session);
+
+
+void cab_session__update_saves(CabSession* session);
+
 #endif

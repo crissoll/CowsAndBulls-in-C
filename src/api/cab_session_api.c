@@ -20,6 +20,7 @@
 
 #include "cab_session.h"
 #include "cab_session_api.h"
+#include "cmd_spec.h"
 
 
 void setup_session(void);
@@ -120,39 +121,37 @@ bool prompt_to_load_game(void) {
     return true;
 }
 
-
-void parse_input(void) {
+void cab_session__parse_input(CabSession* session) {
     char** input_tokens = NULL;
 
     const size_t token_count =
-        get_tokens_from_input(cab_get_session()->input_buffer, &input_tokens);
+        get_tokens_from_input(session->input_buffer, &input_tokens);
 
     if (token_count > 0) {
-        parse(cab_get_session(), (const char**)input_tokens, token_count);
+        parse(session, (const char**)input_tokens, token_count);
     }
 
     free(input_tokens);
+}
+
+
+void parse_input(void) {
+    cab_session__parse_input(cab_get_session());
 }
 
 static bool cab_secret_word_revealed(void) {
     return cab_get_session()->ending_flags != CABEND_None;
 }
 
-void update_saves(void) {
-    if (cab_secret_word_revealed()) {
-        default_session.current_turn = CAB_TID_PlayAgain;
+void cab_session__update_saves(CabSession* session) {
+    if (session->ending_flags != CABEND_None) {
+        session->current_turn = CAB_TID_PlayAgain;
         cab_session__delete_data(session);
         return;
     }
-    cab_session__save_data(cab_get_session());
+    cab_session__save_data(session);
 }
 
-void load_saves_wrapper(void) {
-    if (loading_saves) {
-        load_saves();
-        loading_saves = false;
-    }
-}
 
 void cab_process_turn(void) {
     default_session.current_turn =
@@ -165,8 +164,7 @@ bool _cab_is_game_ended(void) {
 }
 
 bool cab_is_game_ended(void) {
-    return _cab_is_game_ended() &&
-           (!cab_get_setting(STG_Internal_ShowPlayAgainPrompt) || !play_again);
+    return cab_session__get_end_flags(cab_get_session());
 }
 
 size_t cab_get_attempt_number(void) {

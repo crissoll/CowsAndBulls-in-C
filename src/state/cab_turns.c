@@ -4,15 +4,15 @@
 #include "cab_attempts_manager.h"
 #include "cab_end.h"
 #include "cab_input.h"
+#include "cab_saves.h"
 #include "cab_session.h"
 #include "cab_session_api.h"
+#include "cab_settings_override.h"
 
 
 // temp solution
 
 extern bool prompt_to_load_game(void);
-extern void parse_input(void);
-extern void update_saves(void);
 
 extern void force_setup_session(void);
 
@@ -85,7 +85,7 @@ TURN_FUNCS_DEF(
     cab_session__parse_input(session);
 
     if (cab_session__get_attempts_count(session) > 0) {
-        update_saves();
+        cab_session__update_saves(session);
         return CAB_TID_Playing;
     }
 
@@ -104,12 +104,17 @@ TURN_FUNCS_DEF(  //
     "Enter guess or command: ",
     /* process */
     {
-        parse_input();
+        cab_session__parse_input(session);
 
-        update_saves();
+        cab_session__update_saves(session);
 
-        if (_cab_is_game_ended()) {
-            return CAB_TID_PlayAgain;
+        if (cab_session__get_end_flags(session) != CABEND_None) {
+            if (cab_session__get_setting(*session,
+                                         STG_Internal_ShowPlayAgainPrompt)) {
+                cab_session__reset_end_flags(session);
+                return CAB_TID_PlayAgain;
+            }
+            return CAB_TID_NotStarted;
         }
 
         return CAB_TID_Playing;
@@ -127,13 +132,13 @@ TURN_FUNCS_DEF(
     {
         if (cab_session__get_setting(
                 *session, STG_Internal_ShowPlayAgainPrompt) == false) {
+            cab_session__set_end_flags(session, CABEND_DontPlayAgain);
             return CAB_TID_NotStarted;
         }
 
         switch (get_y_or_n_from_input(cab_get_session()->input_buffer)) {
             case YORN_Yes:
                 force_setup_session();
-                play_again = true;
                 cab_start_new_game();
                 return CAB_TID_FirstTurn;
             case YORN_No:
