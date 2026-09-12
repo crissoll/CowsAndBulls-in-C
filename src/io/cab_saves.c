@@ -229,14 +229,6 @@ void cab_session__load_vocabulary(CabSession* session) {
     vdi__flush_log(&vdi, session);
 }
 
-void load_saves(void) {
-    cab_session__load_data(cab_get_session());
-    extra_io_warning(
-        cab_get_session(),
-        "no valid game saves found. generated new saves instead\n");
-    return;
-}
-
 unsigned char get_char_hash(size_t seed) {
     const unsigned char chr = seed % ALPHABET_SIZE;
     if (chr != 0) {

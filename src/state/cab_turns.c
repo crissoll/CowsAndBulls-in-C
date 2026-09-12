@@ -4,6 +4,7 @@
 #include "cab_attempts_manager.h"
 #include "cab_end.h"
 #include "cab_input.h"
+#include "cab_output.h"
 #include "cab_rand.h"
 #include "cab_saves.h"
 #include "cab_session.h"
@@ -152,6 +153,8 @@ TURN_FUNCS_DEF(
                 cab_session__set_end_flags(session, CABEND_DontPlayAgain);
                 return CAB_TID_NotStarted;
             case YORN_Invalid:
+                message(cab_get_session(), OT_INPUT_ERROR,
+                        "input must be y or n\n");
                 return CAB_TID_PlayAgain;
         }
     }

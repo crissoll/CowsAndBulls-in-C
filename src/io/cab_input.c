@@ -110,7 +110,7 @@ YORN_Result get_y_or_n_from_input(CAB_IOBuffer* buffer) {
 
     if (input_size == 0 || (strcmp(buffer->content, "y") != 0 &&
                             strcmp(buffer->content, "n") != 0)) {
-        message(cab_get_session(), OT_INPUT_ERROR, "input must be y or n\n");
+
         return YORN_Invalid;
     }
 
