@@ -275,11 +275,13 @@ size_t vocabulary__hash(const Vocabulary* voc) {
 void cab_session__save_data(CabSession* session) {
     const char* path = session->file_paths.saves_path;
     if (path == NULL) {
-        path = DEFAULT_SAVES_PATH;
+        session->file_paths.saves_path = malloc(sizeof(DEFAULT_SAVES_PATH));
+        strcpy((char*)session->file_paths.saves_path, DEFAULT_SAVES_PATH);
         extra_io_warning(session,
                          "cab_session__save_data: NULL saves path. defaulting "
                          "to default path: %s",
                          DEFAULT_SAVES_PATH);
+        path = session->file_paths.saves_path;
     }
     create_directories_if_missing(path);
     FILE* fp = open_file_safe(path, "w");

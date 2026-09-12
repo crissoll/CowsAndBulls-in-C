@@ -8,7 +8,6 @@
 #include "cab_io_buffer.h"
 #include "cab_output_buffer.h"
 #include "cab_rand.h"
-#include "cab_saves.h"
 #include "cab_session.h"
 #include "cab_turns.h"
 #include "word.h"
