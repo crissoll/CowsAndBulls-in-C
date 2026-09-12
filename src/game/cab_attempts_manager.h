@@ -14,13 +14,10 @@ typedef struct {
 } CabAttempts;
 
 
-size_t get_attempt_number(void);
-
-
 bool cab_attempts__contains_word(Word word, const CabAttempts* attempts);
 
 
-void print_attempts(CabSession* session);
+void cab_session__print_attempts(CabSession* session);
 
 void cab_session__add_attempt(CabSession* session, Word word,
                               GuessResult result);

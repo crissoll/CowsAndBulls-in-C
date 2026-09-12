@@ -20,7 +20,7 @@ void display_remaining_attempts(CabSession* session) {
             remaining_attempts, (remaining_attempts != 1) ? "s" : "");
 }
 
-void print_attempts(CabSession* session) {
+void cab_session__print_attempts(CabSession* session) {
     const size_t attempt_count = cab_session__get_attempts_count(session);
     if (attempt_count == 0) {
         message(session, OT_ATTEMPTS, "no attempts yet!\n");

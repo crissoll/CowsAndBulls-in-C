@@ -65,7 +65,7 @@ static const CommandSpec command_specs[] = {
     {
         .name = "attempts",
         .help_text = HELP_CMD_ATTEMPTS,
-        .case_no_args = print_attempts,
+        .case_no_args = cab_session__print_attempts,
         .default_handler = compare_attempts_to_first_token,
         .args = NULL,
     },
