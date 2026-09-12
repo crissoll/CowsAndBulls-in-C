@@ -5,7 +5,6 @@
 #include "cab_io_consts.h"
 #include "cab_output.h"
 #include "cab_settings_override.h"
-#include "cab_used_vocabulary.h"
 
 #include "word.h"
 
@@ -23,7 +22,7 @@ void compare_attempts_to_first_token(CabSession* session, size_t token_count,
     const size_t word_len =
         cab_session__get_setting(*session, STG_Internal_WordLen);
     Word candidate_word = word__new(tokens[0], word_len);
-    if (!word_is_in_used_vocabulary(candidate_word)) {
+    if (!vocabulary__contains_word(session->vocabulary, candidate_word)) {
         message(session, OT_ALERT, "word not contained in vocabulary\n");
         return;
     }

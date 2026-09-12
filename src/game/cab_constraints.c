@@ -6,11 +6,10 @@
 #include "cab_end.h"
 #include "cab_io_consts.h"
 #include "cab_output.h"
-#include "cab_used_vocabulary.h"
 
 
 static bool handle_vocabulary_constraint(CabSession* session, Word word) {
-    if (word_is_in_used_vocabulary(word)) {
+    if (vocabulary__contains_word(session->vocabulary, word)) {
         return false;
     }
     if (cab_session__get_setting(*session, STG_Rule_VocabularyConstraintMode) !=
