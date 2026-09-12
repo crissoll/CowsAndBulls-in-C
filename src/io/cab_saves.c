@@ -14,7 +14,7 @@
 
 
 #include "cab_attempts_manager.h"
-#include "cab_paths.h"
+#include "cab_files.h"
 
 #include "cab_help_filter.h"
 #include "cab_saves.h"

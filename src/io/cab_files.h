@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+bool create_directories_if_missing(const char* path);
 // Controllo per assicurarsi che il file esista
 FILE* open_file_safe(const char* file_name, const char* mode);
 
