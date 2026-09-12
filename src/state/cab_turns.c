@@ -4,6 +4,7 @@
 #include "cab_attempts_manager.h"
 #include "cab_end.h"
 #include "cab_input.h"
+#include "cab_io_consts.h"
 #include "cab_output.h"
 #include "cab_rand.h"
 #include "cab_saves.h"
@@ -80,6 +81,7 @@ TURN_FUNCS_DEF(  //
         if (prompt_to_load_game()) {
             return CAB_TID_FirstTurn;
         }
+        message(session, INPUT_ERROR, "invalid input");
         return CAB_TID_NotStarted;
     }
 
@@ -93,7 +95,6 @@ TURN_FUNCS_DEF(
     "Type a 5-letter word to guess, or 'help' to display "
     "available commands:\n> ",
     /* process */
-    //load_saves_wrapper();
     cab_session__parse_input(session);
 
     if (cab_session__get_end_flags(session) != CABEND_None) {

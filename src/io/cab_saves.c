@@ -345,7 +345,7 @@ void cab_session__load_data(CabSession* session) {
     if (path == NULL) {
         extra_io_warning(session,
                          "cab_session__load_data: NULL saves path. defaulting "
-                         "to default path: %d",
+                         "to default path: %s",
                          DEFAULT_SAVES_PATH);
 
         path = DEFAULT_SAVES_PATH;
@@ -356,7 +356,6 @@ void cab_session__load_data(CabSession* session) {
         extra_io_warning(
             session,
             "cab_session__load_data: failed to open save file for reading");
-        cab_session__set_end_flags(session, CABEND_LoadError);
         return;
     }
 
@@ -367,7 +366,6 @@ void cab_session__load_data(CabSession* session) {
         extra_io_warning(session,
                          "cab_session__load_data: failed to load seed");
         fclose(fp);
-        cab_session__set_end_flags(session, CABEND_LoadError);
         return;
     }
     size_t rng_state;
@@ -376,7 +374,6 @@ void cab_session__load_data(CabSession* session) {
         extra_io_warning(session,
                          "cab_session__load_data: failed to load rng_state");
         fclose(fp);
-        cab_session__set_end_flags(session, CABEND_LoadError);
         return;
     }
     session->rng_state = (uint32_t)rng_state;
@@ -408,20 +405,18 @@ void cab_session__load_data(CabSession* session) {
         extra_io_warning(session,
                          "cab_session__load_data: failed to load secret_word");
         fclose(fp);
-        cab_session__set_end_flags(session, CABEND_LoadError);
         return;
     }
     unhash_word(&session->secret_word, session->seed);
 
     // attempts
-    params = fscanf(fp, "valid: %zu invalid: %zu",
+    params = fscanf(fp, " valid: %zu invalid: %zu",
                     &session->attempts.valid_attempts_count,
                     &session->attempts.invalid_attempts_count);
     if (params != 2) {
         extra_io_warning(session,
                          "cab_session__load_data: failed to load attempts");
         fclose(fp);
-        cab_session__set_end_flags(session, CABEND_LoadError);
         return;
     }
     Attempt attempt;
@@ -434,7 +429,6 @@ void cab_session__load_data(CabSession* session) {
                 session, "cab_session__load_data: failed to load attempt n.%zu",
                 i);
             fclose(fp);
-            cab_session__set_end_flags(session, CABEND_LoadError);
             return;
         }
         session->attempts.attempts[i] = attempt;
@@ -447,7 +441,6 @@ void cab_session__load_data(CabSession* session) {
         extra_io_warning(session,
                          "cab_session__load_data: failed to load settings");
         fclose(fp);
-        cab_session__set_end_flags(session, CABEND_LoadError);
         return;
     }
 
@@ -465,7 +458,6 @@ void cab_session__load_data(CabSession* session) {
                 session, "cab_session__load_data: failed to load setting n.%zu",
                 i);
             fclose(fp);
-            cab_session__set_end_flags(session, CABEND_LoadError);
             return;
         }
         if (session->settings_override != NULL &&
