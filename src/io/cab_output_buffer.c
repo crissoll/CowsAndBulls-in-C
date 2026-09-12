@@ -83,7 +83,7 @@ void print_to_buffer(CAB_IOBuffer* buffer, const char* text) {
 }
 
 
-void log_tagged_output(CabSession* session) {
+void cab_session__log_output_buffer(CabSession* session) {
     OutputBuffer output_buffer = *session->output_buffer;
     if (cab_output_buffer__is_initialized(output_buffer) == false) {
         return;

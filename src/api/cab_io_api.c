@@ -62,7 +62,7 @@ char* cab_get_output(CabSession* session) {
         output_buffer__get_tagged_output(session->output_buffer);
     char* cur_txt = output_buffer__flush(session->output_buffer);
     if (cab_session__get_setting(*session, STG_Debug_LogMessages)) {
-        log_tagged_output(session);
+        cab_session__log_output_buffer(session);
     }
 
 
@@ -100,7 +100,7 @@ char** cab_get_messages_with_tag(CabSession* session, OutputTags tag,
         output_buffer__get_tagged_output(session->output_buffer);
     char* cur_txt = output_buffer__flush(session->output_buffer);
     if (cab_session__get_setting(*session, STG_Debug_LogMessages)) {
-        log_tagged_output(session);
+        cab_session__log_output_buffer(session);
     }
 
     if (msg_tags.size > 1) {

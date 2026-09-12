@@ -35,5 +35,5 @@ void output_buffer__end_message(OutputBuffer* output_buffer);
 bool output_buffer__is_message_started(OutputBuffer output_buffer);
 
 
-void log_tagged_output(CabSession* session);
+void cab_session__log_output_buffer(CabSession* session);
 #endif

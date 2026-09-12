@@ -47,6 +47,7 @@ typedef struct CabSession {
 
     bool loaded : 1;
     bool setup : 1;
+
 } CabSession;
 
 
