@@ -23,14 +23,10 @@
 
 void setup_session(void);
 
-static bool loading_saves = false;
-
-bool session_setup = false;
-
 static CabSession default_session = (CabSession){0};
 
 CabSession* cab_get_session(void) {
-    if (!session_setup) {
+    if (default_session.setup == false) {
         setup_session();
     }
     return &default_session;
@@ -40,29 +36,26 @@ CabSession* cab_get_session(void) {
 void setup_vars(void);
 
 void setup_session(void) {
-    if (session_setup) {
+    if (default_session.setup) {
         return;
     }
-    session_setup = true;
     extra_io_warning(&default_session, "\n======== new session ===========\n");
-
     default_session = cab_session__new();
+    default_session.setup = true;
 
     cab_session__load_data(&default_session);
-    bool load_complete = true;
-    if (cab_session__match_all_end_flags(&default_session, CABEND_LoadError)) {
-        default_session.current_turn = CAB_TID_FirstTurn;
-        load_complete = false;
-    }
-    cab_session__reset_end_flags(&default_session);
 
-    cab_session__load_vocabulary(&default_session);
     if (cab_session__match_all_end_flags(&default_session, CABEND_LoadError)) {
         message(&default_session, OT_ALERT,
                 "Couldn't load vocabulary, game can't start");
+        cab_get_session()->current_turn = CAB_TID_NotStarted;
+        return;
     }
-    if (!load_complete) {
-        setup_vars();
+    cab_session__reset_end_flags(&default_session);
+
+    if (cab_get_session()->loaded == false) {
+        cab_session__start_new_game(&default_session);
+        default_session.current_turn = CAB_TID_FirstTurn;
     }
 }
 
@@ -71,7 +64,7 @@ void force_setup_session(void) {
 }
 
 CabTurnId cab_get_current_turn_id(void) {
-    if (!session_setup) {
+    if (default_session.setup == false) {
         setup_session();
     }
 
@@ -79,11 +72,10 @@ CabTurnId cab_get_current_turn_id(void) {
 }
 
 void setup_vars(void) {
-    if (!session_setup) {
+    if (default_session.setup == false) {
         setup_session();
     }
 
-    loading_saves = false;
 
     cab_session__word_filter_init(cab_get_session());
     cab_session__generate_secret_word(cab_get_session());
@@ -96,25 +88,27 @@ void cab_start_new_game(void) {
 
 void cab_load_game(void) {
     setup_vars();
-    load_saves();
     default_session.current_turn = CAB_TID_FirstTurn;
 }
 
 
 bool prompt_to_load_game(void) {
-    if (!session_setup) {
+    if (default_session.setup == false) {
         setup_session();
     }
+
     if (cab_get_session()->loaded == false) {
-        loading_saves = false;
         return true;
     }
     YORN_Result y_or_n = get_y_or_n_from_input(cab_get_session()->input_buffer);
     switch (y_or_n) {
         case YORN_Invalid:
             return false;
-        default:
-            loading_saves = y_or_n;
+        case YORN_Yes:
+            return true;
+        case YORN_No:
+            cab_session__start_new_game(&default_session);
+            return true;
     }
     return true;
 }
@@ -161,6 +155,6 @@ size_t cab_get_attempt_number(void) {
 
 void cab_session_shutdown(void) {
     cab_session__free_content(&default_session);
-    session_setup = false;
+    default_session.setup = false;
     default_session.current_turn = CAB_TID_NotStarted;
 }

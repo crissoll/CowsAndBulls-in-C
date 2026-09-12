@@ -8,6 +8,7 @@
 #include "cab_io_buffer.h"
 #include "cab_output_buffer.h"
 #include "cab_rand.h"
+#include "cab_saves.h"
 #include "cab_session.h"
 #include "cab_turns.h"
 #include "word.h"
@@ -116,4 +117,22 @@ size_t cab_session__get_attempts_left(CabSession* session) {
     const size_t used_attempts = cab_session__get_attempts_count(session);
 
     return (used_attempts >= max_attempts) ? 0 : max_attempts - used_attempts;
+}
+
+
+void cab_session__start_new_game(CabSession* session) {
+    if (session == NULL) {
+        return;
+    }
+    if (session->seed == 0) {
+        *session = cab_session__new();
+    }
+    cab_rand_init(session);
+    cab_session__generate_secret_word(session);
+    cab_session__reset_attempts(session);
+    cab_session__word_filter_init(session);
+    cab_session__reset_end_flags(session);
+
+    session->setup = true;
+    session->loaded = false;
 }

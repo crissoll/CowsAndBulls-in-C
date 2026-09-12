@@ -45,7 +45,8 @@ typedef struct CabSession {
     CabTurnId current_turn;
     CABGameEndFlags ending_flags;
 
-    bool loaded;
+    bool loaded : 1;
+    bool setup : 1;
 } CabSession;
 
 
@@ -67,4 +68,6 @@ size_t cab_session__get_attempts_left(CabSession* session);
 
 
 void cab_session__reset_attempts(CabSession* session);
+
+void cab_session__start_new_game(CabSession* session);
 #endif
