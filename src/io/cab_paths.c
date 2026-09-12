@@ -25,28 +25,6 @@
     #define MKDIR(path) mkdir(path, 0777)
 #endif
 
-typedef enum {
-    SPS_Success,
-    SPS_MallocFailure,
-    SPS_EmptyArgument,
-} SetPathStringStatus;
-
-SetPathStringStatus set_path_string(char** path, const char* value) {
-    if (value == NULL || value[0] == '\0') {
-        // extra_io_warning(session, "tried assigning empty value to path\n");
-        return SPS_EmptyArgument;
-    }
-
-    char* new_path = malloc(strlen(value) + 1);
-    if (new_path == NULL) {
-        return SPS_MallocFailure;
-    }
-    strcpy(new_path, value);
-    free(*path);
-    *path = new_path;
-    return SPS_Success;
-}
-
 
 static bool dir_exists(const char* path) {
     struct stat st;
@@ -54,6 +32,26 @@ static bool dir_exists(const char* path) {
         return S_ISDIR(st.st_mode);
     }
     return false;
+}
+
+static char* find_last_slash(const char* path) {
+    char* last_slash = strrchr(path, '/');
+    char* last_backslash = strrchr(path, '\\');
+    char* cut = (last_slash > last_backslash) ? last_slash : last_backslash;
+    return cut;
+}
+
+static bool create_dir(const char* path) {
+    if (dir_exists(path)) {
+        return true;
+    }
+    const int error_status = MKDIR(path) != 0;
+
+    return (error_status && !dir_exists(path));
+}
+
+static bool char_is_slash(char chr) {
+    return chr == '\\' || chr == '/';
 }
 
 bool create_directories_if_missing(const char* path) {
@@ -64,40 +62,34 @@ bool create_directories_if_missing(const char* path) {
     char tmp[256];
 
     snprintf(tmp, sizeof(tmp), "%s", path);
-    char* last_slash = strrchr(tmp, '/');
-    char* last_backslash = strrchr(tmp, '\\');
-    char* cut = (last_slash > last_backslash) ? last_slash : last_backslash;
-    if (cut == NULL) {
+
+    char* last_slash = find_last_slash(tmp);
+    if (last_slash == NULL) {
         return true;
     }
-    *cut = '\0';
+    *last_slash = '\0';
 
     size_t len = strlen(tmp);
 
-    if (len > 0 && (tmp[len - 1] == '/' || tmp[len - 1] == '\\')) {
+    if (len > 0 && char_is_slash(tmp[len - 1])) {
         tmp[len - 1] = '\0';
     }
 
-    for (char* p = tmp + 1; *p; p++) {
-        if (*p == '/' || *p == '\\') {
-            char original = *p;
-            *p = '\0';
-            if (!(p == tmp + 2 && tmp[1] == ':')) {
-                if (!dir_exists(tmp)) {
-                    if (MKDIR(tmp) != 0 && !dir_exists(tmp)) {
-                        return false;
-                    }
-                }
+    for (char* chr = tmp + 1; *chr; chr++) {
+        if (!char_is_slash(*chr)) {
+            continue;
+        }
+        char original = *chr;
+        *chr = '\0';
+
+        // skips the slash in absolute paths (ex. "C:/")
+        if (!(chr == tmp + 2 && tmp[1] == ':')) {
+            if (!create_dir(tmp)) {
+                return false;
             }
-            *p = original;
         }
+        *chr = original;
     }
 
-    if (!dir_exists(tmp)) {
-        if (MKDIR(tmp) != 0 && !dir_exists(tmp)) {
-            return false;
-        }
-    }
-
-    return true;
+    return create_dir(tmp);
 }
