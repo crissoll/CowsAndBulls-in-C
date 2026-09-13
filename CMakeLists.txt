@@ -28,7 +28,7 @@ set_target_properties(cab_core PROPERTIES OUTPUT_NAME "cab_game")
 add_library(cab::cab_core ALIAS cab_core)
 
 # Automatically detect and include all immediate subdirectories under src/
-file(GLOB CAB_SUBDIRS LIST_DIRECTORIES true "src/*")
+file(GLOB CAB_SUBDIRS LIST_DIRECTORIES true CONFIGURE_DEPENDS "src/*")
 foreach(DIR ${CAB_SUBDIRS})
     if(IS_DIRECTORY "${DIR}")
         target_include_directories(cab_core PUBLIC "${DIR}")
