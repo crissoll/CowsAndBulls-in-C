@@ -7,7 +7,9 @@
 #include "cab_io_consts.h"
 #include "cab_session.h"
 
+#include "cab_deprecated.h"
 
+CAB_DEPRECATED("since the cab_session rework it's no longer necessary; no-op")
 // must be called at the end of execution to avoid memory leaks
 void cab_io_shutdown(void);
 

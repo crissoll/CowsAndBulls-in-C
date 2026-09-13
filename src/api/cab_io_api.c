@@ -190,3 +190,5 @@ const char* cab_session__cab_get_input_prompt(CabSession* session) {
 const char* cab_get_input_prompt(void) {
     return cab_session__cab_get_input_prompt(cab_get_session());
 }
+
+void cab_io_shutdown(void) {}
