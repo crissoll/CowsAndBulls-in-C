@@ -155,6 +155,4 @@ size_t cab_get_attempt_number(void) {
 
 void cab_session_shutdown(void) {
     cab_session__free_content(&default_session);
-    default_session.setup = false;
-    default_session.current_turn = CAB_TID_NotStarted;
 }
