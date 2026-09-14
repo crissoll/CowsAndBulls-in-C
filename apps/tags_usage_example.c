@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "cab_engine_api.h"
 #include "cab_io_api.h"
 #include "cab_session_api.h"
 
@@ -36,15 +35,14 @@ static bool read_line(char* buffer, size_t buffer_size) {
 }
 void turn_function(const char* input_buffer) {
 
-    cab_input(cab_get_session(), input_buffer);
+    cab_input(input_buffer);
     cab_process_turn();
 
     size_t message_count;
 
     size_t j = 1;
     for (OutputTags t = 1; t < OT_END; t *= 2) {
-        char** strings =
-            cab_get_messages_with_tag(cab_get_session(), t, &message_count);
+        char** strings = cab_get_messages_with_tag(t, &message_count);
         if (strings != NULL && message_count > 0) {
             printf("%s:\n", CAB_OUTPUT_TAG_NAMES[j]);
             if (message_count == 1) {
@@ -75,6 +73,6 @@ int main(void) {
 
         turn_function(buffer);
     }
-    cab_shutdown_game();
+    cab_session_shutdown();
     return 0;
 }

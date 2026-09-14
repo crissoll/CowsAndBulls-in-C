@@ -2,11 +2,10 @@
 #include "cab_io_api.h"
 #include "cab_session_api.h"
 
-char* cab_play_turn(char* input_string) {
-    if (cab_input(cab_get_session(), input_string) != INPUT_SUCCESS) {
-        return cab_get_output(cab_get_session());
+const char* cab_play_turn(char* input_string) {
+    if (cab_session__set_input(cab_get_session(), input_string) ==
+        INPUT_SUCCESS) {
+        cab_process_turn();
     }
-    cab_process_turn();
-
-    return cab_get_output(cab_get_session());
+    return cab_session__get_output(cab_get_session());
 }

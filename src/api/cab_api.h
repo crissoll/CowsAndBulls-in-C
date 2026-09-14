@@ -25,7 +25,7 @@ const char* cab_get_input_prompt(void);
 // the core function of the game.
 // if you call this without using load_game or start_new_game,
 // if there are saves the user will be asked if they want to load them
-char* cab_play_turn(char* input_string);
+const char* cab_play_turn(char* input_string);
 
 // returns true if you find the secret word
 bool cab_is_game_ended(void);

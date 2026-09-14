@@ -15,7 +15,6 @@ int main(void) {
 
         char* output = cab_play_turn(string);
         printf("%s", output);
-        free(output);
     }
     cab_shutdown_game();
     return 0;

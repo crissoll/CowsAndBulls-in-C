@@ -37,7 +37,7 @@ int main(void) {
 
         char* output_string = cab_play_turn(buffer);
         printf("%s", output_string);
-        free(output_string);
+        // free(output_string);
     }
     cab_shutdown_game();
     return 0;
