@@ -131,19 +131,12 @@ void parse_input(void) {
     cab_session__parse_input(cab_get_session());
 }
 
-static bool cab_secret_word_revealed(void) {
-    return cab_get_session()->ending_flags != CABEND_None;
-}
 
 void cab_process_turn(void) {
     default_session.current_turn =
         get_turn_state(default_session.current_turn).process(cab_get_session());
 }
 
-
-bool _cab_is_game_ended(void) {
-    return (cab_secret_word_revealed());
-}
 
 bool cab_is_game_ended(void) {
     return cab_session__get_end_flags(cab_get_session());
