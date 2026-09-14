@@ -28,6 +28,8 @@ void print_to_buffer(CAB_IOBuffer* buffer, const char* text);
 
 OutputBuffer output_buffer__get_tagged_output(OutputBuffer* output_buffer);
 
+void cab_output_buffer__clear(OutputBuffer* buffer);
+
 void output_buffer__start_message(OutputBuffer* output_buffer, OutputTags tags);
 
 void output_buffer__end_message(OutputBuffer* output_buffer);

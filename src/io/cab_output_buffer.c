@@ -191,3 +191,15 @@ OutputBuffer output_buffer__get_tagged_output(OutputBuffer* output_buffer) {
     output_buffer->size = 0;
     return result;
 }
+
+
+void cab_output_buffer__clear(OutputBuffer* buffer) {
+    if (buffer == NULL) {
+        return;
+    }
+    buffer->size = 0;
+    if (buffer->text_buffer != NULL && buffer->text_buffer->content != NULL) {
+        buffer->text_buffer->current_size = 0;
+        buffer->text_buffer->content[0] = '\0';
+    }
+}

@@ -17,12 +17,15 @@
 
 #include "cab_session_api.h"
 
-InputStatus cab_input(CabSession* session, const char* input_string) {
+InputStatus cab_session__set_input(CabSession* session,
+                                   const char* input_string) {
     if (session == NULL || session->input_buffer == NULL) {
         extra_io_warning(session, "cab_input: NULL input_buffer\n");
 
         return INPUT_ERROR;
     }
+
+    cab_output_buffer__clear(session->output_buffer);
 
     if (input_string == NULL) {
         extra_io_warning(session,
@@ -51,39 +54,26 @@ InputStatus cab_input(CabSession* session, const char* input_string) {
     return status;
 }
 
-
-char* cab_get_output(CabSession* session) {
-    if (session == NULL || session->output_buffer == NULL) {
-        return strdup("");
-    }
-
-    OutputBuffer msg_tags =
-        output_buffer__get_tagged_output(session->output_buffer);
-    char* cur_txt = output_buffer__flush(session->output_buffer);
-    if (cab_session__get_setting(*session, STG_Debug_LogMessages)) {
-        cab_session__log_output_buffer(session);
-    }
-
-
-    if (msg_tags.size > 1) {
-        const size_t max_line_length = cab_session__get_setting(
-            *session, STG_Display_TextWrapMaxLineLength);
-        for (size_t msg = 0; msg < msg_tags.size - 1; msg++) {
-            text_wrap(&cur_txt[msg_tags.message_indexes[msg]], max_line_length);
-        }
-    }
-
-    free(msg_tags.message_indexes);
-    free(msg_tags.tags);
-
-    if (cur_txt == NULL) {
-        return strdup("");
-    }
-    return cur_txt;
+InputStatus cab_input(const char* input_string) {
+    return cab_session__set_input(cab_get_session(), input_string);
 }
 
-char** cab_get_messages_with_tag(CabSession* session, OutputTags tag,
-                                 size_t* message_count) {
+const char* cab_session__get_output(CabSession* session) {
+    if (session == NULL || session->output_buffer == NULL ||
+        session->output_buffer->text_buffer == NULL ||
+        session->output_buffer->text_buffer->content == NULL) {
+        return "";
+    }
+    return session->output_buffer->text_buffer->content;
+}
+
+const char* cab_get_output(void) {
+    return cab_session__get_output(cab_get_session());
+}
+
+const char** cab_session__get_messages_with_tag(CabSession* session,
+                                                OutputTags tag,
+                                                size_t* message_count) {
     if (message_count == NULL) {
         extra_io_warning(session, "passed null message_count pointer\n");
         return NULL;
@@ -171,6 +161,11 @@ char** cab_get_messages_with_tag(CabSession* session, OutputTags tag,
     free(cur_txt);
 
     return result;
+}
+
+const char** cab_get_messages_with_tag(OutputTags tag, size_t* message_count) {
+    return cab_session__get_messages_with_tag(cab_get_session(), tag,
+                                              message_count);
 }
 
 const char* cab_session__get_turn_input_prompt(CabSession* session) {
