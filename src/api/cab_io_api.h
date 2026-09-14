@@ -11,6 +11,7 @@
 #include "cmd_spec.h"
 
 
+#ifndef CAB_NO_GLOBAL_SESSION
 
 const char* cab_get_input_prompt(void);
 
@@ -28,6 +29,7 @@ const char** cab_get_messages_with_tag(OutputTags tag, size_t* message_count);
 CAB_DEPRECATED("since the cab_session rework it's no longer necessary; no-op")
 void cab_io_shutdown(void);
 
+#endif  // CAB_NO_GLOBAL_SESSION
 
 
 InputStatus cab_session__set_input(CabSession* session,

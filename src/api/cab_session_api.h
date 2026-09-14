@@ -7,6 +7,8 @@
 #include "cab_session.h"
 #include "cab_turns.h"
 
+#ifndef CAB_NO_GLOBAL_SESSION
+
 CabSession* cab_get_session(void);
 
 CabTurnId cab_get_current_turn_id(void);
@@ -25,7 +27,9 @@ size_t cab_get_attempt_number(void);
 
 void cab_session_shutdown(void);
 
+#endif
 
 void cab_session__parse_input(CabSession* session);
+
 
 #endif
