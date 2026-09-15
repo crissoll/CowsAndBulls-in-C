@@ -17,10 +17,12 @@
 #include "cab_files.h"
 
 #include "cab_help_filter.h"
+#include "cab_rand.h"
 #include "cab_saves.h"
 #include "cab_settings_override.h"
 #include "vocabulary.h"
 #include "word.h"
+
 
 #define STR_(X) #X
 #define STR(X) STR_(X)
@@ -129,11 +131,13 @@ void cab_session__load_vocabulary(CabSession* session) {
                          "load_vocabulary: vocabulary file is empty\n");
         return;
     }
+
     Word* words = malloc(sizeof(words[0]) * word_count);
-    if (cab_session__get_setting(*session,
-                                 STG_Internal_VocabDecimationPercentage) > 0) {
-        srand(session->seed);
+    if (session->seed == 0) {
+        cab_session__rand_init(session);
     }
+    uint32_t decimation_rand_var = session->seed;
+
 
     FILE* file = open_file_safe(vocab_path, "r");
     if (file == NULL) {
@@ -208,7 +212,9 @@ void cab_session__load_vocabulary(CabSession* session) {
         }
 
         if (decimation_percetage > 0) {
-            const size_t survival_percentage = ((size_t)rand()) % 100;
+            decimation_rand_var = cab_rand(decimation_rand_var);
+            const size_t survival_percentage =
+                ((size_t)decimation_rand_var) % 100;
             if (survival_percentage < decimation_percetage) {
                 continue;
             }

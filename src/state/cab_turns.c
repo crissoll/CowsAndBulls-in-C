@@ -19,8 +19,6 @@ extern bool prompt_to_load_game(void);
 
 extern void force_setup_session(void);
 
-extern bool _cab_is_game_ended(void);
-extern void cab_start_new_game(void);
 
 #pragma region  // turn functions declarations
 #define TURN_FUNCS_DECL(TURN_NAME)                                      \
