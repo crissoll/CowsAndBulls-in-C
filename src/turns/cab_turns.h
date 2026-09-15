@@ -1,5 +1,5 @@
-#ifndef CAB_GAME_STATE
-#define CAB_GAME_STATE
+#ifndef CAB_TURNS_H
+#define CAB_TURNS_H
 
 #include <stddef.h>
 
@@ -12,7 +12,6 @@ typedef struct CabSession CabSession;
     X(CAB_TID_Playing)    /**/ \
     X(CAB_TID_PlayAgain)  /**/
 
-
 typedef enum {
 #define AS_EVAL(val) val,
     _CAB_TURNS(AS_EVAL)
@@ -20,18 +19,9 @@ typedef enum {
         CAB_TID_LEN,
 } CabTurnId;
 
-typedef struct _cab_turn_struct CabTurn;
+void cab_session__end_game(CabSession* session);
 
-typedef CabTurnId (*CabTurnProcFunc)(CabSession* session);
-typedef const char* (*CabTurnInputPrompt)(CabSession* session);
-
-struct _cab_turn_struct {
-    CabSession* session;
-    CabTurnInputPrompt get_input_prompt;
-    CabTurnProcFunc process;
-};
-
-CabTurn get_turn_state(CabTurnId turn_id);
-
+const char* cab_session__get_turn_input_prompt(CabSession* session);
+void cab_session__process(CabSession* session);
 
 #endif

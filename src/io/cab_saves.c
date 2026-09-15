@@ -241,6 +241,7 @@ unsigned char get_char_hash(size_t seed) {
     }
     return 1;
 }
+
 void hash_word(Word* word, size_t seed) {
     const size_t len = strlen(word->letters);
     const char hash = get_char_hash(seed);

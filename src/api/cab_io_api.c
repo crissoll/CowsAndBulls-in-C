@@ -168,12 +168,8 @@ const char** cab_get_messages_with_tag(OutputTags tag, size_t* message_count) {
                                               message_count);
 }
 
-const char* cab_session__get_turn_input_prompt(CabSession* session) {
-    return get_turn_state(session->current_turn).get_input_prompt(session);
-}
 
-
-const char* cab_session__cab_get_input_prompt(CabSession* session) {
+const char* cab_session__get_input_prompt(CabSession* session) {
     const char* prompt = cab_session__get_turn_input_prompt(session);
     if (cab_session__get_setting(*session, STG_Debug_LogInputPrompt)) {
         extra_io_warning(session, "[input prompt]: %s", prompt);
@@ -182,7 +178,7 @@ const char* cab_session__cab_get_input_prompt(CabSession* session) {
 }
 
 const char* cab_get_input_prompt(void) {
-    return cab_session__cab_get_input_prompt(cab_get_session());
+    return cab_session__get_input_prompt(cab_get_session());
 }
 
 void cab_io_shutdown(void) {}

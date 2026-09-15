@@ -133,8 +133,7 @@ void parse_input(void) {
 
 
 void cab_process_turn(void) {
-    default_session.current_turn =
-        get_turn_state(default_session.current_turn).process(cab_get_session());
+    cab_session__process(&default_session);
 }
 
 
