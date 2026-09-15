@@ -8,6 +8,7 @@
 #include "cab_io_buffer.h"
 #include "cab_output_buffer.h"
 #include "cab_rand.h"
+#include "cab_saves.h"
 #include "cab_session.h"
 #include "cab_turns.h"
 #include "word.h"
@@ -128,6 +129,7 @@ void cab_session__start_new_game(CabSession* session) {
         *session = cab_session__new();
     }
     cab_session__rand_init(session);
+    cab_session__load_vocabulary(session);
     cab_session__generate_secret_word(session);
     cab_session__reset_attempts(session);
     cab_session__word_filter_init(session);
