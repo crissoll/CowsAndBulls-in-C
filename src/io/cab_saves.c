@@ -225,7 +225,7 @@ void cab_session__load_vocabulary(CabSession* session) {
     }
     session->vocabulary = calloc(1, sizeof(Vocabulary));
 
-    vocabulary__init(session->vocabulary, words, word_count);
+    vocabulary__init(session->vocabulary, words, initialized_voc_word_count);
 
     cab_session__word_filter_init(session);
     fclose(file);
