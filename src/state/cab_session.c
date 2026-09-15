@@ -29,7 +29,7 @@ CabSession cab_session__new(void) {
 
     session.ending_flags = CABEND_None;
 
-    cab_rand_init(&session);
+    cab_session__rand_init(&session);
     return session;
 }
 
@@ -89,9 +89,10 @@ void cab_session__set_secret_word(CabSession* session, Word new_secret_word) {
 
 
 void cab_session__generate_secret_word(CabSession* session) {
+
     size_t vocab_size = session->vocabulary->size;
     Word secret_word =
-        session->vocabulary->words[cab_rand(session) % vocab_size];
+        session->vocabulary->words[cab_session__rand(session) % vocab_size];
     cab_session__set_secret_word(session, secret_word);
 }
 
@@ -126,7 +127,7 @@ void cab_session__start_new_game(CabSession* session) {
     if (session->seed == 0) {
         *session = cab_session__new();
     }
-    cab_rand_init(session);
+    cab_session__rand_init(session);
     cab_session__generate_secret_word(session);
     cab_session__reset_attempts(session);
     cab_session__word_filter_init(session);

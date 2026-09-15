@@ -146,7 +146,7 @@ TURN_FUNCS_DEF(
 
         switch (get_y_or_n_from_input(cab_get_session()->input_buffer)) {
             case YORN_Yes:
-                cab_rand_init(session);
+                cab_session__rand_init(session);
                 cab_session__generate_secret_word(session);
                 cab_session__reset_attempts(session);
                 return CAB_TID_FirstTurn;
