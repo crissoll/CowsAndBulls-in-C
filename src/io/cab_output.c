@@ -52,7 +52,7 @@ static void output_buffer__va_message(OutputBuffer* output_buffer,
 void output(CabSession* session, const char* format_string, ...) {
     va_list args;
     va_start(args, format_string);
-    if (!output_buffer__is_message_started(*session->output_buffer)) {
+    if (!output_buffer__is_message_started(session->output_buffer)) {
         extra_io_warning(
             session,
             "output() called without starting a message; it will be "

@@ -18,13 +18,13 @@ typedef struct {
 } OutputBuffer;
 
 
-bool cab_output_buffer__is_initialized(OutputBuffer messages);
+bool cab_output_buffer__is_initialized(OutputBuffer* buffer);
 
-void cab_output_buffer__init(OutputBuffer* messages);
+void cab_output_buffer__init(OutputBuffer* buffer);
 
 char* output_buffer__flush(OutputBuffer* output_buffer);
 
-void cab_output_buffer__free_content(OutputBuffer output_buffer);
+void cab_output_buffer__free_content(OutputBuffer* output_buffer);
 
 void print_to_buffer(CAB_IOBuffer* buffer, const char* text);
 
@@ -34,7 +34,7 @@ void output_buffer__start_message(OutputBuffer* output_buffer, OutputTags tags);
 
 void output_buffer__end_message(OutputBuffer* output_buffer);
 
-bool output_buffer__is_message_started(OutputBuffer output_buffer);
+bool output_buffer__is_message_started(OutputBuffer* output_buffer);
 
 
 void cab_session__log_output_buffer(CabSession* session);

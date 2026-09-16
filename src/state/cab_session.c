@@ -40,7 +40,7 @@ void cab_session__free_content(CabSession* session) {
         return;
     }
     if (session->output_buffer != NULL) {
-        cab_output_buffer__free_content(*session->output_buffer);
+        cab_output_buffer__free_content(session->output_buffer);
         free(session->output_buffer);
     }
     if (session->input_buffer != NULL) {

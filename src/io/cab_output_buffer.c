@@ -17,18 +17,18 @@
 // extremely high, so its never checked. PLS don't go anywhere near it
 
 
-bool cab_output_buffer__is_initialized(OutputBuffer messages) {
-    return messages.message_indexes != NULL && messages.tags != NULL &&
-           messages.text_buffer != NULL &&
-           cab_io_buffer__is_initialized(*messages.text_buffer);
+bool cab_output_buffer__is_initialized(OutputBuffer* messages) {
+    return messages->message_indexes != NULL && messages->tags != NULL &&
+           messages->text_buffer != NULL &&
+           cab_io_buffer__is_initialized(*messages->text_buffer);
 }
 
-void cab_output_buffer__free_content(OutputBuffer messages) {
-    free(messages.message_indexes);
-    free(messages.tags);
-    if (messages.text_buffer != NULL) {
-        cab_io_buffer__free_content(messages.text_buffer);
-        free(messages.text_buffer);
+void cab_output_buffer__free_content(OutputBuffer* messages) {
+    free(messages->message_indexes);
+    free(messages->tags);
+    if (messages->text_buffer != NULL) {
+        cab_io_buffer__free_content(messages->text_buffer);
+        free(messages->text_buffer);
     }
 }
 
@@ -83,33 +83,33 @@ void print_to_buffer(CAB_IOBuffer* buffer, const char* text) {
 
 
 void cab_session__log_output_buffer(CabSession* session) {
-    OutputBuffer output_buffer = *session->output_buffer;
+    OutputBuffer* output_buffer = session->output_buffer;
     if (cab_output_buffer__is_initialized(output_buffer) == false) {
         return;
     }
 
-    for (size_t i = 0; i < output_buffer.size; i++) {
-        OutputTags tag = output_buffer.tags[i];
+    for (size_t i = 0; i < output_buffer->size; i++) {
+        OutputTags tag = output_buffer->tags[i];
         if (tag == OT_NONE) {
             continue;
         }
 
         const char* tag_name = CAB_OUTPUT_TAG_NAMES[LOG2(tag)];
-        size_t start = output_buffer.message_indexes[i];
-        size_t end = (i + 1 < output_buffer.size)
-                         ? output_buffer.message_indexes[i + 1]
-                         : output_buffer.text_buffer->current_size;
+        size_t start = output_buffer->message_indexes[i];
+        size_t end = (i + 1 < output_buffer->size)
+                         ? output_buffer->message_indexes[i + 1]
+                         : output_buffer->text_buffer->current_size;
         int len = (int)(end > start ? end - start : 0);
 
         extra_io_warning(session, "[message:%s]: %.*s", tag_name, len,
-                         output_buffer.text_buffer->content + start);
+                         output_buffer->text_buffer->content + start);
     }
 }
 
 
 char* output_buffer__flush(OutputBuffer* output_buffer) {
     if (output_buffer == NULL ||
-        cab_output_buffer__is_initialized(*output_buffer) == false) {
+        cab_output_buffer__is_initialized(output_buffer) == false) {
         return strdup("");
     }
 
@@ -119,14 +119,14 @@ char* output_buffer__flush(OutputBuffer* output_buffer) {
 }
 
 
-bool output_buffer__is_message_started(OutputBuffer output_buffer) {
-    return (output_buffer.size > 0 &&
-            output_buffer.tags[output_buffer.size - 1] != OT_NONE);
+bool output_buffer__is_message_started(OutputBuffer* output_buffer) {
+    return (output_buffer->size > 0 &&
+            output_buffer->tags[output_buffer->size - 1] != OT_NONE);
 }
 
 
 void output_buffer__start_message(OutputBuffer* output_buffer, OutputTags tag) {
-    if (cab_output_buffer__is_initialized(*output_buffer) == false) {
+    if (cab_output_buffer__is_initialized(output_buffer) == false) {
         cab_output_buffer__init(output_buffer);
     }
 
