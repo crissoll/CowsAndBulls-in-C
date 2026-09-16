@@ -23,6 +23,4 @@ Constraint get_total_constraint(CabSession* session, Word word);
 
 ConstraintResult handle_contraints(CabSession* session, Word word);
 
-void set_attempts_equality_constraint(size_t value);
-
 #endif

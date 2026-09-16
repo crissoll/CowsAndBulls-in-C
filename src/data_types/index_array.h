@@ -22,7 +22,6 @@ IndexArray index_array__copy(const IndexArray* src);
 void index_array__output(CabSession* session, IndexArray index_array,
                          const Vocabulary* vocabulary);
 
-void index_array__set_output_words_per_line(size_t words_per_line);
 
 // Operators
 
