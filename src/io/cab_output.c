@@ -23,7 +23,7 @@ int get_formatted_text_len(const char* format_string, va_list args) {
 }
 
 
-static void output_buffer__va_output(OutputBuffer output_buffer,
+static void output_buffer__va_output(OutputBuffer* output_buffer,
                                      const char* format_string, va_list args) {
     int formatted_text_len = get_formatted_text_len(format_string, args);
 
@@ -36,7 +36,7 @@ static void output_buffer__va_output(OutputBuffer output_buffer,
     formatted_text = malloc(formatted_text_len + 1);
 
     vsnprintf(formatted_text, formatted_text_len + 1, format_string, args);
-    print_to_buffer(output_buffer.text_buffer, formatted_text);
+    print_to_buffer(output_buffer->text_buffer, formatted_text);
     free(formatted_text);
 }
 
@@ -44,7 +44,7 @@ static void output_buffer__va_message(OutputBuffer* output_buffer,
                                       OutputTags tags,
                                       const char* format_string, va_list args) {
     output_buffer__start_message(output_buffer, tags);
-    output_buffer__va_output(*output_buffer, format_string, args);
+    output_buffer__va_output(output_buffer, format_string, args);
     output_buffer__end_message(output_buffer);
 }
 
@@ -62,7 +62,7 @@ void output(CabSession* session, const char* format_string, ...) {
         va_end(args);
         return;
     }
-    output_buffer__va_output(*session->output_buffer, format_string, args);
+    output_buffer__va_output(session->output_buffer, format_string, args);
     va_end(args);
 }
 
