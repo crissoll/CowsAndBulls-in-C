@@ -15,7 +15,7 @@
 #include "cab_output_buffer.h"
 
 // extremely high, so its never checked. PLS don't go anywhere near it
-#define MAX_MESSAGES_COUNT 256
+
 
 bool cab_output_buffer__is_initialized(OutputBuffer messages) {
     return messages.message_indexes != NULL && messages.tags != NULL &&
@@ -164,33 +164,6 @@ void output_buffer__end_message(OutputBuffer* output_buffer) {
     }
     output_buffer__start_message(output_buffer, OT_NONE);
 }
-
-OutputBuffer output_buffer__get_tagged_output(OutputBuffer* output_buffer) {
-    OutputBuffer result = (OutputBuffer){
-        .message_indexes =
-            malloc(sizeof(result.message_indexes[0]) * output_buffer->size),
-        .tags = malloc(sizeof(result.tags[0]) * output_buffer->size),
-        .size = output_buffer->size,
-    };
-
-    if (result.message_indexes == NULL || result.tags == NULL) {
-        return (OutputBuffer){
-            .message_indexes = NULL,
-            .tags = NULL,
-            .size = 0,
-        };
-    }
-
-    memcpy(result.message_indexes, output_buffer->message_indexes,
-           output_buffer->size * sizeof(result.message_indexes[0]));
-
-    memcpy(result.tags, output_buffer->tags,
-           output_buffer->size * sizeof(result.tags[0]));
-
-    output_buffer->size = 0;
-    return result;
-}
-
 
 void cab_output_buffer__clear(OutputBuffer* buffer) {
     if (buffer == NULL) {
