@@ -59,6 +59,7 @@ void output(CabSession* session, const char* format_string, ...) {
             "printed as a OT_NONE message\n");
         output_buffer__va_message(session->output_buffer, OT_NONE,
                                   format_string, args);
+        va_end(args);
         return;
     }
     output_buffer__va_output(*session->output_buffer, format_string, args);
