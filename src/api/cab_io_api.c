@@ -27,7 +27,7 @@ InputStatus cab_session__set_input(CabSession* session,
     }
 
     cab_output_buffer__clear(session->output_buffer);
-
+    cab_session__free_output_buffer_view(session);
 
     if (input_string == NULL) {
         extra_io_warning(session,
