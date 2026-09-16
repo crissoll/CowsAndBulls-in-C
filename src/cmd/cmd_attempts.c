@@ -21,7 +21,7 @@ void compare_attempts_to_first_token(CabSession* session, size_t token_count,
         return;
     }
     const size_t word_len =
-        cab_session__get_setting(*session, STG_Internal_WordLen);
+        cab_session__get_setting(session, STG_Internal_WordLen);
     Word candidate_word = word__new(tokens[0], word_len);
     if (!vocabulary__contains_word(session->vocabulary, candidate_word)) {
         message(session, OT_ALERT, "word not contained in vocabulary\n");

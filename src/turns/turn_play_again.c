@@ -11,14 +11,13 @@
 #include "cab_settings.h"
 
 const char* cab_turn_input_prompt_CAB_TID_PlayAgain(CabSession* session) {
-    return (cab_session__get_setting(*session,
-                                     STG_Internal_ShowPlayAgainPrompt))
+    return (cab_session__get_setting(session, STG_Internal_ShowPlayAgainPrompt))
                ? "Play Again? (y/n)\n> "
                : "Nothing more to do\n> ";
 }
 
 void cab_turn_process_CAB_TID_PlayAgain(CabSession* session) {
-    if (cab_session__get_setting(*session, STG_Internal_ShowPlayAgainPrompt) ==
+    if (cab_session__get_setting(session, STG_Internal_ShowPlayAgainPrompt) ==
         false) {
         cab_session__set_end_flags(session, CABEND_DontPlayAgain);
         session->current_turn = CAB_TID_NotStarted;

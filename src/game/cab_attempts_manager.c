@@ -56,7 +56,7 @@ void cab_session__print_attempts(CabSession* session) {
         message(session, OT_ATTEMPTS, "%d invalid attempts\n",
                 attempts->invalid_attempts_count);
     }
-    if (cab_session__get_setting(*session, STG_Rule_LoseOnMaxAttemptsReached)) {
+    if (cab_session__get_setting(session, STG_Rule_LoseOnMaxAttemptsReached)) {
         display_remaining_attempts(session);
     }
 }
@@ -105,7 +105,7 @@ bool cab_session__attempts_coherence(const CabSession* session, Word word) {
 }
 
 void handle_attempts_deplition(CabSession* session) {
-    if (cab_session__get_setting(*session, STG_Rule_LoseOnMaxAttemptsReached) ==
+    if (cab_session__get_setting(session, STG_Rule_LoseOnMaxAttemptsReached) ==
             false ||
         session->ending_flags != CABEND_None) {
         return;
@@ -114,7 +114,7 @@ void handle_attempts_deplition(CabSession* session) {
         message(session, OT_USER,
                 "reached maximum amount of attempts! you lose\n");
         if (cab_session__get_setting(
-                *session, STG_Display_RevealSecretWordOnAttemptsFinished)) {
+                session, STG_Display_RevealSecretWordOnAttemptsFinished)) {
             message(session, OT_USER, "the secret word was %s\n",
                     cab_session__get_secret_word(session).letters);
         }
@@ -130,7 +130,7 @@ void cab_session__add_attempt(CabSession* session, Word word,
         cab_session__get_attempts_ptr(session)->valid_attempts_count;
     if (cab_session__get_attempts_left(session) == 0) {
         if (cab_session__get_setting(
-                *session, STG_Rule_LoseOnMaxAttemptsReached) == false) {
+                session, STG_Rule_LoseOnMaxAttemptsReached) == false) {
             message(session, OT_USER,
                     "reached maximum amount of attempts! oldest one will be "
                     "deleted\n");
@@ -141,7 +141,7 @@ void cab_session__add_attempt(CabSession* session, Word word,
                     "be reacheable\n");
         }
         size_t max_attempts =
-            cab_session__get_setting(*session, STG_Internal_MaxAttempts);
+            cab_session__get_setting(session, STG_Internal_MaxAttempts);
         for (size_t i = 0; i < max_attempts - 1; i++) {
             attempts[i] = attempts[i + 1];
         }

@@ -18,7 +18,7 @@ void cmd__try_word_from_tokens(CabSession* session, size_t token_count,
         return;
     }
     const size_t word_len =
-        cab_session__get_setting(*session, STG_Internal_WordLen);
+        cab_session__get_setting(session, STG_Internal_WordLen);
     word = word__new(tokens[0], word_len);
 
     play_word(session, word);

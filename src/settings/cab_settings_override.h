@@ -19,7 +19,8 @@ typedef struct {
 } CabSettingsOverride;
 
 
-size_t cab_session__get_setting(CabSession session, CabSettingId setting);
+size_t cab_session__get_setting(const CabSession* session,
+                                CabSettingId setting);
 
 void cab_session__reset_setting(CabSession* session, CabSettingId setting);
 

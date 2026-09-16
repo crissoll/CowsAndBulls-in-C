@@ -35,7 +35,7 @@ InputStatus cab_session__set_input(CabSession* session,
         return INPUT_USAGE_ERROR;
     }
 
-    if (cab_session__get_setting(*session, STG_Debug_LogInput)) {
+    if (cab_session__get_setting(session, STG_Debug_LogInput)) {
         extra_io_warning(session, "[user]> %s", input_string);
     }
 
@@ -106,7 +106,7 @@ const char** cab_get_messages_with_tag(OutputTags tag, size_t* message_count) {
 
 const char* cab_session__get_input_prompt(CabSession* session) {
     const char* prompt = cab_session__get_turn_input_prompt(session);
-    if (cab_session__get_setting(*session, STG_Debug_LogInputPrompt)) {
+    if (cab_session__get_setting(session, STG_Debug_LogInputPrompt)) {
         extra_io_warning(session, "[input prompt]: %s", prompt);
     }
     return prompt;

@@ -146,14 +146,14 @@ void cab_session__load_vocabulary(CabSession* session) {
     }
 
     const bool remove_dup_letters_words =
-        cab_session__get_setting(*session,
-                                 STG_Internal_AllowDuplicateLetters) == false;
+        cab_session__get_setting(session, STG_Internal_AllowDuplicateLetters) ==
+        false;
 
     const char buffer_len = 99;
     char buffer[buffer_len + 1];
 
     const bool debug_log_enabled = cab_session__get_setting(
-        *session, STG_Debug_LogVocabularyDiscardedWords);
+        session, STG_Debug_LogVocabularyDiscardedWords);
 
     VocabDebugInfo vdi;
     if (debug_log_enabled) {
@@ -166,7 +166,7 @@ void cab_session__load_vocabulary(CabSession* session) {
 
     size_t initialized_voc_word_count = 0;
 
-    if (cab_session__get_setting(*session,
+    if (cab_session__get_setting(session,
                                  STG_Internal_DetectWordLenFromVocab)) {
         while (fscanf(file, "%99s", buffer) == 1) {
             if (strlen(buffer) > MAX_PRACTICAL_WORD_LEN) {
@@ -192,12 +192,12 @@ void cab_session__load_vocabulary(CabSession* session) {
         }
     }
     const size_t word_len =
-        cab_session__get_setting(*session, STG_Internal_WordLen);
+        cab_session__get_setting(session, STG_Internal_WordLen);
 
     extra_io_warning(session, "load_vocabulary: word len set to %zu", word_len);
 
     const size_t decimation_percetage = cab_session__get_setting(
-        *session, STG_Internal_VocabDecimationPercentage);
+        session, STG_Internal_VocabDecimationPercentage);
 
     for (; (fscanf(file, "%99s", buffer) == 1);) {
         to_lower(buffer, buffer_len);

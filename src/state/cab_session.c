@@ -121,7 +121,7 @@ size_t cab_session__get_attempts_count(CabSession* session) {
 
 size_t cab_session__get_attempts_left(CabSession* session) {
     const size_t max_attempts =
-        cab_session__get_setting(*session, STG_Internal_MaxAttempts);
+        cab_session__get_setting(session, STG_Internal_MaxAttempts);
     const size_t used_attempts = cab_session__get_attempts_count(session);
 
     return (used_attempts >= max_attempts) ? 0 : max_attempts - used_attempts;

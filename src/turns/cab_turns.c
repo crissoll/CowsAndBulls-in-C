@@ -50,7 +50,7 @@ CabTurn get_turn_state(CabTurnId turn_id) {
 
 CabTurnId cab_end_game(CabSession* session) {
     cab_session__delete_data(session);
-    if (cab_session__get_setting(*session, STG_Internal_ShowPlayAgainPrompt)) {
+    if (cab_session__get_setting(session, STG_Internal_ShowPlayAgainPrompt)) {
         cab_session__reset_end_flags(session);
         return CAB_TID_PlayAgain;
     }
@@ -60,7 +60,7 @@ CabTurnId cab_end_game(CabSession* session) {
 
 void cab_session__end_game(CabSession* session) {
     cab_session__delete_data(session);
-    if (cab_session__get_setting(*session, STG_Internal_ShowPlayAgainPrompt)) {
+    if (cab_session__get_setting(session, STG_Internal_ShowPlayAgainPrompt)) {
         cab_session__reset_end_flags(session);
         session->current_turn = CAB_TID_PlayAgain;
         return;

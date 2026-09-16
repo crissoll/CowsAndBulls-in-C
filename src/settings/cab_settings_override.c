@@ -4,7 +4,6 @@
 #include <stdlib.h>
 
 
-
 #include "cab_session.h"
 
 #include "cab_errors.h"
@@ -91,8 +90,9 @@ void cab_settings_override__set_value(CabSettingsOverride* settings,
 }
 
 
-size_t cab_session__get_setting(CabSession session, CabSettingId setting) {
-    const CabSettingsOverride* stg = session.settings_override;
+size_t cab_session__get_setting(const CabSession* session,
+                                CabSettingId setting) {
+    const CabSettingsOverride* stg = session->settings_override;
     const SettingIndex setting_index = cab_setting_id_get_index(setting);
 
     if (stg == NULL ||

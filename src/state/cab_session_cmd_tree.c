@@ -13,22 +13,22 @@ void cab_session_set_cmd_root(CabSession* session,
     session->commands_tree->root = specifier;
 }
 
-static int cab_session__find_disabled_command(CabSession session,
+static int cab_session__find_disabled_command(const CabSession* session,
                                               const CommandSpec* specifier) {
-    if (session.commands_tree == NULL ||
-        session.commands_tree->disabled_commands == NULL) {
+    if (session->commands_tree == NULL ||
+        session->commands_tree->disabled_commands == NULL) {
         return -1;
     }
-    CmdTree command_tree = *session.commands_tree;
-    for (size_t i = 0; i < command_tree.disabled_commands_current_size; i++) {
-        if (specifier == command_tree.disabled_commands[i]) {
+    CmdTree* command_tree = session->commands_tree;
+    for (size_t i = 0; i < command_tree->disabled_commands_current_size; i++) {
+        if (specifier == command_tree->disabled_commands[i]) {
             return (int)i;
         }
     }
     return -1;
 }
 
-bool cab_session__is_command_allowed(CabSession session,
+bool cab_session__is_command_allowed(const CabSession* session,
                                      const CommandSpec* specifier) {
     CabCmdDisabledFlags flags =
         cab_session__get_command_spec_disable_flags(session, specifier);
@@ -36,12 +36,12 @@ bool cab_session__is_command_allowed(CabSession session,
 }
 
 CabCmdDisabledFlags cab_session__get_command_spec_disable_flags(
-    CabSession session, const CommandSpec* specifier) {
+    const CabSession* session, const CommandSpec* specifier) {
     int index = cab_session__find_disabled_command(session, specifier);
     if (index < 0) {
         return CMD_DISABLE_NOTHING;
     }
-    return session.commands_tree->disabled_slots[index];
+    return session->commands_tree->disabled_slots[index];
 }
 
 
@@ -53,7 +53,7 @@ void cab_session__set_command_spec_disable_flags(CabSession* session,
         session->commands_tree = calloc(1, sizeof(*session->commands_tree));
     }
     CmdTree* tree = session->commands_tree;
-    const int index = cab_session__find_disabled_command(*session, specifier);
+    const int index = cab_session__find_disabled_command(session, specifier);
     if (index != -1) {
         if (flags == CMD_DISABLE_NOTHING) {
             tree->disabled_slots[index] = CMD_DISABLE_NOTHING;

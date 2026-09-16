@@ -27,7 +27,7 @@ void cab_reset_all_settings(void) {
 }
 
 size_t cab_get_setting(CabSettingId setting) {
-    return cab_session__get_setting(*cab_get_session(), setting);
+    return cab_session__get_setting(cab_get_session(), setting);
 }
 
 void cab_reset_setting(CabSettingId setting) {

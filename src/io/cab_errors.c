@@ -9,11 +9,11 @@
 #include "cmd_spec.h"
 
 
-bool get_log_to_file(CabSession session) {
+bool get_log_to_file(CabSession* session) {
     return cab_session__get_setting(session, STG_Debug_LogMode) & LOG_ToFile;
 }
 
-bool get_log_to_stdout(CabSession session) {
+bool get_log_to_stdout(CabSession* session) {
     return cab_session__get_setting(session, STG_Debug_LogMode) & LOG_ToStdout;
 }
 
@@ -32,7 +32,7 @@ void va_extra_io_log_to_stream(const char* format_text, va_list vargs,
     (*file_interaction_count)++;
 }
 
-void va_extra_io_log(CabSession session, const char* log_file_path,
+void va_extra_io_log(CabSession* session, const char* log_file_path,
                      const char* format_text, va_list vargs) {
     if (format_text == NULL) {
         return;
@@ -43,7 +43,7 @@ void va_extra_io_log(CabSession session, const char* log_file_path,
             va_list vargs_copy;
             va_copy(vargs_copy, vargs);
             va_extra_io_log_to_stream(format_text, vargs_copy, fp,
-                                      &session.file_interaction_count);
+                                      &session->file_interaction_count);
             va_end(vargs_copy);
             fclose(fp);
         }
@@ -53,19 +53,18 @@ void va_extra_io_log(CabSession session, const char* log_file_path,
         va_list vargs_copy;
         va_copy(vargs_copy, vargs);
         va_extra_io_log_to_stream(format_text, vargs_copy, stdout,
-                                  &session.file_interaction_count);
+                                  &session->file_interaction_count);
         va_end(vargs_copy);
     }
 }
 
-void extra_io_warning(const CabSession* session, const char* warning_message,
-                      ...) {
+void extra_io_warning(CabSession* session, const char* warning_message, ...) {
     const char* log_path =
         (session != NULL && session->file_paths.log_path != NULL)
             ? session->file_paths.log_path
             : "last.log";
     va_list vargs;
     va_start(vargs, warning_message);
-    va_extra_io_log(*session, log_path, warning_message, vargs);
+    va_extra_io_log(session, log_path, warning_message, vargs);
     va_end(vargs);
 }

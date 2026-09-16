@@ -22,7 +22,7 @@ bool can_string_be_word(CabSession* session, const char* string) {
         }
     }
 
-    size_t word_len = cab_session__get_setting(*session, STG_Internal_WordLen);
+    size_t word_len = cab_session__get_setting(session, STG_Internal_WordLen);
 
     if (len > word_len) {
         message(session, OT_INPUT_ERROR, "word too long\n");
@@ -43,7 +43,7 @@ void play_word(CabSession* session, Word word) {
 
     GuessResult result =
         compare_words(word, cab_session__get_secret_word(session));
-    size_t word_len = cab_session__get_setting(*session, STG_Internal_WordLen);
+    size_t word_len = cab_session__get_setting(session, STG_Internal_WordLen);
     if (result.bulls >= word_len) {
         message(
             session, OT_USER,

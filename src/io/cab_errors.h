@@ -13,7 +13,6 @@ typedef enum {
 } LogMode;
 
 
-void extra_io_warning(const CabSession* session, const char* warning_message,
-                      ...);
+void extra_io_warning(CabSession* session, const char* warning_message, ...);
 
 #endif

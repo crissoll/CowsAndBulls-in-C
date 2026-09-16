@@ -15,7 +15,7 @@ void filter__output(CabSession* session, const WordSetFilter* filter) {
     bool fixed_letters[MAX_PRACTICAL_WORD_LEN];
     size_t fixed_letter_index[MAX_PRACTICAL_WORD_LEN];
     for (size_t i = 0;
-         i < cab_session__get_setting(*session, STG_Internal_WordLen); i++) {
+         i < cab_session__get_setting(session, STG_Internal_WordLen); i++) {
         fixed_letters[i] = false;
         for (size_t j = 0; j < ALPHABET_SIZE; j++) {
             if (filter->present_letters[i][j] == false) {
@@ -40,7 +40,7 @@ void filter__output(CabSession* session, const WordSetFilter* filter) {
             }
             bool has_valid_placement = false;
             for (size_t j = 0;
-                 j < cab_session__get_setting(*session, STG_Internal_WordLen);
+                 j < cab_session__get_setting(session, STG_Internal_WordLen);
                  j++) {
                 if (fixed_letters[j] && fixed_letter_index[j] != i) {
                     continue;
@@ -58,7 +58,7 @@ void filter__output(CabSession* session, const WordSetFilter* filter) {
 
         if (impossible_letter != '\0') {
             for (size_t i = 0;
-                 i < cab_session__get_setting(*session, STG_Internal_WordLen);
+                 i < cab_session__get_setting(session, STG_Internal_WordLen);
                  i++) {
                 output(session, "  [%zu] (none)\n", i + 1);
             }
@@ -71,7 +71,7 @@ void filter__output(CabSession* session, const WordSetFilter* filter) {
     }
 
     for (size_t i = 0;
-         i < cab_session__get_setting(*session, STG_Internal_WordLen); i++) {
+         i < cab_session__get_setting(session, STG_Internal_WordLen); i++) {
         char not_allowed[ALPHABET_SIZE + 1];
         size_t count = 0;
 
@@ -131,7 +131,7 @@ void index_array__output(CabSession* session, IndexArray index_array,
         output(session, "%s ",
                vocabulary->words[index_array.indexes[i]].letters);
         if (++j > cab_session__get_setting(
-                      *session, STG_Display_IndexArray_WordsPerLine)) {
+                      session, STG_Display_IndexArray_WordsPerLine)) {
             output(session, "\n");
             j = 0;
         }
@@ -185,7 +185,7 @@ size_t cab_session__compute_filter_word_count(const CabSession* session,
 }
 
 void cab_session__word_filter_add_entry(CabSession* session,
-                                       ListHistoryEntry entry) {
+                                        ListHistoryEntry entry) {
     if (session == NULL) {
         return;
     }
@@ -201,7 +201,8 @@ void cab_session__word_filter_add_entry(CabSession* session,
         session->word_filter.history[HELP_FILTER_HISTORY_MAX - 1] = entry;
         session->word_filter.entries_count = HELP_FILTER_HISTORY_MAX;
     } else {
-        session->word_filter.history[session->word_filter.entries_count] = entry;
+        session->word_filter.history[session->word_filter.entries_count] =
+            entry;
         session->word_filter.entries_count++;
     }
 }

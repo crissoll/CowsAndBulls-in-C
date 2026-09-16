@@ -20,7 +20,7 @@ void cab_session__set_command_spec_disable_flags(CabSession* session,
                                                  CabCmdDisabledFlags flags);
 
 
-bool cab_session__is_command_allowed(CabSession session,
+bool cab_session__is_command_allowed(const CabSession* session,
                                      const CommandSpec* specifier);
 
 const CommandSpec* cab_session__get_cmd_tree_root(CabSession* session);
@@ -28,7 +28,7 @@ const CommandSpec* cab_session__get_cmd_tree_root(CabSession* session);
 void cab_session_set_cmd_root(CabSession* session,
                               const CommandSpec* specifier);
 CabCmdDisabledFlags cab_session__get_command_spec_disable_flags(
-    CabSession session, const CommandSpec* specifier);
+    const CabSession* session, const CommandSpec* specifier);
 
 
 #endif
