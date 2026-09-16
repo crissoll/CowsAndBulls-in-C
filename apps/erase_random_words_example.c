@@ -15,9 +15,8 @@ int main(void) {
         }
         string[999] = '\0';
 
-        char* output = cab_play_turn(string);
+        const char* output = cab_play_turn(string);
         printf("%s", output);
-        free(output);
     }
     cab_shutdown_game();
     return 0;
