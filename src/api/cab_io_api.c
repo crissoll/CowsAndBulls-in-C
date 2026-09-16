@@ -7,10 +7,11 @@
 
 #include "cab_io_api.h"
 #include "cab_io_consts.h"
-#include "cab_io_utils.h"
 #include "cab_output_buffer.h"
 #include "cab_session.h"
 #include "cab_turns.h"
+#include "output_buffer_view.h"
+
 
 #include "cab_errors.h"
 #include "cab_input_internal.h"
@@ -26,6 +27,7 @@ InputStatus cab_session__set_input(CabSession* session,
     }
 
     cab_output_buffer__clear(session->output_buffer);
+
 
     if (input_string == NULL) {
         extra_io_warning(session,
@@ -80,87 +82,22 @@ const char** cab_session__get_messages_with_tag(CabSession* session,
     }
 
     *message_count = 0;
+    *message_count = 0;
 
-    if (session == NULL || session->output_buffer == NULL) {
-        return NULL;
-    }
+    char** msgs = (char**)cab_output_buffer__get_messages_with_tags(
+        session->output_buffer, tag, message_count);
+    CabOutputBufferView* buf_view = &session->output_buffer_view;
 
-    OutputBuffer msg_tags =
-        output_buffer__get_tagged_output(session->output_buffer);
-    char* cur_txt = output_buffer__flush(session->output_buffer);
-    if (cab_session__get_setting(*session, STG_Debug_LogMessages)) {
-        cab_session__log_output_buffer(session);
-    }
+    session->output_buffer_view.entries =
+        realloc((CabOutputBufferViewEntry*)buf_view->entries,
+                sizeof(*buf_view->entries) * (buf_view->size + 1));
+    buf_view->entries[buf_view->size] = (CabOutputBufferViewEntry){
+        .count = *message_count,
+        .messages = msgs,
+    };
+    buf_view->size++;
 
-    if (msg_tags.size > 1) {
-        const size_t max_line_length = cab_session__get_setting(
-            *session, STG_Display_TextWrapMaxLineLength);
-        for (size_t msg = 0; msg < msg_tags.size - 1; msg++) {
-            text_wrap(&cur_txt[msg_tags.message_indexes[msg]], max_line_length);
-        }
-    }
-
-    if (msg_tags.size <= 1) {
-        free(msg_tags.message_indexes);
-        free(msg_tags.tags);
-        free(cur_txt);
-        return NULL;
-    }
-
-    for (size_t i = 0; i < msg_tags.size - 1; i++) {
-        if (msg_tags.tags[i] & tag) {
-            (*message_count)++;
-        }
-    }
-
-    if (*message_count == 0) {
-        free(msg_tags.message_indexes);
-        free(msg_tags.tags);
-        free(cur_txt);
-        return NULL;
-    }
-
-    char** result = malloc(sizeof(char*) * (*message_count));
-    if (result == NULL) {
-        *message_count = 0;
-        free(msg_tags.message_indexes);
-        free(msg_tags.tags);
-        free(cur_txt);
-        return NULL;
-    }
-
-    size_t j = 0;
-    for (size_t i = 0; i < msg_tags.size - 1; i++) {
-        if (!(msg_tags.tags[i] & tag)) {
-            continue;
-        }
-        const size_t msg_len =
-            msg_tags.message_indexes[i + 1] - msg_tags.message_indexes[i] + 1;
-
-        result[j] = malloc(sizeof(result[0]) * msg_len);
-        if (result[j] == NULL) {
-            for (size_t k = 0; k < j; k++) {
-                free(result[k]);
-            }
-            free(result);
-            free(msg_tags.message_indexes);
-            free(msg_tags.tags);
-            free(cur_txt);
-            *message_count = 0;
-            return NULL;
-        }
-
-        memcpy(result[j], &cur_txt[msg_tags.message_indexes[i]],
-               (msg_len - 1) * sizeof(char));
-        result[j][msg_len - 1] = '\0';
-        j++;
-    }
-
-    free(msg_tags.message_indexes);
-    free(msg_tags.tags);
-    free(cur_txt);
-
-    return result;
+    return (const char**)msgs;
 }
 
 const char** cab_get_messages_with_tag(OutputTags tag, size_t* message_count) {

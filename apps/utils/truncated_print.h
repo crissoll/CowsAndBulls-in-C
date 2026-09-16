@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <string.h>
 
-void print_truncated_string(char* string, size_t len) {
+void print_truncated_string(const char* string, size_t len) {
     if (string == NULL) {
         printf("(null)\n");
         fflush(stdout);

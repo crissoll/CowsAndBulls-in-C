@@ -19,15 +19,14 @@
 
 void turn_function(const char* input_buffer) {
 
-    cab_input(cab_get_session(), input_buffer);
+    cab_input(input_buffer);
     cab_process_turn();
 
     size_t message_count;
 
     size_t j = 1;
     for (OutputTags t = 1; t < OT_END; t *= 2) {
-        char** strings =
-            cab_get_messages_with_tag(cab_get_session(), t, &message_count);
+        const char** strings = cab_get_messages_with_tag(t, &message_count);
         if (strings != NULL && message_count > 0) {
             printf("%s:\n", CAB_OUTPUT_TAG_NAMES[j]);
             if (message_count == 1) {
@@ -38,10 +37,6 @@ void turn_function(const char* input_buffer) {
                     print_truncated_string(strings[i], MAX_DISPLAYED_MSG_LEN);
                 }
             }
-            for (size_t i = 0; i < message_count; i++) {
-                free(strings[i]);
-            }
-            free(strings);
         }
         j++;
     }

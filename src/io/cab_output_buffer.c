@@ -15,7 +15,7 @@
 #include "cab_output_buffer.h"
 
 // extremely high, so its never checked. PLS don't go anywhere near it
-#define MAX_TEXTS_PER_SINGLE_OUTPUT 256
+#define MAX_MESSAGES_COUNT 256
 
 bool cab_output_buffer__is_initialized(OutputBuffer messages) {
     return messages.message_indexes != NULL && messages.tags != NULL &&
@@ -43,10 +43,9 @@ void cab_output_buffer__init(OutputBuffer* messages) {
         *messages->text_buffer = (CAB_IOBuffer){0};
         cab_io_buffer__init(messages->text_buffer);
     }
-    messages->message_indexes = malloc(MAX_TEXTS_PER_SINGLE_OUTPUT *
-                                       sizeof(messages->message_indexes[0]));
-    messages->tags =
-        malloc(MAX_TEXTS_PER_SINGLE_OUTPUT * sizeof(messages->tags[0]));
+    messages->message_indexes =
+        malloc(MAX_MESSAGES_COUNT * sizeof(messages->message_indexes[0]));
+    messages->tags = malloc(MAX_MESSAGES_COUNT * sizeof(messages->tags[0]));
     messages->size = 0;
 }
 
@@ -202,4 +201,26 @@ void cab_output_buffer__clear(OutputBuffer* buffer) {
         buffer->text_buffer->current_size = 0;
         buffer->text_buffer->content[0] = '\0';
     }
+}
+
+
+const char** cab_output_buffer__get_messages_with_tags(OutputBuffer* buffer,
+                                                       OutputTags tags,
+                                                       size_t* message_count) {
+    *message_count = 0;
+    for (size_t i = 0; i < buffer->size; i++) {
+        if (buffer->tags[i] & tags) {
+            (*message_count)++;
+        }
+    }
+    const char** result = malloc(sizeof(char*) * (*message_count));
+    size_t j = 0;
+    for (size_t i = 0; i < buffer->size; i++) {
+        if (buffer->tags[i] & tags) {
+            result[j] =
+                buffer->text_buffer->content + buffer->message_indexes[i];
+            j++;
+        }
+    }
+    return result;
 }

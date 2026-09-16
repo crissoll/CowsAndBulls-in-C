@@ -7,6 +7,8 @@
 #include "cab_io_buffer.h"
 #include "cab_io_consts.h"
 
+#define MAX_MESSAGES_COUNT 256
+
 typedef struct CabSession CabSession;
 typedef struct {
     size_t* message_indexes;
@@ -26,8 +28,6 @@ void cab_output_buffer__free_content(OutputBuffer output_buffer);
 
 void print_to_buffer(CAB_IOBuffer* buffer, const char* text);
 
-OutputBuffer output_buffer__get_tagged_output(OutputBuffer* output_buffer);
-
 void cab_output_buffer__clear(OutputBuffer* buffer);
 
 void output_buffer__start_message(OutputBuffer* output_buffer, OutputTags tags);
@@ -38,4 +38,8 @@ bool output_buffer__is_message_started(OutputBuffer output_buffer);
 
 
 void cab_session__log_output_buffer(CabSession* session);
+
+const char** cab_output_buffer__get_messages_with_tags(OutputBuffer* buffer,
+                                                       OutputTags tags,
+                                                       size_t* message_count);
 #endif

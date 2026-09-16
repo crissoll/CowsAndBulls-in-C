@@ -15,7 +15,9 @@
 
 #include "cab_settings_override.h"
 #include "cab_turns.h"
+#include "output_buffer_view.h"
 #include "word.h"
+
 
 
 typedef struct Vocabulary Vocabulary;
@@ -29,6 +31,7 @@ typedef struct {
 typedef struct CabSession {
     OutputBuffer* output_buffer;
     CAB_IOBuffer* input_buffer;
+    CabOutputBufferView output_buffer_view;
     CabPaths file_paths;
     size_t seed;
     uint32_t rng_state;

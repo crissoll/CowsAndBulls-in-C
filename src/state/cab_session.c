@@ -11,6 +11,7 @@
 #include "cab_saves.h"
 #include "cab_session.h"
 #include "cab_turns.h"
+#include "output_buffer_view.h"
 #include "word.h"
 
 
@@ -53,6 +54,7 @@ void cab_session__free_content(CabSession* session) {
     if (session->settings_override != NULL) {
         free(session->settings_override);
     }
+    cab_session__free_output_buffer_view(session);
     cab_session__word_filter_free_content(session);
     *session = (CabSession){0};
 }
