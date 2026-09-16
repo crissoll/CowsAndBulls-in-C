@@ -15,7 +15,22 @@ endif()
 if(MSVC)
     add_compile_options(/W4)
 else()
-    add_compile_options(-Wall -Wextra -Wpedantic)
+    add_compile_options(
+        -Wall
+        -Wextra
+        -Wpedantic
+        -Wcast-align
+        -Wconversion
+        -Wsign-conversion
+        -Wdouble-promotion
+    )
+    if(CMAKE_C_COMPILER_ID MATCHES "Clang")
+        add_compile_options(
+            -Wlarge-by-value-copy=64
+            -Wframe-larger-than=1024
+            # -Wpadded  # Uncomment to inspect and optimize struct layouts
+        )
+    endif()
 endif()
 
 # ==============================================================================
