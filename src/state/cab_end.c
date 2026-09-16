@@ -6,7 +6,7 @@ bool cab_session__match_all_end_flags(CabSession* session,
     return (session->ending_flags & searched_flags) == searched_flags;
 }
 
-bool cab_session__get_end_flags(CabSession* session) {
+CABGameEndFlags cab_session__get_end_flags(CabSession* session) {
     return session->ending_flags;
 }
 
