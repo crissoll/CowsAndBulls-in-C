@@ -3,6 +3,22 @@
 
 #include <stddef.h>
 
+#if defined(_MSC_VER) && !defined(__clang__)
+    #include <intrin.h>
+static inline unsigned int cab_log2_1based(unsigned int x) {
+    unsigned long index;
+    if (_BitScanReverse(&index, x)) {
+        return (unsigned int)(index + 1);
+    }
+    return 0;
+}
+    #define LOG2(x) cab_log2_1based(x)
+#else
+    #define LOG2(x) \
+        ((x) == 0   \
+             ? 0    \
+             : (unsigned int)((sizeof(unsigned int) * 8) - __builtin_clz(x)))
+#endif
 
 typedef enum {
     OT_NONE = 0,  // empty message, termination
@@ -25,6 +41,7 @@ typedef enum {
 
 #define CAB_GET_TAG_FROM_I(I) (I == 0) ? OT_NONE : (OutputTags)(1U << (I - 1))
 
+#define CAB_OT_LEN LOG2(OT_END)
 
 typedef enum {
     INPUT_SUCCESS,

@@ -4,23 +4,6 @@
 #include <stddef.h>
 #include "cab_io_consts.h"
 
-#if defined(_MSC_VER) && !defined(__clang__)
-    #include <intrin.h>
-static inline unsigned int cab_log2_1based(unsigned int x) {
-    unsigned long index;
-    if (_BitScanReverse(&index, x)) {
-        return (unsigned int)(index + 1);
-    }
-    return 0;
-}
-    #define LOG2(x) cab_log2_1based(x)
-#else
-    #define LOG2(x) \
-        ((x) == 0   \
-             ? 0    \
-             : (unsigned int)((sizeof(unsigned int) * 8) - __builtin_clz(x)))
-#endif
-
 
 // transcription of the names of OutputTags values
 // can be used for debugging purposes
