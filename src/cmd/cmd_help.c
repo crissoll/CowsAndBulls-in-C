@@ -13,8 +13,7 @@ void print_help_text(CabSession* session, const char* command_name) {
         const bool found =
             command_spec_name_match(*candidate_spec, command_name);
 
-        if (cab_session__is_command_allowed(*session, candidate_spec) ==
-                false ||
+        if (cab_session__is_command_allowed(session, candidate_spec) == false ||
             !found) {
             candidate_spec++;
             continue;
@@ -45,7 +44,7 @@ void print_whole_help_text(CabSession* session) {
     const CommandSpec* cur_spec = cab_session__get_cmd_tree_root(session)->args;
     start_message(session, OT_HELP);
     while (!command_spec_is_end_spec(*cur_spec)) {
-        if ((cab_session__is_command_allowed(*session, cur_spec)) &&
+        if ((cab_session__is_command_allowed(session, cur_spec)) &&
             cur_spec->help_text != NULL) {
             output(session, "%s", cur_spec->help_text);
         }

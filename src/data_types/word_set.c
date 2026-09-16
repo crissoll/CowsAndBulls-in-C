@@ -10,8 +10,8 @@
 
 IndexArray word_set__get_words_with_letter_at_pos(char letter,
                                                   size_t position_in_word,
-                                                  WordSet words) {
-    return words.words[position_in_word][(size_t)(letter - 'a')];
+                                                  WordSet* words) {
+    return words->words[position_in_word][(size_t)(letter - 'a')];
 }
 
 void word_set__init_from_vocabulary(WordSet* word_set,

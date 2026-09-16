@@ -16,7 +16,7 @@ void command_spec__set_disable_flags(CabSession* session, size_t token_count,
         return;
     }
     const CabCmdDisabledFlags old_flags =
-        cab_session__get_command_spec_disable_flags(*session, spec);
+        cab_session__get_command_spec_disable_flags(session, spec);
     cab_session__set_command_spec_disable_flags(session, spec, flags);
     const char* flag_text;
     switch (flags) {

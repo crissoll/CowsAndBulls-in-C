@@ -53,11 +53,11 @@ void parse_command(CabSession* session, const CommandSpec* specifier,
         extra_io_warning(
             session, "command_spec_find_arg: NULL arguments not accepted\n");
     }
-    if (cab_session__is_command_allowed(*session, specifier) == false) {
+    if (cab_session__is_command_allowed(session, specifier) == false) {
         return;
     }
     CabCmdDisabledFlags flags =
-        cab_session__get_command_spec_disable_flags(*session, specifier);
+        cab_session__get_command_spec_disable_flags(session, specifier);
 
     if (token_count == 0) {
         if (specifier->case_no_args == NULL || flags & CMD_DISABLE_NO_ARGS) {
