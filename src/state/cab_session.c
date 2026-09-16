@@ -56,6 +56,11 @@ void cab_session__free_content(CabSession* session) {
     }
     cab_session__free_output_buffer_view(session);
     cab_session__word_filter_free_content(session);
+
+    free((char*)session->file_paths.saves_path);
+    free((char*)session->file_paths.log_path);
+    free((char*)session->file_paths.vocab_path);
+
     *session = (CabSession){0};
 }
 
