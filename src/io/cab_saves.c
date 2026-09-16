@@ -487,7 +487,7 @@ void cab_session__delete_data(CabSession* session) {
         extra_io_warning(
             session,
             "cab_session__delete_data: NULL saves path. defaulting "
-            "to default path: %d",
+            "to default path: %s",
             DEFAULT_SAVES_PATH);
 
         path = DEFAULT_SAVES_PATH;
