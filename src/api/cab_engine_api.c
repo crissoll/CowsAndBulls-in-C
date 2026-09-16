@@ -14,7 +14,7 @@ bool cab_set_saves_folder_path(const char* path) {
         return true;
     }
     *saves_path = realloc(*saves_path, sizeof(char) * (strlen(path) + 1));
-    sprintf(*saves_path, "%255s", path);
+    strcpy(*saves_path, path);
     return true;
 }
 
@@ -26,7 +26,7 @@ bool cab_set_vocabulary_file_path(const char* path) {
         return true;
     }
     *vocab_path = realloc(*vocab_path, sizeof(char) * (strlen(path) + 1));
-    sprintf(*vocab_path, "%255s", path);
+    strcpy(*vocab_path, path);
     return true;
 }
 

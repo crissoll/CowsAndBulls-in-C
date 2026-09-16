@@ -109,7 +109,7 @@ void cab_session__load_vocabulary(CabSession* session) {
 
     const char* vocab_path = session->file_paths.vocab_path;
     if (vocab_path == NULL) {
-        vocab_path = DEFAULT_VOCAB_PATH;
+        vocab_path = strdup(DEFAULT_VOCAB_PATH);
         extra_io_warning(session,
                          "cab_session__load_vocabulary: NULL path. trying "
                          "loading default path: %s",
