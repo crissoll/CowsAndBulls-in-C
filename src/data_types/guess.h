@@ -1,7 +1,7 @@
 #ifndef GUESS
 #define GUESS
 
-#include <stdlib.h>
+#include <stddef.h>
 
 #include "word.h"
 
@@ -11,7 +11,5 @@ typedef struct {
 } GuessResult;
 
 GuessResult compare_words(Word word, Word secret_word);
-
-void guess_result__output(CabSession* session, GuessResult result);
 
 #endif

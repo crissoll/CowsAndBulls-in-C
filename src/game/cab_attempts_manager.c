@@ -13,6 +13,25 @@
 #include "word.h"
 
 
+void guess_result__output(CabSession* session, GuessResult result) {
+    output(session, "cows: %zu, bulls: %zu", result.cows, result.bulls);
+}
+
+void attempt__output(CabSession* session, Attempt attempt) {
+    output(session, "%s\t", attempt.word.letters);
+    guess_result__output(session, attempt.result);
+}
+
+void print_attempt_array(CabSession* session, const Attempt* attempts,
+                         size_t attempt_number) {
+    start_message(session, OT_ATTEMPTS);
+    for (size_t i = 0; i < attempt_number; i++) {
+        attempt__output(session, attempts[i]);
+        output(session, "\n");
+    }
+    end_message(session);
+}
+
 void display_remaining_attempts(CabSession* session) {
     const size_t remaining_attempts = cab_session__get_attempts_left(session);
 

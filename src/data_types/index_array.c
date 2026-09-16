@@ -1,9 +1,6 @@
 #include <stdlib.h>
 
-#include "cab_output.h"
 #include "index_array.h"
-#include "word.h"
-
 
 void index_array__init(IndexArray* array, size_t size) {
     array->size = size;
@@ -109,20 +106,4 @@ IndexArray join(IndexArray a, IndexArray b) {
 
     result.size = k;
     return result;
-}
-
-
-void index_array__output(CabSession* session, IndexArray index_array,
-                         const Vocabulary* vocabulary) {
-    size_t j = 0;
-    for (size_t i = 0; i < index_array.size; i++) {
-        word__output(session, vocabulary->words[index_array.indexes[i]]);
-        output(session, " ");
-        if (++j > cab_session__get_setting(
-                      *session, STG_Display_IndexArray_WordsPerLine)) {
-            output(session, "\n");
-            j = 0;
-        }
-    }
-    output(session, "\n");
 }

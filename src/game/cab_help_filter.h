@@ -38,6 +38,11 @@ void cab_session__word_filter_revert_to(CabSession* session,
 
 size_t cab_session__get_filter_history_size(const CabSession* session);
 
+void filter__output(CabSession* session, const WordSetFilter* filter);
+
+void index_array__output(CabSession* session, IndexArray index_array,
+                         const Vocabulary* vocabulary);
+
 void print_current_filter(CabSession* session);
 
 void print_filter_history(CabSession* session);

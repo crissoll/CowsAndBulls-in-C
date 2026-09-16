@@ -1,9 +1,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
-#include "cab_output.h"
 
-#include "cab_settings_override.h"
 #include "index_array.h"
 #include "word.h"
 #include "word_set.h"
@@ -129,117 +127,4 @@ IndexArray filter__get_words_from_word_set(const WordSet* word_set,
     }
 
     return result;
-}
-
-void filter__output(CabSession* session, const WordSetFilter* filter) {
-    bool fixed_letters[MAX_PRACTICAL_WORD_LEN];
-    size_t fixed_letter_index[MAX_PRACTICAL_WORD_LEN];
-    for (size_t i = 0;
-         i < cab_session__get_setting(*session, STG_Internal_WordLen); i++) {
-        fixed_letters[i] = false;
-        for (size_t j = 0; j < ALPHABET_SIZE; j++) {
-            if (filter->present_letters[i][j] == false) {
-                continue;
-            }
-            if (!fixed_letters[i]) {
-                fixed_letters[i] = true;
-                fixed_letter_index[i] = j;
-            } else {
-                fixed_letters[i] = false;
-                break;
-            }
-        }
-    }
-
-    {
-        char impossible_letter = '\0';
-
-        for (size_t i = 0; i < ALPHABET_SIZE; i++) {
-            if (filter->required_letters[i] == false) {
-                continue;
-            }
-            bool has_valid_placement = false;
-            for (size_t j = 0;
-                 j < cab_session__get_setting(*session, STG_Internal_WordLen);
-                 j++) {
-                if (fixed_letters[j] && fixed_letter_index[j] != i) {
-                    continue;
-                }
-                if (filter->present_letters[j][i] == false) {
-                    continue;
-                }
-                has_valid_placement = true;
-            }
-            if (!has_valid_placement) {
-                impossible_letter = (char)('a' + (int)i);
-                break;
-            }
-        }
-
-        if (impossible_letter != '\0') {
-            for (size_t i = 0;
-                 i < cab_session__get_setting(*session, STG_Internal_WordLen);
-                 i++) {
-                output(session, "  [%zu] (none)\n", i + 1);
-            }
-            output(session,
-                   "empty pattern: required letter '%c' has no valid "
-                   "placement\n",
-                   impossible_letter);
-            return;
-        }
-    }
-
-    for (size_t i = 0;
-         i < cab_session__get_setting(*session, STG_Internal_WordLen); i++) {
-        char not_allowed[ALPHABET_SIZE + 1];
-        size_t count = 0;
-
-        bool required_letters[ALPHABET_SIZE];
-        for (size_t j = 0; j < ALPHABET_SIZE; j++) {
-            required_letters[j] = filter->required_letters[j];
-        }
-        char fixed_char;
-        for (size_t j = 0; j < ALPHABET_SIZE; j++) {
-            if (filter->present_letters[i][j] == false) {
-                not_allowed[count] = (char)('a' + (int)j);
-                count++;
-                required_letters[j] = false;
-            } else {
-                fixed_char = (char)('a' + (int)j);
-            }
-        }
-
-        not_allowed[count] = '\0';
-
-        output(session, "  [%zu] ", i + 1);
-        if (count == ALPHABET_SIZE) {
-            output(session, "(none)\n");
-            continue;
-        }
-        if (count == ALPHABET_SIZE - 1) {
-            output(session, "%c\n", fixed_char);
-            continue;
-        }
-
-        if (count == 0) {
-            output(session, "* ");
-        } else {
-            output(session, "!%s ", not_allowed);
-        }
-
-        char candidate_chars[ALPHABET_SIZE + 1];
-        size_t candidate_count = 0;
-
-        for (size_t j = 0; j < ALPHABET_SIZE; j++) {
-            if (required_letters[j]) {
-                candidate_chars[candidate_count++] = (char)('a' + (int)j);
-            }
-        }
-        candidate_chars[candidate_count] = '\0';
-        if (candidate_count > 0) {
-            output(session, "?%s", candidate_chars);
-        }
-        output(session, "\n");
-    }
 }

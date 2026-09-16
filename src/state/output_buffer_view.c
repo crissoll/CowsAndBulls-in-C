@@ -1,5 +1,7 @@
-#include "output_buffer_view.h"
+#include <stdlib.h>
+
 #include "cab_session.h"
+#include "output_buffer_view.h"
 
 void cab_session__free_output_buffer_view(CabSession* session) {
     for (size_t i = 0; i < session->output_buffer_view.size; i++) {

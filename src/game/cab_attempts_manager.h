@@ -13,9 +13,14 @@ typedef struct {
     Attempt attempts[MAX_PRACTICAL_ATTEMPTS];
 } CabAttempts;
 
+void guess_result__output(CabSession* session, GuessResult result);
+
+void attempt__output(CabSession* session, Attempt attempt);
+
+void print_attempt_array(CabSession* session, const Attempt* attempts,
+                         size_t attempt_number);
 
 bool cab_attempts__contains_word(Word word, const CabAttempts* attempts);
-
 
 void cab_session__print_attempts(CabSession* session);
 

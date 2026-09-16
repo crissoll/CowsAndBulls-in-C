@@ -2,6 +2,7 @@
 #include <stddef.h>
 
 #include "cab_attempts_manager.h"
+#include "cab_core.h"
 #include "cab_io_consts.h"
 #include "cab_output.h"
 #include "cab_settings_override.h"

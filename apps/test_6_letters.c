@@ -1,7 +1,5 @@
 #include <stdbool.h>
 #include <stddef.h>
-#include <stdlib.h>
-
 #include "cab_api.h"
 
 #include "utils/input_test.h"

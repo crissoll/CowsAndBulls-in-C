@@ -1,5 +1,5 @@
 #include <stdbool.h>
-
+#include <string.h>
 
 #include "cab_constraints.h"
 #include "cab_end.h"
@@ -10,6 +10,30 @@
 
 #include "cab_attempts_manager.h"
 #include "cab_settings_override.h"
+
+bool can_string_be_word(CabSession* session, const char* string) {
+    const size_t len = strlen(string);
+
+    for (size_t i = 0; i < len; i++) {
+        if (string[i] < 'a' || string[i] > 'z') {
+            message(session, OT_INPUT_ERROR,
+                    "word contains invalid characters\n");
+            return false;
+        }
+    }
+
+    size_t word_len = cab_session__get_setting(*session, STG_Internal_WordLen);
+
+    if (len > word_len) {
+        message(session, OT_INPUT_ERROR, "word too long\n");
+        return false;
+    }
+    if (len < word_len) {
+        message(session, OT_INPUT_ERROR, "word too short\n");
+        return false;
+    }
+    return true;
+}
 
 void play_word(CabSession* session, Word word) {
     const ConstraintResult constr_result = handle_contraints(session, word);
