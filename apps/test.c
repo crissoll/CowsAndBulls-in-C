@@ -9,9 +9,8 @@
 
 
 void turn_function(const char* input_string) {
-    char* output_string = cab_play_turn((char*)input_string);
+    const char* output_string = cab_play_turn((char*)input_string);
     print_truncated_string(output_string, 50);
-    free(output_string);
 }
 
 int main(void) {

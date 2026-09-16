@@ -10,9 +10,8 @@
 
 
 void turn_function(const char* input_string) {
-    char* output_string = cab_play_turn((char*)input_string);
+    const char* output_string = cab_play_turn((char*)input_string);
     printf("%s", output_string);
-    free(output_string);
 }
 
 void prep_function(void) {
