@@ -6,10 +6,7 @@
 #include "index_array.h"
 #include "vocabulary.h"
 #include "word.h"
-
-typedef struct {
-    IndexArray words[MAX_PRACTICAL_WORD_LEN][ALPHABET_SIZE];
-} WordSet;
+#include "word_set.h"
 
 IndexArray word_set__get_words_with_letter_at_pos(char letter,
                                                   size_t position_in_word,

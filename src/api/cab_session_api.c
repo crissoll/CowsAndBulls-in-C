@@ -59,9 +59,6 @@ void setup_session(void) {
     }
 }
 
-void force_setup_session(void) {
-    setup_session();
-}
 
 CabTurnId cab_get_current_turn_id(void) {
     if (default_session.setup == false) {

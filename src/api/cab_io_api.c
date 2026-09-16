@@ -4,7 +4,6 @@
 #include <string.h>
 
 
-
 #include "cab_io_api.h"
 #include "cab_io_consts.h"
 #include "cab_output_buffer.h"
@@ -81,7 +80,6 @@ const char** cab_session__get_messages_with_tag(CabSession* session,
         return NULL;
     }
 
-    *message_count = 0;
     *message_count = 0;
 
     char** msgs = (char**)cab_output_buffer__get_messages_with_tags(
