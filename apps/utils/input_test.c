@@ -58,7 +58,7 @@ InputTestSet load_test_set_from_file(const char* file_name) {
         return test_set;
     }
 
-    char buffer[1200];
+    char* buffer = malloc(sizeof(char) * 1201);
 
     InputTest cur_test = get_empty_test();
 
@@ -74,6 +74,7 @@ InputTestSet load_test_set_from_file(const char* file_name) {
             add_input_line_to_test(&cur_test, buffer);
         }
     }
+    free(buffer);
 
     if (cur_test.count > 0) {
         add_test_to_test_set(&test_set, cur_test);
@@ -82,6 +83,7 @@ InputTestSet load_test_set_from_file(const char* file_name) {
     add_test_to_test_set(&test_set, get_empty_test());
 
     fclose(fp);
+
     return test_set;
 }
 
