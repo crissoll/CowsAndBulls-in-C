@@ -19,19 +19,20 @@ typedef struct {
     ListHistoryEntry history[HELP_FILTER_HISTORY_MAX];
     size_t entries_count;
     WordSet current_word_set;
+    ListHistoryEntry default_entry;
 } CabWordFilter;
 
 void cab_session__word_filter_init(CabSession* session);
 
 void cab_session__word_filter_free_content(CabSession* session);
 
-ListHistoryEntry cab_session__get_last_word_filter(const CabSession* session);
+const ListHistoryEntry* cab_session__get_last_word_filter(CabSession* session);
 
 size_t cab_session__compute_filter_word_count(const CabSession* session,
                                               const WordSetFilter* filter);
 
 void cab_session__word_filter_add_entry(CabSession* session,
-                                       ListHistoryEntry entry);
+                                        const ListHistoryEntry* entry);
 
 void cab_session__word_filter_revert_to(CabSession* session,
                                         size_t history_index);

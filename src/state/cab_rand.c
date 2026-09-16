@@ -19,7 +19,7 @@ uint32_t cab_session__rand(CabSession* session) {
 
 void cab_session__rand_init(CabSession* session) {
     uint64_t t = (uint64_t)time(NULL);
-    uint32_t seed = t % (1u << 31) ^ t >> 31;
+    uint32_t seed = (uint32_t)(t % (1u << 31) ^ t >> 31);
     session->rng_state = (seed != 0) ? seed : 0x80085;
 
     session->seed = cab_session__rand(session);

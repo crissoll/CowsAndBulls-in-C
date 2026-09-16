@@ -40,7 +40,7 @@ void setup_session(void) {
         return;
     }
     extra_io_warning(&default_session, "\n======== new session ===========\n");
-    default_session = cab_session__new();
+    cab_session__init(&default_session);
     default_session.setup = true;
 
     cab_session__load_data(&default_session);

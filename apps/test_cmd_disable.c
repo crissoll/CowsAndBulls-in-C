@@ -9,7 +9,8 @@
 int main(void) {
     printf("--- Running test_cmd_disable ---\n");
 
-    CabSession session = cab_session__new();
+    CabSession session = {0};
+    cab_session__init(&session);
     const CommandSpec* root = cab_session__get_cmd_tree_root(&session);
     assert(root != NULL);
 
@@ -31,27 +32,27 @@ int main(void) {
     assert(list_spec != NULL);
 
     // 2. Initial state: all commands allowed
-    assert(cab_session__is_command_allowed(session, surrender_spec) == true);
+    assert(cab_session__is_command_allowed(&session, surrender_spec) == true);
     assert(cab_session__get_command_spec_disable_flags(
-               session, surrender_spec) == CMD_DISABLE_NOTHING);
+               &session, surrender_spec) == CMD_DISABLE_NOTHING);
     printf("[PASS] Initial flags verified.\n");
 
     // 3. Test: "disable surrender" -> CMD_DISABLE_ALL
     const char* disable_surrender_tokens[] = {"disable", "surrender"};
     parse_command(&session, root, disable_surrender_tokens, 2);
 
-    assert(cab_session__is_command_allowed(session, surrender_spec) == false);
+    assert(cab_session__is_command_allowed(&session, surrender_spec) == false);
     assert(cab_session__get_command_spec_disable_flags(
-               session, surrender_spec) == CMD_DISABLE_ALL);
+               &session, surrender_spec) == CMD_DISABLE_ALL);
     printf("[PASS] 'disable surrender' set CMD_DISABLE_ALL successfully.\n");
 
     // 4. Test: "disable --reset surrender" -> CMD_DISABLE_NOTHING
     const char* reset_surrender_tokens[] = {"disable", "--reset", "surrender"};
     parse_command(&session, root, reset_surrender_tokens, 3);
 
-    assert(cab_session__is_command_allowed(session, surrender_spec) == true);
+    assert(cab_session__is_command_allowed(&session, surrender_spec) == true);
     assert(cab_session__get_command_spec_disable_flags(
-               session, surrender_spec) == CMD_DISABLE_NOTHING);
+               &session, surrender_spec) == CMD_DISABLE_NOTHING);
     printf("[PASS] 'disable --reset surrender' re-enabled the command.\n");
 
     // 5. Test: "disable --zero-args attempts" -> CMD_DISABLE_NO_ARGS
@@ -60,9 +61,9 @@ int main(void) {
     parse_command(&session, root, disable_zero_args_tokens, 3);
 
     CabCmdDisabledFlags attempts_flags =
-        cab_session__get_command_spec_disable_flags(session, attempts_spec);
+        cab_session__get_command_spec_disable_flags(&session, attempts_spec);
     assert(attempts_flags & CMD_DISABLE_NO_ARGS);
-    assert(cab_session__is_command_allowed(session, attempts_spec) == true);
+    assert(cab_session__is_command_allowed(&session, attempts_spec) == true);
     printf(
         "[PASS] 'disable --zero-args attempts' set CMD_DISABLE_NO_ARGS "
         "successfully.\n");
@@ -72,7 +73,7 @@ int main(void) {
     parse_command(&session, root, disable_default_tokens, 3);
 
     attempts_flags =
-        cab_session__get_command_spec_disable_flags(session, attempts_spec);
+        cab_session__get_command_spec_disable_flags(&session, attempts_spec);
     assert(attempts_flags & CMD_DISABLE_DEF_HANDLER);
     assert(attempts_flags & CMD_DISABLE_NO_ARGS);
     printf(
@@ -84,7 +85,7 @@ int main(void) {
     parse_command(&session, root, disable_args_tokens, 3);
 
     CabCmdDisabledFlags list_flags =
-        cab_session__get_command_spec_disable_flags(session, list_spec);
+        cab_session__get_command_spec_disable_flags(&session, list_spec);
     assert(list_flags & CMD_DISABLE_ARGS);
     printf("[PASS] 'disable --args list' set CMD_DISABLE_ARGS successfully.\n");
 
@@ -98,7 +99,7 @@ int main(void) {
     const char* disable_list_p_tokens[] = {"disable", "list", "-p"};
     parse_command(&session, root, disable_list_p_tokens, 3);
 
-    assert(cab_session__is_command_allowed(session, list_p_spec) == false);
+    assert(cab_session__is_command_allowed(&session, list_p_spec) == false);
     printf(
         "[PASS] 'disable list -p' disabled nested subcommand successfully.\n");
 

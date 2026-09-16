@@ -66,7 +66,8 @@ int main(void) {
     printf("--- Running test_cmd_root ---\n");
 
     // 1. Initialize session
-    CabSession session = cab_session__new();
+    CabSession session = {0};
+    cab_session__init(&session);
     assert(session.commands_tree == NULL);
 
     // 2. Default root should be returned when commands_tree is NULL
@@ -94,10 +95,11 @@ int main(void) {
     printf("[PASS] Custom sub-command executed successfully.\n");
 
     // 5. Test disabling a command under the custom root
-    assert(cab_session__is_command_allowed(session, &custom_specs[0]) == true);
+    assert(cab_session__is_command_allowed(&session, &custom_specs[0]) == true);
     cab_session__set_command_spec_disable_flags(&session, &custom_specs[0],
                                                 CMD_DISABLE_ALL);
-    assert(cab_session__is_command_allowed(session, &custom_specs[0]) == false);
+    assert(cab_session__is_command_allowed(&session, &custom_specs[0]) ==
+           false);
     printf("[PASS] Command disabled successfully.\n");
 
     // When disabled, parse_command should not invoke the handler

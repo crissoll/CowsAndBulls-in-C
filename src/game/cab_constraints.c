@@ -50,16 +50,16 @@ static bool handle_attempts_equality_constraint(CabSession* session,
 
 Constraint get_total_constraint(CabSession* session, Word word) {
     if (handle_vocabulary_constraint(session, word)) {
-        return cab_session__get_setting(session,
-                                        STG_Rule_VocabularyConstraintMode);
+        return (Constraint)cab_session__get_setting(
+            session, STG_Rule_VocabularyConstraintMode);
     }
     if (handle_attempts_coherence_constraint(session, word)) {
-        return cab_session__get_setting(
+        return (Constraint)cab_session__get_setting(
             session, STG_Rule_AttemptsCoherenceConstraintMode);
     }
 
     if (handle_attempts_equality_constraint(session, word)) {
-        return cab_session__get_setting(
+        return (Constraint)cab_session__get_setting(
             session, STG_Rule_AttemptsEqualityConstraintMode);
     }
 

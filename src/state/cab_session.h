@@ -19,7 +19,6 @@
 #include "word.h"
 
 
-
 typedef struct Vocabulary Vocabulary;
 
 typedef struct {
@@ -33,7 +32,7 @@ typedef struct CabSession {
     CAB_IOBuffer* input_buffer;
     CabOutputBufferView output_buffer_view;
     CabPaths file_paths;
-    size_t seed;
+    uint32_t seed;
     uint32_t rng_state;
     uint64_t file_interaction_count;
 
@@ -54,7 +53,7 @@ typedef struct CabSession {
 } CabSession;
 
 
-CabSession cab_session__new(void);
+void cab_session__init(CabSession* session);
 void cab_session__free_content(CabSession* session);
 
 bool cab_session__is_game_started(const CabSession* session);

@@ -1,5 +1,7 @@
+#include <assert.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "attempts.h"
 #include "cab_attempts_manager.h"
@@ -15,24 +17,23 @@
 #include "word.h"
 
 
-CabSession cab_session__new(void) {
-    CabSession session = {0};
-    session.output_buffer = malloc(sizeof(*session.output_buffer));
-    if (session.output_buffer != NULL) {
-        *session.output_buffer = (OutputBuffer){0};
-        cab_output_buffer__init(session.output_buffer);
+void cab_session__init(CabSession* session) {
+
+    session->output_buffer = malloc(sizeof(*session->output_buffer));
+    if (session->output_buffer != NULL) {
+        *session->output_buffer = (OutputBuffer){0};
+        cab_output_buffer__init(session->output_buffer);
     }
 
-    session.input_buffer = malloc(sizeof(*session.input_buffer));
-    if (session.input_buffer != NULL) {
-        *session.input_buffer = (CAB_IOBuffer){0};
-        cab_io_buffer__init(session.input_buffer);
+    session->input_buffer = malloc(sizeof(*session->input_buffer));
+    if (session->input_buffer != NULL) {
+        *session->input_buffer = (CAB_IOBuffer){0};
+        cab_io_buffer__init(session->input_buffer);
     }
 
-    session.ending_flags = CABEND_None;
+    session->ending_flags = CABEND_None;
 
-    cab_session__rand_init(&session);
-    return session;
+    cab_session__rand_init(session);
 }
 
 void cab_session__free_content(CabSession* session) {
@@ -61,7 +62,7 @@ void cab_session__free_content(CabSession* session) {
     free((char*)session->file_paths.log_path);
     free((char*)session->file_paths.vocab_path);
 
-    *session = (CabSession){0};
+    memset(session, 0, sizeof(*session));
 }
 
 
@@ -73,10 +74,8 @@ bool cab_session__is_game_started(const CabSession* session) {
             return false;
         case CAB_TID_Playing:
             return true;
-        case CAB_TID_LEN:
-            extra_io_warning(session,
-                             "cab_session__is_game_started: current_turn is "
-                             "set as CAB_TID_LEN; this value shouldnt be used");
+        default:
+            assert(false && "current_turn is CAB_TID_LEN or invalid");
             return false;
     }
 }
@@ -133,7 +132,7 @@ void cab_session__start_new_game(CabSession* session) {
         return;
     }
     if (session->seed == 0) {
-        *session = cab_session__new();
+        cab_session__init(session);
     }
     cab_session__rand_init(session);
     cab_session__load_vocabulary(session);

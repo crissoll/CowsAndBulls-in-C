@@ -77,10 +77,10 @@ bool cab_setting_entry__is_overridden(CabSettingEntry entry) {
     return entry.overridden;
 }
 
-bool cab_settings_override__is_overridden(CabSettingsOverride settings,
+bool cab_settings_override__is_overridden(const CabSettingsOverride* settings,
                                           CabSettingId setting_id) {
     const SettingIndex setting_index = cab_setting_id_get_index(setting_id);
-    return settings.entries[setting_index.value].overridden;
+    return settings->entries[setting_index.value].overridden;
 }
 
 void cab_settings_override__set_value(CabSettingsOverride* settings,
@@ -96,7 +96,7 @@ size_t cab_session__get_setting(const CabSession* session,
     const SettingIndex setting_index = cab_setting_id_get_index(setting);
 
     if (stg == NULL ||
-        cab_settings_override__is_overridden(*stg, setting) == false) {
+        cab_settings_override__is_overridden(stg, setting) == false) {
         return cab_settings__get_default_value(setting);
     }
 

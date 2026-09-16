@@ -160,16 +160,17 @@ void cab_session__word_filter_free_content(CabSession* session) {
     session->word_filter.entries_count = 0;
 }
 
-ListHistoryEntry cab_session__get_last_word_filter(const CabSession* session) {
+const ListHistoryEntry* cab_session__get_last_word_filter(CabSession* session) {
     if (session == NULL || session->word_filter.entries_count == 0) {
-        ListHistoryEntry default_entry = {0};
-        filter__init(&default_entry.filter);
+        filter__init(&session->word_filter.default_entry.filter);
         if (session != NULL && session->vocabulary != NULL) {
-            default_entry.word_count = session->vocabulary->size;
+            session->word_filter.default_entry.word_count =
+                session->vocabulary->size;
         }
-        return default_entry;
+        return &session->word_filter.default_entry;
     }
-    return session->word_filter.history[session->word_filter.entries_count - 1];
+    return &session->word_filter
+                .history[session->word_filter.entries_count - 1];
 }
 
 size_t cab_session__compute_filter_word_count(const CabSession* session,
@@ -185,7 +186,7 @@ size_t cab_session__compute_filter_word_count(const CabSession* session,
 }
 
 void cab_session__word_filter_add_entry(CabSession* session,
-                                        ListHistoryEntry entry) {
+                                        const ListHistoryEntry* entry) {
     if (session == NULL) {
         return;
     }
@@ -198,11 +199,11 @@ void cab_session__word_filter_add_entry(CabSession* session,
             session->word_filter.history[i] =
                 session->word_filter.history[i + 1];
         }
-        session->word_filter.history[HELP_FILTER_HISTORY_MAX - 1] = entry;
+        session->word_filter.history[HELP_FILTER_HISTORY_MAX - 1] = *entry;
         session->word_filter.entries_count = HELP_FILTER_HISTORY_MAX;
     } else {
         session->word_filter.history[session->word_filter.entries_count] =
-            entry;
+            *entry;
         session->word_filter.entries_count++;
     }
 }
@@ -214,7 +215,7 @@ void cab_session__word_filter_revert_to(CabSession* session,
         return;
     }
     cab_session__word_filter_add_entry(
-        session, session->word_filter.history[history_index]);
+        session, &session->word_filter.history[history_index]);
 }
 
 size_t cab_session__get_filter_history_size(const CabSession* session) {
@@ -226,9 +227,10 @@ size_t cab_session__get_filter_history_size(const CabSession* session) {
 
 void print_current_filter(CabSession* session) {
     start_message(session, OT_FILTER);
-    ListHistoryEntry cur_entry = cab_session__get_last_word_filter(session);
-    output(session, "--- [%zu words] ---\n", cur_entry.word_count);
-    filter__output(session, &cur_entry.filter);
+    const ListHistoryEntry* cur_entry =
+        cab_session__get_last_word_filter(session);
+    output(session, "--- [%zu words] ---\n", cur_entry->word_count);
+    filter__output(session, &cur_entry->filter);
     end_message(session);
 }
 
@@ -252,9 +254,10 @@ void print_filter_history(CabSession* session) {
 
 void print_filtered_word_list(CabSession* session) {
     start_message(session, OT_LIST);
-    ListHistoryEntry cur_entry = cab_session__get_last_word_filter(session);
+    const ListHistoryEntry* cur_entry =
+        cab_session__get_last_word_filter(session);
     IndexArray filtered = filter__get_words_from_word_set(
-        &session->word_filter.current_word_set, &cur_entry.filter);
+        &session->word_filter.current_word_set, &cur_entry->filter);
     const Vocabulary* voc = session->vocabulary;
     index_array__output(session, filtered, voc);
     index_array__free_content(&filtered);

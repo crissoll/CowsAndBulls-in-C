@@ -83,7 +83,7 @@ void load_filter_from_history(CabSession* session, size_t token_count,
 
     message(session, OT_USER, "correctly reverted to step number %d\n", index);
     const size_t word_count =
-        cab_session__get_last_word_filter(session).word_count;
+        cab_session__get_last_word_filter(session)->word_count;
     message(session, OT_WORD_COUNT, "[%zu words]\n", word_count);
 }
 
@@ -98,7 +98,7 @@ void cmd__list_remove_letters(CabSession* session, size_t token_count,
         }
     }
 
-    WordSetFilter filter = cab_session__get_last_word_filter(session).filter;
+    WordSetFilter filter = cab_session__get_last_word_filter(session)->filter;
     for (size_t i = 0; i < token_count; i++) {
         filter__apply_pattern(&filter, tokens[i], REMOVE);
     }
@@ -107,7 +107,7 @@ void cmd__list_remove_letters(CabSession* session, size_t token_count,
         cab_session__compute_filter_word_count(session, &filter);
     cab_session__word_filter_add_entry(
         session,
-        (ListHistoryEntry){.filter = filter, .word_count = word_count});
+        &(ListHistoryEntry){.filter = filter, .word_count = word_count});
     message(session, OT_WORD_COUNT, "[%zu words]\n", word_count);
 }
 
@@ -122,7 +122,7 @@ void cmd__list_intersect_letters(CabSession* session, size_t token_count,
         }
     }
 
-    WordSetFilter filter = cab_session__get_last_word_filter(session).filter;
+    WordSetFilter filter = cab_session__get_last_word_filter(session)->filter;
     for (size_t i = 0; i < token_count; i++) {
         filter__apply_pattern(&filter, tokens[i], INTERSECT);
     }
@@ -131,7 +131,7 @@ void cmd__list_intersect_letters(CabSession* session, size_t token_count,
         cab_session__compute_filter_word_count(session, &filter);
     cab_session__word_filter_add_entry(
         session,
-        (ListHistoryEntry){.filter = filter, .word_count = word_count});
+        &(ListHistoryEntry){.filter = filter, .word_count = word_count});
     message(session, OT_WORD_COUNT, "[%zu words]\n", word_count);
 }
 
@@ -159,6 +159,6 @@ void setup_list_from_pattern(CabSession* session, size_t token_count,
         cab_session__compute_filter_word_count(session, &filter);
     cab_session__word_filter_add_entry(
         session,
-        (ListHistoryEntry){.filter = filter, .word_count = word_count});
+        &(ListHistoryEntry){.filter = filter, .word_count = word_count});
     message(session, OT_WORD_COUNT, "[%zu words]\n", word_count);
 }

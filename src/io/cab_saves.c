@@ -1,3 +1,4 @@
+#include <inttypes.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -5,6 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+
 
 #include "attempts.h"
 #include "cab_end.h"
@@ -244,7 +246,7 @@ unsigned char get_char_hash(size_t seed) {
 
 void hash_word(Word* word, size_t seed) {
     const size_t len = strlen(word->letters);
-    const char hash = get_char_hash(seed);
+    const unsigned char hash = get_char_hash(seed);
     for (size_t i = 0; i < len; i++) {
         const size_t shift = (hash + i) % ALPHABET_SIZE;
         word->letters[i] =
@@ -254,9 +256,9 @@ void hash_word(Word* word, size_t seed) {
 
 void unhash_word(Word* word, size_t seed) {
     const size_t len = strlen(word->letters);
-    const char hash = get_char_hash(seed);
+    const unsigned char hash = get_char_hash(seed);
     for (size_t i = 0; i < len; i++) {
-        const size_t shift = (hash + i) % ALPHABET_SIZE;
+        const size_t shift = ((size_t)hash + i) % ALPHABET_SIZE;
         word->letters[i] =
             (char)(((word->letters[i] - 'a' + ALPHABET_SIZE - shift) %
                     ALPHABET_SIZE) +
@@ -299,8 +301,8 @@ void cab_session__save_data(CabSession* session) {
         return;
     }
     // seed and rng state
-    fprintf(fp, "%zu\n", session->seed);
-    fprintf(fp, "%zu\n\n", (size_t)session->rng_state);
+    fprintf(fp, "%" PRIu32 "\n", session->seed);
+    fprintf(fp, "%" PRIu32 "\n\n", session->rng_state);
 
     // vocabulary
     size_t vocab_hash = vocabulary__hash(session->vocabulary);
@@ -370,22 +372,25 @@ void cab_session__load_data(CabSession* session) {
 
     // seed and rng state
     int params;
-    params = fscanf(fp, "%zu", &session->seed);
+    uint32_t seed;
+    params = fscanf(fp, "%" PRIu32, &seed);
     if (params != 1) {
         extra_io_warning(session,
                          "cab_session__load_data: failed to load seed");
         fclose(fp);
         return;
     }
-    size_t rng_state;
-    params = fscanf(fp, "%zu", &rng_state);
+    session->seed = seed;
+
+    uint32_t rng_state;
+    params = fscanf(fp, "%" PRIu32, &rng_state);
     if (params != 1) {
         extra_io_warning(session,
                          "cab_session__load_data: failed to load rng_state");
         fclose(fp);
         return;
     }
-    session->rng_state = (uint32_t)rng_state;
+    session->rng_state = rng_state;
 
     // vocabulary
     session->file_paths.vocab_path = calloc(256, sizeof(char));

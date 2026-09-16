@@ -27,31 +27,32 @@ int main(void) {
     printf("[PASS] Default settings and bounds retrieved correctly.\n");
 
     // 3. Test Session Isolation and Value Overrides
-    CabSession session = cab_session__new();
-    assert(cab_session__get_setting(session, STG_Internal_WordLen) == 5);
+    CabSession session = {0};
+    cab_session__init(&session);
+    assert(cab_session__get_setting(&session, STG_Internal_WordLen) == 5);
 
     // Override word length to 6
     cab_session__set_setting(&session, STG_Internal_WordLen, 6);
-    assert(cab_session__get_setting(session, STG_Internal_WordLen) == 6);
+    assert(cab_session__get_setting(&session, STG_Internal_WordLen) == 6);
     assert(cab_get_default_setting(STG_Internal_WordLen) ==
            5);  // Default unchanged
     printf("[PASS] Session setting override applied successfully.\n");
 
     // 4. Test Reset Single Setting
     cab_session__reset_setting(&session, STG_Internal_WordLen);
-    assert(cab_session__get_setting(session, STG_Internal_WordLen) == 5);
+    assert(cab_session__get_setting(&session, STG_Internal_WordLen) == 5);
     printf("[PASS] Reset single setting reverted to default.\n");
 
     // 5. Test Reset All Settings
     cab_session__set_setting(&session, STG_Internal_WordLen, 7);
     cab_session__set_setting(&session, STG_Display_TextWrapMaxLineLength, 120);
-    assert(cab_session__get_setting(session, STG_Internal_WordLen) == 7);
-    assert(cab_session__get_setting(session,
+    assert(cab_session__get_setting(&session, STG_Internal_WordLen) == 7);
+    assert(cab_session__get_setting(&session,
                                     STG_Display_TextWrapMaxLineLength) == 120);
 
     cab_session__reset_all_settings(&session);
-    assert(cab_session__get_setting(session, STG_Internal_WordLen) == 5);
-    assert(cab_session__get_setting(session,
+    assert(cab_session__get_setting(&session, STG_Internal_WordLen) == 5);
+    assert(cab_session__get_setting(&session,
                                     STG_Display_TextWrapMaxLineLength) == 80);
     printf("[PASS] Reset all settings reverted all overrides.\n");
 
@@ -80,12 +81,12 @@ int main(void) {
     // 7. Test In-Game Lock Enforcement
     session.current_turn = CAB_TID_NotStarted;
     cab_session__set_setting(&session, STG_Internal_WordLen, 6);
-    assert(cab_session__get_setting(session, STG_Internal_WordLen) == 6);
+    assert(cab_session__get_setting(&session, STG_Internal_WordLen) == 6);
 
     // When game has started, changing locked setting should be rejected
     session.current_turn = CAB_TID_Playing;
     cab_session__set_setting(&session, STG_Internal_WordLen, 4);
-    assert(cab_session__get_setting(session, STG_Internal_WordLen) ==
+    assert(cab_session__get_setting(&session, STG_Internal_WordLen) ==
            6);  // Retained 6
     printf("[PASS] In-game locked settings blocked during active game.\n");
 
