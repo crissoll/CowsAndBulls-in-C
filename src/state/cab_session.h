@@ -38,6 +38,7 @@ typedef struct CabSession {
 
     CmdTree* commands_tree;
     Vocabulary* vocabulary;
+    size_t vocab_hash;
 
     CabSettingsOverride* settings_override;
     Word secret_word;
