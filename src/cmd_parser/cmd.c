@@ -2,7 +2,6 @@
 #include <stddef.h>
 
 #include "cab_session.h"
-#include "cmd_spec.h"
 
 
 void parse(CabSession* session, const char* tokens[], size_t token_count) {

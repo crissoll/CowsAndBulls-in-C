@@ -2,7 +2,7 @@
 #define CAB_RAND
 #include <stdint.h>
 
-typedef struct CabSession CabSession;
+#include "cab_session_fwd.h"
 
 uint32_t cab_rand(uint32_t from);
 

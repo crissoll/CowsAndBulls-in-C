@@ -8,7 +8,6 @@
 #include "cab_session.h"
 
 #include "cab_deprecated.h"
-#include "cmd_spec.h"
 
 
 #ifndef CAB_NO_GLOBAL_SESSION

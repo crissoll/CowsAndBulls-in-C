@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 
-typedef struct CabSession CabSession;
+#include "cab_session_fwd.h"
 
 typedef enum {
     CABEND_None = 0,

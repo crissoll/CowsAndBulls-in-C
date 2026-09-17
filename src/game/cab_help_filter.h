@@ -3,10 +3,9 @@
 
 #include <stddef.h>
 
+#include "cab_session_fwd.h"
 #include "word_set.h"
 #include "word_set_filter.h"
-
-typedef struct CabSession CabSession;
 
 #define HELP_FILTER_HISTORY_MAX 100
 

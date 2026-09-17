@@ -5,6 +5,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "cab_session_fwd.h"
+
 typedef enum {
     CMD_DISABLE_NOTHING = 0,
     CMD_DISABLE_NO_ARGS = 1,
@@ -17,7 +19,6 @@ typedef enum {
 
 typedef struct CommandSpec CommandSpec;
 
-typedef struct CabSession CabSession;
 
 #define END_SPEC {.name = NULL}
 

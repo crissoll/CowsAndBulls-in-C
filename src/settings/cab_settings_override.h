@@ -4,9 +4,9 @@
 #include <stdbool.h>
 #include <stddef.h>
 
+#include "cab_session_fwd.h"
 #include "cab_settings.h"
 
-typedef struct CabSession CabSession;
 
 typedef struct {
     bool overridden;

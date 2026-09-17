@@ -18,8 +18,6 @@
 
 #include "cab_session.h"
 #include "cab_session_api.h"
-#include "cmd_spec.h"
-
 
 void setup_session(void);
 

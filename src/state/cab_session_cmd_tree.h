@@ -3,7 +3,7 @@
 
 #include "cmd_spec.h"
 
-typedef struct CabSession CabSession;
+#include "cab_session_fwd.h"
 
 typedef struct {
     const CommandSpec* root;

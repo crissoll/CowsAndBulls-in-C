@@ -6,10 +6,10 @@
 
 #include "cab_io_buffer.h"
 #include "cab_io_consts.h"
+#include "cab_session_fwd.h"
 
 #define MAX_MESSAGES_COUNT 256
 
-typedef struct CabSession CabSession;
 typedef struct {
     size_t* message_indexes;
     OutputTags* tags;

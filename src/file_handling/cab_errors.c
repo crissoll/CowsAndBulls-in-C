@@ -7,7 +7,6 @@
 #include "cab_errors.h"
 #include "cab_files.h"
 #include "cab_session.h"
-#include "cmd_spec.h"
 
 
 bool get_log_to_file(CabSession* session) {
