@@ -33,9 +33,10 @@ static void output_buffer__va_output(OutputBuffer* output_buffer,
 
     char* formatted_text;
 
-    formatted_text = malloc(formatted_text_len + 1);
+    formatted_text = malloc((unsigned int)formatted_text_len + 1);
 
-    vsnprintf(formatted_text, formatted_text_len + 1, format_string, args);
+    vsnprintf(formatted_text, (unsigned int)formatted_text_len + 1,
+              format_string, args);
     print_to_buffer(output_buffer->text_buffer, formatted_text);
     free(formatted_text);
 }

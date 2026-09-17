@@ -17,7 +17,7 @@ static inline unsigned int cab_log2_1based(unsigned int x) {
     #define LOG2(x) \
         ((x) == 0   \
              ? 0    \
-             : (unsigned int)((sizeof(unsigned int) * 8) - __builtin_clz(x)))
+             : (sizeof(unsigned int) * 8) - (unsigned int)__builtin_clz(x))
 #endif
 
 typedef enum {

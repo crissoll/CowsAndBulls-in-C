@@ -249,8 +249,9 @@ void hash_word(Word* word, size_t seed) {
     const unsigned char hash = get_char_hash(seed);
     for (size_t i = 0; i < len; i++) {
         const size_t shift = (hash + i) % ALPHABET_SIZE;
-        word->letters[i] =
-            (char)(((word->letters[i] - 'a' + shift) % ALPHABET_SIZE) + 'a');
+        word->letters[i] = (char)((((unsigned)word->letters[i] - 'a' + shift) %
+                                   ALPHABET_SIZE) +
+                                  'a');
     }
 }
 
@@ -270,7 +271,7 @@ size_t vocabulary__hash(const Vocabulary* voc) {
     if (voc == NULL) {
         return 0;
     }
-    size_t hash = 5381;
+    size_t hash = 0xABCD;
     for (size_t i = 0; i < voc->size; i++) {
         for (const char* p = voc->words[i].letters; *p; p++) {
             hash =
