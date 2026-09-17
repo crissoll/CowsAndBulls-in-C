@@ -17,7 +17,7 @@ void cab_turn_process_CAB_TID_Playing(CabSession* session) {
         return;
     }
 
-    cab_session__save_data(session);
+    cab_session__store_data(session);
 
     session->current_turn = CAB_TID_Playing;
 }

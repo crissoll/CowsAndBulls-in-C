@@ -288,7 +288,7 @@ void cab_session__save_data(CabSession* session) {
         session->file_paths.saves_path = malloc(sizeof(DEFAULT_SAVES_PATH));
         strcpy((char*)session->file_paths.saves_path, DEFAULT_SAVES_PATH);
         extra_io_warning(session,
-                         "cab_session__save_data: NULL saves path. defaulting "
+                         "cab_session__store_data: NULL saves path. defaulting "
                          "to default path: %s",
                          DEFAULT_SAVES_PATH);
         path = session->file_paths.saves_path;

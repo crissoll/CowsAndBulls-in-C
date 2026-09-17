@@ -20,7 +20,7 @@ void cab_turn_process_CAB_TID_FirstTurn(CabSession* session) {
     }
 
     if (cab_session__get_attempts_count(session) > 0) {
-        cab_session__save_data(session);
+        cab_session__store_data(session);
         session->current_turn = CAB_TID_Playing;
         return;
     }
