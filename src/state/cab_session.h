@@ -9,7 +9,6 @@
 #include "cab_help_filter.h"
 #include "cab_io_buffer.h"
 #include "cab_output_buffer.h"
-#include "cab_rand.h"
 #include "cab_session_cmd_tree.h"
 
 

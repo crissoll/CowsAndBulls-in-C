@@ -58,9 +58,8 @@ void vocabulary__init(Vocabulary* vocabulary, const Word* words,
 }
 
 
-void vocabulary__get_words_frequencies(
-    const Vocabulary* vocabulary,
-    size_t matrix[ALPHABET_SIZE][MAX_PRACTICAL_WORD_LEN]) {
+void vocabulary__get_words_frequencies(const Vocabulary* vocabulary,
+                                       size_t* matrix[ALPHABET_SIZE]) {
     for (size_t letter_idx = 0; letter_idx < ALPHABET_SIZE; letter_idx++) {
         for (size_t pos = 0; pos < MAX_PRACTICAL_WORD_LEN; pos++) {
             matrix[letter_idx][pos] = 0;

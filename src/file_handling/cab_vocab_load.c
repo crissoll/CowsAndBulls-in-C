@@ -5,6 +5,7 @@
 #include "cab_errors.h"
 #include "cab_files.h"
 #include "cab_io_utils.h"
+#include "cab_rand.h"
 #include "cab_saves.h"
 #include "cab_session.h"
 

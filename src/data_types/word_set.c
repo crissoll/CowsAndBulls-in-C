@@ -1,3 +1,4 @@
+#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -25,7 +26,10 @@ void word_set__init_from_vocabulary(WordSet* word_set,
         return;
     }
 
-    size_t matrix[ALPHABET_SIZE][MAX_PRACTICAL_WORD_LEN];
+    size_t* matrix[ALPHABET_SIZE];
+    for (size_t i = 0; i < ALPHABET_SIZE; i++) {
+        matrix[i] = calloc(word_len, sizeof(size_t));
+    }
 
     vocabulary__get_words_frequencies(vocabulary, matrix);
 
@@ -55,6 +59,10 @@ void word_set__init_from_vocabulary(WordSet* word_set,
             }
             matrix[letter_idx][p]--;
         }
+    }
+
+    for (size_t i = 0; i < ALPHABET_SIZE; i++) {
+        free(matrix[i]);
     }
 }
 

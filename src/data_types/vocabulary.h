@@ -14,9 +14,8 @@ void vocabulary__init(Vocabulary* vocabulary, const Word* words,
                       size_t word_count);
 
 
-void vocabulary__get_words_frequencies(
-    const Vocabulary* vocabulary,
-    size_t matrix[ALPHABET_SIZE][MAX_PRACTICAL_WORD_LEN]);
+void vocabulary__get_words_frequencies(const Vocabulary* vocabulary,
+                                       size_t* matrix[ALPHABET_SIZE]);
 
 bool vocabulary__contains_word(const Vocabulary* vocabulary, Word word);
 

@@ -25,9 +25,6 @@ void cab_fh__store_settings(CabSession* session, char* buffer) {
             const size_t val = session->settings_override->entries[i].value;
             sprintf(buffer, "%zu : %zu\n", i, val);
         }
-
-    } else {
-        sprintf(buffer, "0\n");
     }
 }
 
