@@ -178,8 +178,9 @@ size_t cab_session__compute_filter_word_count(const CabSession* session,
     if (session == NULL || filter == NULL) {
         return 0;
     }
+    const size_t word_len = cab_session__get_word_len(session);
     IndexArray tmp = filter__get_words_from_word_set(
-        &session->word_filter.current_word_set, filter);
+        &session->word_filter.current_word_set, filter, word_len);
     size_t result = tmp.size;
     index_array__free_content(&tmp);
     return result;
@@ -257,7 +258,8 @@ void print_filtered_word_list(CabSession* session) {
     const ListHistoryEntry* cur_entry =
         cab_session__get_last_word_filter(session);
     IndexArray filtered = filter__get_words_from_word_set(
-        &session->word_filter.current_word_set, &cur_entry->filter);
+        &session->word_filter.current_word_set, &cur_entry->filter,
+        cab_session__get_word_len(session));
     const Vocabulary* voc = session->vocabulary;
     index_array__output(session, filtered, voc);
     index_array__free_content(&filtered);

@@ -12,6 +12,7 @@
 #include "cab_rand.h"
 #include "cab_saves.h"
 #include "cab_session.h"
+#include "cab_settings_override.h"
 #include "cab_turns.h"
 #include "output_buffer_view.h"
 #include "word.h"
@@ -143,4 +144,9 @@ void cab_session__start_new_game(CabSession* session) {
 
     session->setup = true;
     session->loaded = false;
+}
+
+
+size_t cab_session__get_word_len(const CabSession* session) {
+    return cab_session__get_setting(session, STG_Internal_WordLen);
 }

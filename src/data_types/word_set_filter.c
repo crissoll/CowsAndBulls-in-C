@@ -69,7 +69,8 @@ void filter__apply_pattern(WordSetFilter* filter, const char* pattern,
 }
 
 IndexArray filter__get_words_from_word_set(const WordSet* word_set,
-                                           const WordSetFilter* filter) {
+                                           const WordSetFilter* filter,
+                                           size_t word_len) {
     IndexArray result;
     index_array__init(&result, 0);
 
@@ -77,7 +78,7 @@ IndexArray filter__get_words_from_word_set(const WordSet* word_set,
 
     /* For each position, union words with allowed letters, then intersect
      * across positions */
-    for (size_t i = 0; i < MAX_PRACTICAL_WORD_LEN; i++) {
+    for (size_t i = 0; i < word_len; i++) {
         IndexArray position_result;
         index_array__init(&position_result, 0);
 

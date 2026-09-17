@@ -38,6 +38,7 @@ void filter__apply_pattern(WordSetFilter* filter,
    The caller must free the returned IndexArray with index_array__free_content.
  */
 IndexArray filter__get_words_from_word_set(const WordSet* word_set,
-                                           const WordSetFilter* filter);
+                                           const WordSetFilter* filter,
+                                           size_t word_len);
 
 #endif /* WORD_SET_FILTER_H */

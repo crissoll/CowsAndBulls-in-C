@@ -73,4 +73,6 @@ size_t cab_session__get_attempts_left(CabSession* session);
 void cab_session__reset_attempts(CabSession* session);
 
 void cab_session__start_new_game(CabSession* session);
+
+size_t cab_session__get_word_len(const CabSession* session);
 #endif
