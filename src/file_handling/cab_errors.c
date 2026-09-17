@@ -5,6 +5,7 @@
 #include <string.h>
 
 #include "cab_errors.h"
+#include "cab_files.h"
 #include "cab_session.h"
 #include "cmd_spec.h"
 
@@ -38,7 +39,7 @@ void va_extra_io_log(CabSession* session, const char* log_file_path,
         return;
     }
     if (get_log_to_file(session) && log_file_path != NULL) {
-        FILE* fp = fopen(log_file_path, "a+");
+        FILE* fp = open_file_safe(log_file_path, "a+");
         if (fp != NULL) {
             va_list vargs_copy;
             va_copy(vargs_copy, vargs);

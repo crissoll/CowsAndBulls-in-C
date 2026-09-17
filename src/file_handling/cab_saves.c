@@ -261,9 +261,9 @@ void unhash_word(Word* word, size_t seed) {
     for (size_t i = 0; i < len; i++) {
         const size_t shift = ((size_t)hash + i) % ALPHABET_SIZE;
         word->letters[i] =
-            (char)(((word->letters[i] - 'a' + ALPHABET_SIZE - shift) %
-                    ALPHABET_SIZE) +
-                   'a');
+            ((ALPHABET_SIZE + (unsigned)word->letters[i] - 'a' - shift) %
+             ALPHABET_SIZE) +
+            'a';
     }
 }
 

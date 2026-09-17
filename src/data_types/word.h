@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-#define ALPHABET_SIZE 26
+#define ALPHABET_SIZE 26u
 #define MAX_PRACTICAL_WORD_LEN 10
 #define UNDEFINED_LETTER '*'
 
