@@ -37,7 +37,11 @@ void setup_session(void) {
     if (default_session.setup) {
         return;
     }
-    extra_io_warning(&default_session, "\n======== new session ===========\n");
+    extra_io_warning(&default_session,
+                     "\n"
+                     "\n========================================\n"
+                     "\n============ new session ===============\n"
+                     "\n========================================\n");
     cab_session__init(&default_session);
     default_session.setup = true;
 
