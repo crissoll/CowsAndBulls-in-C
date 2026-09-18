@@ -112,16 +112,17 @@ bool prompt_to_load_game(void) {
 }
 
 void cab_session__parse_input(CabSession* session) {
-    char** input_tokens = NULL;
-
-    const size_t token_count =
-        get_tokens_from_input(session->input_buffer, &input_tokens);
-
-    if (token_count > 0) {
-        parse(session, (const char**)input_tokens, token_count);
+    if (session->tokens.tokens != NULL) {
+        free(session->tokens.tokens);
     }
 
-    free(input_tokens);
+    session->tokens.token_count =
+        get_tokens_from_input(session->input_buffer, &session->tokens.tokens);
+
+    if (session->tokens.token_count > 0) {
+        parse(session, (const char**)session->tokens.tokens,
+              session->tokens.token_count);
+    }
 }
 
 

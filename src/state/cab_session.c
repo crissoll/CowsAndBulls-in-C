@@ -63,6 +63,10 @@ void cab_session__free_content(CabSession* session) {
     free((char*)session->file_paths.log_path);
     free((char*)session->file_paths.vocab_path);
 
+    if (session->tokens.tokens != NULL) {
+        free(session->tokens.tokens);
+    }
+
     memset(session, 0, sizeof(*session));
 }
 

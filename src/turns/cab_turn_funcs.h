@@ -1,7 +1,7 @@
 #ifndef CAB_TURN_FUNCS
 #define CAB_TURN_FUNCS
 
-#include "cab_turns.h"
+#include "cab_session_fwd.h"
 
 const char* cab_turn_input_prompt_CAB_TID_NotStarted(CabSession* session);
 void cab_turn_process_CAB_TID_NotStarted(CabSession* session);

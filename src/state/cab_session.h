@@ -26,9 +26,19 @@ typedef struct {
     const char* log_path;
 } CabPaths;
 
+
+typedef struct {
+    size_t token_count;
+    char** tokens;
+} CabTokens;
+
+
 typedef struct CabSession {
     OutputBuffer* output_buffer;
     CAB_IOBuffer* input_buffer;
+    CabTokens tokens;
+    size_t cur_token_index;
+
     CabOutputBufferView output_buffer_view;
     CabPaths file_paths;
     uint32_t seed;
