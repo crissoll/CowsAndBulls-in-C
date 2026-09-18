@@ -2,6 +2,7 @@
 
 
 #include "cab_session.h"
+#include "cab_tokens.h"
 #include "cmd_tree.h"
 
 
@@ -103,4 +104,13 @@ void cab_cmd_tree__free_content(CmdTree* tree) {
     if (tree->disabled_slots != NULL) {
         free(tree->disabled_slots);
     }
+}
+
+
+void cab_cmd_tree__add_disabled_command_text(CmdTree* tree,
+                                             const CabTokens* tokens) {
+
+    CabTokens* _tokens =
+        &tree->disabled_commands_text[tree->disabled_commands_current_size++];
+    cab_tokens__copy(_tokens, tokens);
 }

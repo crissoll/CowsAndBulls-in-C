@@ -2,6 +2,7 @@
 
 #include "cab_output.h"
 #include "cab_session.h"
+#include "cab_session_cmd_tree.h"
 #include "cmd_spec.h"
 
 
@@ -39,6 +40,12 @@ void command_spec__set_disable_flags(CabSession* session, size_t token_count,
             break;
     }
     message(session, OT_USER, "%s%s been disabled\n", spec->name, flag_text);
+    session->input_tokens.token_count--;
+    session->input_tokens.tokens++;
+    cab_cmd_tree__add_disabled_command_text(session->commands_tree,
+                                            &session->input_tokens);
+    session->input_tokens.token_count++;
+    session->input_tokens.tokens--;
 }
 
 
@@ -64,6 +71,7 @@ void disable_command_default_handler(CabSession* session, size_t token_count,
 
 void disable_command_no_args(CabSession* session, size_t token_count,
                              const char* tokens[]) {
+
     command_spec__set_disable_flags(session, token_count, tokens,
                                     CMD_DISABLE_NO_ARGS);
 }
