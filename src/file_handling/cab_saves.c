@@ -65,8 +65,12 @@ void cab_session__store_data(CabSession* session) {
     }
     char buffer[1000];
     for (size_t i = 0; file_handler_list[i] != NULL; i++) {
-        fprintf(fp, "--- %s ---\n", file_handler_list[i]->name);
+        buffer[0] = '\0';
         file_handler_list[i]->store_function(session, buffer);
+        if (buffer[0] == '\0') {
+            continue;
+        }
+        fprintf(fp, "--- %s ---\n", file_handler_list[i]->name);
         fputs(buffer, fp);
         fputc('\n', fp);
     }

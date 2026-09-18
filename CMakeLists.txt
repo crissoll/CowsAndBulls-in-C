@@ -23,7 +23,9 @@ else()
         -Wconversion
         -Wsign-conversion
         -Wdouble-promotion
+        -fsanitize=address -g
     )
+    add_link_options(-fsanitize=address)
     if(CMAKE_C_COMPILER_ID MATCHES "Clang")
         add_compile_options(
             -Wlarge-by-value-copy=64

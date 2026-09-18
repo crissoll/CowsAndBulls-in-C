@@ -25,6 +25,12 @@ void command_spec__set_disable_flags(CabSession* session, size_t token_count,
             if (old_flags != CMD_DISABLE_NOTHING) {
                 message(session, OT_USER, "%s has been enabled\n", spec->name);
             }
+            session->input_tokens.token_count--;
+            session->input_tokens.tokens++;
+            cab_cmd_tree__add_disabled_command_text(session->commands_tree,
+                                                    &session->input_tokens);
+            session->input_tokens.token_count++;
+            session->input_tokens.tokens--;
             return;
         case CMD_DISABLE_ALL:
             flag_text = " has";

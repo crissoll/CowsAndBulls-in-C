@@ -98,11 +98,20 @@ const CommandSpec* cab_session__get_cmd_tree_root(CabSession* session) {
 
 
 void cab_cmd_tree__free_content(CmdTree* tree) {
+    if (tree == NULL) {
+        return;
+    }
+    for (size_t i = 0; i < tree->disabled_commands_text_size; i++) {
+        cab_tokens__free_content(&tree->disabled_commands_text[i]);
+    }
+    tree->disabled_commands_text_size = 0;
     if (tree->disabled_commands != NULL) {
         free(tree->disabled_commands);
+        tree->disabled_commands = NULL;
     }
     if (tree->disabled_slots != NULL) {
         free(tree->disabled_slots);
+        tree->disabled_slots = NULL;
     }
 }
 
@@ -111,6 +120,6 @@ void cab_cmd_tree__add_disabled_command_text(CmdTree* tree,
                                              const CabTokens* tokens) {
 
     CabTokens* _tokens =
-        &tree->disabled_commands_text[tree->disabled_commands_current_size++];
+        &tree->disabled_commands_text[tree->disabled_commands_text_size++];
     cab_tokens__copy(_tokens, tokens);
 }

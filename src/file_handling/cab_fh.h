@@ -17,10 +17,16 @@ extern const CabFileHandler cab_fh_settings;
 extern const CabFileHandler cab_fh_attempts;
 extern const CabFileHandler cab_fh_rng;
 extern const CabFileHandler cab_fh_secret_word;
+extern const CabFileHandler cab_fh_cmd_disable;
 
 static const CabFileHandler* const file_handler_list[] = {
-    &cab_fh_rng,         &cab_fh_vocabulary, &cab_fh_settings,
-    &cab_fh_secret_word, &cab_fh_attempts,   NULL,
+    &cab_fh_rng,
+    &cab_fh_vocabulary,
+    &cab_fh_settings,
+    &cab_fh_cmd_disable,
+    &cab_fh_secret_word,
+    &cab_fh_attempts,
+    NULL,
 };
 
 #endif
