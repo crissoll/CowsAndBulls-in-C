@@ -13,16 +13,14 @@
 
 
 #include "cab_errors.h"
-#include "cab_input_internal.h"
-
 #include "cab_session_api.h"
 
 InputStatus cab_session__set_input(CabSession* session,
                                    const char* input_string) {
-    if (session == NULL || session->input_buffer == NULL) {
+    if (session == NULL) {
         extra_io_warning(session, "cab_input: NULL input_buffer\n");
 
-        return INPUT_ERROR;
+        return INPUT_USAGE_ERROR;
     }
 
     cab_output_buffer__clear(session->output_buffer);
@@ -39,20 +37,8 @@ InputStatus cab_session__set_input(CabSession* session,
         extra_io_warning(session, "[user]> %s", input_string);
     }
 
-    InputStatus status =
-        write_to_input_buffer(session->input_buffer, input_string);
-
-    switch (status) {
-        case INPUT_STRING_TOO_LONG:
-            extra_io_warning(session, "Input String Too Long!\n");
-            break;
-        case INPUT_SUCCESS:
-            break;
-        case INPUT_ERROR:
-        case INPUT_USAGE_ERROR:
-            extra_io_warning(session, "cab_input: unexpected error");
-    }
-    return status;
+    cab_tokens__populate(&session->input_tokens, input_string);
+    return INPUT_SUCCESS;
 }
 
 InputStatus cab_input(const char* input_string) {

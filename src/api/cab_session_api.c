@@ -98,7 +98,8 @@ bool prompt_to_load_game(void) {
     if (cab_get_session()->loaded == false) {
         return true;
     }
-    YORN_Result y_or_n = get_y_or_n_from_input(cab_get_session()->input_buffer);
+    YORN_Result y_or_n =
+        get_y_or_n_from_input(&cab_get_session()->input_tokens.buffer);
     switch (y_or_n) {
         case YORN_Invalid:
             return false;
@@ -112,16 +113,10 @@ bool prompt_to_load_game(void) {
 }
 
 void cab_session__parse_input(CabSession* session) {
-    if (session->tokens.tokens != NULL) {
-        free(session->tokens.tokens);
-    }
 
-    session->tokens.token_count =
-        get_tokens_from_input(session->input_buffer, &session->tokens.tokens);
-
-    if (session->tokens.token_count > 0) {
-        parse(session, (const char**)session->tokens.tokens,
-              session->tokens.token_count);
+    if (session->input_tokens.token_count > 0) {
+        parse(session, (const char**)session->input_tokens.tokens,
+              session->input_tokens.token_count);
     }
 }
 

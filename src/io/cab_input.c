@@ -91,6 +91,9 @@ size_t get_tokens_from_input(CAB_IOBuffer* buffer, char*** tokens) {
     }
 
     *tokens = malloc(token_count * sizeof **tokens);
+    if (*tokens == NULL) {
+        return 0;
+    }
 
     split_tokens(buffer->content, *tokens);
 

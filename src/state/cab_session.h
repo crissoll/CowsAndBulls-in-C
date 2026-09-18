@@ -7,12 +7,10 @@
 #include "cab_attempts_manager.h"
 #include "cab_end.h"
 #include "cab_help_filter.h"
-#include "cab_io_buffer.h"
 #include "cab_output_buffer.h"
 #include "cab_session_cmd_tree.h"
-
-
 #include "cab_settings_override.h"
+#include "cab_tokens.h"
 #include "cab_turns.h"
 #include "output_buffer_view.h"
 #include "word.h"
@@ -26,17 +24,9 @@ typedef struct {
     const char* log_path;
 } CabPaths;
 
-
-typedef struct {
-    size_t token_count;
-    char** tokens;
-} CabTokens;
-
-
 typedef struct CabSession {
     OutputBuffer* output_buffer;
-    CAB_IOBuffer* input_buffer;
-    CabTokens tokens;
+    CabTokens input_tokens;
     size_t cur_token_index;
 
     CabOutputBufferView output_buffer_view;
@@ -78,7 +68,6 @@ CabAttempts* cab_session__get_attempts_ptr(CabSession* session);
 size_t cab_session__get_attempts_count(CabSession* session);
 
 size_t cab_session__get_attempts_left(CabSession* session);
-
 
 void cab_session__reset_attempts(CabSession* session);
 

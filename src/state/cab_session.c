@@ -7,7 +7,6 @@
 #include "cab_attempts_manager.h"
 #include "cab_end.h"
 #include "cab_errors.h"
-#include "cab_io_buffer.h"
 #include "cab_output_buffer.h"
 #include "cab_rand.h"
 #include "cab_saves.h"
@@ -26,11 +25,7 @@ void cab_session__init(CabSession* session) {
         cab_output_buffer__init(session->output_buffer);
     }
 
-    session->input_buffer = malloc(sizeof(*session->input_buffer));
-    if (session->input_buffer != NULL) {
-        *session->input_buffer = (CAB_IOBuffer){0};
-        cab_io_buffer__init(session->input_buffer);
-    }
+    cab_tokens__init(&session->input_tokens);
 
     session->ending_flags = CABEND_None;
 
@@ -45,10 +40,9 @@ void cab_session__free_content(CabSession* session) {
         cab_output_buffer__free_content(session->output_buffer);
         free(session->output_buffer);
     }
-    if (session->input_buffer != NULL) {
-        cab_io_buffer__free_content(session->input_buffer);
-        free(session->input_buffer);
-    }
+
+    cab_tokens__free_content(&session->input_tokens);
+
     if (session->commands_tree != NULL) {
         cab_cmd_tree__free_content(session->commands_tree);
         free(session->commands_tree);
@@ -62,10 +56,6 @@ void cab_session__free_content(CabSession* session) {
     free((char*)session->file_paths.saves_path);
     free((char*)session->file_paths.log_path);
     free((char*)session->file_paths.vocab_path);
-
-    if (session->tokens.tokens != NULL) {
-        free(session->tokens.tokens);
-    }
 
     memset(session, 0, sizeof(*session));
 }

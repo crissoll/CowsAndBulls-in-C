@@ -24,7 +24,7 @@ void cab_turn_process_CAB_TID_PlayAgain(CabSession* session) {
         return;
     }
 
-    switch (get_y_or_n_from_input(session->input_buffer)) {
+    switch (get_y_or_n_from_input(&session->input_tokens.buffer)) {
         case YORN_Yes:
             cab_session__rand_init(session);
             cab_session__generate_secret_word(session);
