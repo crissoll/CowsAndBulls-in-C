@@ -105,7 +105,7 @@ void cab_session__load_data(CabSession* session) {
         return;
     }
 
-    char* buffer = malloc(sizeof(char) * 4096);
+    char* buffer = calloc(4096, sizeof(char));
     char line[256];
     char current_section[128] = {0};
     while (fgets(line, sizeof(line), fp) != NULL) {
@@ -131,7 +131,7 @@ void cab_session__load_data(CabSession* session) {
             strcpy(current_section, section_name);
             buffer[0] = '\0';
         } else if (current_section[0] != '\0') {
-            if (strlen(buffer) + strlen(line) < sizeof(buffer) - 1) {
+            if (strlen(buffer) + strlen(line) < sizeof(*buffer) - 1) {
                 strcat(buffer, line);
             }
         }
@@ -143,15 +143,31 @@ void cab_session__load_data(CabSession* session) {
         extra_io_warning(session,
                          "cab_session_load_data: section %s couldn't be loaded",
                          current_section);
+    } else {
+        extra_io_warning(session,
+                         "cab_session_load_data: section %s correctly loaded",
+                         current_section);
     }
 
+    bool validation_succeeded = true;
     for (size_t i = 0; file_handler_list[i] != NULL; i++) {
         if (file_handler_list[i]->validation_function != NULL) {
-            file_handler_list[i]->validation_function(session);
+            validation_succeeded =
+                file_handler_list[i]->validation_function(session);
+            extra_io_warning(
+                session,
+                "cab_session_load_data: section %s didn't pass validation",
+                file_handler_list[i]->name);
+            break;
         }
+        extra_io_warning(session,
+                         "cab_session_load_data: section %s passed validation",
+                         file_handler_list[i]->name);
     }
 
-    session->loaded = true;
+    if (validation_succeeded) {
+        session->loaded = true;
+    }
 
     free(buffer);
     fclose(fp);
