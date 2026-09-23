@@ -5,6 +5,8 @@
 
 #include "cab_session_api.h"
 
+#ifndef CAB_NO_GLOBAL_SESSION
+
 bool cab_set_saves_folder_path(const char* path) {
     char** saves_path = (char**)&cab_get_session()->file_paths.saves_path;
     if (path == NULL) {
@@ -30,5 +32,7 @@ bool cab_set_vocabulary_file_path(const char* path) {
 }
 
 void cab_shutdown_game(void) {
-    cab_session_shutdown();
+    cab_session__free_content(cab_get_session());
 }
+
+#endif  // CAB_NO_GLOBAL_SESSION

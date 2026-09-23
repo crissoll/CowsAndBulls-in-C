@@ -10,6 +10,10 @@ CABGameEndFlags cab_session__get_end_flags(CabSession* session) {
     return session->ending_flags;
 }
 
+bool cab_session__is_game_ended(CabSession* session) {
+    return session->ending_flags != CABEND_None;
+}
+
 void cab_session__set_end_flags(CabSession* session, CABGameEndFlags flags) {
     session->ending_flags |= flags;
 }

@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 
+#ifndef CAB_NO_GLOBAL_SESSION
 // can't be used while the game is running
 bool cab_set_saves_folder_path(const char* path);
 
@@ -34,4 +35,10 @@ bool cab_is_game_ended(void);
 // must be called to avoid memory leaks when closing the game
 void cab_shutdown_game(void);
 
+#endif  //CAB_NO_GLOBAL_SESSION
+
+#include "cab_session.h"
+
+const char* cab_session__play_turn(CabSession* session,
+                                   const char* input_string);
 #endif

@@ -25,4 +25,6 @@ void cab_session__set_end_flags(CabSession* session, CABGameEndFlags flags);
 
 void cab_session__reset_end_flags(CabSession* session);
 
+bool cab_session__is_game_ended(CabSession* session);
+
 #endif

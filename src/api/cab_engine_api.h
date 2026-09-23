@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 
-#ifdef CAB_NO_GLOBAL_SESSION
+#ifndef CAB_NO_GLOBAL_SESSION
 // returns true if successful
 bool cab_set_saves_folder_path(const char* path);
 

@@ -5,13 +5,10 @@
 #include <stddef.h>
 
 #include "cab_session.h"
-#include "cab_turns.h"
 
 #ifndef CAB_NO_GLOBAL_SESSION
 
 CabSession* cab_get_session(void);
-
-CabTurnId cab_get_current_turn_id(void);
 
 void cab_start_new_game(void);
 
@@ -30,6 +27,7 @@ void cab_session_shutdown(void);
 #endif
 
 void cab_session__parse_input(CabSession* session);
+bool cab_session__prompt_to_load_game(CabSession* session);
 
 
 #endif

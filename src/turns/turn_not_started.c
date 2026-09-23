@@ -4,9 +4,7 @@
 
 #include "cab_io_consts.h"
 #include "cab_output.h"
-
-// temp solution
-extern bool prompt_to_load_game(void);
+#include "cab_session_api.h"
 
 const char* cab_turn_input_prompt_CAB_TID_NotStarted(CabSession* session) {
     (void)session;
@@ -14,7 +12,7 @@ const char* cab_turn_input_prompt_CAB_TID_NotStarted(CabSession* session) {
 }
 
 void cab_turn_process_CAB_TID_NotStarted(CabSession* session) {
-    if (prompt_to_load_game()) {
+    if (cab_session__prompt_to_load_game(session)) {
         if (session->loaded) {
             session->current_turn = CAB_TID_Playing;
         } else {
