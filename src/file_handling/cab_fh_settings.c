@@ -1,6 +1,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "cab_errors.h"
 #include "cab_fh.h"
@@ -8,6 +9,7 @@
 
 
 void cab_fh__store_settings(CabSession* session, char* buffer) {
+    int offset = 0;
     if (session->settings_override != NULL) {
         size_t overridden_settings = 0;
         const size_t settings_count =
@@ -17,45 +19,66 @@ void cab_fh__store_settings(CabSession* session, char* buffer) {
                 overridden_settings++;
             }
         }
-        sprintf(buffer, "%zu\n", overridden_settings);
+        offset += sprintf(buffer + offset, "%zu\n", overridden_settings);
         for (size_t i = 0; i < settings_count; i++) {
             if (session->settings_override->entries[i].overridden == false) {
                 continue;
             }
             const size_t val = session->settings_override->entries[i].value;
-            sprintf(buffer, "%zu : %zu\n", i, val);
+            offset += sprintf(buffer + offset, "%zu : %zu\n", i, val);
         }
     }
 }
 
-
 bool cab_fh__load_settings(CabSession* session, const char* buffer) {
-    int params;
+    if (session == NULL || buffer == NULL) {
+        return false;
+    }
+
+    int consumed = 0;
+    int offset = 0;
     size_t overridden_settings_count;
-    params = sscanf(buffer, "%zu", &overridden_settings_count);
+    int params = sscanf(buffer + offset, "%zu%n", &overridden_settings_count,
+                        &consumed);
     if (params != 1) {
         extra_io_warning(session,
                          "cab_session__load_data: failed to load settings");
         return false;
     }
+    offset += consumed;
 
-    if (overridden_settings_count != 0) {
-        session->settings_override = calloc(1, sizeof(CabSettingsOverride));
-        session->settings_override->settings_count = STG_LEN;
+    if (overridden_settings_count == 0) {
+        if (session->settings_override != NULL) {
+            free(session->settings_override);
+            session->settings_override = NULL;
+        }
+        return true;
     }
+
+    if (session->settings_override == NULL) {
+        session->settings_override = calloc(1, sizeof(CabSettingsOverride));
+        if (session->settings_override == NULL) {
+            return false;
+        }
+    } else {
+        memset(session->settings_override, 0, sizeof(CabSettingsOverride));
+    }
+    session->settings_override->settings_count = STG_LEN;
 
     for (size_t i = 0; i < overridden_settings_count; i++) {
         size_t setting_id;
         size_t val;
-        params = sscanf(buffer, "%zu : %zu", &setting_id, &val);
+        consumed = 0;
+        params = sscanf(buffer + offset, "%zu : %zu%n", &setting_id, &val,
+                        &consumed);
         if (params != 2) {
             extra_io_warning(
                 session, "cab_session__load_data: failed to load setting n.%zu",
                 i);
             return false;
         }
-        if (session->settings_override != NULL &&
-            setting_id < session->settings_override->settings_count) {
+        offset += consumed;
+        if (setting_id < session->settings_override->settings_count) {
             session->settings_override->entries[setting_id].overridden = true;
             session->settings_override->entries[setting_id].value = val;
         }
