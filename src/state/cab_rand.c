@@ -1,8 +1,10 @@
 #include <stdint.h>
 #include <time.h>
 
+#include "cab_io_utils.h"
 #include "cab_rand.h"
 #include "cab_session.h"
+
 
 uint32_t cab_rand(uint32_t from) {
     uint32_t x = from;
@@ -23,4 +25,5 @@ void cab_session__rand_init(CabSession* session) {
     session->rng_state = (seed != 0) ? seed : 0x80085;
 
     session->seed = cab_session__rand(session);
+    alpha_hash(session->seed, session->alpha_seed);
 }

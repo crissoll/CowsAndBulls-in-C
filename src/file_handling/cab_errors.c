@@ -19,11 +19,12 @@ bool get_log_to_stdout(CabSession* session) {
 
 
 void va_extra_io_log_to_stream(const char* format_text, va_list vargs,
-                               FILE* stream, uint64_t* file_interaction_count) {
+                               FILE* stream, uint64_t* file_interaction_count,
+                               char* session_seed) {
     if (format_text == NULL || stream == NULL) {
         return;
     }
-    fprintf(stream, "[_%06zu_]:", *file_interaction_count);
+    fprintf(stream, "[_%.4s/%04zu_]: ", session_seed, *file_interaction_count);
     vfprintf(stream, format_text, vargs);
     size_t len = strlen(format_text);
     if (len > 0 && format_text[len - 1] != '\n') {
@@ -43,7 +44,8 @@ void va_extra_io_log(CabSession* session, const char* log_file_path,
             va_list vargs_copy;
             va_copy(vargs_copy, vargs);
             va_extra_io_log_to_stream(format_text, vargs_copy, fp,
-                                      &session->file_interaction_count);
+                                      &session->file_interaction_count,
+                                      session->alpha_seed);
             va_end(vargs_copy);
             fclose(fp);
         }
@@ -53,7 +55,8 @@ void va_extra_io_log(CabSession* session, const char* log_file_path,
         va_list vargs_copy;
         va_copy(vargs_copy, vargs);
         va_extra_io_log_to_stream(format_text, vargs_copy, stdout,
-                                  &session->file_interaction_count);
+                                  &session->file_interaction_count,
+                                  session->alpha_seed);
         va_end(vargs_copy);
     }
 }

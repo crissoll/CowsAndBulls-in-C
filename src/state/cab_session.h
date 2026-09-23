@@ -7,6 +7,7 @@
 #include "cab_attempts_manager.h"
 #include "cab_end.h"
 #include "cab_help_filter.h"
+#include "cab_io_utils.h"
 #include "cab_output_buffer.h"
 #include "cab_session_cmd_tree.h"
 #include "cab_settings_override.h"
@@ -33,6 +34,7 @@ typedef struct CabSession {
     CabPaths file_paths;
     uint32_t seed;
     uint32_t rng_state;
+    char alpha_seed[LOG26_OF_1_LSHIFT_32 + 1];
     uint64_t file_interaction_count;
 
     CmdTree* commands_tree;

@@ -1,7 +1,9 @@
 #include <stddef.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 
+#include "cab_io_utils.h"
 
 void to_lower(char* string, size_t max_length) {
     for (size_t k = 0; k < max_length && string[k] != '\0'; k++) {
@@ -38,4 +40,13 @@ void text_wrap(char* text, size_t max_line_length) {
             }
         }
     }
+}
+
+void alpha_hash(uint32_t value, char result[LOG26_OF_1_LSHIFT_32 + 1]) {
+
+    for (size_t i = 0; i < LOG26_OF_1_LSHIFT_32; i++) {
+        result[i] = 'A' + value % 26;
+        value /= 26;
+    }
+    result[LOG26_OF_1_LSHIFT_32] = '\0';
 }
