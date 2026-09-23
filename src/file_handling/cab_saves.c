@@ -29,6 +29,39 @@ static const CabFileHandler* find_file_handler(const char* name) {
     return NULL;
 }
 
+static void clean_buffer(char* buffer) {
+    const size_t len = strlen(buffer);
+    char* support_buffer = calloc(len + 1, sizeof(char));
+    bool half_comment = false;
+    bool comment = false;
+    size_t j = 0;
+    for (size_t i = 0; i < len; i++) {
+        if (comment) {
+            if (buffer[i] == '\n') {
+                comment = false;
+            }
+            continue;
+        }
+        if (half_comment) {
+            comment = (buffer[i] == '/');
+            if (!comment) {
+                support_buffer[j++] = buffer[i - 1];
+                support_buffer[j++] = buffer[i];
+            }
+            half_comment = false;
+            continue;
+        }
+        if (buffer[i] == '/') {
+            half_comment = true;
+            continue;
+        }
+        support_buffer[j++] = buffer[i];
+    }
+    strncpy(buffer, support_buffer, j);
+    buffer[j] = '\0';
+    free(support_buffer);
+}
+
 static bool flush_section(CabSession* session, const char* section_name,
                           const char* buffer) {
     if (section_name[0] == '\0' || buffer == NULL) {
@@ -109,6 +142,7 @@ bool buffer_concat_string(char* buffer, char* string) {
     return true;
 }
 
+
 void cab_session__load_data(CabSession* session) {
     const char* path = session->file_paths.saves_path;
     if (path == NULL) {
@@ -157,7 +191,6 @@ void cab_session__load_data(CabSession* session) {
                 fclose(fp);
                 return;
             }
-
             strcpy(current_section, section_name);
             buffer[0] = '\0';
         } else if (current_section[0] != '\0') {
