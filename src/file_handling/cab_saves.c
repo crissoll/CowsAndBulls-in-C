@@ -78,6 +78,22 @@ void cab_session__store_data(CabSession* session) {
     fclose(fp);
 }
 
+bool load_section(CabSession* session, char* section, char* buffer) {
+    const bool load_succeeded = flush_section(session, section, buffer);
+
+    if (!load_succeeded) {
+        extra_io_warning(
+            session, "cab_session__load_data: section %s couldn't be loaded",
+            section);
+        return false;
+    }
+    extra_io_warning(session,
+                     "cab_session__load_data: section \"%s\" correctly loaded",
+                     section);
+    return true;
+}
+
+
 bool buffer_concat_string(char* buffer, char* string) {
     if (strlen(buffer) + strlen(string) >= sizeof(buffer) - 1) {
         return false;
@@ -117,15 +133,22 @@ void cab_session__load_data(CabSession* session) {
                                section_name[len - 1] == '\t')) {
                 section_name[--len] = '\0';
             }
-            const bool load_succeeded =
-                flush_section(session, current_section, buffer);
-
-            if (!load_succeeded) {
-                extra_io_warning(
-                    session,
-                    "cab_session_load_data: section %s couldn't be loaded",
-                    current_section);
-                continue;
+            const size_t buffer_len = strlen(buffer);
+            clean_buffer(buffer);
+            const size_t new_buffer_len = strlen(buffer);
+            if (new_buffer_len != buffer_len) {
+                extra_io_warning(session,
+                                 "cab_session__load_data: buffer length "
+                                 "changed from %zu to %zu",
+                                 buffer_len, new_buffer_len);
+            }
+            if (!load_section(session, current_section, buffer)) {
+                extra_io_warning(session,
+                                 "cab_session__load_data: session couldn't be "
+                                 "loaded. starting new game");
+                free(buffer);
+                fclose(fp);
+                return;
             }
 
             strcpy(current_section, section_name);
@@ -137,17 +160,7 @@ void cab_session__load_data(CabSession* session) {
         }
     }
 
-    const bool load_succeeded = flush_section(session, current_section, buffer);
-
-    if (!load_succeeded) {
-        extra_io_warning(session,
-                         "cab_session_load_data: section %s couldn't be loaded",
-                         current_section);
-    } else {
-        extra_io_warning(session,
-                         "cab_session_load_data: section %s correctly loaded",
-                         current_section);
-    }
+    load_section(session, current_section, buffer);
 
     bool validation_succeeded = true;
     for (size_t i = 0; file_handler_list[i] != NULL; i++) {
