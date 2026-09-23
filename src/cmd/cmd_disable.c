@@ -1,5 +1,6 @@
 #include <stddef.h>
 
+#include "cab_io_consts.h"
 #include "cab_output.h"
 #include "cab_session.h"
 #include "cab_session_cmd_tree.h"
@@ -18,6 +19,11 @@ void command_spec__set_disable_flags(CabSession* session, size_t token_count,
     }
     const CabCmdDisabledFlags old_flags =
         cab_session__get_command_spec_disable_flags(session, spec);
+
+    if (old_flags == flags) {
+        message(session, OT_USER, "Nothing changed.");
+        return;
+    }
     cab_session__set_command_spec_disable_flags(session, spec, flags);
     const char* flag_text;
     switch (flags) {
