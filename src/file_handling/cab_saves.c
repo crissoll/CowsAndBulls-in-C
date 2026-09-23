@@ -199,8 +199,16 @@ void cab_session__load_data(CabSession* session) {
             }
         }
     }
-
+    clean_buffer(buffer);
     load_section(session, current_section, buffer);
+    if (!load_section(session, current_section, buffer)) {
+        extra_io_warning(session,
+                         "cab_session__load_data: session couldn't be "
+                         "loaded. starting new game");
+        free(buffer);
+        fclose(fp);
+        return;
+    }
 
     bool validation_succeeded = true;
     for (size_t i = 0; file_handler_list[i] != NULL; i++) {
