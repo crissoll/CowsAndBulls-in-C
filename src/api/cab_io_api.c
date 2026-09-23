@@ -34,7 +34,7 @@ InputStatus cab_session__set_input(CabSession* session,
     }
 
     if (cab_session__get_setting(session, STG_Debug_LogInput)) {
-        extra_io_warning(session, "[user]> %s", input_string);
+        extra_io_warning(session, "[player]> %s", input_string);
     }
 
     cab_tokens__populate(&session->input_tokens, input_string);
