@@ -15,6 +15,9 @@ void output(CabSession* session, const char* format_string, ...);
 
 void end_message(CabSession* session);
 
+void silence_messages(CabSession* session);
+
+void unsilence_messages(CabSession* session);
 
 // use message to send a single text; if you want to send more complex texts, you can use start_message and use multiple output() calls, and then an end_message
 //

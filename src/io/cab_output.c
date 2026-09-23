@@ -10,6 +10,7 @@
 #include "cab_output.h"
 
 
+#include "cab_io_tag_names.h"
 #include "cab_output_buffer.h"
 #include "cab_session.h"
 
@@ -20,6 +21,22 @@ int get_formatted_text_len(const char* format_string, va_list args) {
     const int formatted_text_len = vsnprintf(NULL, 0, format_string, copy);
     va_end(copy);
     return formatted_text_len;
+}
+
+static void log_last_message(CabSession* session) {
+    const size_t size = session->output_buffer->size;
+    const OutputTags tag = session->output_buffer->tags[size - 2];
+    const char* messages = session->output_buffer->text_buffer->content;
+    const char* last_message =
+        &messages[session->output_buffer->message_indexes[size - 2]];
+    extra_io_warning(session, "[%s]:%s", CAB_OUTPUT_TAG_NAMES[LOG2(tag)],
+                     last_message);
+}
+
+static void remove_last_message(CabSession* session) {
+    session->output_buffer->size--;
+    const size_t size = session->output_buffer->size;
+    session->output_buffer->tags[size - 1] = OT_NONE;
 }
 
 
@@ -75,6 +92,10 @@ void message(CabSession* session, OutputTags tags, const char* format_string,
 
     output_buffer__va_message(session->output_buffer, tags, format_string,
                               args);
+    log_last_message(session);
+    if (session->silent_messages) {
+        remove_last_message(session);
+    }
     va_end(args);
 }
 
@@ -84,4 +105,17 @@ void start_message(CabSession* session, OutputTags tags) {
 
 void end_message(CabSession* session) {
     output_buffer__end_message(session->output_buffer);
+    log_last_message(session);
+    if (session->silent_messages) {
+        remove_last_message(session);
+    }
+}
+
+
+void silence_messages(CabSession* session) {
+    session->silent_messages = true;
+}
+
+void unsilence_messages(CabSession* session) {
+    session->silent_messages = false;
 }

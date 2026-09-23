@@ -49,7 +49,7 @@ typedef struct CabSession {
 
     bool loaded : 1;
     bool setup : 1;
-
+    bool silent_messages : 1;
 } CabSession;
 
 
