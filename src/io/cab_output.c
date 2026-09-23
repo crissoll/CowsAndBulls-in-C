@@ -29,7 +29,8 @@ static void log_last_message(CabSession* session) {
     const char* messages = session->output_buffer->text_buffer->content;
     const char* last_message =
         &messages[session->output_buffer->message_indexes[size - 2]];
-    extra_io_warning(session, "[%s]: %s", CAB_OUTPUT_TAG_NAMES[LOG2(tag)],
+    extra_io_warning(session, "[%s]:%s %s", CAB_OUTPUT_TAG_NAMES[LOG2(tag)],
+                     (session->silent_messages) ? "(silent)" : "",
                      last_message);
 }
 
@@ -115,9 +116,11 @@ void end_message(CabSession* session) {
 
 
 void silence_messages(CabSession* session) {
+    extra_io_warning(session, "##### MESSAGES SILENCED #######");
     session->silent_messages = true;
 }
 
 void unsilence_messages(CabSession* session) {
+    extra_io_warning(session, "##### MESSAGES UNSILENCED #####");
     session->silent_messages = false;
 }
