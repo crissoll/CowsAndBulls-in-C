@@ -2,8 +2,10 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "cab_constraints.h"
 #include "cab_errors.h"
 #include "cab_fh.h"
+#include "cab_output.h"
 #include "cab_session.h"
 
 
@@ -60,8 +62,15 @@ bool cab_fh__load_secret_word(CabSession* session, const char* buffer) {
 }
 
 bool cab_fh__validate_secret_word(CabSession* session) {
-    (void)session;
-    return true;
+    silence_messages(session);
+    if (!silent_can_string_be_word(session->secret_word.letters,
+                                   cab_session__get_word_len(session))) {
+        unsilence_messages(session);
+        return false;
+    }
+    Constraint c = get_total_constraint(session, session->secret_word);
+    unsilence_messages(session);
+    return c == CONSTR_None;
 }
 
 const CabFileHandler cab_fh_secret_word = {
