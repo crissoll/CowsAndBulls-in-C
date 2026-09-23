@@ -151,19 +151,24 @@ void cab_session__load_data(CabSession* session) {
 
     bool validation_succeeded = true;
     for (size_t i = 0; file_handler_list[i] != NULL; i++) {
+        validation_succeeded = true;
         if (file_handler_list[i]->validation_function != NULL) {
             validation_succeeded =
                 file_handler_list[i]->validation_function(session);
+        }
+
+        if (!validation_succeeded) {
             extra_io_warning(
                 session,
-                "cab_session_load_data: section %s didn't pass validation",
+                "cab_session__load_data: section %s didn't pass validation",
                 file_handler_list[i]->name);
             break;
         }
         extra_io_warning(session,
-                         "cab_session_load_data: section %s passed validation",
+                         "cab_session__load_data: section %s passed validation",
                          file_handler_list[i]->name);
     }
+
 
     if (validation_succeeded) {
         session->loaded = true;
