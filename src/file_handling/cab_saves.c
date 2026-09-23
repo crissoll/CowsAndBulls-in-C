@@ -28,11 +28,15 @@ static const CabFileHandler* find_file_handler(const char* name) {
 
 static bool flush_section(CabSession* session, const char* section_name,
                           const char* buffer) {
-    if (section_name[0] == '\0' || buffer[0] == '\0') {
+    if (section_name[0] == '\0' || buffer == NULL) {
+        extra_io_warning(session, "flush_section: empty name or buffer");
         return true;  // empty section => no data loading => no error
     }
     const CabFileHandler* handler = find_file_handler(section_name);
     if (handler == NULL) {
+        extra_io_warning(session,
+                         "flush_section: section name \"%s\" not recognized",
+                         section_name);
         return true;  // unrecognized section => no data loading => no error
     }
     if (handler->load_function == NULL) {
