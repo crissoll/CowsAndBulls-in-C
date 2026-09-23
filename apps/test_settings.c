@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "cab_fh.h"
 #include "cab_session.h"
 #include "cab_session_api.h"
 #include "cab_settings_api.h"
@@ -100,7 +101,50 @@ int main(void) {
     cab_session_shutdown();
     printf("[PASS] Public cab_* settings API functions working.\n");
 
-    // 9. Clean up
+    // 9. Test cab_fh_settings store and load functions
+    {
+        CabSession* sess_store = calloc(1, sizeof(CabSession));
+        assert(sess_store != NULL);
+        cab_session__init(sess_store);
+        cab_session__set_setting(sess_store, STG_Internal_WordLen, 6);
+        cab_session__set_setting(sess_store, STG_Internal_MaxAttempts, 15);
+
+        char save_buf[512] = {0};
+        cab_fh_settings.store_function(sess_store, save_buf);
+        assert(save_buf[0] != '\0');
+
+        CabSession* sess_load = calloc(1, sizeof(CabSession));
+        assert(sess_load != NULL);
+        cab_session__init(sess_load);
+        bool load_res = cab_fh_settings.load_function(sess_load, save_buf);
+        assert(load_res == true);
+        assert(cab_session__get_setting(sess_load, STG_Internal_WordLen) == 6);
+        assert(cab_session__get_setting(sess_load, STG_Internal_MaxAttempts) ==
+               15);
+        assert(cab_session__get_setting(
+                   sess_load, STG_Display_TextWrapMaxLineLength) == 80);
+
+        // Test loading 0 overrides
+        load_res = cab_fh_settings.load_function(sess_load, "0\n");
+        assert(load_res == true);
+        assert(cab_session__get_setting(sess_load, STG_Internal_WordLen) ==
+               cab_get_default_setting(STG_Internal_WordLen));
+
+        // Test loading invalid data
+        assert(cab_fh_settings.load_function(sess_load, "invalid") == false);
+        assert(cab_fh_settings.load_function(sess_load, "2\n1 : 5\n") == false);
+        assert(cab_fh_settings.load_function(NULL, save_buf) == false);
+        assert(cab_fh_settings.load_function(sess_load, NULL) == false);
+
+        cab_session__free_content(sess_store);
+        cab_session__free_content(sess_load);
+        free(sess_store);
+        free(sess_load);
+        printf("[PASS] Settings file handler store and load round trip "
+               "verified.\n");
+    }
+
+    // 10. Clean up
     cab_session__free_content(&session);
     printf("--- All tests in test_settings passed successfully! ---\n");
     return 0;
