@@ -15,7 +15,10 @@
 
 #include "cab_fh.h"
 #include "cab_saves.h"
+#include "cab_session.h"
 
+
+#define CAB_SAVE_BUFFER_SIZE 4096
 
 static const CabFileHandler* find_file_handler(const char* name) {
     for (size_t i = 0; file_handler_list[i] != NULL; i++) {
@@ -125,7 +128,7 @@ void cab_session__load_data(CabSession* session) {
         return;
     }
 
-    char* buffer = calloc(4096, sizeof(char));
+    char* buffer = calloc(CAB_SAVE_BUFFER_SIZE, sizeof(char));
     char line[256];
     char current_section[128] = {0};
     while (fgets(line, sizeof(line), fp) != NULL) {
@@ -158,7 +161,7 @@ void cab_session__load_data(CabSession* session) {
             strcpy(current_section, section_name);
             buffer[0] = '\0';
         } else if (current_section[0] != '\0') {
-            if (strlen(buffer) + strlen(line) < sizeof(*buffer) - 1) {
+            if (strlen(buffer) + strlen(line) < CAB_SAVE_BUFFER_SIZE - 1) {
                 strcat(buffer, line);
             }
         }
