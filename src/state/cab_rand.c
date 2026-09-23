@@ -26,4 +26,6 @@ void cab_session__rand_init(CabSession* session) {
 
     session->seed = cab_session__rand(session);
     alpha_hash(session->seed, session->alpha_seed);
+
+    session->file_interaction_count = 0;
 }
