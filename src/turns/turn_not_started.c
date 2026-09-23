@@ -15,7 +15,11 @@ const char* cab_turn_input_prompt_CAB_TID_NotStarted(CabSession* session) {
 
 void cab_turn_process_CAB_TID_NotStarted(CabSession* session) {
     if (prompt_to_load_game()) {
-        session->current_turn = CAB_TID_FirstTurn;
+        if (session->loaded) {
+            session->current_turn = CAB_TID_Playing;
+        } else {
+            session->current_turn = CAB_TID_FirstTurn;
+        }
         return;
     }
     message(session, OT_INPUT_ERROR, "invalid input");
