@@ -49,7 +49,9 @@ bool cab_fh__validate_vocabulary(CabSession* session) {
     if (vocab_hash != session->vocab_hash) {
         extra_io_warning(
             session,
-            "cab_session__load_data: vocabulary changed since last game");
+            "cab_session__load_data: vocabulary changed since last game: vocab "
+            "hash: %zu, loaded session hash: %zu",
+            session->vocab_hash, vocab_hash);
         return false;
     }
     return true;
