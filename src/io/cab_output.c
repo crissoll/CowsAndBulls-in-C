@@ -29,14 +29,16 @@ static void log_last_message(CabSession* session) {
     const char* messages = session->output_buffer->text_buffer->content;
     const char* last_message =
         &messages[session->output_buffer->message_indexes[size - 2]];
-    extra_io_warning(session, "[%s]:%s", CAB_OUTPUT_TAG_NAMES[LOG2(tag)],
+    extra_io_warning(session, "[%s]: %s", CAB_OUTPUT_TAG_NAMES[LOG2(tag)],
                      last_message);
 }
 
-static void remove_last_message(CabSession* session) {
-    session->output_buffer->size--;
-    const size_t size = session->output_buffer->size;
-    session->output_buffer->tags[size - 1] = OT_NONE;
+static void remove_last_message(OutputBuffer* buffer) {
+    buffer->size--;
+    const size_t size = buffer->size;
+    buffer->text_buffer->current_size = buffer->message_indexes[size - 1];
+    buffer->text_buffer->content[buffer->text_buffer->current_size] = '\0';
+    buffer->tags[size - 1] = OT_NONE;
 }
 
 
@@ -94,7 +96,7 @@ void message(CabSession* session, OutputTags tags, const char* format_string,
                               args);
     log_last_message(session);
     if (session->silent_messages) {
-        remove_last_message(session);
+        remove_last_message(session->output_buffer);
     }
     va_end(args);
 }
@@ -107,7 +109,7 @@ void end_message(CabSession* session) {
     output_buffer__end_message(session->output_buffer);
     log_last_message(session);
     if (session->silent_messages) {
-        remove_last_message(session);
+        remove_last_message(session->output_buffer);
     }
 }
 
