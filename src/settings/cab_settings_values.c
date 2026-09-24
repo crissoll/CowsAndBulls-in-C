@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <string.h>
 
 
 #include "attempts.h"
@@ -154,4 +155,14 @@ CabSettingValidity cab_settings__get_setting_value_validity(
 
 const char* cab_settings__get_name(CabSettingId setting) {
     return setting_specs[setting].name;
+}
+
+
+CabSettingId cab_settings__get_id_from_name(const char* setting_name) {
+    for (size_t i = 0; i < STG_LEN; i++) {
+        if (strcmp(setting_name, setting_specs[i].name) == 0) {
+            return (CabSettingId)i;
+        }
+    }
+    return STG_LEN;
 }

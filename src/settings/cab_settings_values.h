@@ -20,6 +20,7 @@ bool cab_setting_is_initialized(CabSettingId setting);
 
 const char* cab_settings__get_name(CabSettingId setting);
 
+CabSettingId cab_settings__get_id_from_name(const char* setting_name);
 size_t cab_settings__get_default_value(CabSettingId setting);
 
 size_t cab_settings__get_min_value(CabSettingId setting);
