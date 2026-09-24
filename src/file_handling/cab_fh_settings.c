@@ -41,7 +41,7 @@ int load_setting(CabSession* session, const char* buffer) {
     int offset = 0;
     int consumed = 0;
 
-    size_t setting_id;
+    size_t setting_index;
     size_t val;
 
     char first_char;
@@ -55,8 +55,8 @@ int load_setting(CabSession* session, const char* buffer) {
         if (params != 2) {
             return -1;
         }
-        setting_id = cab_settings__get_id_from_name(setting_name);
-        if (setting_id == STG_LEN) {
+        setting_index = cab_settings__get_id_from_name(setting_name);
+        if (setting_index == STG_LEN) {
             extra_io_warning(session,
                              "cab_fh__load_settings: found setting stored with "
                              "invalid name \"%s\" ",
@@ -65,7 +65,7 @@ int load_setting(CabSession* session, const char* buffer) {
         }
 
     } else {
-        params = sscanf(buffer + offset, "%zu : %zu%n", &setting_id, &val,
+        params = sscanf(buffer + offset, "%zu : %zu%n", &setting_index, &val,
                         &consumed);
 
         if (params != 2) {
@@ -73,10 +73,11 @@ int load_setting(CabSession* session, const char* buffer) {
         }
     }
 
-    cab_session__set_setting(session, cab_setting_ids_order[setting_id], val);
+    cab_session__set_setting(session, cab_setting_ids_order[setting_index],
+                             val);
     extra_io_warning(session,
                      "cab_fh__load_settings: loaded setting %zu with value %zu",
-                     setting_id, val);
+                     setting_index, val);
     offset += consumed;
     return offset;
 }
