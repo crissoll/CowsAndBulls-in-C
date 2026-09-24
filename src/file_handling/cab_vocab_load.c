@@ -132,15 +132,15 @@ void cab_session__load_vocabulary(CabSession* session) {
         cab_session__get_setting(session, STG_Internal_AllowDuplicateLetters) ==
         false;
 
-    const char buffer_len = 99;
-    char buffer[buffer_len + 1];
+    const char line_buffer_len = 99;
+    char line_buffer[line_buffer_len + 1];
 
     const bool debug_log_enabled = cab_session__get_setting(
         session, STG_Debug_LogVocabularyDiscardedWords);
 
     VocabDebugInfo vdi;
     if (debug_log_enabled) {
-        const size_t max_alloc_size = word_count * (buffer_len + 1);
+        const size_t max_alloc_size = word_count * (line_buffer_len + 1);
         vdi = vdi__new(max_alloc_size, true, remove_dup_letters_words);
     } else {
         vdi = vdi__new(0, false, false);
@@ -148,29 +148,29 @@ void cab_session__load_vocabulary(CabSession* session) {
 
 
     size_t initialized_voc_word_count = 0;
-
     if (cab_session__get_setting(session,
                                  STG_Internal_DetectWordLenFromVocab)) {
-        while (fscanf(file, "%99s", buffer) == 1) {
-            if (strlen(buffer) > MAX_PRACTICAL_WORD_LEN) {
+        while (fscanf(file, "%99s", line_buffer) == 1) {
+            if (strlen(line_buffer) > MAX_PRACTICAL_WORD_LEN) {
                 extra_io_warning(
                     session,
                     "load_vocabulary: word %s len is too high, it can't be "
                     "used as word_len\n",
-                    buffer);
+                    line_buffer);
                 continue;
             }
-            to_lower(buffer, buffer_len);
-            if (remove_dup_letters_words && has_duplicate_letters(buffer)) {
-                vdi__add_dup_letter_word(&vdi, buffer);
+            to_lower(line_buffer, line_buffer_len);
+            if (remove_dup_letters_words &&
+                has_duplicate_letters(line_buffer)) {
+                vdi__add_dup_letter_word(&vdi, line_buffer);
                 continue;
             }
 
-            strcpy(words[initialized_voc_word_count].letters, buffer);
+            strcpy(words[initialized_voc_word_count].letters, line_buffer);
             initialized_voc_word_count++;
 
             cab_session__set_setting(session, STG_Internal_WordLen,
-                                     strlen(buffer));
+                                     strlen(line_buffer));
             break;
         }
     }
@@ -182,15 +182,15 @@ void cab_session__load_vocabulary(CabSession* session) {
     const size_t decimation_percetage = cab_session__get_setting(
         session, STG_Internal_VocabDecimationPercentage);
 
-    for (; (fscanf(file, "%99s", buffer) == 1);) {
-        to_lower(buffer, buffer_len);
-        if (strlen(buffer) != word_len) {
-            vdi__add_wrong_len_word(&vdi, buffer);
+    for (; (fscanf(file, "%99s", line_buffer) == 1);) {
+        to_lower(line_buffer, line_buffer_len);
+        if (strlen(line_buffer) != word_len) {
+            vdi__add_wrong_len_word(&vdi, line_buffer);
             continue;
         }
 
-        if (remove_dup_letters_words && has_duplicate_letters(buffer)) {
-            vdi__add_dup_letter_word(&vdi, buffer);
+        if (remove_dup_letters_words && has_duplicate_letters(line_buffer)) {
+            vdi__add_dup_letter_word(&vdi, line_buffer);
             continue;
         }
 
@@ -203,7 +203,7 @@ void cab_session__load_vocabulary(CabSession* session) {
             }
         }
 
-        strcpy(words[initialized_voc_word_count].letters, buffer);
+        strcpy(words[initialized_voc_word_count].letters, line_buffer);
         initialized_voc_word_count++;
     }
     session->vocabulary = calloc(1, sizeof(Vocabulary));
