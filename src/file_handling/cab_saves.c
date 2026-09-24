@@ -104,7 +104,7 @@ void cab_session__store_data(CabSession* session) {
             "cab_session__store_data: failed to open save file for writing");
         return;
     }
-    char buffer[1000];
+    char buffer[CAB_SAVE_BUFFER_SIZE];
     for (size_t i = 0; file_handler_list[i] != NULL; i++) {
         buffer[0] = '\0';
         file_handler_list[i]->store_function(session, buffer);
@@ -132,15 +132,6 @@ bool load_section(CabSession* session, char* section, char* buffer) {
     extra_io_warning(session,
                      "cab_session__load_data: section \"%s\" correctly loaded",
                      section);
-    return true;
-}
-
-
-bool buffer_concat_string(char* buffer, char* string) {
-    if (strlen(buffer) + strlen(string) >= sizeof(buffer) - 1) {
-        return false;
-    }
-    strcat(buffer, string);
     return true;
 }
 
