@@ -9,8 +9,8 @@
 
 
 void cab_fh__store_rng(CabSession* session, char* buffer) {
-    sprintf(buffer, "%" PRIu32 "\n%" PRIu32 "\n", session->seed,
-            session->rng_state);
+    sprintf(buffer, "%" PRIu32 " // %s\n%" PRIu32 "\n", session->seed,
+            session->alpha_seed, session->rng_state);
 }
 
 bool cab_fh__load_rng(CabSession* session, const char* buffer) {
@@ -26,6 +26,7 @@ bool cab_fh__load_rng(CabSession* session, const char* buffer) {
     }
     session->seed = seed;
     session->rng_state = rng_state;
+    alpha_hash(session->seed, session->alpha_seed);
     return true;
 }
 

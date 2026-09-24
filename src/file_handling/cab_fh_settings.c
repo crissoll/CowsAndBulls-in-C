@@ -6,7 +6,9 @@
 #include "cab_errors.h"
 #include "cab_fh.h"
 #include "cab_session.h"
+#include "cab_settings_values.h"
 
+extern const CabSettingId cab_setting_ids_order[STG_LEN];
 
 void cab_fh__store_settings(CabSession* session, char* buffer) {
     int offset = 0;
@@ -25,7 +27,8 @@ void cab_fh__store_settings(CabSession* session, char* buffer) {
                 continue;
             }
             const size_t val = session->settings_override->entries[i].value;
-            offset += sprintf(buffer + offset, "%zu : %zu\n", i, val);
+            offset += sprintf(buffer + offset, "%zu : %zu // (%s)\n", i, val,
+                              cab_settings__get_name(cab_setting_ids_order[i]));
         }
     }
 }
@@ -38,8 +41,8 @@ bool cab_fh__load_settings(CabSession* session, const char* buffer) {
     int consumed = 0;
     int offset = 0;
     size_t overridden_settings_count;
-    int params = sscanf(buffer + offset, "%zu%n", &overridden_settings_count,
-                        &consumed);
+    int params =
+        sscanf(buffer + offset, "%zu%n", &overridden_settings_count, &consumed);
     if (params != 1) {
         extra_io_warning(session,
                          "cab_session__load_data: failed to load settings");

@@ -12,7 +12,7 @@
 #include "cab_settings_override.h"
 #include "cab_settings_values.h"
 
-static const CabSettingId cab_setting_ids_order[STG_LEN] = {
+const CabSettingId cab_setting_ids_order[STG_LEN] = {
     STG_Rule_VocabularyConstraintMode,
     STG_Rule_AttemptsCoherenceConstraintMode,
     STG_Rule_AttemptsEqualityConstraintMode,
