@@ -3,10 +3,12 @@
 #include <string.h>
 
 #include "cab_constraints.h"
+#include "cab_core.h"
 #include "cab_errors.h"
 #include "cab_fh.h"
 #include "cab_output.h"
 #include "cab_session.h"
+#include "cab_settings_override.h"
 
 
 #define STR_(X) #X
@@ -46,7 +48,12 @@ void unhash_word(Word* word, size_t seed) {
 void cab_fh__store_secret_word(CabSession* session, char* buffer) {
     Word stored_secret_word = session->secret_word;
     hash_word(&stored_secret_word, session->seed);
-    sprintf(buffer, "%s\n", stored_secret_word.letters);
+    buffer += sprintf(buffer, "%s", stored_secret_word.letters);
+    if (cab_session__get_setting(session,
+                                 STG_Debug_ShowSecretWordInSaveFiles)) {
+        buffer += sprintf(buffer, " // (%s)", session->secret_word.letters);
+    }
+    sprintf(buffer, "\n");
 }
 
 bool cab_fh__load_secret_word(CabSession* session, const char* buffer) {
@@ -63,8 +70,7 @@ bool cab_fh__load_secret_word(CabSession* session, const char* buffer) {
 
 bool cab_fh__validate_secret_word(CabSession* session) {
     silence_messages(session);
-    if (!silent_can_string_be_word(session->secret_word.letters,
-                                   cab_session__get_word_len(session))) {
+    if (!can_string_be_word(session, session->secret_word.letters)) {
         unsilence_messages(session);
         return false;
     }

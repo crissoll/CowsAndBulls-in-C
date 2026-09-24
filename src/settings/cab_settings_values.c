@@ -68,6 +68,8 @@ static const SettingsSpec setting_specs[STG_LEN] = {
                                           true},
     [STG_Debug_LogVocabularyDiscardedWords] = {"log-vocabulary-discarded-words",
                                                false, true, true},
+    [STG_Debug_ShowSecretWordInSaveFiles] = {"show-secret-word-in-save-files",
+                                             false, true, true},
 
 };
 

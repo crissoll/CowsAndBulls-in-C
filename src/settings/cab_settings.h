@@ -28,7 +28,7 @@ typedef enum {
     STG_Debug_LogInput,
     STG_Debug_LogInputPrompt,
     STG_Debug_LogVocabularyDiscardedWords,
-
+    STG_Debug_ShowSecretWordInSaveFiles,
 
     STG_LEN
 } CabSettingId;
