@@ -54,6 +54,7 @@ void parse_command(CabSession* session, const CommandSpec* specifier,
             session, "command_spec_find_arg: NULL arguments not accepted\n");
     }
     if (cab_session__is_command_allowed(session, specifier) == false) {
+        message(session, OT_ALERT, "command %s is disabled", specifier->name);
         return;
     }
     CabCmdDisabledFlags flags =
