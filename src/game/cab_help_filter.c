@@ -1,4 +1,6 @@
+#include <stdbool.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "cab_errors.h"
 #include "cab_help_filter.h"
@@ -145,19 +147,26 @@ void cab_session__word_filter_init(CabSession* session) {
     }
     word_set__free_content(&session->word_filter.current_word_set);
     session->word_filter.entries_count = 0;
-
+    memset(session->word_filter.history, 0,
+           sizeof(session->word_filter.history));
+    if (!session->is_loading) {
+        cab_tokens_array__free_content(
+            &session->word_filter.word_filter_tokens);
+    }
     if (session->vocabulary != NULL) {
         word_set__init_from_vocabulary(&session->word_filter.current_word_set,
                                        session->vocabulary);
     }
 }
 
+
 void cab_session__word_filter_free_content(CabSession* session) {
     if (session == NULL) {
         return;
     }
     word_set__free_content(&session->word_filter.current_word_set);
-    session->word_filter.entries_count = 0;
+    cab_tokens_array__free_content(&session->word_filter.word_filter_tokens);
+    memset(&session->word_filter, 0, sizeof(session->word_filter));
 }
 
 const ListHistoryEntry* cab_session__get_last_word_filter(CabSession* session) {
@@ -186,10 +195,22 @@ size_t cab_session__compute_filter_word_count(const CabSession* session,
     return result;
 }
 
+void cab_word_filter__add_tokens(CabWordFilter* filter,
+                                 const CabTokens* tokens) {
+
+    CabTokens shallow_copy = *tokens;
+    cab_tokens__remove_head(&shallow_copy);
+    cab_tokens_array__add_element(&filter->word_filter_tokens, shallow_copy);
+}
+
 void cab_session__word_filter_add_entry(CabSession* session,
                                         const ListHistoryEntry* entry) {
     if (session == NULL) {
         return;
+    }
+    if (session->is_loading == false) {
+        cab_word_filter__add_tokens(&session->word_filter,
+                                    &session->input_tokens);
     }
     if (session->word_filter.entries_count >= HELP_FILTER_HISTORY_MAX) {
         extra_io_warning(

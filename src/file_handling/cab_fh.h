@@ -18,6 +18,7 @@ extern const CabFileHandler cab_fh_attempts;
 extern const CabFileHandler cab_fh_rng;
 extern const CabFileHandler cab_fh_secret_word;
 extern const CabFileHandler cab_fh_cmd_disable;
+extern const CabFileHandler cab_fh_word_filter;
 
 static const CabFileHandler* const file_handler_list[] = {
     &cab_fh_rng,
@@ -26,6 +27,8 @@ static const CabFileHandler* const file_handler_list[] = {
     &cab_fh_cmd_disable,
     &cab_fh_secret_word,
     &cab_fh_attempts,
+    &cab_fh_word_filter,
+
     NULL,
 };
 

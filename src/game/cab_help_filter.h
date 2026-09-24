@@ -4,6 +4,7 @@
 #include <stddef.h>
 
 #include "cab_session_fwd.h"
+#include "cab_tokens.h"
 #include "word_set.h"
 #include "word_set_filter.h"
 
@@ -19,6 +20,7 @@ typedef struct {
     size_t entries_count;
     WordSet current_word_set;
     ListHistoryEntry default_entry;
+    CabTokensArray word_filter_tokens;
 } CabWordFilter;
 
 void cab_session__word_filter_init(CabSession* session);
