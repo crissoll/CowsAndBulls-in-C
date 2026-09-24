@@ -57,7 +57,7 @@ bool cab_fh__load_settings(CabSession* session, const char* buffer) {
     size_t val;
     params =
         sscanf(buffer + offset, "%zu : %zu%n", &setting_id, &val, &consumed);
-
+    offset += consumed;
     while (params == 2) {
         extra_io_warning(
             session, "cab_fh__load_settings: loaded setting %zu with value %zu",
@@ -67,6 +67,26 @@ bool cab_fh__load_settings(CabSession* session, const char* buffer) {
         if (setting_id < session->settings_override->settings_count) {
             session->settings_override->entries[setting_id].overridden = true;
             session->settings_override->entries[setting_id].value = val;
+        }
+        char first_char;
+        if (sscanf(buffer + offset, " %c%n", &first_char, &consumed) == 1 &&
+            first_char == '-') {
+            offset += consumed;
+            char setting_name[100];
+            params = sscanf(buffer + offset, "%99s : %zu%n", setting_name, &val,
+                            &consumed);
+
+            setting_id = cab_settings__get_id_from_name(setting_name);
+            if (setting_id == STG_LEN) {
+                extra_io_warning(
+                    session,
+                    "cab_fh__load_settings: found setting stored with "
+                    "invalid name \"%s\" ",
+                    setting_name);
+                break;
+            }
+            offset += consumed;
+            continue;
         }
         params = sscanf(buffer + offset, "%zu : %zu%n", &setting_id, &val,
                         &consumed);
