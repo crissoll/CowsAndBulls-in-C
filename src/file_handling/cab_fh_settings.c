@@ -18,6 +18,9 @@ void cab_fh__store_settings(CabSession* session, char* buffer) {
         const size_t settings_count =
             session->settings_override->settings_count;
 
+        const bool store_as_name =
+            cab_session__get_setting(session, STG_Debug_SaveSettingsByName);
+
         for (CabSettingId i = 0; i < settings_count; i++) {
             if (session->settings_override->entries[i].overridden == false) {
                 if (cab_session__get_setting(
@@ -30,9 +33,16 @@ void cab_fh__store_settings(CabSession* session, char* buffer) {
             const size_t val = cab_session__get_setting(session, i);
             size_t j = 0;
             for (; j < STG_LEN && cab_setting_ids_order[j] != i; j++) {}
-            offset += sprintf(buffer + offset, "%zu : %zu", j, val);
 
-            if (cab_session__get_setting(session,
+            if (store_as_name) {
+                offset += sprintf(buffer + offset, "-%s : %zu",
+                                  cab_settings__get_name(i), val);
+            } else {
+                offset += sprintf(buffer + offset, "%zu : %zu", j, val);
+            }
+
+            if (!store_as_name &&
+                cab_session__get_setting(session,
                                          STG_Debug_AddCommentsToSaveFiles)) {
                 const char* setting_name = cab_settings__get_name(i);
                 offset += sprintf(buffer + offset, " // (%s)", setting_name);

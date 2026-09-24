@@ -37,6 +37,7 @@ const CabSettingId cab_setting_ids_order[STG_LEN] = {
     STG_Debug_AddCommentsToSaveFiles,
     STG_Debug_ReloadFileEachTurn,
     STG_Debug_ShowAllSettingsInSaveFiles,
+    STG_Debug_SaveSettingsByName,
 };
 
 typedef struct {
