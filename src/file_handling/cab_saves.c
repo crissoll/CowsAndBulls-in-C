@@ -78,7 +78,8 @@ static bool flush_section(CabSession* session, const char* section_name,
     }
     if (handler->load_function == NULL) {
         extra_io_warning(
-            session, "flush_section: file handler \"%s\" has no load function");
+            session, "flush_section: file handler \"%s\" has no load function",
+            handler->name);
         return false;
     }
     return handler->load_function(session, buffer);
@@ -107,6 +108,13 @@ void cab_session__store_data(CabSession* session) {
     char buffer[CAB_SAVE_BUFFER_SIZE];
     for (size_t i = 0; file_handler_list[i] != NULL; i++) {
         buffer[0] = '\0';
+        if (file_handler_list[i]->store_function == NULL) {
+            extra_io_warning(session,
+                             "cab_session_store_data: file handler \"%s\" has "
+                             "NULL store_function",
+                             file_handler_list[i]->name);
+            continue;
+        }
         file_handler_list[i]->store_function(session, buffer);
         if (buffer[0] == '\0') {
             continue;
@@ -156,43 +164,46 @@ void cab_session__load_data(CabSession* session) {
     }
     char* buffer = calloc(CAB_SAVE_BUFFER_SIZE, sizeof(char));
     char line[256];
-    char current_section[128] = {0};
+    char cur_section_name[128] = {0};
+    size_t buffer_len = 0;
     while (fgets(line, sizeof(line), fp) != NULL) {
-        char section_name[128] = {0};
+        char next_section_name[128] = {0};
         // Match "--- Section Name ---"
-        if (sscanf(line, "--- %127[^-\r\n] ---", section_name) == 1) {
-            size_t len = strlen(section_name);
-            while (len > 0 && (section_name[len - 1] == ' ' ||
-                               section_name[len - 1] == '\t')) {
-                section_name[--len] = '\0';
+        if (sscanf(line, "--- %127[^-\r\n] ---", next_section_name) == 1) {
+            size_t name_len = strlen(next_section_name);
+            while (name_len > 0 && (next_section_name[name_len - 1] == ' ' ||
+                                    next_section_name[name_len - 1] == '\t')) {
+                next_section_name[--name_len] = '\0';
             }
-            const size_t buffer_len = strlen(buffer);
+            const size_t old_buffer_len = buffer_len;
             clean_buffer(buffer);
-            const size_t new_buffer_len = strlen(buffer);
-            if (new_buffer_len != buffer_len) {
+            buffer_len = strlen(buffer);
+            if (buffer_len != old_buffer_len) {
                 extra_io_warning(session,
                                  "cab_session__load_data: buffer length "
                                  "changed from %zu to %zu",
-                                 buffer_len, new_buffer_len);
+                                 old_buffer_len, buffer_len);
             }
-            if (!load_section(session, current_section, buffer)) {
+            if (!load_section(session, cur_section_name, buffer)) {
                 extra_io_warning(session,
                                  "cab_session__load_data: session couldn't be "
-                                 "loaded. starting new game");
+                                 "loaded");
                 free(buffer);
                 fclose(fp);
                 return;
             }
-            strcpy(current_section, section_name);
+            strcpy(cur_section_name, next_section_name);
             buffer[0] = '\0';
-        } else if (current_section[0] != '\0') {
-            if (strlen(buffer) + strlen(line) < CAB_SAVE_BUFFER_SIZE - 1) {
+        } else if (cur_section_name[0] != '\0') {
+            const size_t line_len = strlen(line);
+            if (buffer_len + line_len < CAB_SAVE_BUFFER_SIZE - 1) {
                 strcat(buffer, line);
+                buffer_len += line_len;
             }
         }
     }
     clean_buffer(buffer);
-    if (!load_section(session, current_section, buffer)) {
+    if (!load_section(session, cur_section_name, buffer)) {
         extra_io_warning(session,
                          "cab_session__load_data: session couldn't be "
                          "loaded. starting new game");
