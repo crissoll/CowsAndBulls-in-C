@@ -34,7 +34,8 @@ void cab_tokens__copy(CabTokens* to, const CabTokens* from) {
         return;
     }
     cab_tokens__free_content(to);
-    if (from == NULL || from->buffer.content == NULL || from->token_count == 0) {
+    if (from == NULL || from->buffer.content == NULL ||
+        from->token_count == 0) {
         cab_tokens__init(to);
         return;
     }

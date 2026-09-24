@@ -36,10 +36,10 @@ void output_buffer__end_message(OutputBuffer* output_buffer);
 
 bool output_buffer__is_message_started(OutputBuffer* output_buffer);
 
-
-void cab_session__log_output_buffer(CabSession* session);
-
 const char** cab_output_buffer__get_messages_with_tags(OutputBuffer* buffer,
                                                        OutputTags tags,
                                                        size_t* message_count);
+
+void cab_session__log_output_buffer(CabSession* session);
+
 #endif
