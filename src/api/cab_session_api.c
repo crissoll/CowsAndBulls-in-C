@@ -29,6 +29,7 @@ void cab_session__setup(CabSession* session) {
                      "\n========================================\n"
                      "\n============ new session ===============\n"
                      "\n========================================\n");
+    session->owned_vocab = true;
     cab_session__init(session);
     session->setup = true;
 
