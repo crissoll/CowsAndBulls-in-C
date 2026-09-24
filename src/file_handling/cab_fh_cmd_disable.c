@@ -18,57 +18,28 @@ void cab_fh__store_cmd_disable(CabSession* session, char* buffer) {
     if (session->commands_tree == NULL) {
         return;
     }
-    const CabTokens* tokens_arr =
-        session->commands_tree->disabled_commands_tokens.array;
-    for (size_t i = 0;
-         i < session->commands_tree->disabled_commands_tokens.size; i++) {
-        const CabTokens* tokens = tokens_arr + i;
-
-        for (size_t j = 0; j < tokens->token_count; j++) {
-            buffer += sprintf(buffer, "%s ", tokens->tokens[j]);
-        }
-        if (tokens->token_count > 0) {
-            buffer += sprintf(buffer, "\n");
-        }
-    }
+    const CabTokensArray* tokens_arr =
+        &session->commands_tree->disabled_commands_tokens;
+    cab_tokens_array__store(tokens_arr, buffer);
 }
 
 bool cab_fh__load_cmd_disable(CabSession* session, const char* buffer) {
     if (buffer == NULL) {
         return true;
     }
-    CabTokensArray* token_array = NULL;
-    if (session->commands_tree != NULL) {
-        token_array = &session->commands_tree->disabled_commands_tokens;
+
+    if (session->commands_tree == NULL) {
+        session->commands_tree = calloc(1, sizeof(*session->commands_tree));
     }
+    CabTokensArray* token_array =
+        &session->commands_tree->disabled_commands_tokens;
 
-    const char* ptr = buffer;
-    while (*ptr != '\0') {
-        size_t len = strcspn(ptr, "\r\n");
-        if (len > 0) {
-            char line[256];
-            if (len >= sizeof(line)) {
-                len = sizeof(line) - 1;
-            }
-            memcpy(line, ptr, len);
-            line[len] = '\0';
+    cab_tokens_array__load(token_array, buffer);
 
-            if (session->commands_tree == NULL) {
-                session->commands_tree =
-                    calloc(1, sizeof(*session->commands_tree));
-                token_array = &session->commands_tree->disabled_commands_tokens;
-            }
-            CabTokens new_tokens = {0};
-            cab_tokens__populate(&new_tokens, line);
-            cab_tokens_array__add_element(token_array, new_tokens);
-        }
-        ptr += len;
-        if (*ptr == '\r' || *ptr == '\n') {
-            ptr++;
-        }
-        if (*ptr == '\n') {
-            ptr++;
-        }
+
+    if (session->commands_tree->disabled_commands_tokens.size == 0) {
+        cab_cmd_tree__free_content(session->commands_tree);
+        session->commands_tree = NULL;
     }
     return true;
 }
