@@ -1,8 +1,10 @@
 #include "cab_tokens.h"
 
 #include <stddef.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 
 #include "cab_input.h"
 #include "cab_io_buffer.h"
@@ -140,5 +142,46 @@ void cab_tokens_array__copy(CabTokensArray* to, const CabTokensArray* from) {
         cab_tokens__copy(&deep_copy, &from->array[i]);
         cab_tokens_array__add_element(to, deep_copy);
         cab_tokens__free_content(&deep_copy);
+    }
+}
+
+
+void cab_tokens_array__load(CabTokensArray* array, const char* buffer) {
+    const char* ptr = buffer;
+    while (*ptr != '\0') {
+        size_t len = strcspn(ptr, "\r\n");
+        if (len > 0) {
+            char line[256];
+            if (len >= sizeof(line)) {
+                len = sizeof(line) - 1;
+            }
+            memcpy(line, ptr, len);
+            line[len] = '\0';
+
+
+            CabTokens new_tokens = {0};
+            cab_tokens__populate(&new_tokens, line);
+            cab_tokens_array__add_element(array, new_tokens);
+        }
+        ptr += len;
+        if (*ptr == '\r' || *ptr == '\n') {
+            ptr++;
+        }
+        if (*ptr == '\n') {
+            ptr++;
+        }
+    }
+}
+
+void cab_tokens_array__store(const CabTokensArray* array, char* buffer) {
+    for (size_t i = 0; i < array->size; i++) {
+        const CabTokens* tokens = array->array + i;
+
+        for (size_t j = 0; j < tokens->token_count; j++) {
+            buffer += sprintf(buffer, "%s ", tokens->tokens[j]);
+        }
+        if (tokens->token_count > 0) {
+            buffer += sprintf(buffer, "\n");
+        }
     }
 }

@@ -30,4 +30,7 @@ void cab_tokens_array__copy(CabTokensArray* to, const CabTokensArray* from);
 
 void cab_tokens_array__free_content(CabTokensArray* array);
 
+void cab_tokens_array__load(CabTokensArray* array, const char* buffer);
+
+void cab_tokens_array__store(const CabTokensArray* array, char* buffer);
 #endif
