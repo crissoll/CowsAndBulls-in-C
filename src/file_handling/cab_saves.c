@@ -163,7 +163,6 @@ void cab_session__load_data(CabSession* session) {
             "cab_session__load_data: failed to open save file for reading");
         return;
     }
-
     char* buffer = calloc(CAB_SAVE_BUFFER_SIZE, sizeof(char));
     char line[256];
     char current_section[128] = {0};
@@ -211,7 +210,7 @@ void cab_session__load_data(CabSession* session) {
         fclose(fp);
         return;
     }
-
+    session->is_loading = true;
     bool validation_succeeded = true;
     for (size_t i = 0; file_handler_list[i] != NULL; i++) {
         validation_succeeded = true;
@@ -231,7 +230,7 @@ void cab_session__load_data(CabSession* session) {
             session, "cab_session__load_data: section \"%s\" passed validation",
             file_handler_list[i]->name);
     }
-
+    session->is_loading = false;
 
     if (validation_succeeded) {
         session->loaded = true;

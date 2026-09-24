@@ -50,6 +50,7 @@ typedef struct CabSession {
     CABGameEndFlags ending_flags;
 
     bool loaded : 1;
+    bool is_loading : 1;
     bool setup : 1;
     bool silent_messages : 1;
 } CabSession;
