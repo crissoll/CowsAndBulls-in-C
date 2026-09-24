@@ -75,7 +75,8 @@ static const SettingsSpec setting_specs[STG_LEN] = {
                                           true, true},
     [STG_Debug_ReloadFileEachTurn] = {"reload-file-each-turn", false, true,
                                       true},
-
+    [STG_Debug_ShowAllSettingsInSaveFiles] = {"show-all-settings-in-save-files",
+                                              false, true, false},
 };
 
 static const SettingValueValidationFunc validation_funcs[STG_LEN] = {

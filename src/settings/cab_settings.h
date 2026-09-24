@@ -31,7 +31,7 @@ typedef enum {
     STG_Debug_AddCommentsToSaveFiles,
     STG_Debug_ShowSecretWordInSaveFiles,
     STG_Debug_ReloadFileEachTurn,
-
+    STG_Debug_ShowAllSettingsInSaveFiles,
     STG_LEN
 } CabSettingId;
 

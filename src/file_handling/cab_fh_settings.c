@@ -18,17 +18,24 @@ void cab_fh__store_settings(CabSession* session, char* buffer) {
         const size_t settings_count =
             session->settings_override->settings_count;
 
-        for (size_t i = 0; i < settings_count; i++) {
+        for (CabSettingId i = 0; i < settings_count; i++) {
             if (session->settings_override->entries[i].overridden == false) {
-                continue;
+                if (cab_session__get_setting(
+                        session, STG_Debug_ShowAllSettingsInSaveFiles)) {
+                    offset += sprintf(buffer + offset, "// ");
+                } else {
+                    continue;
+                }
             }
-            const size_t val = session->settings_override->entries[i].value;
-            offset += sprintf(buffer + offset, "%zu : %zu", i, val);
+            const size_t val = cab_session__get_setting(session, i);
+            size_t j = 0;
+            for (; j < STG_LEN && cab_setting_ids_order[j] != i; j++) {}
+            offset += sprintf(buffer + offset, "%zu : %zu", j, val);
+
             if (cab_session__get_setting(session,
                                          STG_Debug_AddCommentsToSaveFiles)) {
-                offset +=
-                    sprintf(buffer + offset, " // (%s)",
-                            cab_settings__get_name(cab_setting_ids_order[i]));
+                const char* setting_name = cab_settings__get_name(i);
+                offset += sprintf(buffer + offset, " // (%s)", setting_name);
             }
             offset += sprintf(buffer + offset, "\n");
         }
