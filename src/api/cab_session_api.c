@@ -11,6 +11,8 @@
 #include "cab_io_consts.h"
 #include "cab_output.h"
 #include "cab_saves.h"
+#include "cab_settings_override.h"
+#include "cab_tokens.h"
 #include "cab_turns.h"
 #include "cmd.h"
 
@@ -47,7 +49,15 @@ void cab_session__setup(CabSession* session) {
 }
 
 void cab_session__parse_input(CabSession* session) {
-
+    if (session->loaded &&
+        cab_session__get_setting(session, STG_Debug_ReloadFileEachTurn)) {
+        CabTokens input_tokens = session->input_tokens;
+        session->input_tokens = (CabTokens){0};
+        cab_session__free_content(session);
+        cab_session__init(session);
+        session->input_tokens = input_tokens;
+        cab_session__load_data(session);
+    }
     if (session->input_tokens.token_count > 0) {
         parse(session, (const char**)session->input_tokens.tokens,
               session->input_tokens.token_count);

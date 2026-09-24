@@ -69,9 +69,11 @@ static const SettingsSpec setting_specs[STG_LEN] = {
     [STG_Debug_LogVocabularyDiscardedWords] = {"log-vocabulary-discarded-words",
                                                false, true, true},
     [STG_Debug_ShowSecretWordInSaveFiles] = {"show-secret-word-in-save-files",
-                                             false, true, true},
+                                             false, true, false},
     [STG_Debug_AddCommentsToSaveFiles] = {"add-comments-to-save-files", false,
                                           true, true},
+    [STG_Debug_ReloadFileEachTurn] = {"reload-file-each-turn", false, true,
+                                      true},
 
 };
 

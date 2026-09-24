@@ -30,6 +30,7 @@ typedef enum {
     STG_Debug_LogVocabularyDiscardedWords,
     STG_Debug_AddCommentsToSaveFiles,
     STG_Debug_ShowSecretWordInSaveFiles,
+    STG_Debug_ReloadFileEachTurn,
 
     STG_LEN
 } CabSettingId;

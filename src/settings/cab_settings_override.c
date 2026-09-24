@@ -35,6 +35,7 @@ const CabSettingId cab_setting_ids_order[STG_LEN] = {
     STG_Debug_LogVocabularyDiscardedWords,
     STG_Debug_ShowSecretWordInSaveFiles,
     STG_Debug_AddCommentsToSaveFiles,
+    STG_Debug_ReloadFileEachTurn,
 };
 
 typedef struct {
