@@ -124,7 +124,8 @@ bool load_section(CabSession* session, char* section, char* buffer) {
 
     if (!load_succeeded) {
         extra_io_warning(
-            session, "cab_session__load_data: section %s couldn't be loaded",
+            session,
+            "cab_session__load_data: section \"%s\" couldn't be loaded",
             section);
         return false;
     }
@@ -222,13 +223,13 @@ void cab_session__load_data(CabSession* session) {
         if (!validation_succeeded) {
             extra_io_warning(
                 session,
-                "cab_session__load_data: section %s didn't pass validation",
+                "cab_session__load_data: section \"%s\" didn't pass validation",
                 file_handler_list[i]->name);
             break;
         }
-        extra_io_warning(session,
-                         "cab_session__load_data: section %s passed validation",
-                         file_handler_list[i]->name);
+        extra_io_warning(
+            session, "cab_session__load_data: section \"%s\" passed validation",
+            file_handler_list[i]->name);
     }
 
 
