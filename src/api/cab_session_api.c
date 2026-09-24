@@ -18,6 +18,7 @@
 
 #include "cab_session.h"
 #include "cab_session_api.h"
+#include "vocabulary.h"
 
 
 void cab_session__setup(CabSession* session) {
@@ -29,7 +30,6 @@ void cab_session__setup(CabSession* session) {
                      "\n========================================\n"
                      "\n============ new session ===============\n"
                      "\n========================================\n");
-    session->owned_vocab = true;
     cab_session__init(session);
     session->setup = true;
 
@@ -54,10 +54,12 @@ void cab_session__parse_input(CabSession* session) {
         cab_session__get_setting(session, STG_Debug_ReloadFileEachTurn)) {
         CabTokens input_tokens = session->input_tokens;
         session->input_tokens = (CabTokens){0};
+        Vocabulary* vocabulary = session->vocabulary;
         cab_session__free_content(session);
         cab_session__init(session);
-        session->input_tokens = input_tokens;
+        session->vocabulary = vocabulary;
         cab_session__load_data(session);
+        session->input_tokens = input_tokens;
     }
     if (session->input_tokens.token_count > 0) {
         parse(session, (const char**)session->input_tokens.tokens,
