@@ -57,6 +57,11 @@ void cab_session__free_content(CabSession* session) {
     free((char*)session->file_paths.log_path);
     free((char*)session->file_paths.vocab_path);
 
+    if (session->owned_vocab && session->vocabulary != NULL) {
+        free(session->vocabulary->words);
+        free(session->vocabulary);
+    }
+
     memset(session, 0, sizeof(*session));
 }
 

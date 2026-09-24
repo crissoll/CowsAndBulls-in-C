@@ -44,6 +44,10 @@ bool cab_fh__load_vocabulary(CabSession* session, const char* buffer) {
 }
 
 bool cab_fh__validate_vocabulary(CabSession* session) {
+    if (session->vocabulary != NULL) {
+        return true;
+    }
+
     cab_session__load_vocabulary(session);
     size_t vocab_hash = vocabulary__hash(session->vocabulary);
     if (vocab_hash != session->vocab_hash) {

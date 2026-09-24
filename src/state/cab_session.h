@@ -53,6 +53,7 @@ typedef struct CabSession {
     bool is_loading : 1;
     bool setup : 1;
     bool silent_messages : 1;
+    bool owned_vocab : 1;
 } CabSession;
 
 
