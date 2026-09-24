@@ -6,11 +6,15 @@
 #include "cab_errors.h"
 #include "cab_fh.h"
 #include "cab_session.h"
+#include "cab_settings.h"
 
 
 void cab_fh__store_rng(CabSession* session, char* buffer) {
-    sprintf(buffer, "%" PRIu32 " // %s\n%" PRIu32 "\n", session->seed,
-            session->alpha_seed, session->rng_state);
+    buffer += sprintf(buffer, "%" PRIu32, session->seed);
+    if (cab_session__get_setting(session, STG_Debug_AddCommentsToSaveFiles)) {
+        buffer += sprintf(buffer, " // %s", session->alpha_seed);
+    }
+    buffer += sprintf(buffer, "\n%" PRIu32 "\n", session->rng_state);
 }
 
 bool cab_fh__load_rng(CabSession* session, const char* buffer) {

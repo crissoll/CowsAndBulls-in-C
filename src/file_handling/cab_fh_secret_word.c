@@ -8,6 +8,7 @@
 #include "cab_fh.h"
 #include "cab_output.h"
 #include "cab_session.h"
+#include "cab_settings.h"
 #include "cab_settings_override.h"
 
 
@@ -49,8 +50,11 @@ void cab_fh__store_secret_word(CabSession* session, char* buffer) {
     Word stored_secret_word = session->secret_word;
     hash_word(&stored_secret_word, session->seed);
     buffer += sprintf(buffer, "%s", stored_secret_word.letters);
-    if (cab_session__get_setting(session,
-                                 STG_Debug_ShowSecretWordInSaveFiles)) {
+    const bool condition =
+        cab_session__get_setting(session,
+                                 STG_Debug_ShowSecretWordInSaveFiles) &&
+        cab_session__get_setting(session, STG_Debug_AddCommentsToSaveFiles);
+    if (condition) {
         buffer += sprintf(buffer, " // (%s)", session->secret_word.letters);
     }
     sprintf(buffer, "\n");

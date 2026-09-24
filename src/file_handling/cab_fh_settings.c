@@ -27,8 +27,14 @@ void cab_fh__store_settings(CabSession* session, char* buffer) {
                 continue;
             }
             const size_t val = session->settings_override->entries[i].value;
-            offset += sprintf(buffer + offset, "%zu : %zu // (%s)\n", i, val,
-                              cab_settings__get_name(cab_setting_ids_order[i]));
+            offset += sprintf(buffer + offset, "%zu : %zu", i, val);
+            if (cab_session__get_setting(session,
+                                         STG_Debug_AddCommentsToSaveFiles)) {
+                offset +=
+                    sprintf(buffer + offset, " // (%s)",
+                            cab_settings__get_name(cab_setting_ids_order[i]));
+            }
+            offset += sprintf(buffer + offset, "\n");
         }
     }
 }
