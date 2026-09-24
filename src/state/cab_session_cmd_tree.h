@@ -14,8 +14,7 @@ typedef struct {
     size_t disabled_commands_current_size;
     size_t disabled_commands_allocated_size;
     CabCmdDisabledFlags* disabled_slots;
-    CabTokens disabled_commands_text[MAX_DISABLE_COUNT];
-    size_t disabled_commands_text_size;
+    CabTokensArray disabled_commands_tokens;
 } CmdTree;
 
 void cab_cmd_tree__free_content(CmdTree* tree);

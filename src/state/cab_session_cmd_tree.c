@@ -1,3 +1,5 @@
+#include "cab_session_cmd_tree.h"
+#include <stdbool.h>
 #include <stdlib.h>
 
 
@@ -5,6 +7,28 @@
 #include "cab_tokens.h"
 #include "cmd_tree.h"
 
+
+void cab_cmd_tree__realloc(CmdTree* tree) {
+    if (tree->disabled_commands == NULL) {
+        tree->disabled_commands_allocated_size = 4;
+        tree->disabled_commands = calloc(tree->disabled_commands_allocated_size,
+                                         sizeof(*tree->disabled_commands));
+        tree->disabled_slots = calloc(tree->disabled_commands_allocated_size,
+                                      sizeof(*tree->disabled_slots));
+        tree->disabled_commands_current_size = 0;
+    } else if (tree->disabled_commands_current_size >=
+               tree->disabled_commands_allocated_size) {
+        tree->disabled_commands_allocated_size *= 3;
+        tree->disabled_commands_allocated_size /= 2;
+        tree->disabled_commands =
+            realloc(tree->disabled_commands,
+                    sizeof(*tree->disabled_commands) *
+                        tree->disabled_commands_allocated_size);
+        tree->disabled_slots = realloc(
+            tree->disabled_slots, sizeof(*tree->disabled_slots) *
+                                      tree->disabled_commands_allocated_size);
+    }
+}
 
 void cab_session_set_cmd_root(CabSession* session,
                               const CommandSpec* specifier) {
@@ -50,10 +74,16 @@ void cab_session__set_command_spec_disable_flags(CabSession* session,
                                                  const CommandSpec* specifier,
                                                  CabCmdDisabledFlags flags) {
 
+
     if (session->commands_tree == NULL) {
         session->commands_tree = calloc(1, sizeof(*session->commands_tree));
     }
     CmdTree* tree = session->commands_tree;
+
+    if (session->is_loading == false) {
+        cab_cmd_tree__add_disabled_command_text(tree, &session->input_tokens);
+    }
+
     const int index = cab_session__find_disabled_command(session, specifier);
     if (index != -1) {
         if (flags == CMD_DISABLE_NOTHING) {
@@ -64,28 +94,11 @@ void cab_session__set_command_spec_disable_flags(CabSession* session,
         return;
     }
 
-    if (tree->disabled_commands == NULL) {
-        tree->disabled_commands_allocated_size = 4;
-        tree->disabled_commands =
-            malloc(sizeof(*tree->disabled_commands) *
-                   tree->disabled_commands_allocated_size);
-        tree->disabled_slots = malloc(sizeof(*tree->disabled_slots) *
-                                      tree->disabled_commands_allocated_size);
-        tree->disabled_commands_current_size = 0;
-    } else if (tree->disabled_commands_current_size >=
-               tree->disabled_commands_allocated_size) {
-        tree->disabled_commands_allocated_size *= 3;
-        tree->disabled_commands_allocated_size /= 2;
-        tree->disabled_commands =
-            realloc(tree->disabled_commands,
-                    sizeof(*tree->disabled_commands) *
-                        tree->disabled_commands_allocated_size);
-        tree->disabled_slots = realloc(
-            tree->disabled_slots, sizeof(*tree->disabled_slots) *
-                                      tree->disabled_commands_allocated_size);
-    }
-    tree->disabled_commands[tree->disabled_commands_current_size] = specifier;
-    tree->disabled_slots[tree->disabled_commands_current_size] = flags;
+    cab_cmd_tree__realloc(tree);
+
+    const size_t cur_size = tree->disabled_commands_current_size;
+    tree->disabled_commands[cur_size] = specifier;
+    tree->disabled_slots[cur_size] = flags;
     tree->disabled_commands_current_size++;
 }
 
@@ -101,10 +114,8 @@ void cab_cmd_tree__free_content(CmdTree* tree) {
     if (tree == NULL) {
         return;
     }
-    for (size_t i = 0; i < tree->disabled_commands_text_size; i++) {
-        cab_tokens__free_content(&tree->disabled_commands_text[i]);
-    }
-    tree->disabled_commands_text_size = 0;
+
+    cab_tokens_array__free_content(&tree->disabled_commands_tokens);
     if (tree->disabled_commands != NULL) {
         free(tree->disabled_commands);
         tree->disabled_commands = NULL;
@@ -119,7 +130,8 @@ void cab_cmd_tree__free_content(CmdTree* tree) {
 void cab_cmd_tree__add_disabled_command_text(CmdTree* tree,
                                              const CabTokens* tokens) {
 
-    CabTokens* _tokens =
-        &tree->disabled_commands_text[tree->disabled_commands_text_size++];
-    cab_tokens__copy(_tokens, tokens);
+    CabTokens shallow_copy = *tokens;
+    cab_tokens__remove_head(&shallow_copy);
+    cab_tokens_array__add_element(&tree->disabled_commands_tokens,
+                                  shallow_copy);
 }

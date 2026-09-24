@@ -7,23 +7,21 @@
 #include "cab_input.h"
 #include "cab_io_buffer.h"
 
+
 void cab_tokens__free_content(CabTokens* tokens) {
     if (tokens == NULL) {
         return;
     }
     free(tokens->tokens);
-    tokens->tokens = NULL;
-    tokens->token_count = 0;
     cab_io_buffer__free_content(&tokens->buffer);
+    *tokens = (CabTokens){0};
 }
 
 void cab_tokens__init(CabTokens* tokens) {
     if (tokens == NULL) {
         return;
     }
-    tokens->token_count = 0;
-    tokens->tokens = NULL;
-    tokens->buffer = (CAB_IOBuffer){0};
+    *tokens = (CabTokens){0};
 }
 
 void cab_tokens__copy(CabTokens* to, const CabTokens* from) {
@@ -96,4 +94,51 @@ void cab_tokens__populate(CabTokens* tokens, const char* input_string) {
 
     tokens->token_count =
         get_tokens_from_input(&tokens->buffer, &tokens->tokens);
+}
+
+
+void cab_tokens__remove_head(CabTokens* tokens) {
+    tokens->token_count--;
+    tokens->tokens++;
+}
+
+void cab_tokens_array__add_element(CabTokensArray* array, CabTokens tokens) {
+    if (array->array == NULL) {
+        array->array = calloc(4, sizeof(CabTokens));
+        array->alloc_size = 4;
+    } else if (array->size >= array->alloc_size) {
+        size_t old_size = array->alloc_size;
+        array->alloc_size *= 3;
+        array->alloc_size /= 2;
+        array->array =
+            realloc(array->array, array->alloc_size * sizeof(CabTokens));
+        memset(array->array + old_size, 0,
+               (array->alloc_size - old_size) * sizeof(CabTokens));
+    }
+
+    cab_tokens__copy(array->array + array->size, &tokens);
+    array->size++;
+}
+
+void cab_tokens_array__free_content(CabTokensArray* array) {
+    for (size_t i = 0; i < array->size; i++) {
+        cab_tokens__free_content(array->array + i);
+    }
+    *array = (CabTokensArray){0};
+}
+
+void cab_tokens_array__copy(CabTokensArray* to, const CabTokensArray* from) {
+    if (from == NULL || to == NULL) {
+        return;
+    }
+    cab_tokens_array__free_content(to);
+    to->alloc_size = from->alloc_size;
+    to->array = calloc(to->alloc_size, sizeof(CabTokens));
+
+    for (size_t i = 0; i < from->size; i++) {
+        CabTokens deep_copy = {0};
+        cab_tokens__copy(&deep_copy, &from->array[i]);
+        cab_tokens_array__add_element(to, deep_copy);
+        cab_tokens__free_content(&deep_copy);
+    }
 }

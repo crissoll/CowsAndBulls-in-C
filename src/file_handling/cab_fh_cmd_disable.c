@@ -9,23 +9,27 @@
 #include "cab_output.h"
 #include "cab_session.h"
 #include "cab_session_cmd_tree.h"
+#include "cab_session_parsing.h"
 #include "cab_tokens.h"
 #include "cmd_spec.h"
+
 
 void cab_fh__store_cmd_disable(CabSession* session, char* buffer) {
     if (session->commands_tree == NULL) {
         return;
     }
     const CabTokens* tokens_arr =
-        session->commands_tree->disabled_commands_text;
-    for (size_t i = 0; i < session->commands_tree->disabled_commands_text_size;
-         i++) {
+        session->commands_tree->disabled_commands_tokens.array;
+    for (size_t i = 0;
+         i < session->commands_tree->disabled_commands_tokens.size; i++) {
         const CabTokens* tokens = tokens_arr + i;
 
         for (size_t j = 0; j < tokens->token_count; j++) {
             buffer += sprintf(buffer, "%s ", tokens->tokens[j]);
         }
-        buffer += sprintf(buffer, "\n");
+        if (tokens->token_count > 0) {
+            buffer += sprintf(buffer, "\n");
+        }
     }
 }
 
@@ -33,11 +37,9 @@ bool cab_fh__load_cmd_disable(CabSession* session, const char* buffer) {
     if (buffer == NULL) {
         return true;
     }
-    CabTokens* token_arr = NULL;
-    size_t* token_arr_size = NULL;
+    CabTokensArray* token_array = NULL;
     if (session->commands_tree != NULL) {
-        token_arr = session->commands_tree->disabled_commands_text;
-        token_arr_size = &session->commands_tree->disabled_commands_text_size;
+        token_array = &session->commands_tree->disabled_commands_tokens;
     }
 
     const char* ptr = buffer;
@@ -54,19 +56,18 @@ bool cab_fh__load_cmd_disable(CabSession* session, const char* buffer) {
             if (session->commands_tree == NULL) {
                 session->commands_tree =
                     calloc(1, sizeof(*session->commands_tree));
-                token_arr = session->commands_tree->disabled_commands_text;
-                token_arr_size =
-                    &session->commands_tree->disabled_commands_text_size;
+                token_array = &session->commands_tree->disabled_commands_tokens;
             }
-
-            cab_tokens__populate(&token_arr[(*token_arr_size)++], line);
+            CabTokens new_tokens = {0};
+            cab_tokens__populate(&new_tokens, line);
+            cab_tokens_array__add_element(token_array, new_tokens);
         }
         ptr += len;
-        if (*ptr == '\r') {
+        if (*ptr == '\r' || *ptr == '\n') {
             ptr++;
         }
         if (*ptr == '\n') {
-            return true;
+            ptr++;
         }
     }
     return true;
@@ -76,19 +77,18 @@ bool cab_fh__validate_cmd_disable(CabSession* session) {
     if (session->commands_tree == NULL) {
         return true;
     }
-    const CabTokens* token_arr = session->commands_tree->disabled_commands_text;
-    size_t token_arr_size = session->commands_tree->disabled_commands_text_size;
     const CommandSpec* root = cab_session__get_cmd_tree_root(session);
+
+    CabTokensArray array = session->commands_tree->disabled_commands_tokens;
+    session->commands_tree->disabled_commands_tokens = (CabTokensArray){0};
+
     silence_messages(session);
     const char* disable_text = "disable";
     const CommandSpec* disable_spec =
         find_command_spec_in_tree(session, 1, &disable_text, root);
-    for (size_t i = 0; i < token_arr_size; i++) {
-        parse_command(session, disable_spec, (const char**)token_arr[i].tokens,
-                      token_arr[i].token_count);
-    }
-
+    cab_session__parse_tokens_array(session, array, disable_spec);
     unsilence_messages(session);
+    session->commands_tree->disabled_commands_tokens = array;
     return true;
 }
 
